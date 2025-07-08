@@ -41,7 +41,7 @@ export default function ProjectDetailModal({ project, isOpen, onClose }: Project
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4">
+    <div className="fixed inset-0 z-50 flex items-start justify-start p-2 sm:p-4 pt-6">
       <div className="absolute inset-0 bg-black/80" onClick={onClose} />
       
       <div className="relative bg-youtube-dark border border-youtube-gray rounded-lg max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden">
