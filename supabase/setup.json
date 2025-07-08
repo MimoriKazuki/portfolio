@@ -1,0 +1,138 @@
+{
+  "version": "1.0",
+  "name": "Portfolio Database Setup",
+  "description": "Database schema for portfolio site with projects and profiles",
+  "sql_commands": [
+    {
+      "step": 1,
+      "description": "Enable UUID extension",
+      "sql": "CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\";"
+    },
+    {
+      "step": 2,
+      "description": "Create project status enum",
+      "sql": "CREATE TYPE project_status AS ENUM ('completed', 'in-progress', 'planned');"
+    },
+    {
+      "step": 3,
+      "description": "Create project category enum",
+      "sql": "CREATE TYPE project_category AS ENUM ('homepage', 'landing-page', 'web-app', 'mobile-app');"
+    },
+    {
+      "step": 4,
+      "description": "Create profiles table",
+      "sql": "CREATE TABLE profiles (id UUID DEFAULT uuid_generate_v4() PRIMARY KEY, created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()) NOT NULL, updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()) NOT NULL, name TEXT NOT NULL, title TEXT NOT NULL, bio TEXT NOT NULL, avatar TEXT NOT NULL, github_url TEXT, twitter_url TEXT, linkedin_url TEXT, email TEXT, location TEXT);"
+    },
+    {
+      "step": 5,
+      "description": "Create projects table",
+      "sql": "CREATE TABLE projects (id UUID DEFAULT uuid_generate_v4() PRIMARY KEY, created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()) NOT NULL, updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()) NOT NULL, title TEXT NOT NULL, description TEXT NOT NULL, thumbnail TEXT NOT NULL, live_url TEXT, github_url TEXT, technologies TEXT[] DEFAULT '{}', featured BOOLEAN DEFAULT false, status project_status DEFAULT 'planned', category project_category DEFAULT 'web-app', duration TEXT, \"order\" INTEGER DEFAULT 0);"
+    },
+    {
+      "step": 6,
+      "description": "Create indexes",
+      "sql": "CREATE INDEX idx_projects_featured ON projects(featured); CREATE INDEX idx_projects_status ON projects(status); CREATE INDEX idx_projects_category ON projects(category); CREATE INDEX idx_projects_order ON projects(\"order\");"
+    },
+    {
+      "step": 7,
+      "description": "Create updated_at trigger function",
+      "sql": "CREATE OR REPLACE FUNCTION update_updated_at_column() RETURNS TRIGGER AS $$ BEGIN NEW.updated_at = TIMEZONE('utc', NOW()); RETURN NEW; END; $$ language 'plpgsql';"
+    },
+    {
+      "step": 8,
+      "description": "Create triggers for updated_at",
+      "sql": "CREATE TRIGGER update_profiles_updated_at BEFORE UPDATE ON profiles FOR EACH ROW EXECUTE FUNCTION update_updated_at_column(); CREATE TRIGGER update_projects_updated_at BEFORE UPDATE ON projects FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();"
+    },
+    {
+      "step": 9,
+      "description": "Enable Row Level Security",
+      "sql": "ALTER TABLE profiles ENABLE ROW LEVEL SECURITY; ALTER TABLE projects ENABLE ROW LEVEL SECURITY;"
+    },
+    {
+      "step": 10,
+      "description": "Create read policies",
+      "sql": "CREATE POLICY \"Profiles are viewable by everyone\" ON profiles FOR SELECT USING (true); CREATE POLICY \"Projects are viewable by everyone\" ON projects FOR SELECT USING (true);"
+    },
+    {
+      "step": 11,
+      "description": "Create write policies for authenticated users",
+      "sql": "CREATE POLICY \"Authenticated users can insert profiles\" ON profiles FOR INSERT WITH CHECK (auth.role() = 'authenticated'); CREATE POLICY \"Authenticated users can update profiles\" ON profiles FOR UPDATE USING (auth.role() = 'authenticated'); CREATE POLICY \"Authenticated users can delete profiles\" ON profiles FOR DELETE USING (auth.role() = 'authenticated');"
+    },
+    {
+      "step": 12,
+      "description": "Create write policies for projects",
+      "sql": "CREATE POLICY \"Authenticated users can insert projects\" ON projects FOR INSERT WITH CHECK (auth.role() = 'authenticated'); CREATE POLICY \"Authenticated users can update projects\" ON projects FOR UPDATE USING (auth.role() = 'authenticated'); CREATE POLICY \"Authenticated users can delete projects\" ON projects FOR DELETE USING (auth.role() = 'authenticated');"
+    }
+  ],
+  "sample_data": {
+    "profile": {
+      "name": "LAND Bridge",
+      "title": "システム開発会社",
+      "bio": "私たちは、お客様のビジネスを成功に導くシステム開発を提供します。ホームページ、ランディングページ、Webアプリケーション、モバイルアプリケーションなど、幅広いプロジェクトに対応しています。",
+      "avatar": "https://images.unsplash.com/photo-1549692520-acc6669e2f0c?w=400&h=400&fit=crop",
+      "email": "tamogami@landbridge.co.jp",
+      "location": "東京, 日本"
+    },
+    "projects": [
+      {
+        "title": "コーポレートサイトリニューアル",
+        "description": "大手製造業のコーポレートサイトを全面リニューアル。レスポンシブデザインとCMSを導入し、更新作業の効率化を実現。",
+        "thumbnail": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=450&fit=crop",
+        "category": "homepage",
+        "technologies": ["Next.js", "TypeScript", "Tailwind CSS", "Contentful"],
+        "featured": true,
+        "status": "completed",
+        "live_url": "https://example.com",
+        "duration": "3ヶ月",
+        "order": 1
+      },
+      {
+        "title": "ECサイト構築",
+        "description": "D2Cブランド向けのECサイトを構築。Shopifyをベースに、カスタムテーマとアプリを開発し、ブランドイメージを表現。",
+        "thumbnail": "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=450&fit=crop",
+        "category": "web-app",
+        "technologies": ["Shopify", "Liquid", "JavaScript", "Node.js"],
+        "featured": true,
+        "status": "completed",
+        "live_url": "https://example-shop.com",
+        "duration": "2ヶ月",
+        "order": 2
+      },
+      {
+        "title": "SaaSダッシュボード開発",
+        "description": "BtoBのSaaSプロダクト向けダッシュボードを開発。リアルタイムデータの可視化と分析機能を実装。",
+        "thumbnail": "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&h=450&fit=crop",
+        "category": "web-app",
+        "technologies": ["React", "TypeScript", "Material-UI", "GraphQL", "PostgreSQL"],
+        "featured": true,
+        "status": "completed",
+        "live_url": "https://dashboard.example.com",
+        "duration": "4ヶ月",
+        "order": 3
+      },
+      {
+        "title": "モバイルアプリ開発",
+        "description": "フィットネストラッキングアプリをReact Nativeで開発。iOS/Android両対応で、ヘルスケアデータとの連携機能も実装。",
+        "thumbnail": "https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=800&h=450&fit=crop",
+        "category": "mobile-app",
+        "technologies": ["React Native", "TypeScript", "Firebase", "HealthKit"],
+        "featured": false,
+        "status": "in-progress",
+        "duration": "3ヶ月（予定）",
+        "order": 4
+      },
+      {
+        "title": "ランディングページ制作",
+        "description": "新サービスローンチ向けのランディングページを制作。A/Bテストを実施し、コンバージョン率を最適化。",
+        "thumbnail": "https://images.unsplash.com/photo-1517292987719-0369a794ec0f?w=800&h=450&fit=crop",
+        "category": "landing-page",
+        "technologies": ["HTML", "CSS", "JavaScript", "Google Analytics"],
+        "featured": false,
+        "status": "completed",
+        "live_url": "https://landing.example.com",
+        "duration": "2週間",
+        "order": 5
+      }
+    ]
+  }
+}

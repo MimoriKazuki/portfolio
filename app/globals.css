@@ -1,0 +1,169 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 240 10% 6%;
+    --foreground: 0 0% 98%;
+
+    --card: 240 10% 8%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 240 10% 8%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 217 91% 60%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 240 6% 15%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 240 6% 15%;
+    --muted-foreground: 0 0% 66%;
+
+    --accent: 240 6% 15%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 240 6% 20%;
+    --input: 240 6% 20%;
+    --ring: 217 91% 60%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 240 10% 6%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 217 91% 60%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 6% 15%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 240 6% 20%;
+    --sidebar-ring: 217 91% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    @apply bg-background;
+    background-color: hsl(var(--background));
+    /* Prevent any white flash during page loads */
+    background: #0f0f0f !important;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+    background-color: hsl(var(--background));
+    background: #0f0f0f !important;
+    min-height: 100vh;
+    /* Prevent flash of white/unstyled content */
+    position: relative;
+  }
+
+  /* Prevent page flashing during transitions */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #0f0f0f;
+    background: #0f0f0f !important;
+    z-index: -1000;
+  }
+
+  /* Ensure all containers maintain dark background */
+  #__next,
+  [data-nextjs-scroll-focus-boundary] {
+    background-color: #0f0f0f !important;
+    background: #0f0f0f !important;
+  }
+
+  .hover-scale {
+    @apply transition-transform duration-200 hover:scale-105;
+  }
+
+  .video-card {
+    @apply bg-card rounded-lg overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1;
+  }
+
+  .glass-effect {
+    @apply bg-background/80 backdrop-blur-md border border-border/50;
+  }
+
+  /* Hide scrollbar but keep functionality */
+  .scrollbar-hide {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE and Edge */
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
+
+  /* Smooth page transitions */
+  .page-transition {
+    transition: opacity 0.15s ease-in-out;
+  }
+
+  /* Shimmer effect for skeleton loading */
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  /* Base skeleton styles with shimmer */
+  .skeleton-base {
+    @apply relative overflow-hidden;
+  }
+
+  .skeleton-base::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.05) 20%,
+      rgba(255, 255, 255, 0.05) 60%,
+      transparent 100%
+    );
+    animation: shimmer 2s infinite;
+  }
+
+  /* Skeleton variants for different content types */
+  .skeleton-image {
+    @apply skeleton-base;
+    background: #1a1a1a;
+  }
+
+  .skeleton-title {
+    @apply skeleton-base;
+    background: #2a2a2a;
+  }
+
+  .skeleton-text {
+    @apply skeleton-base;
+    background: #232323;
+  }
+
+  .skeleton-tag {
+    @apply skeleton-base;
+    background: #1f1f1f;
+  }
+}
