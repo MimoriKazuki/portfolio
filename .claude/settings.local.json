@@ -16,7 +16,9 @@
       "Bash(node:*)",
       "Bash(npm:*)",
       "Bash(claude --version)",
-      "Bash(git pull:*)"
+      "Bash(git pull:*)",
+      "Bash(npx vercel:*)",
+      "Bash(mkdir:*)"
     ],
     "deny": []
   }
