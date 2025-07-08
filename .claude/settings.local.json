@@ -4,7 +4,10 @@
       "Bash(git add:*)",
       "Bash(npm install)",
       "Bash(npm run dev:*)",
-      "Bash(cp:*)"
+      "Bash(cp:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(vercel:*)"
     ],
     "deny": []
   }
