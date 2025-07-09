@@ -41,10 +41,10 @@ export default function ProjectDetailModal({ project, isOpen, onClose }: Project
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-start p-2 sm:p-4 pt-6">
+    <div className="fixed inset-0 z-50 flex">
       <div className="absolute inset-0 bg-black/80" onClick={onClose} />
       
-      <div className="relative bg-youtube-dark border border-youtube-gray rounded-lg max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-hidden">
+      <div className="relative bg-youtube-dark border border-youtube-gray rounded-lg w-full max-w-6xl mx-auto mt-14 ml-0 md:ml-60 mr-4 md:mr-8 max-h-[calc(100vh-3.5rem)] overflow-hidden">
         <div className="sticky top-0 bg-youtube-dark border-b border-youtube-gray p-3 sm:p-4 flex items-center justify-between z-10">
           <h2 className="text-lg sm:text-xl font-bold pr-2 line-clamp-1">{project.title}</h2>
           <button
@@ -55,11 +55,11 @@ export default function ProjectDetailModal({ project, isOpen, onClose }: Project
           </button>
         </div>
         
-        <div className="overflow-y-auto max-h-[calc(95vh-52px)] sm:max-h-[calc(90vh-64px)]">
-          <div className="p-4 sm:p-6">
-            <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
+        <div className="overflow-y-auto max-h-[calc(100vh-7.5rem)]">
+          <div className="p-6 sm:p-8">
+            <div className="flex flex-col lg:flex-row gap-6 sm:gap-8">
               {/* Left column - Thumbnail */}
-              <div className="lg:w-2/5">
+              <div className="lg:w-1/2">
                 <div className="relative aspect-video rounded-lg overflow-hidden">
                   <Image
                     src={project.thumbnail}
@@ -74,7 +74,7 @@ export default function ProjectDetailModal({ project, isOpen, onClose }: Project
               </div>
 
               {/* Right column - Project details */}
-              <div className="lg:w-3/5 space-y-3 sm:space-y-4">
+              <div className="lg:w-1/2 space-y-4 sm:space-y-6">
                 <div>
                   <h3 className="text-base sm:text-lg font-semibold mb-1.5 sm:mb-2">プロジェクト概要</h3>
                   <p className="text-sm sm:text-base text-gray-300 leading-relaxed">{project.description}</p>
