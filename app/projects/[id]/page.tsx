@@ -84,6 +84,32 @@ export default async function ProjectDetailPage({
                 {categoryLabels[project.category]}
               </div>
             </div>
+            
+            {/* Action buttons below thumbnail */}
+            <div className="mt-4 flex flex-col sm:flex-row gap-3 justify-center">
+              {project.live_url && (
+                <a
+                  href={project.live_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors text-white"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                  サイトを見る
+                </a>
+              )}
+              {project.github_url && (
+                <a
+                  href={project.github_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-youtube-gray hover:bg-youtube-gray/80 rounded-lg transition-colors text-white"
+                >
+                  <Github className="w-4 h-4" />
+                  ソースコード
+                </a>
+              )}
+            </div>
           </div>
 
           {/* Right column - Project details */}
@@ -121,30 +147,6 @@ export default async function ProjectDetailPage({
                 </div>
               </div>
 
-              <div className="flex flex-col sm:flex-row gap-3">
-                {project.live_url && (
-                  <a
-                    href={project.live_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors text-white"
-                  >
-                    <ExternalLink className="w-4 h-4" />
-                    サイトを見る
-                  </a>
-                )}
-                {project.github_url && (
-                  <a
-                    href={project.github_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-youtube-gray hover:bg-youtube-gray/80 rounded-lg transition-colors text-white"
-                  >
-                    <Github className="w-4 h-4" />
-                    ソースコード
-                  </a>
-                )}
-              </div>
           </div>
         </div>
       </div>
