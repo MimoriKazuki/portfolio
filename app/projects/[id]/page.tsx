@@ -58,7 +58,7 @@ export default async function ProjectDetailPage({
 
   return (
     <MainLayout>
-      <div className="max-w-4xl mx-auto p-4 sm:p-6">
+      <div className="p-4 sm:p-6 pt-2 sm:pt-3">
         <Link
           href="/projects"
           className="inline-flex items-center gap-2 text-gray-400 hover:text-white mb-6 transition-colors"
@@ -67,24 +67,27 @@ export default async function ProjectDetailPage({
           プロジェクト一覧に戻る
         </Link>
 
-        <div className="space-y-6">
-          <div className="relative aspect-video rounded-lg overflow-hidden">
-            <Image
-              src={project.thumbnail}
-              alt={project.title}
-              fill
-              className="object-cover"
-              priority
-            />
-            <div className={`absolute top-4 right-4 ${categoryColors[project.category]} text-white text-sm px-3 py-1 rounded`}>
-              {categoryLabels[project.category]}
+        <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">{project.title}</h1>
+
+        <div className="flex flex-col lg:flex-row gap-6 sm:gap-8">
+          {/* Left column - Thumbnail */}
+          <div className="lg:w-1/2">
+            <div className="relative aspect-video rounded-lg overflow-hidden">
+              <Image
+                src={project.thumbnail}
+                alt={project.title}
+                fill
+                className="object-cover"
+                priority
+              />
+              <div className={`absolute top-2 right-2 sm:top-4 sm:right-4 ${categoryColors[project.category]} text-white text-xs sm:text-sm px-2 sm:px-3 py-0.5 sm:py-1 rounded`}>
+                {categoryLabels[project.category]}
+              </div>
             </div>
           </div>
 
-          <div>
-            <h1 className="text-2xl sm:text-3xl font-bold mb-4 text-white">{project.title}</h1>
-            
-            <div className="space-y-6">
+          {/* Right column - Project details */}
+          <div className="lg:w-1/2 space-y-4 sm:space-y-6">
               <div>
                 <h2 className="text-lg font-semibold mb-2 text-white">プロジェクト概要</h2>
                 <p className="text-gray-300 leading-relaxed">{project.description}</p>
@@ -142,7 +145,6 @@ export default async function ProjectDetailPage({
                   </a>
                 )}
               </div>
-            </div>
           </div>
         </div>
       </div>
