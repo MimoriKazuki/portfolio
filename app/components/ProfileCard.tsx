@@ -23,54 +23,69 @@ export default function ProfileCard({ categoryStats }: ProfileCardProps) {
   }
 
   return (
-    <div className="relative rounded-lg p-4 sm:p-6 md:p-8 mb-6 md:mb-8 overflow-hidden">
-      {/* グラデーション背景 */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 via-purple-600/20 to-indigo-600/20 rounded-lg" />
-      <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-blue-500/10 to-purple-500/10 rounded-lg" />
+    <div className="relative rounded-2xl p-8 mb-8 overflow-hidden bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+      {/* パターン背景 */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute inset-0" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%234338ca' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+        }} />
+      </div>
       
       {/* コンテンツ */}
-      <div className="relative flex flex-col lg:flex-row gap-6 md:gap-8">
+      <div className="relative flex flex-col lg:flex-row gap-8">
         <div className="flex-1">
-          <div className="text-3xl sm:text-4xl md:text-5xl font-bold mb-2 sm:mb-3 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent pb-1" style={{ lineHeight: '1.4' }}>
+          <h1 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">
             {profile.name}
-          </div>
-          <h2 className="text-lg sm:text-xl md:text-2xl text-gray-300 mb-4 sm:mb-6 font-medium">{profile.title}</h2>
+          </h1>
+          <h2 className="text-xl md:text-2xl text-gray-700 mb-6 font-medium">{profile.title}</h2>
           
-          <div className="text-sm sm:text-base md:text-lg mb-4 sm:mb-6 leading-relaxed text-gray-200 whitespace-pre-line">{profile.bio}</div>
+          <div className="text-base md:text-lg mb-6 leading-relaxed text-gray-600 whitespace-pre-line">{profile.bio}</div>
           
-          <div className="flex items-center gap-2 mt-4 sm:mt-6">
+          <div className="flex items-center gap-4">
             <Link 
-              href="https://landbridge.co.jp/"
+              href="https://www.landbridge.ai/"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 text-sm sm:text-base bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg hover:from-blue-700 hover:to-purple-700 transition-all duration-200 transform hover:scale-105"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-portfolio-blue text-white rounded-lg hover:bg-portfolio-blue-dark transition-all duration-200 font-medium shadow-md hover:shadow-lg"
             >
-              <Globe className="h-4 sm:h-5 w-4 sm:w-5" />
+              <Globe className="h-5 w-5" />
               <span>企業サイトはこちら</span>
-              <ExternalLink className="h-3 sm:h-4 w-3 sm:w-4" />
+              <ExternalLink className="h-4 w-4" />
             </Link>
           </div>
         </div>
 
-        <div className="w-full lg:w-1/3">
-          <div className="bg-black/30 backdrop-blur-sm rounded-lg p-4 sm:p-6 border border-white/10">
-            <h3 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4 text-gray-200">開発実績</h3>
-            <ul className="space-y-2 sm:space-y-3">
+        <div className="w-full lg:w-80">
+          <div className="bg-white rounded-xl p-6 shadow-lg">
+            <h3 className="text-lg font-semibold mb-4 text-gray-900">開発実績</h3>
+            <ul className="space-y-4">
               <li className="flex items-center justify-between">
-                <span className="text-gray-300 text-xs sm:text-sm">コーポレートサイト</span>
-                <span className="text-xl sm:text-2xl font-bold text-blue-400 w-8 sm:w-10 text-right tabular-nums">{categoryStats?.homepage || 0}</span>
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                  <span className="text-gray-700">コーポレートサイト</span>
+                </div>
+                <span className="text-2xl font-bold text-gray-900">{categoryStats?.homepage || 0}</span>
               </li>
               <li className="flex items-center justify-between">
-                <span className="text-gray-300 text-xs sm:text-sm">ランディングページ</span>
-                <span className="text-xl sm:text-2xl font-bold text-purple-400 w-8 sm:w-10 text-right tabular-nums">{categoryStats?.['landing-page'] || 0}</span>
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 bg-pink-500 rounded-full"></div>
+                  <span className="text-gray-700">ランディングページ</span>
+                </div>
+                <span className="text-2xl font-bold text-gray-900">{categoryStats?.['landing-page'] || 0}</span>
               </li>
               <li className="flex items-center justify-between">
-                <span className="text-gray-300 text-xs sm:text-sm">Webアプリ</span>
-                <span className="text-xl sm:text-2xl font-bold text-indigo-400 w-8 sm:w-10 text-right tabular-nums">{categoryStats?.['web-app'] || 0}</span>
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                  <span className="text-gray-700">Webアプリ</span>
+                </div>
+                <span className="text-2xl font-bold text-gray-900">{categoryStats?.['web-app'] || 0}</span>
               </li>
               <li className="flex items-center justify-between">
-                <span className="text-gray-300 text-xs sm:text-sm">モバイルアプリ</span>
-                <span className="text-xl sm:text-2xl font-bold text-blue-400 w-8 sm:w-10 text-right tabular-nums">{categoryStats?.['mobile-app'] || 0}</span>
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <span className="text-gray-700">モバイルアプリ</span>
+                </div>
+                <span className="text-2xl font-bold text-gray-900">{categoryStats?.['mobile-app'] || 0}</span>
               </li>
             </ul>
           </div>

@@ -13,8 +13,20 @@ async function getProjects() {
   return projects || []
 }
 
+async function getLatestColumns() {
+  const supabase = createStaticClient()
+  const { data: columns } = await supabase
+    .from('columns')
+    .select('*')
+    .eq('is_published', true)
+    .order('published_date', { ascending: false })
+    .limit(6)
+  return columns || []
+}
+
 export default async function HomePage() {
   const projects = await getProjects()
+  const columns = await getLatestColumns()
   const featuredProjects = projects.filter(p => p.featured).slice(0, 3)
   
   // カテゴリ別に集計
@@ -26,11 +38,12 @@ export default async function HomePage() {
   }
 
   return (
-    <MainLayout>
+    <MainLayout hideRightSidebar={true}>
       <HomeContent 
         profiles={null}
         categoryStats={categoryStats}
         featuredProjects={featuredProjects}
+        latestColumns={columns}
       />
     </MainLayout>
   )

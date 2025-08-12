@@ -66,17 +66,13 @@ export default {
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
 				},
-				youtube: {
-					red: '#FF0000',
-					dark: '#0F0F0F',
-					darker: '#0A0A0A',
-					gray: '#272727',
-					'light-gray': '#AAAAAA'
-				},
 				portfolio: {
-					blue: '#2563eb',
-					'blue-dark': '#1e40af',
-					'blue-light': '#3b82f6'
+					blue: '#3b82f6',
+					'blue-dark': '#2563eb',
+					'blue-light': '#60a5fa',
+					gray: '#f3f4f6',
+					'gray-dark': '#e5e7eb',
+					'gray-light': '#f9fafb'
 				}
 			},
 			borderRadius: {
@@ -130,5 +126,5 @@ export default {
 			}
 		}
 	},
-	plugins: [require("tailwindcss-animate")],
+	plugins: [require("tailwindcss-animate"), require("@tailwindcss/typography")],
 } satisfies Config;

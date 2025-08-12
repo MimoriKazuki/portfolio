@@ -32,3 +32,46 @@ export interface Profile {
   location?: string
   email?: string
 }
+
+export interface Column {
+  id: string
+  title: string
+  slug: string
+  excerpt?: string
+  content: string
+  thumbnail?: string
+  author?: string
+  published_date: string
+  tags?: string[]
+  is_published: boolean
+  view_count?: number
+  created_at: string
+  updated_at: string
+}
+
+export interface Document {
+  id: string
+  title: string
+  description?: string
+  thumbnail?: string
+  file_url?: string
+  category?: string
+  tags?: string[]
+  is_active: boolean
+  download_count?: number
+  created_at: string
+  updated_at: string
+}
+
+export interface DocumentRequest {
+  id?: string
+  document_id: string
+  company_name: string
+  name: string
+  email: string
+  phone?: string
+  department?: string
+  position?: string
+  message?: string
+  created_at?: string
+}

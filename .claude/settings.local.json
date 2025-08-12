@@ -18,7 +18,10 @@
       "Bash(claude --version)",
       "Bash(git pull:*)",
       "Bash(npx vercel:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "WebFetch(domain:www.landbridge.ai)",
+      "WebFetch(domain:ainow.ai)",
+      "Bash(npx supabase:*)"
     ],
     "deny": []
   }

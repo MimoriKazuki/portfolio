@@ -28,8 +28,8 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
   }, [activeCategory, projects])
     
   return (
-      <div className="p-4 sm:p-6 pt-2 sm:pt-3">
-      <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">開発実績一覧</h1>
+      <div className="w-full">
+      <h1 className="text-[28px] font-bold mb-4 sm:mb-6">開発実績一覧</h1>
       
       {/* Category Tabs */}
       <div className="mb-6 -mx-6 sm:mx-0 relative">
@@ -65,12 +65,13 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
           <p className="text-xl text-muted-foreground">No projects in this category</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+        <div className="flex flex-wrap gap-4 sm:gap-6">
           {filteredProjects.map((project) => (
-            <ProjectCard 
-              key={project.id} 
-              project={project} 
-            />
+            <div key={project.id} className="w-[361px]">
+              <ProjectCard 
+                project={project} 
+              />
+            </div>
           ))}
         </div>
       )}

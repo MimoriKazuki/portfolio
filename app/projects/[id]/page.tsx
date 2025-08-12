@@ -43,10 +43,10 @@ export default async function ProjectDetailPage({
   }
 
   const categoryColors = {
-    'homepage': 'bg-purple-600',
-    'landing-page': 'bg-pink-600',
-    'web-app': 'bg-blue-600',
-    'mobile-app': 'bg-green-600'
+    'homepage': 'bg-purple-100 text-purple-700',
+    'landing-page': 'bg-pink-100 text-pink-700',
+    'web-app': 'bg-blue-100 text-blue-700',
+    'mobile-app': 'bg-green-100 text-green-700'
   }
 
   const categoryLabels = {
@@ -61,13 +61,13 @@ export default async function ProjectDetailPage({
       <div className="p-4 sm:p-6 pt-2 sm:pt-3">
         <Link
           href="/projects"
-          className="inline-flex items-center gap-2 text-gray-400 hover:text-white mb-6 transition-colors"
+          className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           プロジェクト一覧に戻る
         </Link>
 
-        <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6">{project.title}</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-gray-900">{project.title}</h1>
 
         <div className="flex flex-col lg:flex-row gap-6 sm:gap-8">
           {/* Left column - Thumbnail */}
@@ -80,19 +80,19 @@ export default async function ProjectDetailPage({
                 className="object-cover"
                 priority
               />
-              <div className={`absolute top-2 right-2 sm:top-4 sm:right-4 ${categoryColors[project.category]} text-white text-xs sm:text-sm px-2 sm:px-3 py-0.5 sm:py-1 rounded`}>
+              <div className={`absolute top-2 right-2 sm:top-4 sm:right-4 ${categoryColors[project.category]} text-xs sm:text-sm px-2 sm:px-3 py-0.5 sm:py-1 rounded`}>
                 {categoryLabels[project.category]}
               </div>
             </div>
             
             {/* Action buttons below thumbnail */}
-            <div className="mt-4 flex flex-col sm:flex-row gap-3 justify-center">
+            <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
               {project.live_url && (
                 <a
                   href={project.live_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors text-white"
+                  className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-portfolio-blue hover:bg-portfolio-blue-dark rounded-lg transition-colors text-white"
                 >
                   <ExternalLink className="w-4 h-4" />
                   サイトを見る
@@ -103,7 +103,7 @@ export default async function ProjectDetailPage({
                   href={project.github_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-youtube-gray hover:bg-youtube-gray/80 rounded-lg transition-colors text-white"
+                  className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-900 rounded-lg transition-colors text-white"
                 >
                   <Github className="w-4 h-4" />
                   ソースコード
@@ -115,14 +115,14 @@ export default async function ProjectDetailPage({
           {/* Right column - Project details */}
           <div className="lg:w-1/2 space-y-4 sm:space-y-6">
               <div>
-                <h2 className="text-lg font-semibold mb-2 text-white">プロジェクト概要</h2>
-                <p className="text-gray-300 leading-relaxed">{project.description}</p>
+                <h2 className="text-lg font-semibold mb-2 text-gray-900">プロジェクト概要</h2>
+                <p className="text-gray-700 leading-relaxed">{project.description}</p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <h3 className="text-base font-medium text-gray-400 mb-2">開発期間</h3>
-                  <div className="flex items-center gap-2 text-gray-300">
+                  <h3 className="text-base font-medium text-gray-600 mb-2">開発期間</h3>
+                  <div className="flex items-center gap-2 text-gray-700">
                     <Clock className="w-4 h-4" />
                     <span>{project.duration}</span>
                   </div>
@@ -130,17 +130,17 @@ export default async function ProjectDetailPage({
                 
                 {project.client && (
                   <div>
-                    <h3 className="text-base font-medium text-gray-400 mb-2">クライアント</h3>
-                    <p className="text-gray-300">{project.client}</p>
+                    <h3 className="text-base font-medium text-gray-600 mb-2">クライアント</h3>
+                    <p className="text-gray-700">{project.client}</p>
                   </div>
                 )}
               </div>
 
               <div>
-                <h3 className="text-base font-medium text-gray-400 mb-2">使用技術</h3>
+                <h3 className="text-base font-medium text-gray-600 mb-2">使用技術</h3>
                 <div className="flex flex-wrap gap-2">
                   {project.technologies.map((tech: string) => (
-                    <span key={tech} className="bg-youtube-gray px-3 py-1 rounded text-sm text-white">
+                    <span key={tech} className="bg-gray-100 border border-gray-200 px-3 py-1 rounded text-sm text-gray-700">
                       {tech}
                     </span>
                   ))}

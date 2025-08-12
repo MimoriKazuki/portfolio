@@ -1,17 +1,49 @@
 'use client'
 
-import Header from './Header'
 import Sidebar from './Sidebar'
+import RightSidebar from './RightSidebar'
 import ContactButton from './ContactButton'
+import Footer from './Footer'
 
-export default function MainLayout({ children }: { children: React.ReactNode }) {
+interface MainLayoutProps {
+  children: React.ReactNode
+  hideRightSidebar?: boolean
+}
+
+export default function MainLayout({ children, hideRightSidebar = false }: MainLayoutProps) {
   return (
-    <div className="min-h-screen bg-youtube-dark text-foreground">
-      <Header />
-      <Sidebar />
-      <main className="pt-6 ml-0 md:ml-60">
-        {children}
-      </main>
+    <div className="min-h-screen bg-gray-50 flex flex-col">
+      {/* Body - contains all main content */}
+      <div className="flex-1 flex">
+        {/* Left Sidebar - Fixed to left edge */}
+        <aside className="w-[178px] flex-shrink-0 hidden lg:block bg-white border-r border-gray-200">
+          <div className="sticky top-0 h-screen overflow-y-auto">
+            <Sidebar />
+          </div>
+        </aside>
+        
+        {/* Main Content Container */}
+        <div className="flex-1">
+          <main className="w-full px-4 sm:px-6 lg:px-8 py-8">
+            <div className="flex gap-8">
+              <div className="flex-1">
+                {children}
+              </div>
+              
+              {/* Right Sidebar */}
+              {!hideRightSidebar && (
+                <aside className="w-[260px] flex-shrink-0 hidden lg:block">
+                  <RightSidebar />
+                </aside>
+              )}
+            </div>
+          </main>
+        </div>
+      </div>
+      
+      {/* Footer */}
+      <Footer />
+      
       <ContactButton />
     </div>
   )
