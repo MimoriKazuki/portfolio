@@ -20,7 +20,7 @@ async function getLatestColumns() {
     .select('*')
     .eq('is_published', true)
     .order('published_date', { ascending: false })
-    .limit(6)
+    .limit(3)
   return columns || []
 }
 

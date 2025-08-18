@@ -21,7 +21,8 @@
       "Bash(mkdir:*)",
       "WebFetch(domain:www.landbridge.ai)",
       "WebFetch(domain:ainow.ai)",
-      "Bash(npx supabase:*)"
+      "Bash(npx supabase:*)",
+      "Bash(find:*)"
     ],
     "deny": []
   }

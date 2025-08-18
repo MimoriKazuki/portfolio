@@ -117,7 +117,7 @@ export default function DocumentRequestPage({ params }: PageProps) {
 
   if (loading) {
     return (
-      <MainLayout>
+      <MainLayout hideRightSidebar={true} hideContactButton={true}>
         <div className="flex justify-center items-center min-h-[400px]">
           <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
         </div>
@@ -130,8 +130,8 @@ export default function DocumentRequestPage({ params }: PageProps) {
   }
 
   return (
-    <MainLayout>
-      <div className="w-full max-w-4xl mx-auto">
+    <MainLayout hideRightSidebar={true} hideContactButton={true}>
+      <div className="w-full">
         <Link 
           href="/documents" 
           className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors"
@@ -295,7 +295,8 @@ export default function DocumentRequestPage({ params }: PageProps) {
               <button
                 type="submit"
                 disabled={submitting || !isFormValid}
-                className="w-full bg-portfolio-blue hover:bg-portfolio-blue-dark text-white font-medium py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full text-white font-medium py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:opacity-90"
+                style={{ backgroundColor: 'rgb(37, 99, 235)' }}
               >
                 {submitting ? (
                   <>

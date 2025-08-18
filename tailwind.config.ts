@@ -19,6 +19,12 @@ export default {
 			}
 		},
 		extend: {
+			gridTemplateColumns: {
+				'16': 'repeat(16, minmax(0, 1fr))',
+			},
+			gridColumn: {
+				'span-7': 'span 7 / span 7',
+			},
 			fontFamily: {
 				sans: ['Inter', 'system-ui', 'sans-serif'],
 			},
@@ -116,13 +122,32 @@ export default {
 						transform: 'scale(1)',
 						opacity: '1'
 					}
+				},
+				'ripple': {
+					'0%': {
+						transform: 'scale(1)',
+						opacity: '0'
+					},
+					'17.5%': {
+						transform: 'scale(1)',
+						opacity: '0.5'
+					},
+					'35%': {
+						transform: 'scale(1.4)',
+						opacity: '0'
+					},
+					'100%': {
+						transform: 'scale(1)',
+						opacity: '0'
+					}
 				}
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
 				'accordion-up': 'accordion-up 0.2s ease-out',
 				'fade-in': 'fade-in 0.3s ease-out',
-				'scale-in': 'scale-in 0.2s ease-out'
+				'scale-in': 'scale-in 0.2s ease-out',
+				'ripple': 'ripple 5s cubic-bezier(0.65, 0, 0.35, 1) infinite'
 			}
 		}
 	},

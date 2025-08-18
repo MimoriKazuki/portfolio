@@ -14,19 +14,19 @@ export const metadata: Metadata = {
   publisher: 'LandBridge株式会社',
   icons: {
     icon: [
+      { url: '/favicon.png', type: 'image/png' },
       { url: '/favicon.ico', type: 'image/x-icon' },
-      { url: '/favicon.svg', type: 'image/svg+xml' },
     ],
     shortcut: [
-      { url: '/favicon.ico' },
+      { url: '/favicon.png' },
     ],
     apple: [
-      { url: '/favicon.svg' },
+      { url: '/favicon.png' },
     ],
     other: [
       {
         rel: 'apple-touch-icon-precomposed',
-        url: '/favicon.svg',
+        url: '/favicon.png',
       },
     ],
   },

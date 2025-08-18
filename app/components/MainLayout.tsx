@@ -8,9 +8,10 @@ import Footer from './Footer'
 interface MainLayoutProps {
   children: React.ReactNode
   hideRightSidebar?: boolean
+  hideContactButton?: boolean
 }
 
-export default function MainLayout({ children, hideRightSidebar = false }: MainLayoutProps) {
+export default function MainLayout({ children, hideRightSidebar = false, hideContactButton = false }: MainLayoutProps) {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Body - contains all main content */}
@@ -44,7 +45,7 @@ export default function MainLayout({ children, hideRightSidebar = false }: MainL
       {/* Footer */}
       <Footer />
       
-      <ContactButton />
+      {!hideContactButton && <ContactButton />}
     </div>
   )
 }

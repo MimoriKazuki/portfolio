@@ -15,7 +15,7 @@ export default function LoginForm() {
   // Check if environment variables are set
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
     return (
-      <div className="bg-red-900/20 border border-red-900 rounded-lg p-4 text-sm text-red-400">
+      <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-sm text-red-600">
         <p className="font-semibold mb-2">環境変数エラー</p>
         <p>Supabaseの環境変数が設定されていません。</p>
         <p className="text-xs mt-2">本番環境で環境変数を設定してください。</p>
@@ -66,17 +66,17 @@ export default function LoginForm() {
   return (
     <form onSubmit={handleLogin} className="space-y-6">
       <div>
-        <label htmlFor="email" className="block text-sm font-medium mb-2">
+        <label htmlFor="email" className="block text-sm font-medium mb-2 text-gray-700">
           メールアドレス
         </label>
         <div className="relative">
-          <Mail className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
+          <Mail className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
           <input
             id="email"
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full pl-10 pr-3 py-2 bg-youtube-dark border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+            className="w-full pl-10 pr-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-portfolio-blue focus:border-portfolio-blue text-gray-900"
             placeholder="admin@portfolio.com"
             required
           />
@@ -84,17 +84,17 @@ export default function LoginForm() {
       </div>
       
       <div>
-        <label htmlFor="password" className="block text-sm font-medium mb-2">
+        <label htmlFor="password" className="block text-sm font-medium mb-2 text-gray-700">
           パスワード
         </label>
         <div className="relative">
-          <Lock className="absolute left-3 top-3 h-5 w-5 text-muted-foreground" />
+          <Lock className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
           <input
             id="password"
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full pl-10 pr-3 py-2 bg-youtube-dark border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+            className="w-full pl-10 pr-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-portfolio-blue focus:border-portfolio-blue text-gray-900"
             placeholder="••••••••"
             required
           />
@@ -102,7 +102,7 @@ export default function LoginForm() {
       </div>
       
       {error && (
-        <div className="bg-red-900/20 border border-red-900 rounded-lg p-3 text-sm text-red-400">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-3 text-sm text-red-600">
           {error}
         </div>
       )}
@@ -110,7 +110,7 @@ export default function LoginForm() {
       <button
         type="submit"
         disabled={loading}
-        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full bg-portfolio-blue hover:bg-portfolio-blue-dark text-white font-semibold py-2 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {loading ? 'ログイン中...' : 'ログイン'}
       </button>

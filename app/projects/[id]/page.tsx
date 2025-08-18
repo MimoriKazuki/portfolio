@@ -4,6 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import MainLayout from '@/app/components/MainLayout'
 import { createStaticClient } from '@/app/lib/supabase/static'
+import { createClient } from '@/app/lib/supabase/server'
 
 // 静的パラメータを生成
 export async function generateStaticParams() {
@@ -29,6 +30,20 @@ async function getProject(id: string) {
   return project
 }
 
+// 関連プロジェクトを取得
+async function getRelatedProjects(currentProjectId: string, category: string) {
+  const supabase = await createClient()
+  const { data: relatedProjects } = await supabase
+    .from('projects')
+    .select('*')
+    .eq('category', category)
+    .neq('id', currentProjectId)
+    .order('created_at', { ascending: false })
+    .limit(3)
+  
+  return relatedProjects || []
+}
+
 // Next.js 15の新しい形式に対応
 export default async function ProjectDetailPage({ 
   params 
@@ -41,6 +56,9 @@ export default async function ProjectDetailPage({
   if (!project) {
     notFound()
   }
+
+  // 関連プロジェクトを取得
+  const relatedProjects = await getRelatedProjects(project.id, project.category)
 
   const categoryColors = {
     'homepage': 'bg-purple-100 text-purple-700',
@@ -92,7 +110,7 @@ export default async function ProjectDetailPage({
                   href={project.live_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-portfolio-blue hover:bg-portfolio-blue-dark rounded-lg transition-colors text-white"
+                  className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-portfolio-blue-dark hover:opacity-90 rounded-full transition-opacity text-white text-sm font-medium"
                 >
                   <ExternalLink className="w-4 h-4" />
                   サイトを見る
@@ -149,6 +167,56 @@ export default async function ProjectDetailPage({
 
           </div>
         </div>
+
+        {/* 関連プロジェクト */}
+        {relatedProjects.length > 0 && (
+          <section className="mt-16">
+            <h2 className="text-2xl font-bold text-gray-900 mb-8">関連実績</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {relatedProjects.map((relatedProject) => (
+                <Link 
+                  key={relatedProject.id} 
+                  href={`/projects/${relatedProject.id}`}
+                  className="group"
+                >
+                  <article className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 h-full flex flex-col">
+                    <div className="relative aspect-video">
+                      <Image
+                        src={relatedProject.thumbnail}
+                        alt={relatedProject.title}
+                        fill
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                      />
+                      <div className={`absolute top-4 right-4 ${categoryColors[relatedProject.category]} text-xs px-3 py-1 rounded`}>
+                        {categoryLabels[relatedProject.category]}
+                      </div>
+                    </div>
+                    
+                    <div className="p-5 flex-1 flex flex-col">
+                      <h3 className="font-semibold text-gray-900 mb-2 line-clamp-1 group-hover:text-portfolio-blue transition-colors">
+                        {relatedProject.title}
+                      </h3>
+                      
+                      <div className="flex-1">
+                        <p className="text-gray-600 text-sm line-clamp-2 mb-4">
+                          {relatedProject.description || ''}
+                        </p>
+                      </div>
+                      
+                      {relatedProject.duration && (
+                        <div className="flex items-center gap-1 text-xs text-gray-500">
+                          <Clock className="w-3 h-3" />
+                          <span>{relatedProject.duration}</span>
+                        </div>
+                      )}
+                    </div>
+                  </article>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </MainLayout>
   )

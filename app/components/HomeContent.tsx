@@ -34,9 +34,9 @@ export default function HomeContent({ profiles, categoryStats, featuredProjects,
             <h2 className="text-2xl font-bold">注目のプロジェクト</h2>
             <Link
               href="/projects"
-              className="text-blue-600 hover:underline flex items-center gap-1"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-portfolio-blue-dark text-white rounded-full hover:opacity-90 transition-opacity text-sm font-medium"
             >
-              View all <ArrowRight className="w-4 h-4" />
+              すべて見る <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
           
@@ -64,7 +64,7 @@ export default function HomeContent({ profiles, categoryStats, featuredProjects,
             <h2 className="text-2xl font-bold">最新のコラム</h2>
             <Link
               href="/columns"
-              className="text-blue-600 hover:underline flex items-center gap-1"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-portfolio-blue-dark text-white rounded-full hover:opacity-90 transition-opacity text-sm font-medium"
             >
               すべて見る <ArrowRight className="w-4 h-4" />
             </Link>

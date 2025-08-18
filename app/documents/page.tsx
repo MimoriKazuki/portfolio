@@ -58,7 +58,8 @@ export default async function DocumentsPage() {
                 
                 <Link
                   href={`/documents/request/${document.id}`}
-                  className="inline-flex items-center justify-center bg-portfolio-blue hover:bg-portfolio-blue-dark text-white px-6 py-3 rounded-lg transition-colors font-medium w-full"
+                  className="inline-flex items-center justify-center text-white px-6 py-3 rounded-lg transition-opacity hover:opacity-90 font-medium w-full"
+                  style={{ backgroundColor: 'rgb(37, 99, 235)' }}
                 >
                   資料ダウンロード
                 </Link>

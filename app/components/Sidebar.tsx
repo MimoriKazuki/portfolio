@@ -36,7 +36,10 @@ const Sidebar = () => {
       
       <div className="space-y-2">
         {menuItems.map((item) => {
-          const isActive = pathname === item.href
+          // Check if current path starts with the menu item's href (except for home page)
+          const isActive = item.href === '/' 
+            ? pathname === item.href 
+            : pathname.startsWith(item.href)
           return (
             <Link
               key={item.href}
@@ -44,11 +47,11 @@ const Sidebar = () => {
               className={cn(
                 "block w-full px-4 py-3 rounded-lg transition-all duration-200 text-center",
                 "hover:bg-gray-100 text-gray-700 hover:text-portfolio-blue",
-                isActive && "bg-portfolio-blue/10 text-portfolio-blue font-medium"
+                isActive && "bg-portfolio-blue/10 text-portfolio-blue font-bold"
               )}
               prefetch={true}
             >
-              <span className="font-medium">{item.label}</span>
+              <span className={isActive ? "font-bold" : "font-medium"}>{item.label}</span>
             </Link>
           )
         })}

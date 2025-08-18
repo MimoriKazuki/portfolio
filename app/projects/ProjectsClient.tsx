@@ -20,6 +20,26 @@ interface ProjectsClientProps {
 export default function ProjectsClient({ projects }: ProjectsClientProps) {
   const [activeCategory, setActiveCategory] = useState('all')
   
+  // カテゴリごとのプロジェクト数を計算
+  const categoryCounts = useMemo(() => {
+    const counts: Record<string, number> = {}
+    categories.forEach(category => {
+      if (category.id === 'all') {
+        counts[category.id] = projects.length
+      } else {
+        counts[category.id] = projects.filter(p => p.category === category.id).length
+      }
+    })
+    return counts
+  }, [projects])
+  
+  // コンテンツがあるカテゴリのみをフィルタリング
+  const visibleCategories = useMemo(() => {
+    return categories.filter(category => 
+      category.id === 'all' || categoryCounts[category.id] > 0
+    )
+  }, [categoryCounts])
+  
   // フィルタリングをメモ化
   const filteredProjects = useMemo(() => {
     return activeCategory === 'all' 
@@ -37,7 +57,7 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
           {/* モバイルでのスクロールインジケーター */}
           <div className="absolute right-0 top-0 h-full w-8 bg-gradient-to-l from-youtube-dark to-transparent pointer-events-none sm:hidden" />
           <div className="absolute left-0 top-0 h-full w-8 bg-gradient-to-r from-youtube-dark to-transparent pointer-events-none sm:hidden" />
-          {categories.map((category) => (
+          {visibleCategories.map((category) => (
             <button
               key={category.id}
               onClick={() => setActiveCategory(category.id)}
@@ -49,10 +69,7 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
             >
               {category.label}
               <span className="ml-1.5 sm:ml-2 text-xs">
-                {category.id === 'all' 
-                  ? projects.length 
-                  : projects.filter(p => p.category === category.id).length
-                }
+                {categoryCounts[category.id]}
               </span>
             </button>
           ))}

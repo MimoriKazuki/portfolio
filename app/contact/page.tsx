@@ -163,7 +163,8 @@ export default function ContactPage() {
               <button
                 type="submit"
                 disabled={isSubmitting || !isFormValid}
-                className="w-full bg-portfolio-blue hover:bg-portfolio-blue-dark text-white font-medium py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="w-full text-white font-medium py-3 px-6 rounded-lg transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                style={{ backgroundColor: 'rgb(37, 99, 235)' }}
               >
                 {isSubmitting ? (
                   <>

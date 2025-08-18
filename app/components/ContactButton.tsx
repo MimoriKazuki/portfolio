@@ -1,6 +1,6 @@
 'use client'
 
-import { MessageCircle } from 'lucide-react'
+import { Mail } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
@@ -13,14 +13,18 @@ export default function ContactButton() {
   }
   
   return (
-    <Link
-      href="/contact"
-      className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 bg-blue-600 hover:bg-blue-700 text-white p-3 sm:p-4 rounded-full shadow-lg transition-all hover:scale-110 z-50 group"
-    >
-      <MessageCircle className="h-5 w-5 sm:h-6 sm:w-6" />
-      <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 bg-youtube-dark px-3 py-1 rounded-lg text-sm whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity hidden sm:block">
-        お問い合わせ
-      </span>
-    </Link>
+    <div className="fixed bottom-6 right-6 z-50">
+      <Link
+        href="/contact"
+        className="relative bg-[rgb(37,99,235)] hover:opacity-90 text-white px-8 py-4 rounded-full shadow-lg transition-all hover:scale-105 flex items-center gap-3 overflow-visible"
+      >
+        {/* Ripple animations */}
+        <span className="absolute inset-0 rounded-full bg-[rgb(37,99,235)] animate-ripple"></span>
+        <span className="absolute inset-0 rounded-full bg-[rgb(37,99,235)] animate-ripple" style={{ animationDelay: '2.5s' }}></span>
+        
+        <Mail className="h-5 w-5 relative z-10" />
+        <span className="text-base relative z-10">お問い合わせ</span>
+      </Link>
+    </div>
   )
 }
