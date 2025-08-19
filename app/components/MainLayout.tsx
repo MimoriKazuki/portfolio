@@ -28,10 +28,10 @@ export default function MainLayout({ children, hideRightSidebar = false, hideCon
         </aside>
         
         {/* Main Content Container */}
-        <div className="flex-1">
-          <main className="w-full px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex-1 overflow-hidden">
+          <main className="w-full px-4 sm:px-6 lg:px-8 py-8 overflow-x-hidden">
             <div className="flex gap-8">
-              <div className="flex-1">
+              <div className="flex-1 min-w-0">
                 {children}
               </div>
               

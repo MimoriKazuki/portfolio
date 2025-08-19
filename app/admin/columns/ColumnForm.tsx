@@ -25,6 +25,7 @@ export default function ColumnForm({ column }: ColumnFormProps) {
     thumbnail: column?.thumbnail || '',
     tags: column?.tags?.join(', ') || '',
     is_published: column?.is_published || false,
+    is_featured: column?.is_featured || false,
     published_date: column?.published_date || new Date().toISOString().split('T')[0],
   })
 
@@ -51,6 +52,7 @@ export default function ColumnForm({ column }: ColumnFormProps) {
         thumbnail: formData.thumbnail,
         tags: formData.tags.split(',').map(tag => tag.trim()).filter(Boolean),
         is_published: formData.is_published,
+        is_featured: formData.is_featured,
         published_date: formData.is_published ? formData.published_date : null,
       }
 
@@ -206,17 +208,32 @@ export default function ColumnForm({ column }: ColumnFormProps) {
         <h2 className="text-lg font-semibold mb-4 text-gray-900">公開設定</h2>
         
         <div className="space-y-4">
-          <div className="flex items-center gap-3">
-            <input
-              type="checkbox"
-              id="is_published"
-              checked={formData.is_published}
-              onChange={(e) => setFormData({ ...formData, is_published: e.target.checked })}
-              className="w-4 h-4 text-portfolio-blue border-gray-300 rounded focus:ring-portfolio-blue"
-            />
-            <label htmlFor="is_published" className="text-sm font-medium text-gray-700">
-              公開する
-            </label>
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                id="is_published"
+                checked={formData.is_published}
+                onChange={(e) => setFormData({ ...formData, is_published: e.target.checked })}
+                className="w-4 h-4 text-portfolio-blue border-gray-300 rounded focus:ring-portfolio-blue"
+              />
+              <label htmlFor="is_published" className="text-sm font-medium text-gray-700">
+                公開する
+              </label>
+            </div>
+            
+            <div className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                id="is_featured"
+                checked={formData.is_featured}
+                onChange={(e) => setFormData({ ...formData, is_featured: e.target.checked })}
+                className="w-4 h-4 text-portfolio-blue border-gray-300 rounded focus:ring-portfolio-blue"
+              />
+              <label htmlFor="is_featured" className="text-sm font-medium text-gray-700">
+                注目コラムにする
+              </label>
+            </div>
           </div>
           
           {formData.is_published && (

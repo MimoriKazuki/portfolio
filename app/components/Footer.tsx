@@ -1,6 +1,9 @@
+'use client'
+
 import Link from 'next/link'
 import Image from 'next/image'
 import { Mail, ExternalLink } from 'lucide-react'
+import { trackExternalLinkClick } from '@/app/components/GoogleAnalyticsEvent'
 
 const Footer = () => {
   const currentYear = new Date().getFullYear()
@@ -30,6 +33,7 @@ const Footer = () => {
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 text-sm hover:text-white transition-colors"
               aria-label="LandBridge株式会社 企業サイトへ"
+              onClick={() => trackExternalLinkClick('https://www.landbridge.co.jp/')}
             >
               企業サイトはこちら
               <ExternalLink className="w-3 h-3" />

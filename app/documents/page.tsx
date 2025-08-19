@@ -28,11 +28,11 @@ export default async function DocumentsPage() {
           <h1 className="text-[28px] font-bold text-gray-900">資料ダウンロード</h1>
         </div>
 
-        <div className="flex flex-wrap gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {documents?.map((document: Document) => (
             <article 
               key={document.id}
-              className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 flex flex-col w-[330px]"
+              className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 flex flex-col"
             >
               {document.thumbnail && (
                 <div className="relative aspect-video">

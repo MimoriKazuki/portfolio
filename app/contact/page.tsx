@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import MainLayout from '@/app/components/MainLayout'
+import { trackContactFormSubmit } from '@/app/components/GoogleAnalyticsEvent'
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -43,6 +44,9 @@ export default function ContactPage() {
       const result = await response.json()
 
       if (response.ok) {
+        // Google Analyticsにイベントを送信
+        trackContactFormSubmit('general_inquiry')
+        
         setSubmitMessage('お問い合わせありがとうございます。内容を確認次第、ご連絡させていただきます。')
         setFormData({ name: '', company: '', email: '', message: '' })
       } else {

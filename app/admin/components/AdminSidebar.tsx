@@ -1,12 +1,26 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { Home, FolderOpen, FileText, Download, User, Mail } from 'lucide-react'
+import { usePathname, useRouter } from 'next/navigation'
+import { Home, FolderOpen, FileText, Download, User, Mail, LogOut } from 'lucide-react'
 import { cn } from '@/app/lib/utils'
+import { createClient } from '@/app/lib/supabase/client'
+import type { User as SupabaseUser } from '@supabase/supabase-js'
 
-export default function AdminSidebar() {
+interface AdminSidebarProps {
+  user: SupabaseUser
+}
+
+export default function AdminSidebar({ user }: AdminSidebarProps) {
   const pathname = usePathname()
+  const router = useRouter()
+  const supabase = createClient()
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
+    router.push('/login')
+    router.refresh()
+  }
   
   const menuItems = [
     { icon: Home, label: 'ダッシュボード', href: '/admin' },
@@ -18,8 +32,16 @@ export default function AdminSidebar() {
   ]
 
   return (
-    <nav className="w-56 bg-white border-r border-gray-200 min-h-screen pt-20">
-      <div className="p-4">
+    <nav className="w-56 bg-white border-r border-gray-200 h-screen flex flex-col">
+      {/* Logo */}
+      <div className="p-6 border-b border-gray-200">
+        <Link href="/admin" className="block">
+          <h1 className="text-xl font-bold text-gray-900">Portfolio Admin</h1>
+        </Link>
+      </div>
+      
+      {/* Menu items */}
+      <div className="flex-1 p-4">
         <div className="space-y-1">
           {menuItems.map((item) => {
             const isActive = pathname === item.href || 
@@ -42,6 +64,17 @@ export default function AdminSidebar() {
             )
           })}
         </div>
+      </div>
+      
+      {/* Logout button */}
+      <div className="p-4 border-t border-gray-200">
+        <button
+          onClick={handleLogout}
+          className="w-full flex items-center justify-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 text-gray-700 hover:bg-red-50 hover:text-red-600 active:bg-red-100"
+        >
+          <LogOut className="h-4 w-4" />
+          <span className="text-sm">ログアウト</span>
+        </button>
       </div>
     </nav>
   )

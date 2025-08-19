@@ -34,7 +34,7 @@ const ProjectCard = ({ project, onOpenDetail, priority = false }: ProjectCardPro
 
   return (
     <div 
-      className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group cursor-pointer h-full flex flex-col"
+      className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 group cursor-pointer h-full flex flex-col w-full"
       onClick={handleCardClick}
       role="button"
       tabIndex={0}

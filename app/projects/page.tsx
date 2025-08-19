@@ -31,7 +31,9 @@ export default async function ProjectsPage() {
 
   return (
     <MainLayout>
-      <ProjectsClient projects={projects} />
+      <div className="w-full">
+        <ProjectsClient projects={projects} />
+      </div>
     </MainLayout>
   )
 }

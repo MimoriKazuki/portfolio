@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import StructuredData from './components/StructuredData'
+import GoogleAnalytics from './components/GoogleAnalytics'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -76,6 +77,7 @@ export default function RootLayout({
         <meta name="theme-color" content="#0f0f0f" />
       </head>
       <body className={`${inter.className} bg-youtube-dark overflow-x-hidden`} style={{ backgroundColor: '#0f0f0f' }}>
+        <GoogleAnalytics />
         {children}
       </body>
     </html>

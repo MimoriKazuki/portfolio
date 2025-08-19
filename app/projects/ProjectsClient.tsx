@@ -49,32 +49,35 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
     
   return (
       <div className="w-full">
-      <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-6 sm:mb-8">開発実績一覧</h1>
+      <div className="mb-8">
+        <h1 className="text-[28px] font-bold text-gray-900">開発実績一覧</h1>
+      </div>
       
       {/* Category Tabs */}
-      <div className="mb-6 sm:mb-8 -mx-4 sm:-mx-6 lg:mx-0">
+      <div className="mb-6 -mx-4 sm:-mx-6 lg:mx-0">
         <div className="overflow-x-auto scrollbar-hide">
           <div className="flex gap-2 px-4 sm:px-6 lg:px-0 pb-2 lg:pb-0 lg:flex-wrap">
-            {visibleCategories.map((category) => (
-              <button
-                key={category.id}
-                onClick={() => setActiveCategory(category.id)}
-                className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-sm font-medium transition-colors whitespace-nowrap flex-shrink-0 ${
-                  activeCategory === category.id
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
-              >
-                {category.label}
-                <span className="ml-1.5 sm:ml-2 text-xs">
-                  ({categoryCounts[category.id]})
-                </span>
-              </button>
-            ))}
+              {visibleCategories.map((category) => (
+                <button
+                  key={category.id}
+                  onClick={() => setActiveCategory(category.id)}
+                  className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-sm font-medium transition-colors whitespace-nowrap flex-shrink-0 ${
+                    activeCategory === category.id
+                      ? 'bg-blue-600 text-white'
+                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                  }`}
+                >
+                  {category.label}
+                  <span className="ml-1.5 sm:ml-2 text-xs">
+                    ({categoryCounts[category.id]})
+                  </span>
+                </button>
+              ))}
           </div>
         </div>
       </div>
       
+      {/* カードコンテナ */}
       {filteredProjects.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20">
           <FolderOpen className="h-16 w-16 sm:h-24 sm:w-24 text-gray-400 mb-4" />
@@ -92,8 +95,8 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
         </div>
       )}
         
-        {/* 問い合わせボタンとの重なりを防ぐためのスペース */}
-        <div className="h-24" />
-      </div>
+      {/* 問い合わせボタンとの重なりを防ぐためのスペース */}
+      <div className="h-24" />
+    </div>
   )
 }

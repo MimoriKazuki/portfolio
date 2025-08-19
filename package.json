@@ -12,10 +12,12 @@
     "setup:admin": "tsx scripts/setup-admin.ts"
   },
   "dependencies": {
+    "@google-analytics/data": "^5.2.0",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.50.3",
     "@tailwindcss/typography": "^0.5.16",
     "clsx": "^2.1.1",
+    "googleapis": "^156.0.0",
     "lucide-react": "^0.462.0",
     "next": "^15.3.5",
     "react": "^18.3.1",

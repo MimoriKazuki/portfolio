@@ -17,7 +17,7 @@ export default async function ColumnsPage() {
   }
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="w-full">
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold mb-2 text-gray-900">コラム管理</h1>
@@ -74,24 +74,24 @@ export default async function ColumnsPage() {
           </div>
 
           {/* Columns Table */}
-          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-            <table className="w-full">
+          <div className="bg-white rounded-lg border border-gray-200 overflow-x-auto">
+            <table className="w-full table-fixed">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th className="text-left px-6 py-3 text-sm font-medium text-gray-700">タイトル</th>
-                  <th className="text-left px-6 py-3 text-sm font-medium text-gray-700">ステータス</th>
-                  <th className="text-left px-6 py-3 text-sm font-medium text-gray-700">閲覧数</th>
-                  <th className="text-left px-6 py-3 text-sm font-medium text-gray-700">公開日</th>
-                  <th className="text-right px-6 py-3 text-sm font-medium text-gray-700">アクション</th>
+                  <th className="w-40 text-center px-6 py-3 text-sm font-medium text-gray-700">画像</th>
+                  <th className="text-center px-6 py-3 text-sm font-medium text-gray-700">内容</th>
+                  <th className="w-[120px] text-center px-6 py-3 text-sm font-medium text-gray-700">ステータス</th>
+                  <th className="w-[120px] text-center px-6 py-3 text-sm font-medium text-gray-700">注目</th>
+                  <th className="w-[120px] text-center px-6 py-3 text-sm font-medium text-gray-700">アクション</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {columns.map((column) => (
                   <tr key={column.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        {column.thumbnail && (
-                          <div className="relative w-16 h-10 flex-shrink-0">
+                    <td className="w-40 px-6 py-4">
+                      <div className="flex justify-center">
+                        {column.thumbnail ? (
+                          <div className="relative w-20 h-12 flex-shrink-0">
                             <Image
                               src={column.thumbnail}
                               alt={column.title}
@@ -99,14 +99,20 @@ export default async function ColumnsPage() {
                               className="object-cover rounded"
                             />
                           </div>
+                        ) : (
+                          <div className="w-20 h-12 bg-gray-100 rounded flex items-center justify-center">
+                            <FileText className="w-6 h-6 text-gray-400" />
+                          </div>
                         )}
-                        <div>
-                          <h3 className="font-medium text-gray-900">{column.title}</h3>
-                          <p className="text-sm text-gray-600 line-clamp-1">{column.excerpt}</p>
-                        </div>
                       </div>
                     </td>
                     <td className="px-6 py-4">
+                      <div className="text-left min-w-0">
+                        <h3 className="font-medium text-gray-900 truncate">{column.title}</h3>
+                        <p className="text-sm text-gray-600 truncate">{column.excerpt}</p>
+                      </div>
+                    </td>
+                    <td className="w-[120px] px-6 py-4 text-center">
                       <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${
                         column.is_published 
                           ? 'bg-green-100 text-green-700' 
@@ -115,20 +121,11 @@ export default async function ColumnsPage() {
                         {column.is_published ? '公開中' : '下書き'}
                       </span>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
-                      {column.view_count || 0}
+                    <td className="w-[120px] px-6 py-4 text-center text-sm text-gray-600">
+                      {column.is_featured ? 'Yes' : 'No'}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
-                      <div className="flex items-center gap-1">
-                        <Calendar className="w-4 h-4" />
-                        {column.published_date 
-                          ? new Date(column.published_date).toLocaleDateString('ja-JP')
-                          : '-'
-                        }
-                      </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="flex items-center justify-end gap-2">
+                    <td className="w-[120px] px-6 py-4">
+                      <div className="flex items-center justify-center gap-2">
                         <Link
                           href={`/columns/${column.slug}`}
                           target="_blank"
