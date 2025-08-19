@@ -25,7 +25,8 @@
       "Bash(find:*)",
       "Bash(touch:*)",
       "WebFetch(domain:www.landbridge.co.jp)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(find:*)"
     ],
     "deny": []
   }

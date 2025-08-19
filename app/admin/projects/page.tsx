@@ -1,6 +1,6 @@
 import { createClient } from '@/app/lib/supabase/server'
 import Link from 'next/link'
-import { Plus, Edit, Trash2, ExternalLink, FolderOpen, Eye } from 'lucide-react'
+import { Plus, Edit, Trash2, ExternalLink, FolderOpen, Eye, Calendar } from 'lucide-react'
 import Image from 'next/image'
 import DeleteProjectButton from './DeleteProjectButton'
 
@@ -16,20 +16,22 @@ export default async function AdminProjectsPage() {
     console.error('Error fetching projects:', error)
   }
 
-  const statusColors = {
-    completed: 'bg-green-100 text-green-700',
-    'in-progress': 'bg-yellow-100 text-yellow-700',
-    planned: 'bg-gray-100 text-gray-700'
+  const categoryColors = {
+    'homepage': 'bg-purple-100 text-purple-700',
+    'landing-page': 'bg-pink-100 text-pink-700',
+    'web-app': 'bg-blue-100 text-blue-700',
+    'mobile-app': 'bg-green-100 text-green-700'
   }
 
-  const statusLabels = {
-    completed: '完了',
-    'in-progress': '進行中',
-    planned: '計画中'
+  const categoryLabels = {
+    'homepage': 'ホームページ',
+    'landing-page': 'ランディングページ',
+    'web-app': 'Webアプリ',
+    'mobile-app': 'モバイルアプリ'
   }
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="w-full">
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold mb-2 text-gray-900">プロジェクト管理</h1>
@@ -60,50 +62,56 @@ export default async function AdminProjectsPage() {
       ) : (
         <div className="space-y-6">
           {/* Stats Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
             <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
               <div className="text-3xl font-bold text-portfolio-blue">{projects.length}</div>
               <div className="text-sm text-gray-600">総プロジェクト数</div>
             </div>
             <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
-              <div className="text-3xl font-bold text-green-600">
-                {projects.filter(p => p.status === 'completed').length}
-              </div>
-              <div className="text-sm text-gray-600">完了</div>
-            </div>
-            <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
-              <div className="text-3xl font-bold text-yellow-600">
-                {projects.filter(p => p.status === 'in-progress').length}
-              </div>
-              <div className="text-sm text-gray-600">進行中</div>
-            </div>
-            <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
               <div className="text-3xl font-bold text-purple-600">
-                {projects.filter(p => p.featured).length}
+                {projects.filter(p => p.category === 'homepage').length}
               </div>
-              <div className="text-sm text-gray-600">注目</div>
+              <div className="text-sm text-gray-600">ホームページ</div>
+            </div>
+            <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+              <div className="text-3xl font-bold text-pink-600">
+                {projects.filter(p => p.category === 'landing-page').length}
+              </div>
+              <div className="text-sm text-gray-600">ランディングページ</div>
+            </div>
+            <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+              <div className="text-3xl font-bold text-blue-600">
+                {projects.filter(p => p.category === 'web-app').length}
+              </div>
+              <div className="text-sm text-gray-600">Webアプリ</div>
+            </div>
+            <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+              <div className="text-3xl font-bold text-green-600">
+                {projects.filter(p => p.category === 'mobile-app').length}
+              </div>
+              <div className="text-sm text-gray-600">モバイルアプリ</div>
             </div>
           </div>
 
           {/* Projects Table */}
-          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-            <table className="w-full">
+          <div className="bg-white rounded-lg border border-gray-200 overflow-x-auto">
+            <table className="w-full table-fixed">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th className="text-left px-6 py-3 text-sm font-medium text-gray-700">プロジェクト</th>
-                  <th className="text-left px-6 py-3 text-sm font-medium text-gray-700">ステータス</th>
-                  <th className="text-left px-6 py-3 text-sm font-medium text-gray-700">注目</th>
-                  <th className="text-left px-6 py-3 text-sm font-medium text-gray-700">リンク</th>
-                  <th className="text-right px-6 py-3 text-sm font-medium text-gray-700">アクション</th>
+                  <th className="w-40 text-center px-6 py-3 text-sm font-medium text-gray-700">画像</th>
+                  <th className="text-center px-6 py-3 text-sm font-medium text-gray-700">内容</th>
+                  <th className="w-[200px] text-center px-6 py-3 text-sm font-medium text-gray-700">カテゴリ</th>
+                  <th className="w-[120px] text-center px-6 py-3 text-sm font-medium text-gray-700">注目</th>
+                  <th className="w-[120px] text-center px-6 py-3 text-sm font-medium text-gray-700">アクション</th>
                 </tr>
               </thead>
             <tbody className="divide-y divide-gray-200">
               {projects.map((project) => (
                 <tr key={project.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      {project.thumbnail && (
-                        <div className="relative w-16 h-10 flex-shrink-0">
+                  <td className="w-40 px-6 py-4">
+                    <div className="flex justify-center">
+                      {project.thumbnail ? (
+                        <div className="relative w-20 h-12 flex-shrink-0">
                           <Image
                             src={project.thumbnail}
                             alt={project.title}
@@ -111,53 +119,33 @@ export default async function AdminProjectsPage() {
                             className="object-cover rounded"
                           />
                         </div>
-                      )}
-                      <div>
-                        <h3 className="font-medium text-gray-900">{project.title}</h3>
-                        <p className="text-sm text-gray-600 line-clamp-1">
-                          {project.description}
-                        </p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${statusColors[project.status]}`}>
-                      {statusLabels[project.status]}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <span className={`inline-flex px-2 py-1 rounded-full text-xs font-medium ${project.featured ? 'bg-purple-100 text-purple-700' : 'bg-gray-100 text-gray-700'}`}>
-                      {project.featured ? '注目' : '通常'}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-2">
-                      {project.live_url && (
-                        <a
-                          href={project.live_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-600"
-                          title="ライブサイト"
-                        >
-                          <ExternalLink className="h-4 w-4" />
-                        </a>
-                      )}
-                      {project.github_url && (
-                        <a
-                          href={project.github_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-600"
-                          title="GitHub"
-                        >
-                          <ExternalLink className="h-4 w-4" />
-                        </a>
+                      ) : (
+                        <div className="w-20 h-12 bg-gray-100 rounded flex items-center justify-center">
+                          <FolderOpen className="w-6 h-6 text-gray-400" />
+                        </div>
                       )}
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <div className="flex items-center justify-end gap-2">
+                    <div className="text-left min-w-0">
+                      <h3 className="font-medium text-gray-900 truncate">{project.title}</h3>
+                      <p className="text-sm text-gray-600 truncate">
+                        {project.description}
+                      </p>
+                    </div>
+                  </td>
+                  <td className="w-[200px] px-6 py-4 text-center">
+                    <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ${categoryColors[project.category]}`}>
+                      {categoryLabels[project.category]}
+                    </span>
+                  </td>
+                  <td className="w-[120px] px-6 py-4 text-center text-sm">
+                    <span className={project.featured ? 'text-green-600 font-medium' : 'text-gray-600'}>
+                      {project.featured ? 'Yes' : 'No'}
+                    </span>
+                  </td>
+                  <td className="w-[120px] px-6 py-4">
+                    <div className="flex items-center justify-center gap-2">
                       <Link
                         href={`/projects/${project.id}`}
                         target="_blank"

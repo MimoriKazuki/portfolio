@@ -2,7 +2,7 @@
 
 import Script from 'next/script'
 import { usePathname, useSearchParams } from 'next/navigation'
-import { useEffect } from 'react'
+import { useEffect, Suspense } from 'react'
 
 const GA_ID = process.env.NEXT_PUBLIC_GA_ID
 
@@ -12,7 +12,7 @@ declare global {
   }
 }
 
-export default function GoogleAnalytics() {
+function GoogleAnalyticsInner() {
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
@@ -25,6 +25,10 @@ export default function GoogleAnalytics() {
     })
   }, [pathname, searchParams])
 
+  return null
+}
+
+export default function GoogleAnalytics() {
   if (!GA_ID) {
     return null
   }
@@ -43,6 +47,9 @@ export default function GoogleAnalytics() {
           gtag('config', '${GA_ID}');
         `}
       </Script>
+      <Suspense fallback={null}>
+        <GoogleAnalyticsInner />
+      </Suspense>
     </>
   )
 }

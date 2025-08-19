@@ -32,7 +32,7 @@ export default function AdminSidebar({ user }: AdminSidebarProps) {
   ]
 
   return (
-    <nav className="w-56 bg-white border-r border-gray-200 h-screen flex flex-col">
+    <nav className="w-56 bg-white border-r border-gray-200 h-screen flex flex-col fixed left-0 top-0">
       {/* Logo */}
       <div className="p-6 border-b border-gray-200">
         <Link href="/admin" className="block">
