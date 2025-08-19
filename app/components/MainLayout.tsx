@@ -4,6 +4,7 @@ import Sidebar from './Sidebar'
 import RightSidebar from './RightSidebar'
 import ContactButton from './ContactButton'
 import Footer from './Footer'
+import MobileHeader from './MobileHeader'
 
 interface MainLayoutProps {
   children: React.ReactNode
@@ -14,6 +15,9 @@ interface MainLayoutProps {
 export default function MainLayout({ children, hideRightSidebar = false, hideContactButton = false }: MainLayoutProps) {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
+      {/* Mobile Header */}
+      <MobileHeader />
+      
       {/* Body - contains all main content */}
       <div className="flex-1 flex">
         {/* Left Sidebar - Fixed to left edge */}

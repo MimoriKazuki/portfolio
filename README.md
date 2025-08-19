@@ -1,110 +1,77 @@
-# Portfolio Site
+# ポートフォリオサイト
 
-A modern portfolio website built with Next.js, TypeScript, and Tailwind CSS, featuring a YouTube-style dark theme design.
+LandBridge株式会社のポートフォリオサイトです。
 
-## Features
+## 技術スタック
 
-- 🎨 YouTube-style dark theme UI
-- 📱 Fully responsive design
-- 🗂️ Project categorization (Homepage, Landing Page, Web App, Mobile App)
-- 👤 Profile management
-- 🔐 Admin panel for content management
-- 🚀 Powered by Supabase for data storage
-- ⚡ Built with Next.js 15 for optimal performance
+- **フレームワーク**: Next.js 15.3.5 (App Router)
+- **言語**: TypeScript
+- **スタイリング**: Tailwind CSS
+- **データベース**: Supabase
+- **認証**: Supabase Auth
 
-## Tech Stack
+## セットアップ
 
-- **Frontend**: Next.js 15, React 18, TypeScript
-- **Styling**: Tailwind CSS, Shadcn UI
-- **Database**: Supabase (PostgreSQL)
-- **Deployment**: Vercel
+### 1. 環境変数の設定
 
-## Getting Started
+`.env.local.example` を `.env.local` にコピーして、Supabaseの認証情報を設定してください。
 
-### Prerequisites
-
-- Node.js 20.x or later
-- npm or yarn
-- Supabase account
-
-### Installation
-
-1. Clone the repository:
-```bash
-git clone <your-repo-url>
-cd tube-tide-online
-```
-
-2. Install dependencies:
-```bash
-npm install
-```
-
-3. Set up environment variables:
 ```bash
 cp .env.local.example .env.local
 ```
 
-4. Update `.env.local` with your Supabase credentials:
-```
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
-ADMIN_EMAIL=your_admin_email
-```
+### 2. Supabaseプロジェクトの設定
 
-5. Set up the database:
-   - Go to your Supabase project dashboard
-   - Navigate to SQL Editor
-   - Execute the SQL from `/supabase/schema.sql`
-   - (Optional) Execute sample data from `/supabase/sample-data.sql`
+1. [Supabase](https://supabase.com) でプロジェクトを作成
+2. `Settings > API` から以下の情報を取得:
+   - Project URL → `NEXT_PUBLIC_SUPABASE_URL`
+   - anon public → `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 
-6. Run the development server:
+### 3. データベースのセットアップ
+
+`supabase/schema.sql` をSupabaseのSQL Editorで実行してテーブルを作成してください。
+
+### 4. 管理者ユーザーの作成
+
+1. 開発サーバーを起動: `npm run dev`
+2. `/login/setup` にアクセス
+3. 管理者ユーザーを作成
+
+## 開発
+
 ```bash
+# 依存関係のインストール
+npm install
+
+# 開発サーバーの起動
 npm run dev
+
+# ビルド
+npm run build
+
+# 本番サーバーの起動
+npm run start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to view the site.
+## 管理画面
 
-## Project Structure
+管理画面は `/admin` からアクセスできます。以下の機能があります:
 
-```
-├── app/                    # Next.js app directory
-│   ├── admin/             # Admin panel pages
-│   ├── components/        # Reusable components
-│   ├── lib/              # Utilities and libraries
-│   └── types/            # TypeScript type definitions
-├── public/               # Static assets
-├── supabase/            # Database schema and migrations
-└── ...config files
-```
+- **プロジェクト管理**: ポートフォリオの追加・編集・削除
+- **コラム管理**: ブログ記事の作成・編集・公開
+- **ドキュメント管理**: 資料のアップロード・管理
+- **プロフィール管理**: 会社情報の編集
 
-## Admin Panel
+## トラブルシューティング
 
-Access the admin panel at `/admin` to:
-- Manage projects (create, edit, delete)
-- Update profile information
-- Control featured projects
-- Organize project order
+### ログインできない場合
 
-## Deployment
+1. 環境変数が正しく設定されているか確認
+2. Supabaseプロジェクトが正しく設定されているか確認
+3. `/login/setup` から新しいユーザーを作成
+4. メール確認が必要な場合は、Supabaseのダッシュボードで確認
 
-### Vercel
+### データベースエラー
 
-1. Push your code to GitHub
-2. Import the project in Vercel
-3. Add environment variables in Vercel dashboard
-4. Deploy!
-
-## Environment Variables
-
-Required environment variables for production:
-
-- `NEXT_PUBLIC_SUPABASE_URL` - Your Supabase project URL
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Supabase anonymous key
-- `SUPABASE_SERVICE_ROLE_KEY` - Supabase service role key
-- `ADMIN_EMAIL` - Admin email for authentication
-
-## License
-
-This project is private and proprietary.
+1. Supabaseのテーブルが正しく作成されているか確認
+2. RLS (Row Level Security) ポリシーが適切に設定されているか確認

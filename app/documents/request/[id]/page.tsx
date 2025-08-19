@@ -239,7 +239,7 @@ export default function DocumentRequestPage({ params }: PageProps) {
                       value={formData.phone}
                       onChange={handleInputChange}
                       className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:border-portfolio-blue transition-colors"
-                      placeholder="03-1234-5678"
+                      placeholder="090-1234-5678"
                     />
                   </div>
 

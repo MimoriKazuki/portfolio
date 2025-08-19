@@ -68,11 +68,11 @@ export default function ContactPage() {
         </div>
         
         <div className="grid lg:grid-cols-1 gap-8 max-w-2xl mx-auto">
-          <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6">
             <h3 className="text-lg font-semibold text-gray-900 mb-6">お問い合わせフォーム</h3>
             
             <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
                     お名前 <span className="text-red-500">*</span>

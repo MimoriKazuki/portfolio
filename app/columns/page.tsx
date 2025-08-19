@@ -28,12 +28,12 @@ export default async function ColumnsPage() {
           <h1 className="text-[28px] font-bold text-gray-900">コラム</h1>
         </div>
 
-        <div className="flex flex-wrap gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
           {columns?.map((column: Column) => (
             <Link 
               key={column.id} 
               href={`/columns/${column.slug}`}
-              className="group w-[361px]"
+              className="group"
             >
               <article className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 h-full flex flex-col">
                 {column.thumbnail && (
@@ -43,17 +43,18 @@ export default async function ColumnsPage() {
                       alt={column.title}
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1280px) 33vw, 25vw"
                     />
                   </div>
                 )}
                 
                 <div className="p-4 flex-1 flex flex-col">
-                  <h2 className="font-semibold text-gray-900 mb-2 line-clamp-1 group-hover:text-portfolio-blue transition-colors">
+                  <h2 className="font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-portfolio-blue transition-colors">
                     {column.title}
                   </h2>
                   
                   <div className="flex-1">
-                    <p className="text-gray-600 text-sm line-clamp-2 mb-4">
+                    <p className="text-gray-600 text-sm line-clamp-3 mb-4">
                       {column.excerpt || ''}
                     </p>
                   </div>

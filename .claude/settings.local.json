@@ -22,7 +22,9 @@
       "WebFetch(domain:www.landbridge.ai)",
       "WebFetch(domain:ainow.ai)",
       "Bash(npx supabase:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(touch:*)",
+      "WebFetch(domain:www.landbridge.co.jp)"
     ],
     "deny": []
   }

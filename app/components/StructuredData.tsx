@@ -10,7 +10,7 @@ export default function StructuredData() {
     ],
     contactPoint: {
       '@type': 'ContactPoint',
-      telephone: '',
+      email: 'info@landbridge.co.jp',
       contactType: 'customer service',
       availableLanguage: ['Japanese', 'English'],
     },

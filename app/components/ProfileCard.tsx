@@ -1,4 +1,7 @@
-import { Globe, ExternalLink } from 'lucide-react'
+'use client'
+
+import { useState } from 'react'
+import { Globe, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 
 interface ProfileCardProps {
@@ -11,6 +14,9 @@ interface ProfileCardProps {
 }
 
 export default function ProfileCard({ categoryStats }: ProfileCardProps) {
+  const [currentCard, setCurrentCard] = useState(0)
+  const totalCards = 2
+
   const profile = {
     name: "LandBridge株式会社",
     title: "AIによる自動コーディングを活用した開発実績",
@@ -22,80 +28,213 @@ export default function ProfileCard({ categoryStats }: ProfileCardProps) {
     linkedin_url: null,
   }
 
+  const handleSwipe = (direction: 'left' | 'right') => {
+    if (direction === 'right' && currentCard < totalCards - 1) {
+      setCurrentCard(currentCard + 1)
+    } else if (direction === 'left' && currentCard > 0) {
+      setCurrentCard(currentCard - 1)
+    }
+  }
+
+  // タッチイベント用の状態
+  const [touchStart, setTouchStart] = useState(0)
+  const [touchEnd, setTouchEnd] = useState(0)
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStart(e.targetTouches[0].clientX)
+  }
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX)
+  }
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return
+    
+    const distance = touchStart - touchEnd
+    const isLeftSwipe = distance > 50
+    const isRightSwipe = distance < -50
+
+    if (isLeftSwipe && currentCard < totalCards - 1) {
+      setCurrentCard(currentCard + 1)
+    }
+    if (isRightSwipe && currentCard > 0) {
+      setCurrentCard(currentCard - 1)
+    }
+  }
+
+  // 実績セクションのコンポーネント
+  const StatsSection = () => (
+    <div className="flex flex-col gap-3 lg:gap-4 lg:max-w-[400px]">
+      {categoryStats?.homepage > 0 && (
+        <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 lg:p-5 border border-white/20">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-2.5 lg:w-3 h-2.5 lg:h-3 bg-purple-400 rounded-full flex-shrink-0"></div>
+            <span className="text-white/90 font-medium text-sm lg:text-base">コーポレートサイト</span>
+          </div>
+          <div className="flex items-baseline gap-1">
+            <span className="text-3xl lg:text-4xl font-bold text-white">{categoryStats.homepage}</span>
+            <span className="text-white/60 text-xs lg:text-sm">件</span>
+          </div>
+        </div>
+      )}
+      {categoryStats?.['landing-page'] > 0 && (
+        <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 lg:p-5 border border-white/20">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-2.5 lg:w-3 h-2.5 lg:h-3 bg-pink-400 rounded-full flex-shrink-0"></div>
+            <span className="text-white/90 font-medium text-sm lg:text-base">ランディングページ</span>
+          </div>
+          <div className="flex items-baseline gap-1">
+            <span className="text-3xl lg:text-4xl font-bold text-white">{categoryStats['landing-page']}</span>
+            <span className="text-white/60 text-xs lg:text-sm">件</span>
+          </div>
+        </div>
+      )}
+      {categoryStats?.['web-app'] > 0 && (
+        <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 lg:p-5 border border-white/20">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-2.5 lg:w-3 h-2.5 lg:h-3 bg-blue-400 rounded-full flex-shrink-0"></div>
+            <span className="text-white/90 font-medium text-sm lg:text-base">Webアプリ</span>
+          </div>
+          <div className="flex items-baseline gap-1">
+            <span className="text-3xl lg:text-4xl font-bold text-white">{categoryStats['web-app']}</span>
+            <span className="text-white/60 text-xs lg:text-sm">件</span>
+          </div>
+        </div>
+      )}
+      {categoryStats?.['mobile-app'] > 0 && (
+        <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 lg:p-5 border border-white/20">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-2.5 lg:w-3 h-2.5 lg:h-3 bg-green-400 rounded-full flex-shrink-0"></div>
+            <span className="text-white/90 font-medium text-sm lg:text-base">モバイルアプリ</span>
+          </div>
+          <div className="flex items-baseline gap-1">
+            <span className="text-3xl lg:text-4xl font-bold text-white">{categoryStats['mobile-app']}</span>
+            <span className="text-white/60 text-xs lg:text-sm">件</span>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+
   return (
-    <div className="relative rounded-2xl p-8 mb-8 overflow-hidden bg-gradient-to-br from-portfolio-blue to-portfolio-blue-dark">
+    <div className="relative rounded-2xl overflow-hidden bg-gradient-to-br from-portfolio-blue to-portfolio-blue-dark mb-8">
       {/* パターン背景 */}
       <div className="absolute inset-0 opacity-10">
         <div className="absolute inset-0" style={{
           backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
         }} />
       </div>
-      
-      {/* コンテンツ */}
-      <div className="relative flex flex-col lg:flex-row gap-8">
-        <div className="flex-1">
-          <h1 className="text-3xl md:text-4xl font-bold mb-4 text-white">
-            {profile.name}
-          </h1>
-          <h2 className="text-xl md:text-2xl text-white/90 mb-6 font-medium">{profile.title}</h2>
-          
-          <div className="text-base md:text-lg mb-6 leading-relaxed text-white/80 whitespace-pre-line">{profile.bio}</div>
-          
-          <div className="flex items-center gap-4">
-            <Link 
-              href="https://www.landbridge.co.jp/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-white text-portfolio-blue rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium shadow-md hover:shadow-lg"
-            >
-              <span>企業サイトはこちら</span>
-              <ExternalLink className="h-4 w-4" />
-            </Link>
+
+      {/* デスクトップビュー - 1枚のカード */}
+      <div className="hidden lg:block relative p-8">
+        <div className="flex gap-8">
+          <div className="flex-1 flex flex-col">
+            <div className="flex-1">
+              <h2 className="text-xl md:text-2xl text-white/90 mb-6 font-bold">{profile.title}</h2>
+              
+              <div className="text-base md:text-lg mb-6 leading-relaxed text-white/80 whitespace-pre-line">{profile.bio}</div>
+            </div>
+            
+            <div className="flex items-center gap-4 mt-auto">
+              <Link 
+                href="https://www.landbridge.co.jp/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-white text-portfolio-blue rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium shadow-md hover:shadow-lg"
+              >
+                <span>企業サイトはこちら</span>
+                <ExternalLink className="h-4 w-4" />
+              </Link>
+            </div>
+          </div>
+
+          <div className="w-80 flex-shrink-0">
+            <StatsSection />
+          </div>
+        </div>
+      </div>
+
+      {/* モバイルビュー - スワイプ可能な2枚のカード */}
+      <div className="lg:hidden">
+        <div 
+          className="relative overflow-hidden"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
+          <div 
+            className="flex transition-transform duration-300 ease-in-out items-stretch"
+            style={{ transform: `translateX(-${currentCard * 100}%)` }}
+          >
+            {/* カード1: プロフィール */}
+            <div className="w-full flex-shrink-0 p-6 pb-16">
+              <div className="flex flex-col h-full">
+                <h2 className="text-lg sm:text-xl text-white/90 mb-4 font-bold">{profile.title}</h2>
+                
+                <div className="text-sm sm:text-base mb-6 leading-relaxed text-white/80 whitespace-pre-line flex-1">{profile.bio}</div>
+                
+                <div className="flex items-center gap-4">
+                  <Link 
+                    href="https://www.landbridge.co.jp/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-portfolio-blue rounded-lg hover:bg-gray-50 transition-all duration-200 font-medium shadow-md hover:shadow-lg text-sm"
+                  >
+                    <span>企業サイトはこちら</span>
+                    <ExternalLink className="h-3.5 w-3.5" />
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            {/* カード2: 実績 */}
+            <div className="w-full flex-shrink-0 p-6 pb-16">
+              <div className="h-full flex items-center">
+                <div className="w-full">
+                  <StatsSection />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="w-full lg:w-80">
-          <div className="bg-white rounded-xl p-6 shadow-lg">
-            <h3 className="text-lg font-semibold mb-4 text-gray-900">開発実績</h3>
-            <ul className="space-y-4">
-              {categoryStats?.homepage > 0 && (
-                <li className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
-                    <span className="text-gray-700">コーポレートサイト</span>
-                  </div>
-                  <span className="text-2xl font-bold text-gray-900">{categoryStats.homepage}</span>
-                </li>
-              )}
-              {categoryStats?.['landing-page'] > 0 && (
-                <li className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-2 h-2 bg-pink-500 rounded-full"></div>
-                    <span className="text-gray-700">ランディングページ</span>
-                  </div>
-                  <span className="text-2xl font-bold text-gray-900">{categoryStats['landing-page']}</span>
-                </li>
-              )}
-              {categoryStats?.['web-app'] > 0 && (
-                <li className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                    <span className="text-gray-700">Webアプリ</span>
-                  </div>
-                  <span className="text-2xl font-bold text-gray-900">{categoryStats['web-app']}</span>
-                </li>
-              )}
-              {categoryStats?.['mobile-app'] > 0 && (
-                <li className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                    <span className="text-gray-700">モバイルアプリ</span>
-                  </div>
-                  <span className="text-2xl font-bold text-gray-900">{categoryStats['mobile-app']}</span>
-                </li>
-              )}
-            </ul>
-          </div>
+        {/* ナビゲーション矢印（タブレット） */}
+        <button
+          onClick={() => handleSwipe('left')}
+          className={`hidden md:block absolute left-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-all ${
+            currentCard === 0 ? 'opacity-50 cursor-not-allowed' : ''
+          }`}
+          disabled={currentCard === 0}
+          aria-label="前のカード"
+        >
+          <ChevronLeft className="h-6 w-6" />
+        </button>
+        <button
+          onClick={() => handleSwipe('right')}
+          className={`hidden md:block absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-full bg-white/20 backdrop-blur-sm text-white hover:bg-white/30 transition-all ${
+            currentCard === totalCards - 1 ? 'opacity-50 cursor-not-allowed' : ''
+          }`}
+          disabled={currentCard === totalCards - 1}
+          aria-label="次のカード"
+        >
+          <ChevronRight className="h-6 w-6" />
+        </button>
+
+        {/* インジケーター */}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2">
+          {[...Array(totalCards)].map((_, index) => (
+            <button
+              key={index}
+              onClick={() => setCurrentCard(index)}
+              className={`w-2 h-2 rounded-full transition-all ${
+                index === currentCard 
+                  ? 'bg-white w-8' 
+                  : 'bg-white/40 hover:bg-white/60'
+              }`}
+              aria-label={`カード ${index + 1}`}
+            />
+          ))}
         </div>
       </div>
     </div>
