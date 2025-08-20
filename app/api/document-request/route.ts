@@ -63,7 +63,15 @@ export async function POST(request: Request) {
 
     // Slackに通知
     if (SLACK_WEBHOOK_URL) {
-      const slackMessage = {
+      const slackMessage: {
+        text: string;
+        blocks: Array<{
+          type: string;
+          text?: { type: string; text: string };
+          fields?: Array<{ type: string; text: string }>;
+          elements?: Array<{ type: string; text: string }>;
+        }>;
+      } = {
         text: '新しい資料請求がありました',
         blocks: [
           {
