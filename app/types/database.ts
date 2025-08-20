@@ -94,6 +94,41 @@ export interface Database {
           location?: string | null
         }
       }
+      contacts: {
+        Row: {
+          id: string
+          created_at: string
+          updated_at: string
+          name: string
+          company: string | null
+          email: string
+          message: string
+          inquiry_type: 'service' | 'partnership' | 'recruit' | 'other'
+          status: 'new' | 'in_progress' | 'completed'
+        }
+        Insert: {
+          id?: string
+          created_at?: string
+          updated_at?: string
+          name: string
+          company?: string | null
+          email: string
+          message: string
+          inquiry_type?: 'service' | 'partnership' | 'recruit' | 'other'
+          status?: 'new' | 'in_progress' | 'completed'
+        }
+        Update: {
+          id?: string
+          created_at?: string
+          updated_at?: string
+          name?: string
+          company?: string | null
+          email?: string
+          message?: string
+          inquiry_type?: 'service' | 'partnership' | 'recruit' | 'other'
+          status?: 'new' | 'in_progress' | 'completed'
+        }
+      }
     }
     Views: {
       [_ in never]: never

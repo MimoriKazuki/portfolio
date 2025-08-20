@@ -9,7 +9,8 @@ export default function ContactPage() {
     name: '',
     company: '',
     email: '',
-    message: ''
+    message: '',
+    inquiry_type: 'service' as 'service' | 'partnership' | 'recruit' | 'other'
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitMessage, setSubmitMessage] = useState('')
@@ -48,7 +49,7 @@ export default function ContactPage() {
         trackContactFormSubmit('general_inquiry')
         
         setSubmitMessage('お問い合わせありがとうございます。内容を確認次第、ご連絡させていただきます。')
-        setFormData({ name: '', company: '', email: '', message: '' })
+        setFormData({ name: '', company: '', email: '', message: '', inquiry_type: 'service' })
       } else {
         setSubmitMessage(result.error || 'エラーが発生しました。もう一度お試しください。')
       }
@@ -136,6 +137,25 @@ export default function ContactPage() {
                 {emailError && (
                   <p className="mt-1 text-sm text-red-600">{emailError}</p>
                 )}
+              </div>
+            
+              <div className="col-span-full">
+                <label htmlFor="inquiry_type" className="block text-sm font-medium text-gray-700 mb-1">
+                  お問い合わせ種別 <span className="text-red-500">*</span>
+                </label>
+                <select
+                  id="inquiry_type"
+                  name="inquiry_type"
+                  value={formData.inquiry_type}
+                  onChange={(e) => setFormData({ ...formData, inquiry_type: e.target.value as any })}
+                  className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:border-portfolio-blue transition-colors"
+                  required
+                >
+                  <option value="service">サービスについて</option>
+                  <option value="partnership">提携・協業</option>
+                  <option value="recruit">採用関連</option>
+                  <option value="other">その他</option>
+                </select>
               </div>
             
               <div>

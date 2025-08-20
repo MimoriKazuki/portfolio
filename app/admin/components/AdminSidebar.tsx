@@ -6,6 +6,7 @@ import { Home, FolderOpen, FileText, Download, User, Mail, LogOut } from 'lucide
 import { cn } from '@/app/lib/utils'
 import { createClient } from '@/app/lib/supabase/client'
 import type { User as SupabaseUser } from '@supabase/supabase-js'
+import Image from 'next/image'
 
 interface AdminSidebarProps {
   user: SupabaseUser
@@ -27,16 +28,21 @@ export default function AdminSidebar({ user }: AdminSidebarProps) {
     { icon: FolderOpen, label: 'プロジェクト', href: '/admin/projects' },
     { icon: FileText, label: 'コラム', href: '/admin/columns' },
     { icon: Download, label: 'ドキュメント', href: '/admin/documents' },
-    { icon: User, label: 'プロフィール', href: '/admin/profile' },
     { icon: Mail, label: 'お問い合わせ', href: '/admin/contacts' },
   ]
 
   return (
     <nav className="w-56 bg-white border-r border-gray-200 h-screen flex flex-col fixed left-0 top-0">
       {/* Logo */}
-      <div className="p-6 border-b border-gray-200">
+      <div className="p-6 border-b border-gray-200 flex justify-center">
         <Link href="/admin" className="block">
-          <h1 className="text-xl font-bold text-gray-900">Portfolio Admin</h1>
+          <Image 
+            src="/logo_portfolio.png" 
+            alt="Portfolio Admin" 
+            width={140} 
+            height={40}
+            className="object-contain"
+          />
         </Link>
       </div>
       

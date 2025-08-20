@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createClient } from '@/app/lib/supabase/server'
 
 // Slack Webhook URL should be in environment variable for security
 const SLACK_WEBHOOK_URL = process.env.SLACK_WEBHOOK_URL || ''
@@ -8,6 +9,7 @@ interface ContactFormData {
   company?: string
   email: string
   message: string
+  inquiry_type?: 'service' | 'partnership' | 'recruit' | 'other'
 }
 
 export async function POST(request: NextRequest) {
@@ -32,6 +34,29 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: '有効なメールアドレスを入力してください' },
         { status: 400 }
+      )
+    }
+
+    // Save to database
+    const supabase = await createClient()
+    const { data: contact, error: dbError } = await supabase
+      .from('contacts')
+      .insert({
+        name: data.name,
+        company: data.company || null,
+        email: data.email,
+        message: data.message,
+        inquiry_type: data.inquiry_type || 'other',
+        status: 'new'
+      })
+      .select()
+      .single()
+    
+    if (dbError) {
+      console.error('Database error:', dbError)
+      return NextResponse.json(
+        { error: 'データベースエラーが発生しました' },
+        { status: 500 }
       )
     }
 

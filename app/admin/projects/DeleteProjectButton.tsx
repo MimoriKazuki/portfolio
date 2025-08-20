@@ -44,9 +44,9 @@ export default function DeleteProjectButton({ projectId, projectTitle }: DeleteP
     <button
       onClick={handleDelete}
       disabled={isDeleting}
-      className="p-2 hover:bg-youtube-dark rounded-lg transition-colors disabled:opacity-50"
+      className="p-2 hover:bg-red-100 rounded-lg transition-colors text-red-600 disabled:opacity-50"
     >
-      <Trash2 className="h-4 w-4 text-red-500" />
+      <Trash2 className="h-4 w-4" />
     </button>
   )
 }

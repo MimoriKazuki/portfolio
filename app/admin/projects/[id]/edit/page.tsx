@@ -17,9 +17,9 @@ export default async function EditProjectPage({ params }: { params: { id: string
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-8">プロジェクトを編集</h1>
+      <h1 className="text-3xl font-bold mb-6">プロジェクトを編集</h1>
       
-      <div className="bg-youtube-gray rounded-lg p-6">
+      <div className="bg-youtube-gray rounded-lg">
         <ProjectForm initialData={project} projectId={params.id} />
       </div>
     </div>

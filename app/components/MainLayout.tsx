@@ -2,7 +2,7 @@
 
 import Sidebar from './Sidebar'
 import RightSidebar from './RightSidebar'
-import ContactButton from './ContactButton'
+import FloatingButtons from './FloatingButtons'
 import Footer from './Footer'
 import MobileHeader from './MobileHeader'
 
@@ -49,7 +49,7 @@ export default function MainLayout({ children, hideRightSidebar = false, hideCon
       {/* Footer */}
       <Footer />
       
-      {!hideContactButton && <ContactButton />}
+      {!hideContactButton && <FloatingButtons />}
     </div>
   )
 }

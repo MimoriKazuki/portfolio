@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/app/lib/supabase/client'
-import { Save, X, Upload } from 'lucide-react'
+import { Check, X, Upload } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -32,6 +32,7 @@ export default function ProjectForm({ initialData, projectId }: ProjectFormProps
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null)
   const [thumbnailPreview, setThumbnailPreview] = useState<string>(initialData?.thumbnail || '')
   const [featuredCount, setFeaturedCount] = useState(0)
+  const [dragOver, setDragOver] = useState(false)
   
   const [formData, setFormData] = useState<ProjectFormData>({
     title: initialData?.title || '',
@@ -72,6 +73,35 @@ export default function ProjectForm({ initialData, projectId }: ProjectFormProps
       setThumbnailPreview(e.target?.result as string)
     }
     reader.readAsDataURL(file)
+  }
+
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    setDragOver(false)
+    
+    const files = Array.from(e.dataTransfer.files)
+    const imageFile = files.find(file => file.type.startsWith('image/'))
+    
+    if (imageFile) {
+      setThumbnailFile(imageFile)
+      
+      // Create preview
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        setThumbnailPreview(e.target?.result as string)
+      }
+      reader.readAsDataURL(imageFile)
+    }
+  }
+
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    setDragOver(true)
+  }
+
+  const handleDragLeave = (e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault()
+    setDragOver(false)
   }
 
   const uploadThumbnail = async (file: File): Promise<string> => {
@@ -130,9 +160,11 @@ export default function ProjectForm({ initialData, projectId }: ProjectFormProps
         if (error) throw error
       }
 
+      console.log('Project saved successfully')
       router.push('/admin/projects')
       router.refresh()
     } catch (error: unknown) {
+      console.error('Error saving project:', error)
       alert('Error saving project: ' + (error instanceof Error ? error.message : 'Unknown error'))
     } finally {
       setLoading(false)
@@ -167,11 +199,9 @@ export default function ProjectForm({ initialData, projectId }: ProjectFormProps
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold mb-4 text-gray-900">基本情報</h2>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div className="bg-white rounded-lg p-4">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-medium mb-2 text-gray-700">
               プロジェクト名 <span className="text-red-500">*</span>
@@ -187,7 +217,7 @@ export default function ProjectForm({ initialData, projectId }: ProjectFormProps
 
           <div>
             <label className="block text-sm font-medium mb-2 text-gray-700">
-              カテゴリ
+              カテゴリ <span className="text-red-500">*</span>
             </label>
             <select
               value={formData.category}
@@ -200,7 +230,9 @@ export default function ProjectForm({ initialData, projectId }: ProjectFormProps
               <option value="mobile-app">モバイルアプリ</option>
             </select>
           </div>
+        </div>
 
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-medium mb-2 text-gray-700">
               開発期間
@@ -212,73 +244,6 @@ export default function ProjectForm({ initialData, projectId }: ProjectFormProps
               className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-portfolio-blue text-gray-900"
               placeholder="2週間"
             />
-          </div>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold mb-4 text-gray-900">詳細情報</h2>
-        
-        <div className="space-y-6">
-          <div>
-            <label className="block text-sm font-medium mb-2 text-gray-700">
-              説明 <span className="text-red-500">*</span>
-            </label>
-            <textarea
-              value={formData.description}
-              onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-              className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-portfolio-blue text-gray-900"
-              rows={4}
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2 text-gray-700">
-              サムネイル画像 <span className="text-red-500">*</span>
-            </label>
-            <div className="space-y-4">
-              {thumbnailPreview && (
-                <div className="relative w-full max-w-md">
-                  <Image
-                    src={thumbnailPreview}
-                    alt="サムネイルプレビュー"
-                    width={400}
-                    height={225}
-                    className="rounded-lg border border-gray-200"
-                  />
-                </div>
-              )}
-              <div>
-                <label className="cursor-pointer inline-block">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleThumbnailChange}
-                    className="hidden"
-                  />
-                  <div className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition-colors">
-                    <Upload className="h-5 w-5" />
-                    {thumbnailFile ? '画像を変更' : '画像を選択'}
-                  </div>
-                </label>
-                {thumbnailFile && (
-                  <span className="ml-3 text-sm text-gray-600">
-                    {thumbnailFile.name}
-                  </span>
-                )}
-              </div>
-              {!thumbnailPreview && (
-                <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
-                  <Upload className="h-12 w-12 mx-auto text-gray-400 mb-2" />
-                  <p className="text-sm text-gray-600">画像をドラッグ＆ドロップまたはクリックして選択</p>
-                  <p className="text-xs text-gray-500 mt-1">推奨サイズ: 1600×900px</p>
-                </div>
-              )}
-              {uploading && (
-                <p className="text-sm text-blue-600">アップロード中...</p>
-              )}
-            </div>
           </div>
 
           <div>
@@ -293,52 +258,116 @@ export default function ProjectForm({ initialData, projectId }: ProjectFormProps
               placeholder="https://example.com"
             />
           </div>
+        </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-2 text-gray-700">
-              使用技術
-            </label>
-            <div className="flex gap-2 mb-2">
-              <input
-                type="text"
-                value={techInput}
-                onChange={(e) => setTechInput(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTechnology())}
-                className="flex-1 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-portfolio-blue text-gray-900"
-                placeholder="技術を追加..."
-              />
-              <button
-                type="button"
-                onClick={addTechnology}
-                className="px-4 py-2 bg-portfolio-blue hover:bg-portfolio-blue-dark text-white rounded-lg transition-colors"
+        <div>
+          <label className="block text-sm font-medium mb-2 text-gray-700">
+            サムネイル画像 <span className="text-red-500">*</span>
+          </label>
+          <div className="space-y-4">
+            {thumbnailPreview ? (
+              <div className="relative w-80 aspect-video">
+                <Image
+                  src={thumbnailPreview}
+                  alt="サムネイルプレビュー"
+                  fill
+                  className="object-cover rounded-lg border border-gray-200"
+                />
+              </div>
+            ) : (
+              <div 
+                className={`w-80 aspect-video border-2 border-dashed rounded-lg flex items-center justify-center cursor-pointer transition-colors ${
+                  dragOver 
+                    ? 'bg-blue-50 border-blue-300' 
+                    : 'bg-gray-100 border-gray-300 hover:bg-gray-200'
+                }`}
+                onDrop={handleDrop}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onClick={() => document.getElementById('thumbnail-input')?.click()}
               >
-                追加
-              </button>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {formData.technologies.map((tech) => (
-                <span
-                  key={tech}
-                  className="bg-gray-100 px-3 py-1 rounded-full text-sm flex items-center gap-2 text-gray-700"
-                >
-                  {tech}
-                  <button
-                    type="button"
-                    onClick={() => removeTechnology(tech)}
-                    className="text-red-500 hover:text-red-600"
-                  >
-                    <X className="h-3 w-3" />
-                  </button>
+                <span className="text-gray-500">ここにファイルをドラッグ&ドロップ</span>
+              </div>
+            )}
+            <div>
+              <label className="cursor-pointer inline-block">
+                <input
+                  id="thumbnail-input"
+                  type="file"
+                  accept="image/*"
+                  onChange={handleThumbnailChange}
+                  className="hidden"
+                />
+                <div className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition-colors">
+                  <Upload className="h-5 w-5" />
+                  {thumbnailFile ? '画像を変更' : '画像を選択'}
+                </div>
+              </label>
+              {thumbnailFile && (
+                <span className="ml-3 text-sm text-gray-600">
+                  {thumbnailFile.name}
                 </span>
-              ))}
+              )}
             </div>
+            {uploading && (
+              <p className="text-sm text-blue-600">アップロード中...</p>
+            )}
           </div>
         </div>
-      </div>
 
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold mb-4 text-gray-900">公開設定</h2>
-        
+        <div>
+          <label className="block text-sm font-medium mb-2 text-gray-700">
+            説明 <span className="text-red-500">*</span>
+          </label>
+          <textarea
+            value={formData.description}
+            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-portfolio-blue text-gray-900"
+            rows={4}
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2 text-gray-700">
+            使用技術
+          </label>
+          <div className="flex gap-2 mb-2">
+            <input
+              type="text"
+              value={techInput}
+              onChange={(e) => setTechInput(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTechnology())}
+              className="flex-1 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-portfolio-blue text-gray-900"
+              placeholder="技術を追加..."
+            />
+            <button
+              type="button"
+              onClick={addTechnology}
+              className="px-4 py-2 bg-portfolio-blue hover:bg-portfolio-blue-dark text-white rounded-lg transition-colors"
+            >
+              追加
+            </button>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {formData.technologies.map((tech) => (
+              <span
+                key={tech}
+                className="bg-gray-100 px-3 py-1 rounded-full text-sm flex items-center gap-2 text-gray-700"
+              >
+                {tech}
+                <button
+                  type="button"
+                  onClick={() => removeTechnology(tech)}
+                  className="text-red-500 hover:text-red-600"
+                >
+                  <X className="h-3 w-3" />
+                </button>
+              </span>
+            ))}
+          </div>
+        </div>
+
         <div>
           <label className="flex items-center gap-2">
             <input
@@ -359,26 +388,26 @@ export default function ProjectForm({ initialData, projectId }: ProjectFormProps
             現在の注目プロジェクト: {featuredCount}/3
           </p>
         </div>
-      </div>
 
-      <div className="flex gap-4">
-        <button
-          type="submit"
-          disabled={loading}
-          className="flex items-center gap-2 bg-portfolio-blue hover:bg-portfolio-blue-dark text-white px-6 py-2 rounded-lg transition-colors disabled:opacity-50"
-        >
-          <Save className="h-5 w-5" />
-          {loading ? '保存中...' : '保存する'}
-        </button>
-        
-        <Link
-          href="/admin/projects"
-          className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-2 rounded-lg transition-colors"
-        >
-          <X className="h-5 w-5" />
-          キャンセル
-        </Link>
-      </div>
-    </form>
+        <div className="flex justify-end gap-4">
+          <Link
+            href="/admin/projects"
+            className="flex items-center gap-2 bg-gray-200 hover:bg-gray-300 text-gray-700 px-6 py-2 rounded-lg transition-colors"
+          >
+            <X className="h-5 w-5" />
+            キャンセル
+          </Link>
+          
+          <button
+            type="submit"
+            disabled={loading}
+            className="flex items-center gap-2 bg-portfolio-blue hover:bg-portfolio-blue-dark text-white px-6 py-2 rounded-lg transition-colors disabled:opacity-50"
+          >
+            <Check className="h-5 w-5" />
+            {loading ? '保存中...' : '保存する'}
+          </button>
+        </div>
+      </form>
+    </div>
   )
 }

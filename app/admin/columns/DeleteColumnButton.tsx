@@ -69,7 +69,7 @@ export default function DeleteColumnButton({ columnId, columnTitle }: DeleteColu
   return (
     <button
       onClick={() => setShowConfirm(true)}
-      className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-600"
+      className="p-2 hover:bg-red-100 rounded-lg transition-colors text-red-600"
       title="削除"
     >
       <Trash2 className="h-4 w-4" />

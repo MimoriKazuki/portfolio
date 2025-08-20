@@ -43,7 +43,7 @@ export default function DeleteDocumentButton({ documentId, documentTitle }: Dele
     <button
       onClick={handleDelete}
       disabled={isDeleting}
-      className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-600 disabled:opacity-50"
+      className="p-2 hover:bg-red-100 rounded-lg transition-colors text-red-600 disabled:opacity-50"
       title="削除"
     >
       <Trash2 className="h-4 w-4" />
