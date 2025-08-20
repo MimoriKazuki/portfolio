@@ -2,13 +2,18 @@ import { createClient } from '@/app/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import ProjectForm from '../../ProjectForm'
 
-export default async function EditProjectPage({ params }: { params: { id: string } }) {
+interface PageProps {
+  params: Promise<{ id: string }>
+}
+
+export default async function EditProjectPage({ params }: PageProps) {
+  const { id } = await params
   const supabase = await createClient()
   
   const { data: project, error } = await supabase
     .from('projects')
     .select('*')
-    .eq('id', params.id)
+    .eq('id', id)
     .single()
 
   if (error || !project) {
@@ -20,7 +25,7 @@ export default async function EditProjectPage({ params }: { params: { id: string
       <h1 className="text-3xl font-bold mb-6">プロジェクトを編集</h1>
       
       <div className="bg-youtube-gray rounded-lg">
-        <ProjectForm initialData={project} projectId={params.id} />
+        <ProjectForm initialData={project} projectId={id} />
       </div>
     </div>
   )
