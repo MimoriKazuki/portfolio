@@ -87,16 +87,22 @@ const ProjectCard = ({ project, onOpenDetail, priority = false }: ProjectCardPro
           {project.description}
         </p>
         
-        <div className="flex flex-wrap gap-1 mb-2">
-          {project.technologies.slice(0, 3).map((tech) => (
-            <span key={tech} className="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded">
-              {tech}
-            </span>
-          ))}
-          {project.technologies.length > 3 && (
-            <span className="text-xs text-gray-500">
-              +{project.technologies.length - 3}
-            </span>
+        <div className="h-[20px] mb-2">
+          {project.technologies && project.technologies.length > 0 ? (
+            <div className="flex flex-wrap gap-1">
+              {project.technologies.slice(0, 3).map((tech) => (
+                <span key={tech} className="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded">
+                  {tech}
+                </span>
+              ))}
+              {project.technologies.length > 3 && (
+                <span className="text-xs text-gray-500">
+                  +{project.technologies.length - 3}
+                </span>
+              )}
+            </div>
+          ) : (
+            <div className="h-full"></div>
           )}
         </div>
         

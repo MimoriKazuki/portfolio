@@ -322,22 +322,9 @@ export default function GoogleAnalyticsDashboard() {
     return () => clearInterval(interval)
   }, [])
 
-  if (loading) {
+  if (error || (!loading && !data)) {
     return (
-      <div className="max-w-7xl mx-auto">
-        <div className="flex items-center justify-center h-96">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-portfolio-blue mx-auto mb-4"></div>
-            <p className="text-gray-600">アナリティクスデータを読み込み中...</p>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-  if (error || !data) {
-    return (
-      <div className="max-w-7xl mx-auto">
+      <div className="w-full">
         <div className="bg-red-50 border border-red-200 rounded-lg p-6 flex items-start gap-3">
           <AlertCircle className="h-5 w-5 text-red-600 flex-shrink-0 mt-0.5" />
           <div>
@@ -352,31 +339,45 @@ export default function GoogleAnalyticsDashboard() {
     )
   }
 
+  // デフォルトデータ構造を定義
+  const defaultData = {
+    overview: {
+      users: 0,
+      newUsers: 0,
+      sessions: 0,
+      bounceRate: 0,
+      pageViews: 0,
+      avgSessionDuration: '0:00'
+    },
+    last30Days: [],
+    trafficSources: [],
+    devices: [],
+    topPages: [],
+    locations: []
+  }
+
+  // loadingの場合もデータをマージして表示
+  const displayData = data || defaultData
+
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="w-full">
       <div className="flex items-center justify-between mb-8">
-        <div>
-          <h1 className="text-3xl font-bold mb-2 text-gray-900">アナリティクス ダッシュボード</h1>
-          <p className="text-gray-600">ウェブサイトのパフォーマンスとユーザー行動を分析</p>
-        </div>
-        <div className="flex items-center gap-4">
+        <h1 className="text-3xl font-bold text-gray-900">ダッシュボード</h1>
+        <div className="relative">
           <select 
             value={timeRange}
             onChange={(e) => setTimeRange(e.target.value)}
-            className="px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-portfolio-blue"
+            className="appearance-none px-4 py-2 pr-10 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-portfolio-blue"
           >
             <option value="7daysAgo">過去7日間</option>
             <option value="30daysAgo">過去30日間</option>
             <option value="90daysAgo">過去90日間</option>
           </select>
-          <Link
-            href="/"
-            target="_blank"
-            className="flex items-center gap-2 bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors"
-          >
-            <Eye className="h-5 w-5" />
-            サイトを見る
-          </Link>
+          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+            <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </div>
         </div>
       </div>
 
@@ -398,7 +399,7 @@ export default function GoogleAnalyticsDashboard() {
           <div className="flex items-center justify-between mb-2">
             <Users className="h-8 w-8 text-blue-500" />
           </div>
-          <div className="text-2xl font-bold text-gray-900">{formatNumber(data.overview.users)}</div>
+          <div className="text-2xl font-bold text-gray-900">{formatNumber(displayData.overview.users)}</div>
           <div className="text-sm text-gray-600">ユーザー</div>
         </div>
         
@@ -406,7 +407,7 @@ export default function GoogleAnalyticsDashboard() {
           <div className="flex items-center justify-between mb-2">
             <Eye className="h-8 w-8 text-green-500" />
           </div>
-          <div className="text-2xl font-bold text-gray-900">{formatNumber(data.overview.pageViews)}</div>
+          <div className="text-2xl font-bold text-gray-900">{formatNumber(displayData.overview.pageViews)}</div>
           <div className="text-sm text-gray-600">ページビュー</div>
         </div>
         
@@ -414,7 +415,7 @@ export default function GoogleAnalyticsDashboard() {
           <div className="flex items-center justify-between mb-2">
             <BarChart3 className="h-8 w-8 text-purple-500" />
           </div>
-          <div className="text-2xl font-bold text-gray-900">{formatNumber(data.overview.sessions)}</div>
+          <div className="text-2xl font-bold text-gray-900">{formatNumber(displayData.overview.sessions)}</div>
           <div className="text-sm text-gray-600">セッション</div>
         </div>
         
@@ -422,7 +423,7 @@ export default function GoogleAnalyticsDashboard() {
           <div className="flex items-center justify-between mb-2">
             <TrendingUp className="h-8 w-8 text-yellow-500" />
           </div>
-          <div className="text-2xl font-bold text-gray-900">{data.overview.bounceRate.toFixed(1)}%</div>
+          <div className="text-2xl font-bold text-gray-900">{displayData.overview.bounceRate.toFixed(1)}%</div>
           <div className="text-sm text-gray-600">直帰率</div>
         </div>
       </div>
@@ -432,8 +433,8 @@ export default function GoogleAnalyticsDashboard() {
         <div className="lg:col-span-2 bg-white rounded-lg p-6 border border-gray-200">
           <h3 className="text-lg font-semibold mb-4 text-gray-900">ページビューの推移</h3>
           <div className="h-64 flex items-end justify-between gap-1">
-            {data.last30Days.slice(-14).map((day, index) => {
-              const maxViews = Math.max(...data.last30Days.slice(-14).map(d => d.pageViews))
+            {displayData.last30Days.slice(-14).map((day, index) => {
+              const maxViews = Math.max(...displayData.last30Days.slice(-14).map(d => d.pageViews))
               const height = (day.pageViews / maxViews) * 100
               
               return (
@@ -454,7 +455,7 @@ export default function GoogleAnalyticsDashboard() {
         <div className="bg-white rounded-lg p-6 border border-gray-200">
           <h3 className="text-lg font-semibold mb-4 text-gray-900">トラフィックソース</h3>
           <div className="space-y-4">
-            {data.trafficSources.map((source) => (
+            {displayData.trafficSources.map((source) => (
               <div key={source.source}>
                 <div className="flex justify-between text-sm mb-1">
                   <span className="text-gray-700">{source.source}</span>
@@ -486,7 +487,7 @@ export default function GoogleAnalyticsDashboard() {
                 </tr>
               </thead>
               <tbody className="text-sm">
-                {data.topPages.slice(0, 5).map((page) => (
+                {displayData.topPages.slice(0, 5).map((page) => (
                   <tr key={page.page} className="border-b border-gray-100">
                     <td className="py-3">
                       <div>
@@ -507,7 +508,7 @@ export default function GoogleAnalyticsDashboard() {
         <div className="bg-white rounded-lg p-6 border border-gray-200">
           <h3 className="text-lg font-semibold mb-4 text-gray-900">デバイス別</h3>
           <div className="space-y-4">
-            {data.devices.map((device) => {
+            {displayData.devices.map((device) => {
               const Icon = device.icon
               return (
                 <div key={device.type} className="flex items-center justify-between">
@@ -532,7 +533,7 @@ export default function GoogleAnalyticsDashboard() {
           <div className="mt-6 pt-6 border-t border-gray-200">
             <h4 className="text-sm font-semibold mb-3 text-gray-900">地域別セッション</h4>
             <div className="space-y-2">
-              {data.locations.slice(0, 5).map((location) => (
+              {displayData.locations.slice(0, 5).map((location) => (
                 <div key={location.country} className="flex justify-between text-sm">
                   <span className="text-gray-700">{location.country}</span>
                   <span className="text-gray-900">{formatNumber(location.sessions)} ({location.percentage}%)</span>

@@ -3,10 +3,15 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/app/lib/supabase/client'
-import { Check, X, Upload } from 'lucide-react'
+import { Check, X, Upload, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
-import RichTextEditor from './RichTextEditor'
+import dynamic from 'next/dynamic'
+
+const RichTextEditor = dynamic(() => import('./RichTextEditor'), {
+  ssr: false,
+  loading: () => <div className="h-[400px] bg-gray-100 rounded-lg animate-pulse" />
+})
 import './editor-styles.css'
 
 interface ColumnFormData {
@@ -17,7 +22,6 @@ interface ColumnFormData {
   is_featured: boolean
   is_published: boolean
   author?: string
-  tags?: string[]
   thumbnail?: string
 }
 
@@ -34,7 +38,6 @@ export default function ColumnForm({ initialData, columnId }: ColumnFormProps) {
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null)
   const [thumbnailPreview, setThumbnailPreview] = useState<string>(initialData?.thumbnail || '')
   const [dragOver, setDragOver] = useState(false)
-  const [tagInput, setTagInput] = useState('')
   
   const [formData, setFormData] = useState<ColumnFormData>({
     title: initialData?.title || '',
@@ -44,22 +47,44 @@ export default function ColumnForm({ initialData, columnId }: ColumnFormProps) {
     is_featured: initialData?.is_featured || false,
     is_published: initialData?.is_published || false,
     author: initialData?.author || 'LandBridge開発チーム',
-    tags: initialData?.tags || [],
     thumbnail: initialData?.thumbnail || '',
   })
+  const [slugManuallyEdited, setSlugManuallyEdited] = useState(!!columnId && !!initialData?.slug)
+  const [columnCount, setColumnCount] = useState(0)
 
-  // Slugを自動生成
+  // コラムの総数を取得
   useEffect(() => {
-    if (!columnId && formData.title && !formData.slug) {
-      const generatedSlug = formData.title
+    const fetchColumnCount = async () => {
+      const { count } = await supabase
+        .from('columns')
+        .select('*', { count: 'exact', head: true })
+      
+      setColumnCount(count || 0)
+    }
+    fetchColumnCount()
+  }, [supabase])
+
+  // Slugを自動生成（英数字のみ）
+  useEffect(() => {
+    // 手動で編集された場合は自動生成しない
+    if (slugManuallyEdited && formData.slug) return
+    
+    if (formData.title) {
+      // タイトルから英数字とスペースのみを抽出
+      const alphanumericTitle = formData.title
         .toLowerCase()
-        .replace(/[^\w\s-]/g, '') // 特殊文字を削除
+        .replace(/[^a-z0-9\s]/g, '') // 英数字とスペースのみ残す
         .replace(/\s+/g, '-') // スペースをハイフンに
         .replace(/--+/g, '-') // 連続するハイフンを単一に
+        .replace(/^-|-$/g, '') // 先頭と末尾のハイフンを削除
         .trim()
+      
+      // 英数字が抽出できなかった場合は連番ベースのスラッグを生成
+      const generatedSlug = alphanumericTitle || `column-${columnCount + 1}`
+      
       setFormData(prev => ({ ...prev, slug: generatedSlug }))
     }
-  }, [formData.title, formData.slug, columnId])
+  }, [formData.title, slugManuallyEdited, columnCount])
 
   const handleThumbnailChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -124,22 +149,6 @@ export default function ColumnForm({ initialData, columnId }: ColumnFormProps) {
     return publicUrl
   }
 
-  const addTag = () => {
-    if (tagInput.trim() && !formData.tags?.includes(tagInput.trim())) {
-      setFormData({
-        ...formData,
-        tags: [...(formData.tags || []), tagInput.trim()]
-      })
-      setTagInput('')
-    }
-  }
-
-  const removeTag = (tag: string) => {
-    setFormData({
-      ...formData,
-      tags: formData.tags?.filter(t => t !== tag) || []
-    })
-  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -160,7 +169,8 @@ export default function ColumnForm({ initialData, columnId }: ColumnFormProps) {
 
       const columnData = {
         ...formData,
-        thumbnail: thumbnailUrl
+        thumbnail: thumbnailUrl,
+        published_date: new Date().toISOString() // 公開日時を追加
       }
 
       if (columnId) {
@@ -255,36 +265,35 @@ export default function ColumnForm({ initialData, columnId }: ColumnFormProps) {
             <input
               type="text"
               value={formData.slug}
-              onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
+              onChange={(e) => {
+                // 半角英数字とハイフンのみを許可（URLセーフな文字のみ）
+                const value = e.target.value
+                  .toLowerCase()
+                  .replace(/[^a-z0-9\-]/g, '') // 半角英数字とハイフンのみ（ハイフンをエスケープ）
+                  .replace(/--+/g, '-') // 連続するハイフンを単一に
+                  .replace(/^-+|-+$/g, '') // 先頭と末尾のハイフンを削除
+                setFormData({ ...formData, slug: value })
+                setSlugManuallyEdited(true) // 手動編集フラグを立てる
+              }}
+              onBlur={() => {
+                // フォーカスが外れた時に先頭・末尾のハイフンを削除
+                const cleanedSlug = formData.slug.replace(/^-+|-+$/g, '')
+                if (cleanedSlug !== formData.slug) {
+                  setFormData({ ...formData, slug: cleanedSlug })
+                }
+              }}
               className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-portfolio-blue text-gray-900"
               placeholder="自動生成されます"
+              pattern="[a-z0-9-]+"
+              title="半角英数字とハイフンのみ使用可能です"
             />
             <p className="text-xs text-gray-600 mt-1">
-              URLに使用される識別子です。空欄の場合はタイトルから自動生成されます。
+              URLに使用される識別子です。半角英数字とハイフンのみ使用可能です。
+              日本語タイトルの場合は自動的に連番ベースのスラッグが生成されます。
             </p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-sm font-medium mb-2 text-gray-700">
-              カテゴリ <span className="text-red-500">*</span>
-            </label>
-            <select className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-portfolio-blue text-gray-900">
-              <option>テクノロジー</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2 text-gray-700">
-              公開日
-            </label>
-            <input
-              type="date"
-              className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-portfolio-blue text-gray-900"
-            />
-          </div>
-        </div>
 
         <div>
           <label className="block text-sm font-medium mb-2 text-gray-700">
@@ -365,45 +374,6 @@ export default function ColumnForm({ initialData, columnId }: ColumnFormProps) {
         </div>
 
 
-        <div>
-          <label className="block text-sm font-medium mb-2 text-gray-700">
-            タグ
-          </label>
-          <div className="flex gap-2 mb-2">
-            <input
-              type="text"
-              value={tagInput}
-              onChange={(e) => setTagInput(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), addTag())}
-              className="flex-1 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-portfolio-blue text-gray-900"
-              placeholder="タグを追加..."
-            />
-            <button
-              type="button"
-              onClick={addTag}
-              className="px-4 py-2 bg-portfolio-blue hover:bg-portfolio-blue-dark text-white rounded-lg transition-colors"
-            >
-              追加
-            </button>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {formData.tags?.map((tag) => (
-              <span
-                key={tag}
-                className="bg-gray-100 px-3 py-1 rounded-full text-sm flex items-center gap-2 text-gray-700"
-              >
-                {tag}
-                <button
-                  type="button"
-                  onClick={() => removeTag(tag)}
-                  className="text-red-500 hover:text-red-600"
-                >
-                  <X className="h-3 w-3" />
-                </button>
-              </span>
-            ))}
-          </div>
-        </div>
 
         <div className="flex items-center gap-6">
           <label className="flex items-center gap-2">
@@ -443,10 +413,19 @@ export default function ColumnForm({ initialData, columnId }: ColumnFormProps) {
           <button
             type="submit"
             disabled={loading}
-            className="flex items-center gap-2 bg-portfolio-blue hover:bg-portfolio-blue-dark text-white px-6 py-2 rounded-lg transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 bg-portfolio-blue hover:bg-portfolio-blue-dark text-white px-6 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Check className="h-5 w-5" />
-            {loading ? '保存中...' : '保存する'}
+            {loading ? (
+              <>
+                <Loader2 className="h-5 w-5 animate-spin" />
+                保存中...
+              </>
+            ) : (
+              <>
+                <Check className="h-5 w-5" />
+                保存する
+              </>
+            )}
           </button>
         </div>
       </form>

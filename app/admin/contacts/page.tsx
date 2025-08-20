@@ -32,26 +32,39 @@ import ContactsClient from './ContactsClient'
 export default async function AdminContactsPage() {
   const supabase = await createClient()
   
-  const { data: contacts, error } = await supabase
+  // フォームからの問い合わせを取得
+  const { data: contacts, error: contactsError } = await supabase
     .from('contacts')
     .select('*')
     .order('created_at', { ascending: false })
 
-  if (error) {
-    console.error('Error fetching contacts:', error)
-    console.error('Error details:', {
-      message: error.message,
-      details: error.details,
-      hint: error.hint,
-      code: error.code
-    })
-    
-    // If table doesn't exist, return empty array
-    if (error.code === '42P01') {
+  // 資料請求を取得（document情報も含む）
+  const { data: documentRequests, error: requestsError } = await supabase
+    .from('document_requests')
+    .select(`
+      *,
+      document:documents (
+        id,
+        title
+      )
+    `)
+    .order('created_at', { ascending: false })
+
+  if (contactsError) {
+    console.error('Error fetching contacts:', contactsError)
+    // If table doesn't exist, set empty array
+    if (contactsError.code === '42P01') {
       console.warn('Contacts table does not exist. Please create it using the SQL above.')
-      return <ContactsClient contacts={[]} />
     }
   }
 
-  return <ContactsClient contacts={contacts || []} />
+  if (requestsError) {
+    console.error('Error fetching document requests:', requestsError)
+  }
+
+  // 両方のデータを統合して渡す
+  return <ContactsClient 
+    contacts={contacts || []} 
+    documentRequests={documentRequests || []}
+  />
 }

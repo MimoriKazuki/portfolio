@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/app/lib/supabase/client'
-import { Check, X, Upload } from 'lucide-react'
+import { Check, X, Upload, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -401,10 +401,19 @@ export default function ProjectForm({ initialData, projectId }: ProjectFormProps
           <button
             type="submit"
             disabled={loading}
-            className="flex items-center gap-2 bg-portfolio-blue hover:bg-portfolio-blue-dark text-white px-6 py-2 rounded-lg transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 bg-portfolio-blue hover:bg-portfolio-blue-dark text-white px-6 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <Check className="h-5 w-5" />
-            {loading ? '保存中...' : '保存する'}
+            {loading ? (
+              <>
+                <Loader2 className="h-5 w-5 animate-spin" />
+                保存中...
+              </>
+            ) : (
+              <>
+                <Check className="h-5 w-5" />
+                保存する
+              </>
+            )}
           </button>
         </div>
       </form>

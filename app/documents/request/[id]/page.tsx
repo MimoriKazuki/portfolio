@@ -8,6 +8,7 @@ import { createClient } from '@/app/lib/supabase/client'
 import { Document } from '@/app/types'
 import { ChevronLeft, FileText, Loader2 } from 'lucide-react'
 import MainLayout from '@/app/components/MainLayout'
+import ContactCompletionModal from '@/app/components/ContactCompletionModal'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -15,7 +16,7 @@ interface PageProps {
 
 export default function DocumentRequestPage({ params }: PageProps) {
   const router = useRouter()
-  const [document, setDocument] = useState<Document | null>(null)
+  const [documentData, setDocumentData] = useState<Document | null>(null)
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [documentId, setDocumentId] = useState<string>('')
@@ -29,6 +30,7 @@ export default function DocumentRequestPage({ params }: PageProps) {
     message: ''
   })
   const [emailError, setEmailError] = useState('')
+  const [showCompletionModal, setShowCompletionModal] = useState(false)
 
   // メールアドレスのバリデーション
   const validateEmail = (email: string) => {
@@ -60,7 +62,7 @@ export default function DocumentRequestPage({ params }: PageProps) {
         return
       }
 
-      setDocument(data)
+      setDocumentData(data)
       setLoading(false)
     }
 
@@ -103,7 +105,30 @@ export default function DocumentRequestPage({ params }: PageProps) {
       })
 
       if (response.ok) {
-        router.push('/documents/request/complete')
+        const result = await response.json()
+        
+        // PDFのダウンロードURLがある場合は自動ダウンロード
+        if (result.downloadUrl) {
+          // PDFファイルを直接ダウンロード
+          try {
+            const response = await fetch(result.downloadUrl)
+            const blob = await response.blob()
+            const url = window.URL.createObjectURL(blob)
+            const link = document.createElement('a')
+            link.href = url
+            link.download = `${documentData?.title || 'document'}.pdf`
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+            window.URL.revokeObjectURL(url)
+          } catch (error) {
+            console.error('Download failed:', error)
+            // フォールバック: 新しいウィンドウで開く
+            window.open(result.downloadUrl, '_blank')
+          }
+        }
+        
+        setShowCompletionModal(true)
       } else {
         alert('送信に失敗しました。もう一度お試しください。')
       }
@@ -113,6 +138,11 @@ export default function DocumentRequestPage({ params }: PageProps) {
     } finally {
       setSubmitting(false)
     }
+  }
+
+  const handleModalClose = () => {
+    setShowCompletionModal(false)
+    router.push('/')
   }
 
   if (loading) {
@@ -125,7 +155,7 @@ export default function DocumentRequestPage({ params }: PageProps) {
     )
   }
 
-  if (!document) {
+  if (!documentData) {
     return null
   }
 
@@ -143,11 +173,11 @@ export default function DocumentRequestPage({ params }: PageProps) {
         <div className="grid lg:grid-cols-2 gap-8">
           <div>
             <div className="bg-gray-100 rounded-lg p-6 mb-6">
-              {document.thumbnail && (
+              {documentData.thumbnail && (
                 <div className="relative aspect-video mb-4 rounded-lg overflow-hidden">
                   <Image
-                    src={document.thumbnail}
-                    alt={document.title}
+                    src={documentData.thumbnail}
+                    alt={documentData.title}
                     fill
                     className="object-cover"
                   />
@@ -156,11 +186,11 @@ export default function DocumentRequestPage({ params }: PageProps) {
               
               <div>
                 <h2 className="text-lg font-semibold text-gray-900 mb-2">
-                  {document.title}
+                  {documentData.title}
                 </h2>
-                {document.description && (
+                {documentData.description && (
                   <p className="text-gray-600 text-sm">
-                    {document.description}
+                    {documentData.description}
                   </p>
                 )}
               </div>
@@ -309,12 +339,22 @@ export default function DocumentRequestPage({ params }: PageProps) {
               </button>
 
               <p className="text-xs text-gray-600 text-center">
-                送信いただいた情報は、資料送付およびご連絡のためにのみ使用いたします。
+                送信することで、
+                <Link href="/privacy" className="text-portfolio-blue hover:underline">
+                  プライバシーポリシー
+                </Link>
+                に同意したものとします。
               </p>
             </form>
           </div>
         </div>
       </div>
+      
+      <ContactCompletionModal 
+        isOpen={showCompletionModal}
+        onClose={handleModalClose}
+        type="document"
+      />
     </MainLayout>
   )
 }

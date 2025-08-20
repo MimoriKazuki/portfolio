@@ -29,7 +29,9 @@
       "Bash(find:*)",
       "Bash(kill:*)",
       "Bash(npx tsc:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(npx tailwindcss:*)",
+      "Bash(sed:*)"
     ],
     "deny": []
   }

@@ -8,23 +8,35 @@ import { Calendar, ChevronLeft } from 'lucide-react'
 import MainLayout from '@/app/components/MainLayout'
 import TableOfContents from '@/app/components/TableOfContents'
 
-export const revalidate = 60
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
 interface PageProps {
   params: Promise<{ slug: string }>
 }
 
-export async function generateStaticParams() {
-  const supabase = createStaticClient()
-  const { data: columns } = await supabase
-    .from('columns')
-    .select('slug')
-    .eq('is_published', true)
+// 動的ルーティングを使用するためコメントアウト
+// export async function generateStaticParams() {
+//   try {
+//     const supabase = createStaticClient()
+//     const { data: columns, error } = await supabase
+//       .from('columns')
+//       .select('slug')
+//       .eq('is_published', true)
 
-  return columns?.map((column) => ({
-    slug: column.slug,
-  })) || []
-}
+//     if (error) {
+//       console.error('Error in generateStaticParams:', error)
+//       return []
+//     }
+    
+//     return columns?.map((column) => ({
+//       slug: column.slug,
+//     })) || []
+//   } catch (err) {
+//     console.error('Error generating static params:', err)
+//     return []
+//   }
+// }
 
 export default async function ColumnDetailPage({ params }: PageProps) {
   const { slug } = await params
@@ -47,8 +59,8 @@ export default async function ColumnDetailPage({ params }: PageProps) {
     .update({ view_count: (column.view_count || 0) + 1 })
     .eq('id', column.id)
 
-  // 見出しを抽出して目次を生成
-  const headings = extractHeadings(column.content)
+  // HTMLから見出しを抽出して目次を生成
+  const headings = extractHeadingsFromHtml(column.content)
   const hasMultipleHeadings = headings.length >= 2
 
   // 関連コラムを取得（現在の記事を除く最新3件）
@@ -100,11 +112,20 @@ export default async function ColumnDetailPage({ params }: PageProps) {
           </div>
         </header>
 
+        {/* 概要文 */}
+        {column.excerpt && (
+          <div className="bg-gray-50 border-l-4 border-gray-300 py-4 px-6 mb-8 rounded-r-lg">
+            <p className="text-gray-700 leading-relaxed text-lg">
+              {column.excerpt}
+            </p>
+          </div>
+        )}
+
         {/* 目次 */}
         {hasMultipleHeadings && <TableOfContents headings={headings} />}
 
         <div 
-          className="prose max-w-none
+          className="prose max-w-none column-content
             prose-headings:text-gray-900 prose-headings:font-bold
             prose-h1:text-[28px] prose-h1:border-b-4 prose-h1:border-portfolio-blue prose-h1:pb-3 prose-h1:mb-6 prose-h1:mt-8
             prose-h2:text-[24px] prose-h2:border-l-4 prose-h2:border-portfolio-blue prose-h2:pl-4 prose-h2:mb-4 prose-h2:mt-6
@@ -121,7 +142,7 @@ export default async function ColumnDetailPage({ params }: PageProps) {
             prose-ul:text-[16px] prose-ul:text-gray-700 prose-ol:text-[16px] prose-ol:text-gray-700
             prose-li:marker:text-gray-400"
           dangerouslySetInnerHTML={{ 
-            __html: convertMarkdownToHtmlWithIds(column.content)
+            __html: addIdsToHeadings(column.content)
           }}
         />
 
@@ -189,93 +210,44 @@ export default async function ColumnDetailPage({ params }: PageProps) {
   )
 }
 
-// 見出しを抽出
-function extractHeadings(markdown: string): { level: number; text: string }[] {
-  const headingRegex = /^(#{1,6})\s+(.+)$/gm
+// HTMLから見出しを抽出
+function extractHeadingsFromHtml(html: string): { level: number; text: string }[] {
   const headings: { level: number; text: string }[] = []
+  
+  // h1-h6タグを正規表現で検索
+  const headingRegex = /<h([1-6])(?:\s[^>]*)?>([\s\S]*?)<\/h[1-6]>/gi
   let match
-
-  while ((match = headingRegex.exec(markdown)) !== null) {
-    const level = match[1].length
-    const text = match[2].replace(/\[.*?\]\s*/, '') // [H1見出し] などのラベルを除去
-    headings.push({ level, text })
+  
+  while ((match = headingRegex.exec(html)) !== null) {
+    const level = parseInt(match[1])
+    // HTMLタグを除去してテキストだけを取得
+    const text = match[2].replace(/<[^>]*>/g, '').trim()
+    if (text) {
+      headings.push({ level, text })
+    }
   }
-
+  
   return headings
 }
 
-// IDを付与したHTML変換
-function convertMarkdownToHtmlWithIds(markdown: string): string {
+// 見出しにIDを追加
+function addIdsToHeadings(html: string): string {
+  // サーバーサイドでDOMParserが使えないため、正規表現で処理
   let headingIndex = 0
   
-  // まず見出しを順番に処理してIDを付与
-  const lines = markdown.split('\n')
-  const processedLines = lines.map(line => {
-    // h1からh6までの見出しパターンをチェック
-    const headingMatch = line.match(/^(#{1,6})\s+(.+)$/)
-    if (headingMatch) {
-      const level = headingMatch[1].length
-      const text = headingMatch[2]
-      const id = `heading-${headingIndex++}`
-      return `<h${level} id="${id}">${text}</h${level}>`
+  // h1-h6タグを検索してIDを追加
+  const processedHtml = html.replace(/<h([1-6])(\s[^>]*)?>([\s\S]*?)<\/h[1-6]>/gi, (match, level, attrs, content) => {
+    const id = `heading-${headingIndex++}`
+    // 既存の属性がある場合は保持
+    if (attrs) {
+      // 既にidがある場合はそのまま返す
+      if (/id=/.test(attrs)) {
+        return match
+      }
+      return `<h${level}${attrs} id="${id}">${content}</h${level}>`
     }
-    return line
+    return `<h${level} id="${id}">${content}</h${level}>`
   })
   
-  // 残りのMarkdown変換を処理
-  let html = processedLines.join('\n')
-  
-  // Code blocks - より正確なパターンマッチング
-  html = html.replace(/```(\w+)?\n([\s\S]*?)```/gm, (match, lang, code) => {
-    // HTMLエスケープ
-    const escapedCode = code
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#039;')
-    return `<pre><code class="language-${lang || 'plaintext'}">${escapedCode}</code></pre>`
-  })
-  
-  // Bold
-  html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-  
-  // Inline code
-  html = html.replace(/`([^`]+)`/g, '<code>$1</code>')
-  
-  // Links
-  html = html.replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2">$1</a>')
-  
-  // Blockquotes
-  html = html.replace(/^> (.+)$/gim, '<blockquote>$1</blockquote>')
-  
-  // Lists
-  html = html.replace(/^\- (.+)$/gim, '<li>$1</li>')
-  html = html.replace(/^\d+\. (.+)$/gim, '<li>$1</li>')
-  
-  // Paragraphs - 改行の処理
-  const paragraphs = html.split('\n\n')
-  html = paragraphs.map(paragraph => {
-    const trimmed = paragraph.trim()
-    // すでにHTMLタグの場合はそのまま
-    if (trimmed.startsWith('<h') || 
-        trimmed.startsWith('<pre') || 
-        trimmed.startsWith('<ul') || 
-        trimmed.startsWith('<ol') ||
-        trimmed.startsWith('<blockquote') ||
-        trimmed.startsWith('<li')) {
-      return trimmed
-    }
-    // 空行はスキップ
-    if (!trimmed) return ''
-    // それ以外は段落タグで囲む
-    return `<p>${trimmed}</p>`
-  }).filter(p => p).join('\n\n')
-  
-  // 連続するリストアイテムをulタグで囲む
-  html = html.replace(/(<li>.*?<\/li>\s*)+/g, (match) => {
-    return `<ul>${match}</ul>`
-  })
-  
-  return html
+  return processedHtml
 }

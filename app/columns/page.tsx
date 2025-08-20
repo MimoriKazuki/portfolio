@@ -49,12 +49,12 @@ export default async function ColumnsPage() {
                 )}
                 
                 <div className="p-4 flex-1 flex flex-col">
-                  <h2 className="font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-portfolio-blue transition-colors">
+                  <h2 className="font-semibold text-gray-900 mb-2 line-clamp-1 group-hover:text-portfolio-blue transition-colors">
                     {column.title}
                   </h2>
                   
                   <div className="flex-1">
-                    <p className="text-gray-600 text-sm line-clamp-3 mb-4">
+                    <p className="text-gray-600 text-sm line-clamp-2 mb-4">
                       {column.excerpt || ''}
                     </p>
                   </div>

@@ -1,6 +1,6 @@
 'use client'
 
-import { X, Mail, User, Building, Calendar, MessageSquare, Tag } from 'lucide-react'
+import { X, Mail } from 'lucide-react'
 import { format } from 'date-fns'
 import { ja } from 'date-fns/locale'
 
@@ -16,12 +16,30 @@ interface Contact {
   updated_at: string
 }
 
+interface DocumentRequest {
+  id: string
+  document_id: string
+  company_name: string
+  name: string
+  email: string
+  phone?: string
+  department?: string
+  position?: string
+  message?: string
+  created_at: string
+  document?: {
+    id: string
+    title: string
+  }
+}
+
 interface ContactDetailModalProps {
-  contact: Contact
+  contact?: Contact | null
+  documentRequest?: DocumentRequest | null
   onClose: () => void
 }
 
-export default function ContactDetailModal({ contact, onClose }: ContactDetailModalProps) {
+export default function ContactDetailModal({ contact, documentRequest, onClose }: ContactDetailModalProps) {
   const statusColors = {
     'new': 'bg-red-100 text-red-700',
     'in_progress': 'bg-yellow-100 text-yellow-700',
@@ -48,12 +66,18 @@ export default function ContactDetailModal({ contact, onClose }: ContactDetailMo
     'other': 'その他'
   }
 
+  const isDocumentRequest = !!documentRequest
+  const data = documentRequest || contact
+  if (!data) return null
+
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-hidden">
+      <div className="bg-white rounded-lg max-w-5xl w-full max-h-[95vh] overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-xl font-semibold text-gray-900">お問い合わせ詳細</h2>
+          <h2 className="text-xl font-semibold text-gray-900">
+            {isDocumentRequest ? '資料請求詳細' : 'お問い合わせ詳細'}
+          </h2>
           <button
             onClick={onClose}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
@@ -63,97 +87,200 @@ export default function ContactDetailModal({ contact, onClose }: ContactDetailMo
         </div>
 
         {/* Content */}
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-80px)]">
+        <div className="p-8 overflow-y-auto max-h-[calc(95vh-80px)]">
           <div className="space-y-6">
-            {/* Status and Type */}
-            <div className="flex items-center gap-4">
-              <span className={`inline-flex px-3 py-1 rounded-full text-sm font-medium ${statusColors[contact.status]}`}>
-                {statusLabels[contact.status]}
-              </span>
-              <span className={`inline-flex px-3 py-1 rounded-full text-sm font-medium ${typeColors[contact.inquiry_type]}`}>
-                {typeLabels[contact.inquiry_type]}
-              </span>
-            </div>
-
-            {/* Customer Info */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-900">お客様情報</h3>
-              <div className="bg-gray-50 rounded-lg p-4 space-y-3">
-                <div className="flex items-start gap-3">
-                  <User className="h-5 w-5 text-gray-400 mt-0.5" />
-                  <div>
-                    <div className="text-sm text-gray-600">お名前</div>
-                    <div className="font-medium text-gray-900">{contact.name}</div>
+            {/* 基本情報 */}
+            <div className="bg-gray-50 rounded-lg p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">基本情報</h3>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                {/* 送信元 */}
+                <div className="space-y-2">
+                  <div className="text-sm text-gray-600">送信元</div>
+                  <div className="font-medium">
+                    <span className={`inline-flex px-3 py-1 rounded-full text-sm ${
+                      isDocumentRequest
+                        ? 'bg-purple-100 text-purple-700'
+                        : 'bg-blue-100 text-blue-700'
+                    }`}>
+                      {isDocumentRequest ? '資料請求' : 'フォーム'}
+                    </span>
                   </div>
                 </div>
-                {contact.company && (
-                  <div className="flex items-start gap-3">
-                    <Building className="h-5 w-5 text-gray-400 mt-0.5" />
-                    <div>
-                      <div className="text-sm text-gray-600">会社名</div>
-                      <div className="font-medium text-gray-900">{contact.company}</div>
+                
+                {/* 問い合わせ種別 */}
+                <div className="space-y-2">
+                  <div className="text-sm text-gray-600">問い合わせ種別</div>
+                  <div className="font-medium">
+                    {contact ? (
+                      <span className={`inline-flex px-3 py-1 rounded-full text-sm ${typeColors[contact.inquiry_type]}`}>
+                        {typeLabels[contact.inquiry_type]}
+                      </span>
+                    ) : (
+                      <span className="text-gray-400">-</span>
+                    )}
+                  </div>
+                </div>
+                
+                {/* ステータス */}
+                <div className="space-y-2">
+                  <div className="text-sm text-gray-600">ステータス</div>
+                  <div className="font-medium">
+                    {contact ? (
+                      <span className={`inline-flex px-3 py-1 rounded-full text-sm ${statusColors[contact.status]}`}>
+                        {statusLabels[contact.status]}
+                      </span>
+                    ) : (
+                      <span className="inline-flex px-3 py-1 rounded-full text-sm bg-red-100 text-red-700">
+                        新規
+                      </span>
+                    )}
+                  </div>
+                </div>
+                
+                {/* 資料名 */}
+                {isDocumentRequest && (
+                  <div className="space-y-2">
+                    <div className="text-sm text-gray-600">資料名</div>
+                    <div className="font-medium text-gray-900">
+                      {documentRequest?.document?.title || '-'}
                     </div>
                   </div>
                 )}
-                <div className="flex items-start gap-3">
-                  <Mail className="h-5 w-5 text-gray-400 mt-0.5" />
-                  <div>
-                    <div className="text-sm text-gray-600">メールアドレス</div>
+              </div>
+            </div>
+
+            {/* お客様情報 */}
+            <div className="bg-gray-50 rounded-lg p-6">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">お客様情報</h3>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* お名前 */}
+                <div className="space-y-2">
+                  <div className="text-sm text-gray-600">お名前</div>
+                  <div className="font-medium text-gray-900">
+                    {contact?.name || documentRequest?.name || '-'}
+                  </div>
+                </div>
+                
+                {/* 会社名 */}
+                <div className="space-y-2">
+                  <div className="text-sm text-gray-600">会社名</div>
+                  <div className="font-medium text-gray-900">
+                    {contact?.company || documentRequest?.company_name || '-'}
+                  </div>
+                </div>
+                
+                {/* メールアドレス */}
+                <div className="space-y-2">
+                  <div className="text-sm text-gray-600">メールアドレス</div>
+                  <div className="font-medium">
                     <a 
-                      href={`mailto:${contact.email}`}
-                      className="font-medium text-portfolio-blue hover:underline"
+                      href={`mailto:${contact?.email || documentRequest?.email}`}
+                      className="text-portfolio-blue hover:underline"
                     >
-                      {contact.email}
+                      {contact?.email || documentRequest?.email || '-'}
                     </a>
                   </div>
                 </div>
+                
+                {/* 電話番号 */}
+                <div className="space-y-2">
+                  <div className="text-sm text-gray-600">電話番号</div>
+                  <div className="font-medium text-gray-900">
+                    {documentRequest?.phone || '-'}
+                  </div>
+                </div>
+                
+                {/* 部署 */}
+                <div className="space-y-2">
+                  <div className="text-sm text-gray-600">部署</div>
+                  <div className="font-medium text-gray-900">
+                    {documentRequest?.department || '-'}
+                  </div>
+                </div>
+                
+                {/* 役職 */}
+                <div className="space-y-2">
+                  <div className="text-sm text-gray-600">役職</div>
+                  <div className="font-medium text-gray-900">
+                    {documentRequest?.position || '-'}
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Message */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-900">メッセージ</h3>
-              <div className="bg-gray-50 rounded-lg p-4">
-                <p className="text-gray-700 whitespace-pre-wrap">{contact.message}</p>
+            {/* お問い合わせ内容と受信情報を横並びに */}
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+              {/* 左側 - お問い合わせ内容 */}
+              <div className="bg-gray-50 rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                  {isDocumentRequest ? 'ご要望・ご質問' : 'お問い合わせ内容'}
+                </h3>
+                <div className="bg-white rounded-lg p-6 border border-gray-200 min-h-[200px]">
+                  <p className="text-gray-700 whitespace-pre-wrap">
+                    {contact?.message || documentRequest?.message || '-'}
+                  </p>
+                </div>
               </div>
-            </div>
-
-            {/* Timestamps */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-gray-900">受信情報</h3>
-              <div className="bg-gray-50 rounded-lg p-4 space-y-3">
-                <div className="flex items-start gap-3">
-                  <Calendar className="h-5 w-5 text-gray-400 mt-0.5" />
-                  <div>
+              
+              {/* 右側 - 受信情報 */}
+              <div className="bg-gray-50 rounded-lg p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">受信情報</h3>
+                <div className="space-y-4">
+                  {/* 受信日時 */}
+                  <div className="space-y-2">
                     <div className="text-sm text-gray-600">受信日時</div>
                     <div className="font-medium text-gray-900">
-                      {format(new Date(contact.created_at), 'yyyy年MM月dd日 HH:mm', { locale: ja })}
+                      {format(
+                        new Date(contact?.created_at || documentRequest?.created_at || ''), 
+                        'yyyy年MM月dd日 HH:mm', 
+                        { locale: ja }
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* 最終更新日時 */}
+                  <div className="space-y-2">
+                    <div className="text-sm text-gray-600">最終更新日時</div>
+                    <div className="font-medium text-gray-900">
+                      {contact && contact.updated_at !== contact.created_at ? (
+                        format(new Date(contact.updated_at), 'yyyy年MM月dd日 HH:mm', { locale: ja })
+                      ) : (
+                        '-'
+                      )}
                     </div>
                   </div>
                 </div>
-                {contact.updated_at !== contact.created_at && (
-                  <div className="flex items-start gap-3">
-                    <Calendar className="h-5 w-5 text-gray-400 mt-0.5" />
-                    <div>
-                      <div className="text-sm text-gray-600">最終更新日時</div>
-                      <div className="font-medium text-gray-900">
-                        {format(new Date(contact.updated_at), 'yyyy年MM月dd日 HH:mm', { locale: ja })}
-                      </div>
-                    </div>
-                  </div>
-                )}
               </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-3 pt-4">
-              <a
-                href={`mailto:${contact.email}`}
+            <div className="flex gap-3 pt-2">
+              <button
+                onClick={() => {
+                  const email = contact?.email || documentRequest?.email || ''
+                  const subject = isDocumentRequest 
+                    ? `Re: 資料請求について - ${documentRequest?.document?.title || ''}` 
+                    : `Re: お問い合わせについて - ${contact?.inquiry_type ? typeLabels[contact.inquiry_type] : ''}`
+                  const body = `${contact?.name || documentRequest?.name} 様\n\nお問い合わせいただきありがとうございます。\n\n`
+                  
+                  // mailtoリンクを作成して直接クリック
+                  const mailtoLink = document.createElement('a')
+                  mailtoLink.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+                  
+                  // 一時的にDOMに追加
+                  document.body.appendChild(mailtoLink)
+                  
+                  // クリックイベントを発火
+                  mailtoLink.click()
+                  
+                  // DOMから削除
+                  document.body.removeChild(mailtoLink)
+                }}
                 className="flex-1 flex items-center justify-center gap-2 bg-portfolio-blue hover:bg-portfolio-blue-dark text-white px-4 py-2 rounded-lg transition-colors"
               >
                 <Mail className="h-5 w-5" />
                 メールで返信
-              </a>
+              </button>
               <button
                 onClick={onClose}
                 className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"

@@ -1,10 +1,14 @@
 'use client'
 
 import { useState, useCallback } from 'react'
+import Link from 'next/link'
 import MainLayout from '@/app/components/MainLayout'
+import ContactCompletionModal from '@/app/components/ContactCompletionModal'
 import { trackContactFormSubmit } from '@/app/components/GoogleAnalyticsEvent'
+import { useRouter } from 'next/navigation'
 
 export default function ContactPage() {
+  const router = useRouter()
   const [formData, setFormData] = useState({
     name: '',
     company: '',
@@ -15,6 +19,7 @@ export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitMessage, setSubmitMessage] = useState('')
   const [emailError, setEmailError] = useState('')
+  const [showCompletionModal, setShowCompletionModal] = useState(false)
 
   // メールアドレスのバリデーション
   const validateEmail = (email: string) => {
@@ -48,7 +53,8 @@ export default function ContactPage() {
         // Google Analyticsにイベントを送信
         trackContactFormSubmit('general_inquiry')
         
-        setSubmitMessage('お問い合わせありがとうございます。内容を確認次第、ご連絡させていただきます。')
+        // モーダルを表示
+        setShowCompletionModal(true)
         setFormData({ name: '', company: '', email: '', message: '', inquiry_type: 'service' })
       } else {
         setSubmitMessage(result.error || 'エラーが発生しました。もう一度お試しください。')
@@ -60,6 +66,11 @@ export default function ContactPage() {
       setIsSubmitting(false)
     }
   }, [formData])
+
+  const handleModalClose = () => {
+    setShowCompletionModal(false)
+    router.push('/')
+  }
 
   return (
     <MainLayout hideRightSidebar={true}>
@@ -201,12 +212,21 @@ export default function ContactPage() {
               </button>
 
               <p className="text-xs text-gray-600 text-center">
-                お送りいただいた内容は、お問い合わせへの回答のためにのみ使用いたします。
+                送信することで、
+                <Link href="/privacy" className="text-portfolio-blue hover:underline">
+                  プライバシーポリシー
+                </Link>
+                に同意したものとします。
               </p>
             </form>
           </div>
         </div>
       </div>
+      
+      <ContactCompletionModal 
+        isOpen={showCompletionModal}
+        onClose={handleModalClose}
+      />
     </MainLayout>
   )
 }

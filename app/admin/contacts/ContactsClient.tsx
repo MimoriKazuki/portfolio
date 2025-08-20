@@ -20,15 +20,35 @@ interface Contact {
   updated_at: string
 }
 
-interface ContactsClientProps {
-  contacts: Contact[]
+interface DocumentRequest {
+  id: string
+  document_id: string
+  company_name: string
+  name: string
+  email: string
+  phone?: string
+  department?: string
+  position?: string
+  message?: string
+  created_at: string
+  document?: {
+    id: string
+    title: string
+  }
 }
 
-export default function ContactsClient({ contacts }: ContactsClientProps) {
+interface ContactsClientProps {
+  contacts: Contact[]
+  documentRequests: DocumentRequest[]
+}
+
+export default function ContactsClient({ contacts, documentRequests }: ContactsClientProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [typeFilter, setTypeFilter] = useState<string>('all')
+  const [sourceFilter, setSourceFilter] = useState<string>('all') // フォーム/資料請求のフィルター
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null)
+  const [selectedDocRequest, setSelectedDocRequest] = useState<DocumentRequest | null>(null)
   const [showDetailModal, setShowDetailModal] = useState(false)
 
   const statusColors = {
@@ -57,23 +77,93 @@ export default function ContactsClient({ contacts }: ContactsClientProps) {
     'other': 'その他'
   }
 
-  const filteredContacts = useMemo(() => {
-    return contacts.filter(contact => {
+  // すべての問い合わせを統合して管理するための型
+  interface UnifiedInquiry {
+    id: string
+    name: string
+    company: string
+    email: string
+    message: string
+    type: 'contact' | 'document_request'
+    inquiry_type?: string
+    status: 'new' | 'in_progress' | 'completed'
+    created_at: string
+    document_title?: string
+    phone?: string
+    department?: string
+    position?: string
+  }
+
+  // データを統合
+  const unifiedInquiries = useMemo(() => {
+    const contactInquiries: UnifiedInquiry[] = contacts.map(contact => ({
+      id: contact.id,
+      name: contact.name,
+      company: contact.company || '',
+      email: contact.email,
+      message: contact.message,
+      type: 'contact' as const,
+      inquiry_type: contact.inquiry_type,
+      status: contact.status,
+      created_at: contact.created_at
+    }))
+
+    const documentInquiries: UnifiedInquiry[] = documentRequests.map(req => ({
+      id: req.id,
+      name: req.name,
+      company: req.company_name,
+      email: req.email,
+      message: req.message || '',
+      type: 'document_request' as const,
+      inquiry_type: 'document',
+      status: 'new' as const, // 資料請求は常に新規として扱う
+      created_at: req.created_at,
+      document_title: req.document?.title,
+      phone: req.phone,
+      department: req.department,
+      position: req.position
+    }))
+
+    return [...contactInquiries, ...documentInquiries].sort((a, b) => 
+      new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    )
+  }, [contacts, documentRequests])
+
+  const filteredInquiries = useMemo(() => {
+    return unifiedInquiries.filter(inquiry => {
       const matchesSearch = searchQuery === '' || 
-        contact.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        contact.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        contact.message.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (contact.company && contact.company.toLowerCase().includes(searchQuery.toLowerCase()))
+        inquiry.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        inquiry.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        inquiry.message.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        inquiry.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (inquiry.document_title && inquiry.document_title.toLowerCase().includes(searchQuery.toLowerCase()))
       
-      const matchesStatus = statusFilter === 'all' || contact.status === statusFilter
-      const matchesType = typeFilter === 'all' || contact.inquiry_type === typeFilter
+      const matchesStatus = statusFilter === 'all' || inquiry.status === statusFilter
+      const matchesType = typeFilter === 'all' || 
+        (typeFilter === 'document' && inquiry.type === 'document_request') ||
+        (typeFilter !== 'document' && inquiry.inquiry_type === typeFilter)
+      const matchesSource = sourceFilter === 'all' || 
+        (sourceFilter === 'form' && inquiry.type === 'contact') ||
+        (sourceFilter === 'document' && inquiry.type === 'document_request')
 
-      return matchesSearch && matchesStatus && matchesType
+      return matchesSearch && matchesStatus && matchesType && matchesSource
     })
-  }, [contacts, searchQuery, statusFilter, typeFilter])
+  }, [unifiedInquiries, searchQuery, statusFilter, typeFilter, sourceFilter])
 
-  const handleViewDetail = (contact: Contact) => {
-    setSelectedContact(contact)
+  const handleViewDetail = (inquiry: UnifiedInquiry) => {
+    if (inquiry.type === 'contact') {
+      const contact = contacts.find(c => c.id === inquiry.id)
+      if (contact) {
+        setSelectedContact(contact)
+        setSelectedDocRequest(null)
+      }
+    } else {
+      const docRequest = documentRequests.find(d => d.id === inquiry.id)
+      if (docRequest) {
+        setSelectedDocRequest(docRequest)
+        setSelectedContact(null)
+      }
+    }
     setShowDetailModal(true)
   }
 
@@ -81,7 +171,7 @@ export default function ContactsClient({ contacts }: ContactsClientProps) {
     <div className="w-full">
       <h1 className="text-3xl font-bold mb-8 text-gray-900">お問い合わせ管理</h1>
       
-      {!contacts || contacts.length === 0 ? (
+      {!unifiedInquiries || unifiedInquiries.length === 0 ? (
         <div className="bg-white rounded-lg p-16 text-center border border-gray-200">
           <Mail className="h-20 w-20 mx-auto mb-6 text-gray-400" />
           <h2 className="text-2xl font-bold mb-4 text-gray-900">お問い合わせがありません</h2>
@@ -92,26 +182,26 @@ export default function ContactsClient({ contacts }: ContactsClientProps) {
           {/* Stats Cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
-              <div className="text-3xl font-bold text-portfolio-blue">{contacts.length}</div>
+              <div className="text-3xl font-bold text-portfolio-blue">{unifiedInquiries.length}</div>
               <div className="text-sm text-gray-600">総お問い合わせ数</div>
             </div>
             <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
               <div className="text-3xl font-bold text-red-600">
-                {contacts.filter(c => c.status === 'new').length}
+                {unifiedInquiries.filter(i => i.status === 'new').length}
               </div>
               <div className="text-sm text-gray-600">未対応</div>
             </div>
             <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
-              <div className="text-3xl font-bold text-yellow-600">
-                {contacts.filter(c => c.status === 'in_progress').length}
+              <div className="text-3xl font-bold text-purple-600">
+                {unifiedInquiries.filter(i => i.type === 'document_request').length}
               </div>
-              <div className="text-sm text-gray-600">対応中</div>
+              <div className="text-sm text-gray-600">資料請求</div>
             </div>
             <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
-              <div className="text-3xl font-bold text-green-600">
-                {contacts.filter(c => c.status === 'completed').length}
+              <div className="text-3xl font-bold text-blue-600">
+                {unifiedInquiries.filter(i => i.type === 'contact').length}
               </div>
-              <div className="text-sm text-gray-600">完了</div>
+              <div className="text-sm text-gray-600">フォーム</div>
             </div>
           </div>
 
@@ -141,10 +231,25 @@ export default function ContactsClient({ contacts }: ContactsClientProps) {
                   className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-10 text-gray-700 focus:outline-none focus:ring-2 focus:ring-portfolio-blue"
                 >
                   <option value="all">すべての種別</option>
+                  <option value="document">資料請求</option>
                   <option value="service">サービスについて</option>
                   <option value="partnership">提携・協業</option>
                   <option value="recruit">採用関連</option>
                   <option value="other">その他</option>
+                </select>
+                <Filter className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+              </div>
+
+              {/* Source filter */}
+              <div className="relative">
+                <select
+                  value={sourceFilter}
+                  onChange={(e) => setSourceFilter(e.target.value)}
+                  className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-10 text-gray-700 focus:outline-none focus:ring-2 focus:ring-portfolio-blue"
+                >
+                  <option value="all">すべての送信元</option>
+                  <option value="form">フォーム</option>
+                  <option value="document">資料請求</option>
                 </select>
                 <Filter className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
               </div>
@@ -170,6 +275,7 @@ export default function ContactsClient({ contacts }: ContactsClientProps) {
                 <tr>
                   <th className="text-left px-6 py-3 text-sm font-medium text-gray-700">受信日時</th>
                   <th className="text-left px-6 py-3 text-sm font-medium text-gray-700">お客様情報</th>
+                  <th className="text-center px-6 py-3 text-sm font-medium text-gray-700">送信元</th>
                   <th className="text-center px-6 py-3 text-sm font-medium text-gray-700">問い合わせ種別</th>
                   <th className="text-left px-6 py-3 text-sm font-medium text-gray-700">メッセージ</th>
                   <th className="text-center px-6 py-3 text-sm font-medium text-gray-700">ステータス</th>
@@ -177,78 +283,124 @@ export default function ContactsClient({ contacts }: ContactsClientProps) {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {filteredContacts.length === 0 ? (
+                {filteredInquiries.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
+                    <td colSpan={7} className="px-6 py-12 text-center text-gray-500">
                       検索結果が見つかりませんでした
                     </td>
                   </tr>
                 ) : (
-                  filteredContacts.map((contact) => (
-                    <tr key={contact.id} className="hover:bg-gray-50 transition-colors">
+                  filteredInquiries.map((inquiry) => (
+                    <tr key={inquiry.id} className="hover:bg-gray-50 transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2 text-sm text-gray-600">
                           <Calendar className="h-4 w-4" />
-                          <span>{formatDistanceToNow(new Date(contact.created_at), { locale: ja, addSuffix: true })}</span>
+                          <span>{formatDistanceToNow(new Date(inquiry.created_at), { locale: ja, addSuffix: true })}</span>
                         </div>
                         <div className="text-xs text-gray-500 mt-1">
-                          {new Date(contact.created_at).toLocaleString('ja-JP')}
+                          {new Date(inquiry.created_at).toLocaleString('ja-JP')}
                         </div>
                       </td>
                       <td className="px-6 py-4">
                         <div className="space-y-1">
                           <div className="flex items-center gap-2">
                             <User className="h-4 w-4 text-gray-400" />
-                            <span className="font-medium text-gray-900">{contact.name}</span>
+                            <span className="font-medium text-gray-900">{inquiry.name}</span>
                           </div>
-                          {contact.company && (
+                          {inquiry.company && (
                             <div className="flex items-center gap-2 text-sm text-gray-600">
                               <Building className="h-3.5 w-3.5 text-gray-400" />
-                              <span>{contact.company}</span>
+                              <span>{inquiry.company}</span>
                             </div>
                           )}
                           <div className="flex items-center gap-2 text-sm text-gray-600">
                             <Mail className="h-3.5 w-3.5 text-gray-400" />
-                            <a href={`mailto:${contact.email}`} className="hover:text-portfolio-blue">
-                              {contact.email}
+                            <a 
+                              href={`mailto:${inquiry.email}`}
+                              className="hover:text-portfolio-blue cursor-pointer"
+                              onClick={(e) => {
+                                e.preventDefault()
+                                const subject = inquiry.type === 'document_request'
+                                  ? `Re: 資料請求について - ${inquiry.document_title || ''}`
+                                  : `Re: お問い合わせについて - ${inquiry.inquiry_type ? typeLabels[inquiry.inquiry_type as keyof typeof typeLabels] : ''}`
+                                const body = `${inquiry.name} 様\n\nお問い合わせいただきありがとうございます。\n\n`
+                                
+                                // mailtoリンクを作成して直接クリック
+                                const mailtoLink = document.createElement('a')
+                                mailtoLink.href = `mailto:${inquiry.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+                                
+                                // 一時的にDOMに追加
+                                document.body.appendChild(mailtoLink)
+                                
+                                // クリックイベントを発火
+                                mailtoLink.click()
+                                
+                                // DOMから削除
+                                document.body.removeChild(mailtoLink)
+                              }}
+                            >
+                              {inquiry.email}
                             </a>
                           </div>
+                          {inquiry.phone && (
+                            <div className="flex items-center gap-2 text-sm text-gray-600">
+                              <span className="text-gray-400">📞</span>
+                              <span>{inquiry.phone}</span>
+                            </div>
+                          )}
                         </div>
                       </td>
                       <td className="px-6 py-4 text-center">
-                        <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${typeColors[contact.inquiry_type]}`}>
-                          {typeLabels[contact.inquiry_type]}
+                        <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${
+                          inquiry.type === 'document_request' 
+                            ? 'bg-purple-100 text-purple-700' 
+                            : 'bg-blue-100 text-blue-700'
+                        }`}>
+                          {inquiry.type === 'document_request' ? '資料請求' : 'フォーム'}
                         </span>
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        {inquiry.type === 'document_request' ? (
+                          <span className="text-gray-400">-</span>
+                        ) : (
+                          <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${
+                            typeColors[inquiry.inquiry_type as keyof typeof typeColors] || 'bg-gray-100 text-gray-700'
+                          }`}>
+                            {typeLabels[inquiry.inquiry_type as keyof typeof typeLabels] || inquiry.inquiry_type}
+                          </span>
+                        )}
                       </td>
                       <td className="px-6 py-4">
                         <p className="text-sm text-gray-600 line-clamp-2 max-w-xs">
-                          {contact.message}
+                          {inquiry.message || '-'}
                         </p>
                       </td>
                       <td className="px-6 py-4 text-center">
-                        <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${statusColors[contact.status]}`}>
-                          {statusLabels[contact.status]}
+                        <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${statusColors[inquiry.status]}`}>
+                          {statusLabels[inquiry.status]}
                         </span>
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-center gap-2">
                           <button
-                            onClick={() => handleViewDetail(contact)}
+                            onClick={() => handleViewDetail(inquiry)}
                             className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-600"
                             title="詳細を見る"
                           >
                             <Eye className="h-4 w-4" />
                           </button>
-                          {contact.status !== 'completed' && (
+                          {inquiry.type === 'contact' && inquiry.status !== 'completed' && (
                             <UpdateContactStatusButton 
-                              contactId={contact.id}
-                              currentStatus={contact.status}
+                              contactId={inquiry.id}
+                              currentStatus={inquiry.status}
                             />
                           )}
-                          <DeleteContactButton 
-                            contactId={contact.id} 
-                            contactName={contact.name}
-                          />
+                          {inquiry.type === 'contact' && (
+                            <DeleteContactButton 
+                              contactId={inquiry.id} 
+                              contactName={inquiry.name}
+                            />
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -261,12 +413,14 @@ export default function ContactsClient({ contacts }: ContactsClientProps) {
       )}
 
       {/* Detail Modal */}
-      {showDetailModal && selectedContact && (
+      {showDetailModal && (selectedContact || selectedDocRequest) && (
         <ContactDetailModal
           contact={selectedContact}
+          documentRequest={selectedDocRequest}
           onClose={() => {
             setShowDetailModal(false)
             setSelectedContact(null)
+            setSelectedDocRequest(null)
           }}
         />
       )}

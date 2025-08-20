@@ -20,10 +20,10 @@ export async function POST(request: Request) {
     // Supabaseに保存
     const supabase = await createClient()
     
-    // 資料情報を取得
+    // 資料情報を取得（file_urlも含める）
     const { data: document } = await supabase
       .from('documents')
-      .select('title')
+      .select('title, file_url')
       .eq('id', document_id)
       .single()
 
@@ -142,7 +142,10 @@ export async function POST(request: Request) {
       }
     }
 
-    return NextResponse.json({ success: true })
+    return NextResponse.json({ 
+      success: true,
+      downloadUrl: document?.file_url || null
+    })
   } catch (error) {
     console.error('Error processing document request:', error)
     return NextResponse.json(
