@@ -31,7 +31,10 @@
       "Bash(npx tsc:*)",
       "Bash(curl:*)",
       "Bash(npx tailwindcss:*)",
-      "Bash(sed:*)"
+      "Bash(sed:*)",
+      "Bash(kill:*)",
+      "Bash(curl:*)",
+      "Bash(cat:*)"
     ],
     "deny": []
   }

@@ -6,21 +6,31 @@ export const revalidate = 60 // ISR: 60秒ごとに再生成
 
 async function getProjects() {
   const supabase = createStaticClient()
-  const { data: projects } = await supabase
+  const { data: projects, error } = await supabase
     .from('projects')
     .select('*')
-    .order('order', { ascending: true })
+    .order('created_at', { ascending: false })
+  
+  if (error) {
+    console.error('Error fetching projects:', error)
+  }
+  
   return projects || []
 }
 
 async function getLatestColumns() {
   const supabase = createStaticClient()
-  const { data: columns } = await supabase
+  const { data: columns, error } = await supabase
     .from('columns')
     .select('*')
     .eq('is_published', true)
     .order('published_date', { ascending: false })
     .limit(3)
+  
+  if (error) {
+    console.error('Error fetching columns:', error)
+  }
+  
   return columns || []
 }
 

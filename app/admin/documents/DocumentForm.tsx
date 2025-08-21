@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/app/lib/supabase/client'
-import { Check, X, Upload, Loader2 } from 'lucide-react'
+import { Check, X, Upload, Loader2, FileText } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -29,6 +29,7 @@ export default function DocumentForm({ initialData, documentId }: DocumentFormPr
   const [uploading, setUploading] = useState(false)
   const [pdfFile, setPdfFile] = useState<File | null>(null)
   const [pdfUrl, setPdfUrl] = useState<string>(initialData?.file_url || '')
+  const [pdfPreview, setPdfPreview] = useState<string>('')
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null)
   const [thumbnailPreview, setThumbnailPreview] = useState<string>(initialData?.thumbnail || '')
   const [dragOverThumbnail, setDragOverThumbnail] = useState(false)
@@ -45,6 +46,17 @@ export default function DocumentForm({ initialData, documentId }: DocumentFormPr
   })
   const [tagInput, setTagInput] = useState('')
 
+  const generatePdfPreview = async (file: File) => {
+    try {
+      // PDFファイルの最初のページのプレビューを生成
+      // 簡易的にFileオブジェクトのURLを使用
+      const url = URL.createObjectURL(file)
+      setPdfPreview(url)
+    } catch (error) {
+      console.error('PDF preview generation failed:', error)
+    }
+  }
+
   const handlePdfChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
@@ -56,6 +68,7 @@ export default function DocumentForm({ initialData, documentId }: DocumentFormPr
     }
 
     setPdfFile(file)
+    await generatePdfPreview(file)
   }
 
   const uploadPdf = async (file: File): Promise<string> => {
@@ -148,7 +161,7 @@ export default function DocumentForm({ initialData, documentId }: DocumentFormPr
     }
   }
 
-  const handlePdfDrop = (e: React.DragEvent<HTMLDivElement>) => {
+  const handlePdfDrop = async (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
     setDragOverPdf(false)
     
@@ -157,6 +170,7 @@ export default function DocumentForm({ initialData, documentId }: DocumentFormPr
     
     if (pdfFile) {
       setPdfFile(pdfFile)
+      await generatePdfPreview(pdfFile)
     }
   }
 
@@ -315,17 +329,41 @@ export default function DocumentForm({ initialData, documentId }: DocumentFormPr
             PDFファイル <span className="text-red-500">*</span>
           </label>
           <div className="space-y-4">
-            {pdfUrl && !pdfFile ? (
-              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                <p className="text-sm text-gray-700 font-medium mb-1">現在のファイル:</p>
-                <a 
-                  href={pdfUrl} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-portfolio-blue hover:text-portfolio-blue-dark underline text-sm"
+            {(pdfFile || pdfUrl) ? (
+              <div className="w-80 aspect-video relative">
+                {pdfFile ? (
+                  // 新しくアップロードされたPDFのプレビュー
+                  <div className="w-full h-full bg-gray-100 rounded-lg border border-gray-200 flex flex-col items-center justify-center">
+                    <FileText className="h-16 w-16 text-gray-400 mb-2" />
+                    <p className="text-sm text-gray-600 font-medium">{pdfFile.name}</p>
+                    <p className="text-xs text-gray-500 mt-1">{(pdfFile.size / 1024 / 1024).toFixed(2)} MB</p>
+                  </div>
+                ) : (
+                  // 既存のPDFファイル
+                  <div className="w-full h-full bg-gray-100 rounded-lg border border-gray-200 flex flex-col items-center justify-center">
+                    <FileText className="h-16 w-16 text-gray-400 mb-2" />
+                    <p className="text-sm text-gray-600 font-medium">現在のPDFファイル</p>
+                    <a 
+                      href={pdfUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-portfolio-blue hover:text-portfolio-blue-dark underline text-sm mt-2"
+                    >
+                      PDFを表示
+                    </a>
+                  </div>
+                )}
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPdfFile(null)
+                    setPdfPreview('')
+                    setPdfUrl('')
+                  }}
+                  className="absolute top-2 right-2 p-1 bg-white rounded-full shadow-md hover:bg-gray-100"
                 >
-                  PDFを表示
-                </a>
+                  <X className="h-4 w-4 text-gray-600" />
+                </button>
               </div>
             ) : (
               <div 
