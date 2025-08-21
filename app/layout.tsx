@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   },
   manifest: '/manifest.json',
   themeColor: '#1d4ed8',
-  metadataBase: new URL('https://portfolio-site-blond-eta.vercel.app'),
+  metadataBase: new URL('https://www.landbridge.ai'),
   alternates: {
     canonical: '/',
   },
@@ -42,11 +42,11 @@ export const metadata: Metadata = {
     description: 'LandBridge株式会社の開発実績をご紹介。企業サイト、LP、Webアプリ、モバイルアプリなど幅広い制作実績。最新技術で課題解決をサポートします。無料相談受付中。',
     type: 'website',
     locale: 'ja_JP',
-    url: 'https://portfolio-site-blond-eta.vercel.app',
+    url: 'https://www.landbridge.ai',
     siteName: 'LandBridge Media',
     images: [
       {
-        url: 'https://portfolio-site-blond-eta.vercel.app/opengraph-image.png?v=5',
+        url: 'https://www.landbridge.ai/opengraph-image.png?v=5',
         width: 1200,
         height: 630,
         alt: 'LandBridge Media',
@@ -58,10 +58,10 @@ export const metadata: Metadata = {
     title: 'LandBridge Media',
     description: 'LandBridge株式会社の開発実績をご紹介。企業サイト、LP、Webアプリ、モバイルアプリなど幅広い制作実績。最新技術で課題解決をサポートします。無料相談受付中。',
     creator: '@landbridge_jp',
-    images: ['https://portfolio-site-blond-eta.vercel.app/opengraph-image.png?v=5'],
+    images: ['https://www.landbridge.ai/opengraph-image.png?v=5'],
   },
   other: {
-    'msapplication-TileImage': 'https://portfolio-site-blond-eta.vercel.app/opengraph-image.png?v=5',
+    'msapplication-TileImage': 'https://www.landbridge.ai/opengraph-image.png?v=5',
   },
 }
 

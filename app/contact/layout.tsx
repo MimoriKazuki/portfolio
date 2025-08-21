@@ -8,7 +8,7 @@ export const metadata: Metadata = {
     title: 'お問い合わせ・無料相談 | LandBridge株式会社',
     description: 'Web制作・システム開発のご相談は無料。まずはお気軽にお問い合わせください。',
     type: 'website',
-    url: 'https://portfolio-site-blond-eta.vercel.app/contact',
+    url: 'https://www.landbridge.ai/contact',
   },
 }
 

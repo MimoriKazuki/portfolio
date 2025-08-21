@@ -4,7 +4,7 @@ export default function StructuredData() {
     '@type': 'Organization',
     name: 'LandBridge株式会社',
     url: 'https://landbridge.co.jp/',
-    logo: 'https://portfolio-site-blond-eta.vercel.app/favicon.svg',
+    logo: 'https://www.landbridge.ai/favicon.svg',
     sameAs: [
       'https://landbridge.co.jp/',
     ],
@@ -20,7 +20,7 @@ export default function StructuredData() {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: 'LandBridge Portfolio',
-    url: 'https://portfolio-site-blond-eta.vercel.app/',
+    url: 'https://www.landbridge.ai/',
     description: 'LandBridge株式会社のポートフォリオサイト - Webサイト・アプリケーション開発の実績紹介',
     publisher: {
       '@type': 'Organization',

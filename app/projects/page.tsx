@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     title: '開発実績一覧 | LandBridge株式会社',
     description: '豊富な開発実績と最新技術で、お客様のビジネスを成功に導きます。制作事例をぜひご覧ください。',
     type: 'website',
-    url: 'https://portfolio-site-blond-eta.vercel.app/projects',
+    url: 'https://www.landbridge.ai/projects',
   },
 }
 
