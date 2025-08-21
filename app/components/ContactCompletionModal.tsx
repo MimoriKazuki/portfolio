@@ -7,7 +7,7 @@ import Link from 'next/link'
 interface ContactCompletionModalProps {
   isOpen: boolean
   onClose: () => void
-  type?: 'contact' | 'document'
+  type?: 'contact' | 'document' | 'prompt'
 }
 
 export default function ContactCompletionModal({ isOpen, onClose, type = 'contact' }: ContactCompletionModalProps) {
@@ -45,7 +45,9 @@ export default function ContactCompletionModal({ isOpen, onClose, type = 'contac
           </div>
           
           <h2 className="text-2xl font-bold text-gray-900 mb-3">
-            {type === 'document' ? '資料請求を受け付けました' : 'お問い合わせありがとうございます'}
+            {type === 'document' ? '資料請求を受け付けました' : 
+             type === 'prompt' ? 'プロンプトダウンロード完了' :
+             'お問い合わせありがとうございます'}
           </h2>
           
           <p className="text-gray-600 mb-8 leading-relaxed">
@@ -54,6 +56,12 @@ export default function ContactCompletionModal({ isOpen, onClose, type = 'contac
                 資料のダウンロードが完了しました。
                 <br />
                 ダウンロードフォルダをご確認ください。
+              </>
+            ) : type === 'prompt' ? (
+              <>
+                プロンプトのダウンロードが完了しました。
+                <br />
+                CSVファイルはダウンロードフォルダに保存されています。
               </>
             ) : (
               <>
@@ -65,18 +73,22 @@ export default function ContactCompletionModal({ isOpen, onClose, type = 'contac
           </p>
           
           <div className="flex flex-col sm:flex-row gap-3 w-full">
-            <Link
-              href="/documents"
-              className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-3 px-6 rounded-lg transition-colors text-center"
-            >
-              他の資料を見る
-            </Link>
+            {type !== 'prompt' && (
+              <Link
+                href="/documents"
+                className="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-3 px-6 rounded-lg transition-colors text-center"
+              >
+                他の資料を見る
+              </Link>
+            )}
             
             <button
               onClick={onClose}
-              className="flex-1 bg-[rgb(37,99,235)] hover:bg-[rgb(29,78,216)] text-white font-medium py-3 px-6 rounded-lg transition-colors"
+              className={`${type === 'prompt' ? 'w-full' : 'flex-1'} bg-[rgb(37,99,235)] hover:bg-[rgb(29,78,216)] text-white font-medium py-3 px-6 rounded-lg transition-colors`}
             >
-              {type === 'document' ? 'トップに戻る' : 'ホームに戻る'}
+              {type === 'document' ? 'トップに戻る' : 
+               type === 'prompt' ? 'プロジェクトに戻る' : 
+               'ホームに戻る'}
             </button>
           </div>
         </div>
