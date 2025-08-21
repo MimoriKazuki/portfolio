@@ -72,10 +72,9 @@ const RightSidebar = () => {
   const isColumnsPage = pathname.startsWith('/columns')
 
   return (
-    <div className="sticky top-8">
-      <div className="bg-white rounded-lg shadow-sm p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">おすすめコンテンツ</h3>
-        <div className="space-y-4">
+    <div className="bg-white rounded-lg shadow-sm p-6">
+      <h3 className="text-lg font-semibold text-gray-900 mb-4">おすすめコンテンツ</h3>
+      <div className="space-y-4">
           {/* ポートフォリオページ配下では記事を表示 */}
           {isProjectsPage && (
             <>
@@ -191,7 +190,6 @@ const RightSidebar = () => {
           ))}
         </div>
       </div>
-    </div>
   )
 }
 

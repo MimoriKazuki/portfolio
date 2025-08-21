@@ -2,6 +2,7 @@
 
 import Sidebar from './Sidebar'
 import RightSidebar from './RightSidebar'
+import StickySidebar from './StickySidebar'
 import FloatingButtons from './FloatingButtons'
 import Footer from './Footer'
 import MobileHeader from './MobileHeader'
@@ -38,7 +39,9 @@ export default function MainLayout({ children, hideRightSidebar = false, hideCon
               {/* Right Sidebar */}
               {!hideRightSidebar && (
                 <aside className="w-[260px] flex-shrink-0 hidden lg:block">
-                  <RightSidebar />
+                  <StickySidebar>
+                    <RightSidebar />
+                  </StickySidebar>
                 </aside>
               )}
             </div>
