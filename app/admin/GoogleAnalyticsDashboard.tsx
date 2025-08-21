@@ -446,30 +446,34 @@ export default function GoogleAnalyticsDashboard() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
         {/* Page Views Chart */}
-        <div className="lg:col-span-2 bg-white rounded-lg p-6 border border-gray-200">
+        <div className="lg:col-span-2 bg-white rounded-lg p-6 border border-gray-200 overflow-hidden">
           <h3 className="text-lg font-semibold mb-4 text-gray-900">ページビューの推移</h3>
-          <div className="h-64 flex items-end justify-between gap-1">
-            {displayData.last30Days.length > 0 ? (
-              displayData.last30Days.map((day, index) => {
-                const maxViews = Math.max(...displayData.last30Days.map(d => d.pageViews), 1)
-                const height = maxViews > 0 ? (day.pageViews / maxViews) * 100 : 0
-                
-                return (
-                  <div key={index} className="flex-1 flex flex-col items-center">
-                    <div 
-                      className="w-full bg-portfolio-blue rounded-t hover:bg-portfolio-blue-dark transition-colors cursor-pointer"
-                      style={{ height: `${Math.max(height, 5)}%` }}
-                      title={`${day.date}: ${formatNumber(day.pageViews)} ビュー`}
-                    />
-                    <span className="text-xs text-gray-500 mt-2 rotate-45 origin-left">{day.date}</span>
-                  </div>
-                )
-              })
-            ) : (
-              <div className="w-full flex items-center justify-center text-gray-500">
-                データがありません
-              </div>
-            )}
+          <div className="h-64 relative">
+            <div className="h-full flex items-end justify-between gap-1 pb-8">
+              {displayData.last30Days.length > 0 ? (
+                displayData.last30Days.map((day, index) => {
+                  const maxViews = Math.max(...displayData.last30Days.map(d => d.pageViews), 1)
+                  const height = maxViews > 0 ? (day.pageViews / maxViews) * 100 : 0
+                  
+                  return (
+                    <div key={index} className="flex-1 flex flex-col items-center relative">
+                      <div 
+                        className="w-full bg-portfolio-blue rounded-t hover:bg-portfolio-blue-dark transition-colors cursor-pointer"
+                        style={{ height: `${Math.max(height, 5)}%` }}
+                        title={`${day.date}: ${formatNumber(day.pageViews)} ビュー`}
+                      />
+                      <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2">
+                        <span className="text-xs text-gray-500 block whitespace-nowrap">{day.date}</span>
+                      </div>
+                    </div>
+                  )
+                })
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-gray-500">
+                  データがありません
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
