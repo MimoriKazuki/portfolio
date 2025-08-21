@@ -7,9 +7,9 @@ import { createStaticClient } from '@/app/lib/supabase/static'
 import { createClient } from '@/app/lib/supabase/server'
 import type { Metadata } from 'next'
 
-export const dynamic = 'force-dynamic' // 強制的に動的レンダリング
 export const revalidate = 60 // ISR: 60秒ごとに再生成
 export const dynamicParams = true // 動的パラメータを許可
+export const fetchCache = 'force-no-store' // キャッシュを無効化
 
 // 静的パラメータを生成
 export async function generateStaticParams() {
@@ -72,20 +72,21 @@ export async function generateMetadata({
     
     const baseUrl = 'https://www.landbridge.ai'
   
-    // サムネイル画像のURLを完全なURLに変換
+    // サムネイル画像のURLを完全なURLに変換（Teamsキャッシュ対策でタイムスタンプ追加）
+    const timestamp = Date.now()
     let imageUrl: string
     if (project.thumbnail) {
       if (project.thumbnail.startsWith('http')) {
-        imageUrl = project.thumbnail
+        imageUrl = `${project.thumbnail}?t=${timestamp}`
       } else if (project.thumbnail.startsWith('/')) {
-        imageUrl = `${baseUrl}${project.thumbnail}`
+        imageUrl = `${baseUrl}${project.thumbnail}?t=${timestamp}`
       } else {
         // Supabaseストレージの相対パス
-        imageUrl = project.thumbnail
+        imageUrl = `${project.thumbnail}?t=${timestamp}`
       }
     } else {
       // サムネイルがない場合は動的OG画像を使用
-      imageUrl = `${baseUrl}/projects/${project.id}/opengraph-image.png`
+      imageUrl = `${baseUrl}/projects/${project.id}/opengraph-image.png?t=${timestamp}`
     }
   
   const metadata: Metadata = {
@@ -121,6 +122,12 @@ export async function generateMetadata({
       },
       other: {
         'msapplication-TileImage': imageUrl,
+      },
+      robots: {
+        index: true,
+        follow: true,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
       },
     }
   
