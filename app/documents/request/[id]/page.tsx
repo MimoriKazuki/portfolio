@@ -46,7 +46,7 @@ export async function generateMetadata({
     }
   }
 
-  const baseUrl = 'https://portfolio-site-blond-eta.vercel.app'
+  const baseUrl = 'https://portfolio-ngtld97n0-land-bridge.vercel.app'
   
   // サムネイル画像のURLを完全なURLに変換
   let imageUrl: string

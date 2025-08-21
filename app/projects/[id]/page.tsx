@@ -60,31 +60,56 @@ export async function generateMetadata({
     }
   }
 
-  const baseUrl = 'https://portfolio-site-blond-eta.vercel.app'
+  const baseUrl = 'https://portfolio-ngtld97n0-land-bridge.vercel.app'
+  
+  // サムネイル画像のURLを完全なURLに変換
+  let imageUrl: string
+  if (project.thumbnail) {
+    if (project.thumbnail.startsWith('http')) {
+      imageUrl = project.thumbnail
+    } else if (project.thumbnail.startsWith('/')) {
+      imageUrl = `${baseUrl}${project.thumbnail}`
+    } else {
+      // Supabaseストレージの相対パス
+      imageUrl = project.thumbnail
+    }
+  } else {
+    imageUrl = `${baseUrl}/opengraph-image.png?v=5`
+  }
   
   return {
-    title: `${project.title} - LandBridge Media`,
+    title: project.title,
     description: project.description,
+    metadataBase: new URL(baseUrl),
+    alternates: {
+      canonical: `/projects/${project.id}`,
+    },
     openGraph: {
       title: project.title,
       description: project.description,
       images: [
         {
-          url: project.thumbnail,
+          url: imageUrl,
           width: 1200,
           height: 630,
           alt: project.title,
+          type: 'image/png',
         }
       ],
       type: 'article',
       siteName: 'LandBridge Media',
       url: `${baseUrl}/projects/${project.id}`,
+      locale: 'ja_JP',
     },
     twitter: {
       card: 'summary_large_image',
       title: project.title,
       description: project.description,
-      images: [project.thumbnail],
+      images: [imageUrl],
+      creator: '@landbridge_jp',
+    },
+    other: {
+      'msapplication-TileImage': imageUrl,
     },
   }
 }
