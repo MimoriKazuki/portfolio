@@ -9,35 +9,35 @@ import MainLayout from '@/app/components/MainLayout'
 import TableOfContents from '@/app/components/TableOfContents'
 import type { Metadata } from 'next'
 
-export const dynamic = 'force-dynamic'
-export const revalidate = 0
+// ISRを使用してパフォーマンスを向上
+export const revalidate = 60 // 60秒ごとに再生成
 
 interface PageProps {
   params: Promise<{ slug: string }>
 }
 
-// 動的ルーティングを使用するためコメントアウト
-// export async function generateStaticParams() {
-//   try {
-//     const supabase = createStaticClient()
-//     const { data: columns, error } = await supabase
-//       .from('columns')
-//       .select('slug')
-//       .eq('is_published', true)
+// 静的パラメータを生成
+export async function generateStaticParams() {
+  try {
+    const supabase = createStaticClient()
+    const { data: columns, error } = await supabase
+      .from('columns')
+      .select('slug')
+      .eq('is_published', true)
 
-//     if (error) {
-//       console.error('Error in generateStaticParams:', error)
-//       return []
-//     }
+    if (error) {
+      console.error('Error in generateStaticParams:', error)
+      return []
+    }
     
-//     return columns?.map((column) => ({
-//       slug: column.slug,
-//     })) || []
-//   } catch (err) {
-//     console.error('Error generating static params:', err)
-//     return []
-//   }
-// }
+    return columns?.map((column) => ({
+      slug: column.slug,
+    })) || []
+  } catch (err) {
+    console.error('Error generating static params:', err)
+    return []
+  }
+}
 
 // メタデータを生成
 export async function generateMetadata({ 
@@ -46,7 +46,7 @@ export async function generateMetadata({
   params: Promise<{ slug: string }> 
 }): Promise<Metadata> {
   const { slug } = await params
-  const supabase = await createClient()
+  const supabase = createStaticClient()
   
   const { data: column, error } = await supabase
     .from('columns')
@@ -63,30 +63,46 @@ export async function generateMetadata({
 
   const baseUrl = 'https://portfolio-site-blond-eta.vercel.app'
   
+  // サムネイル画像のURLを完全なURLに変換
+  const imageUrl = column.thumbnail 
+    ? column.thumbnail.startsWith('http') 
+      ? column.thumbnail 
+      : `${baseUrl}${column.thumbnail}`
+    : `${baseUrl}/opengraph-image.png?v=5`
+  
   return {
     title: `${column.title} - LandBridge Media`,
     description: column.excerpt || column.title,
+    metadataBase: new URL(baseUrl),
+    alternates: {
+      canonical: `/columns/${column.slug}`,
+    },
     openGraph: {
       title: column.title,
       description: column.excerpt || column.title,
-      images: column.thumbnail ? [
+      images: [
         {
-          url: column.thumbnail,
+          url: imageUrl,
           width: 1200,
           height: 630,
           alt: column.title,
         }
-      ] : undefined,
+      ],
       type: 'article',
       siteName: 'LandBridge Media',
       url: `${baseUrl}/columns/${column.slug}`,
       publishedTime: column.published_date,
+      locale: 'ja_JP',
     },
     twitter: {
       card: 'summary_large_image',
       title: column.title,
       description: column.excerpt || column.title,
-      images: column.thumbnail ? [column.thumbnail] : undefined,
+      images: [imageUrl],
+      creator: '@landbridge_jp',
+    },
+    other: {
+      'msapplication-TileImage': imageUrl,
     },
   }
 }
