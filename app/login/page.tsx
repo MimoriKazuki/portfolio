@@ -15,12 +15,6 @@ export default function AdminLoginPage() {
         <h1 className="text-2xl font-bold text-center mb-8 text-gray-900">管理者ログイン</h1>
         
         <LoginForm />
-        
-        <div className="mt-6 text-center text-sm text-gray-600">
-          <a href="/" className="hover:text-portfolio-blue transition-colors">
-            ← ポートフォリオに戻る
-          </a>
-        </div>
       </div>
     </div>
   )

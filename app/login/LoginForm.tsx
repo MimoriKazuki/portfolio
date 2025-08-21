@@ -10,7 +10,6 @@ export default function LoginForm() {
   const [password, setPassword] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
-  const [showDevCredentials, setShowDevCredentials] = useState(false)
   const router = useRouter()
   
   // Check if environment variables are set
@@ -122,41 +121,6 @@ export default function LoginForm() {
       >
         {loading ? 'ログイン中...' : 'ログイン'}
       </button>
-      
-      <div className="mt-4 text-center space-y-2">
-        <a 
-          href="/login/simple-setup" 
-          className="block text-sm text-gray-600 hover:text-portfolio-blue transition-colors"
-        >
-          初期セットアップ
-        </a>
-        
-        <a 
-          href="/login/debug" 
-          className="block text-sm text-gray-600 hover:text-portfolio-blue transition-colors"
-        >
-          診断ツール
-        </a>
-        
-        {process.env.NODE_ENV === 'development' && (
-          <button
-            type="button"
-            onClick={() => setShowDevCredentials(!showDevCredentials)}
-            className="text-xs text-gray-500 hover:text-gray-700 transition-colors"
-          >
-            開発用認証情報
-          </button>
-        )}
-        
-        {showDevCredentials && (
-          <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-xs text-yellow-800">
-            <p className="font-semibold mb-1">認証情報:</p>
-            <p>Email: tamogami@landbridge.co.jp</p>
-            <p>Password: Lb@123456</p>
-            <p className="mt-2 text-yellow-600">※ セキュリティのため、初回ログイン後にパスワードを変更してください</p>
-          </div>
-        )}
-      </div>
     </form>
   )
 }
