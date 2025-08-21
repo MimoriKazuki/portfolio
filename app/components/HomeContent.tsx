@@ -26,7 +26,7 @@ export default function HomeContent({ profiles, categoryStats, featuredProjects,
         <h1 className="sr-only">LandBridge株式会社 - AIによる自動コーディングを活用した開発実績</h1>
         
         {/* Profile Card */}
-        <ProfileCard profile={profiles} categoryStats={categoryStats} />
+        <ProfileCard categoryStats={categoryStats} />
 
         {/* Featured Projects */}
         <section className="mb-8">

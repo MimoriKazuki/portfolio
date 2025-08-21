@@ -96,13 +96,6 @@ export default function ProjectDetailModal({ project, isOpen, onClose }: Project
                           <span>{project.duration}</span>
                         </div>
                       </div>
-                      
-                      {project.client && (
-                        <div>
-                          <h4 className="text-sm sm:text-base font-medium text-gray-400 mb-1 sm:mb-2">クライアント</h4>
-                          <p className="text-sm sm:text-base text-gray-300">{project.client}</p>
-                        </div>
-                      )}
                     </div>
 
                     <div>
