@@ -70,7 +70,7 @@ export async function generateMetadata({
     }
   } else {
     // サムネイルがない場合は動的OG画像を生成
-    imageUrl = `${baseUrl}/documents/request/${document.id}/opengraph-image.png?t=${timestamp}`
+    imageUrl = `${baseUrl}/documents/request/${document.id}/opengraph-image?t=${timestamp}`
   }
     
   const metadata: Metadata = {
