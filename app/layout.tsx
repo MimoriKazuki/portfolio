@@ -51,7 +51,7 @@ export const metadata: Metadata = {
     siteName: 'LandBridge Media',
     images: [
       {
-        url: `https://www.landbridge.ai/opengraph-image?t=${Date.now()}`,
+        url: 'https://www.landbridge.ai/opengraph-image?v=7',
         width: 1200,
         height: 630,
         alt: 'LandBridge Media',
@@ -64,10 +64,10 @@ export const metadata: Metadata = {
     title: 'LandBridge Media',
     description: 'LandBridge株式会社の開発実績をご紹介。企業サイト、LP、Webアプリ、モバイルアプリなど幅広い制作実績。最新技術で課題解決をサポートします。無料相談受付中。',
     creator: '@landbridge_jp',
-    images: [`https://www.landbridge.ai/opengraph-image?t=${Date.now()}`],
+    images: ['https://www.landbridge.ai/opengraph-image?v=7'],
   },
   other: {
-    'msapplication-TileImage': `https://www.landbridge.ai/opengraph-image?t=${Date.now()}`,
+    'msapplication-TileImage': 'https://www.landbridge.ai/opengraph-image?v=7',
   },
 }
 

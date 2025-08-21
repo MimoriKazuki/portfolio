@@ -32,10 +32,10 @@ export default async function Image() {
               position: 'relative',
               borderRadius: '24px',
               overflow: 'hidden',
-              background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.5) 0%, rgba(147, 51, 234, 0.5) 50%, rgba(99, 102, 241, 0.5) 100%)',
+              background: 'linear-gradient(to bottom right, #3b82f6 0%, #2563eb 100%)',
             }}
           >
-            {/* 追加のグラデーション層 */}
+            {/* SVGパターンオーバーレイ */}
             <div
               style={{
                 position: 'absolute',
@@ -43,7 +43,9 @@ export default async function Image() {
                 left: 0,
                 right: 0,
                 bottom: 0,
-                background: 'linear-gradient(45deg, rgba(37, 99, 235, 0.3) 0%, rgba(139, 92, 246, 0.3) 100%)',
+                opacity: 0.1,
+                backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
+                backgroundSize: '60px 60px',
               }}
             />
             
