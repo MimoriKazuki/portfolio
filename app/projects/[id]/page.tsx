@@ -59,76 +59,71 @@ export async function generateMetadata({
 }: { 
   params: Promise<{ id: string }> 
 }): Promise<Metadata> {
-  try {
-    const resolvedParams = await params
-    const project = await getProject(resolvedParams.id)
-    
-    if (!project) {
-      return {
-        title: 'プロジェクトが見つかりません - LandBridge Media',
-        description: '指定されたプロジェクトは存在しません。',
-      }
-    }
-    
-    const baseUrl = 'https://www.landbridge.ai'
+  const resolvedParams = await params
+  const project = await getProject(resolvedParams.id)
   
-  // サムネイル画像のURLを完全なURLに変換
-  let imageUrl: string
-  if (project.thumbnail) {
-    if (project.thumbnail.startsWith('http')) {
-      imageUrl = project.thumbnail
-    } else if (project.thumbnail.startsWith('/')) {
-      imageUrl = `${baseUrl}${project.thumbnail}`
-    } else {
-      // Supabaseストレージの相対パス
-      imageUrl = project.thumbnail
-    }
-  } else {
-    imageUrl = `${baseUrl}/opengraph-image.png?v=5`
-  }
-  
-  return {
-    title: project.title,
-    description: project.description,
-    metadataBase: new URL(baseUrl),
-    alternates: {
-      canonical: `/projects/${project.id}`,
-    },
-    openGraph: {
-      title: project.title,
-      description: project.description,
-      images: [
-        {
-          url: imageUrl,
-          width: 1200,
-          height: 630,
-          alt: project.title,
-          type: 'image/png',
-        }
-      ],
-      type: 'article',
-      siteName: 'LandBridge Media',
-      url: `${baseUrl}/projects/${project.id}`,
-      locale: 'ja_JP',
-    },
-    twitter: {
-      card: 'summary_large_image',
-      title: project.title,
-      description: project.description,
-      images: [imageUrl],
-      creator: '@landbridge_jp',
-    },
-    other: {
-      'msapplication-TileImage': imageUrl,
-    },
-  }
-  } catch (error) {
-    console.error('Error generating project metadata:', error)
+  if (!project) {
     return {
       title: 'LandBridge Media',
       description: 'LandBridge株式会社の開発実績をご紹介。',
     }
   }
+    
+    const baseUrl = 'https://www.landbridge.ai'
+  
+    // サムネイル画像のURLを完全なURLに変換
+    let imageUrl: string
+    if (project.thumbnail) {
+      if (project.thumbnail.startsWith('http')) {
+        imageUrl = project.thumbnail
+      } else if (project.thumbnail.startsWith('/')) {
+        imageUrl = `${baseUrl}${project.thumbnail}`
+      } else {
+        // Supabaseストレージの相対パス
+        imageUrl = project.thumbnail
+      }
+    } else {
+      // サムネイルがない場合は動的OG画像を使用
+      imageUrl = `${baseUrl}/projects/${project.id}/opengraph-image.png`
+    }
+  
+  const metadata: Metadata = {
+      title: `${project.title} - LandBridge Media`,
+      description: project.description,
+      metadataBase: new URL(baseUrl),
+      alternates: {
+        canonical: `/projects/${project.id}`,
+      },
+      openGraph: {
+        title: project.title,
+        description: project.description,
+        images: [
+          {
+            url: imageUrl,
+            width: 1200,
+            height: 630,
+            alt: project.title,
+            type: 'image/png',
+          }
+        ],
+        type: 'article',
+        siteName: 'LandBridge Media',
+        url: `${baseUrl}/projects/${project.id}`,
+        locale: 'ja_JP',
+      },
+      twitter: {
+        card: 'summary_large_image',
+        title: project.title,
+        description: project.description,
+        images: [imageUrl],
+        creator: '@landbridge_jp',
+      },
+      other: {
+        'msapplication-TileImage': imageUrl,
+      },
+    }
+  
+  return metadata
 }
 
 // Next.js 15の新しい形式に対応
