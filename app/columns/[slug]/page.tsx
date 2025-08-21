@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { Calendar, ChevronLeft } from 'lucide-react'
 import MainLayout from '@/app/components/MainLayout'
 import TableOfContents from '@/app/components/TableOfContents'
+import type { Metadata } from 'next'
 
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
@@ -37,6 +38,58 @@ interface PageProps {
 //     return []
 //   }
 // }
+
+// メタデータを生成
+export async function generateMetadata({ 
+  params 
+}: { 
+  params: Promise<{ slug: string }> 
+}): Promise<Metadata> {
+  const { slug } = await params
+  const supabase = await createClient()
+  
+  const { data: column, error } = await supabase
+    .from('columns')
+    .select('*')
+    .eq('slug', slug)
+    .eq('is_published', true)
+    .single()
+  
+  if (error || !column) {
+    return {
+      title: 'コラムが見つかりません',
+    }
+  }
+
+  const baseUrl = 'https://portfolio-site-blond-eta.vercel.app'
+  
+  return {
+    title: `${column.title} - LandBridge Media`,
+    description: column.excerpt || column.title,
+    openGraph: {
+      title: column.title,
+      description: column.excerpt || column.title,
+      images: column.thumbnail ? [
+        {
+          url: column.thumbnail,
+          width: 1200,
+          height: 630,
+          alt: column.title,
+        }
+      ] : undefined,
+      type: 'article',
+      siteName: 'LandBridge Media',
+      url: `${baseUrl}/columns/${column.slug}`,
+      publishedTime: column.published_date,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: column.title,
+      description: column.excerpt || column.title,
+      images: column.thumbnail ? [column.thumbnail] : undefined,
+    },
+  }
+}
 
 export default async function ColumnDetailPage({ params }: PageProps) {
   const { slug } = await params

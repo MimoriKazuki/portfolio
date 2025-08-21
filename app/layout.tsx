@@ -7,7 +7,7 @@ import GoogleAnalytics from './components/GoogleAnalytics'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'LandBridge株式会社 | Web制作・アプリ開発の実績紹介',
+  title: 'LandBridge Media',
   description: 'LandBridge株式会社の開発実績をご紹介。企業サイト、LP、Webアプリ、モバイルアプリなど幅広い制作実績。最新技術で課題解決をサポートします。無料相談受付中。',
   keywords: ['LandBridge', 'ランドブリッジ', 'Web制作', 'アプリ開発', 'ホームページ制作', 'システム開発', 'ポートフォリオ', '開発実績', '東京'],
   authors: [{ name: 'LandBridge株式会社' }],
@@ -38,25 +38,25 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   openGraph: {
-    title: 'LandBridge株式会社 | Web制作・アプリ開発の実績紹介',
-    description: '最新技術を活用したWeb制作・アプリ開発ならLandBridge。豊富な開発実績と確かな技術力で、お客様のビジネスを成功に導きます。',
+    title: 'LandBridge Media',
+    description: 'LandBridge株式会社の開発実績をご紹介。企業サイト、LP、Webアプリ、モバイルアプリなど幅広い制作実績。最新技術で課題解決をサポートします。無料相談受付中。',
     type: 'website',
     locale: 'ja_JP',
     url: 'https://portfolio-site-blond-eta.vercel.app',
-    siteName: 'LandBridge Portfolio',
+    siteName: 'LandBridge Media',
     images: [
       {
         url: 'https://portfolio-site-blond-eta.vercel.app/opengraph-image?v=4',
         width: 1200,
         height: 630,
-        alt: 'LandBridge Portfolio',
+        alt: 'LandBridge Media',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'LandBridge株式会社 | Web制作・アプリ開発',
-    description: '最新技術を活用したWeb制作・アプリ開発。企業サイト、LP、システム開発まで幅広く対応。無料相談受付中。',
+    title: 'LandBridge Media',
+    description: 'LandBridge株式会社の開発実績をご紹介。企業サイト、LP、Webアプリ、モバイルアプリなど幅広い制作実績。最新技術で課題解決をサポートします。無料相談受付中。',
     creator: '@landbridge_jp',
     images: ['https://portfolio-site-blond-eta.vercel.app/opengraph-image?v=4'],
   },

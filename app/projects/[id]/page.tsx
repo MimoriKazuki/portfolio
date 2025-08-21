@@ -5,6 +5,7 @@ import Link from 'next/link'
 import MainLayout from '@/app/components/MainLayout'
 import { createStaticClient } from '@/app/lib/supabase/static'
 import { createClient } from '@/app/lib/supabase/server'
+import type { Metadata } from 'next'
 
 // 静的パラメータを生成
 export async function generateStaticParams() {
@@ -42,6 +43,50 @@ async function getRelatedProjects(currentProjectId: string, category: string) {
     .limit(3)
   
   return relatedProjects || []
+}
+
+// メタデータを生成
+export async function generateMetadata({ 
+  params 
+}: { 
+  params: Promise<{ id: string }> 
+}): Promise<Metadata> {
+  const resolvedParams = await params
+  const project = await getProject(resolvedParams.id)
+  
+  if (!project) {
+    return {
+      title: 'プロジェクトが見つかりません',
+    }
+  }
+
+  const baseUrl = 'https://portfolio-site-blond-eta.vercel.app'
+  
+  return {
+    title: `${project.title} - LandBridge Media`,
+    description: project.description,
+    openGraph: {
+      title: project.title,
+      description: project.description,
+      images: [
+        {
+          url: project.thumbnail,
+          width: 1200,
+          height: 630,
+          alt: project.title,
+        }
+      ],
+      type: 'article',
+      siteName: 'LandBridge Media',
+      url: `${baseUrl}/projects/${project.id}`,
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: project.title,
+      description: project.description,
+      images: [project.thumbnail],
+    },
+  }
 }
 
 // Next.js 15の新しい形式に対応
