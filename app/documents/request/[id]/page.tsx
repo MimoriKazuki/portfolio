@@ -5,6 +5,7 @@ import type { Metadata } from 'next'
 
 export const revalidate = 60 // ISR: 60秒ごとに再生成
 export const dynamicParams = true // 動的パラメータを許可
+export const fetchCache = 'force-no-store' // キャッシュを無効化
 
 // 静的パラメータを生成
 export async function generateStaticParams() {
@@ -43,77 +44,78 @@ export async function generateMetadata({
 }: { 
   params: Promise<{ id: string }> 
 }): Promise<Metadata> {
-  try {
-    const resolvedParams = await params
-    const document = await getDocument(resolvedParams.id)
-    
-    if (!document) {
-      return {
-        title: '資料が見つかりません - LandBridge Media',
-        description: '指定された資料は存在しません。',
-      }
-    }
-
-    const baseUrl = 'https://www.landbridge.ai'
+  const resolvedParams = await params
+  const document = await getDocument(resolvedParams.id)
   
-    // サムネイル画像のURLを完全なURLに変換
-    let imageUrl: string
-    if (document.thumbnail) {
-      if (document.thumbnail.startsWith('http')) {
-        imageUrl = document.thumbnail
-      } else if (document.thumbnail.startsWith('/')) {
-        imageUrl = `${baseUrl}${document.thumbnail}`
-      } else {
-        // Supabaseストレージの相対パス
-        imageUrl = document.thumbnail
-      }
-    } else {
-      // サムネイルがない場合はデフォルトOG画像
-      imageUrl = `${baseUrl}/opengraph-image.png?v=5`
-    }
-    
-    return {
-      title: document.title,
-      description: document.description || document.title,
-      metadataBase: new URL(baseUrl),
-      alternates: {
-        canonical: `/documents/request/${document.id}`,
-      },
-      openGraph: {
-        title: document.title,
-        description: document.description || document.title,
-        images: [
-          {
-            url: imageUrl,
-            width: 1200,
-            height: 630,
-            alt: document.title,
-            type: 'image/png',
-          }
-        ],
-        type: 'article',
-        siteName: 'LandBridge Media',
-        url: `${baseUrl}/documents/request/${document.id}`,
-        locale: 'ja_JP',
-      },
-      twitter: {
-        card: 'summary_large_image',
-        title: document.title,
-        description: document.description || document.title,
-        images: [imageUrl],
-        creator: '@landbridge_jp',
-      },
-      other: {
-        'msapplication-TileImage': imageUrl,
-      },
-    }
-  } catch (error) {
-    console.error('Error generating document metadata:', error)
+  if (!document) {
     return {
       title: 'LandBridge Media',
       description: 'LandBridge株式会社の開発実績をご紹介。',
     }
   }
+
+  const baseUrl = 'https://www.landbridge.ai'
+  
+  // サムネイル画像のURLを完全なURLに変換（Teamsキャッシュ対策でタイムスタンプ追加）
+  const timestamp = Date.now()
+  let imageUrl: string
+  if (document.thumbnail) {
+    if (document.thumbnail.startsWith('http')) {
+      imageUrl = `${document.thumbnail}?t=${timestamp}`
+    } else if (document.thumbnail.startsWith('/')) {
+      imageUrl = `${baseUrl}${document.thumbnail}?t=${timestamp}`
+    } else {
+      // Supabaseストレージの相対パス
+      imageUrl = `${document.thumbnail}?t=${timestamp}`
+    }
+  } else {
+    // サムネイルがない場合は動的OG画像を生成
+    imageUrl = `${baseUrl}/documents/request/${document.id}/opengraph-image.png?t=${timestamp}`
+  }
+    
+  const metadata: Metadata = {
+    title: `${document.title} - LandBridge Media`,
+    description: document.description || document.title,
+    metadataBase: new URL(baseUrl),
+    alternates: {
+      canonical: `/documents/request/${document.id}`,
+    },
+    openGraph: {
+      title: document.title,
+      description: document.description || document.title,
+      images: [
+        {
+          url: imageUrl,
+          width: 1200,
+          height: 630,
+          alt: document.title,
+          type: 'image/png',
+        }
+      ],
+      type: 'article',
+      siteName: 'LandBridge Media',
+      url: `${baseUrl}/documents/request/${document.id}`,
+      locale: 'ja_JP',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: document.title,
+      description: document.description || document.title,
+      images: [imageUrl],
+      creator: '@landbridge_jp',
+    },
+    other: {
+      'msapplication-TileImage': imageUrl,
+    },
+    robots: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  }
+  
+  return metadata
 }
 
 interface PageProps {
