@@ -6,7 +6,7 @@ interface StickySidebarProps {
 
 export default function StickySidebar({ children }: StickySidebarProps) {
   return (
-    <div className="sticky top-8 self-start">
+    <div className="sticky top-8" style={{ alignSelf: 'flex-start' }}>
       {children}
     </div>
   )

@@ -15,12 +15,12 @@ interface MainLayoutProps {
 
 export default function MainLayout({ children, hideRightSidebar = false, hideContactButton = false }: MainLayoutProps) {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col overflow-x-hidden">
+    <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Mobile Header */}
       <MobileHeader />
       
       {/* Body - contains all main content */}
-      <div className="flex-1 flex">
+      <div className="flex-1 flex overflow-x-hidden">
         {/* Left Sidebar - Fixed to left edge */}
         <aside className="w-[178px] flex-shrink-0 hidden lg:block bg-white border-r border-gray-200">
           <div className="sticky top-0 h-screen overflow-y-auto">
@@ -28,17 +28,17 @@ export default function MainLayout({ children, hideRightSidebar = false, hideCon
           </div>
         </aside>
         
-        {/* Main Content Container */}
-        <div className="flex-1">
-          <main className="w-full px-4 sm:px-6 lg:px-8 py-8">
-            <div className="flex gap-8 items-start">
-              <div className="flex-1 min-w-0">
+        {/* Main Content Container - No overflow here to allow sticky */}
+        <div className="flex-1 flex">
+          <main className="flex-1 px-4 sm:px-6 lg:px-8 py-8">
+            <div className="flex gap-8">
+              <div className="flex-1 min-w-0 overflow-x-hidden">
                 {children}
               </div>
               
               {/* Right Sidebar */}
               {!hideRightSidebar && (
-                <aside className="w-[260px] flex-shrink-0 hidden lg:block relative">
+                <aside className="w-[260px] flex-shrink-0 hidden lg:block">
                   <StickySidebar>
                     <RightSidebar />
                   </StickySidebar>
