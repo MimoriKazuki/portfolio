@@ -7,6 +7,7 @@ import { createStaticClient } from '@/app/lib/supabase/static'
 import { createClient } from '@/app/lib/supabase/server'
 import type { Metadata } from 'next'
 
+export const dynamic = 'force-dynamic' // 強制的に動的レンダリング
 export const revalidate = 60 // ISR: 60秒ごとに再生成
 export const dynamicParams = true // 動的パラメータを許可
 
