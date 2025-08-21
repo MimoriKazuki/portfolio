@@ -46,7 +46,7 @@ export const metadata: Metadata = {
     siteName: 'LandBridge Media',
     images: [
       {
-        url: 'https://portfolio-site-blond-eta.vercel.app/opengraph-image?v=4',
+        url: 'https://portfolio-site-blond-eta.vercel.app/opengraph-image.png?v=5',
         width: 1200,
         height: 630,
         alt: 'LandBridge Media',
@@ -58,10 +58,10 @@ export const metadata: Metadata = {
     title: 'LandBridge Media',
     description: 'LandBridge株式会社の開発実績をご紹介。企業サイト、LP、Webアプリ、モバイルアプリなど幅広い制作実績。最新技術で課題解決をサポートします。無料相談受付中。',
     creator: '@landbridge_jp',
-    images: ['https://portfolio-site-blond-eta.vercel.app/opengraph-image?v=4'],
+    images: ['https://portfolio-site-blond-eta.vercel.app/opengraph-image.png?v=5'],
   },
   other: {
-    'msapplication-TileImage': 'https://portfolio-site-blond-eta.vercel.app/opengraph-image?v=4',
+    'msapplication-TileImage': 'https://portfolio-site-blond-eta.vercel.app/opengraph-image.png?v=5',
   },
 }
 
@@ -75,6 +75,26 @@ export default function RootLayout({
       <head>
         <StructuredData />
         <meta name="theme-color" content="#0f0f0f" />
+        {/* OGP Tags for better compatibility */}
+        <meta property="og:title" content="LandBridge Media" />
+        <meta property="og:description" content="LandBridge株式会社の開発実績をご紹介。企業サイト、LP、Webアプリ、モバイルアプリなど幅広い制作実績。最新技術で課題解決をサポートします。無料相談受付中。" />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://portfolio-site-blond-eta.vercel.app" />
+        <meta property="og:image" content="https://portfolio-site-blond-eta.vercel.app/opengraph-image.png?v=5" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta property="og:image:alt" content="LandBridge Media" />
+        <meta property="og:site_name" content="LandBridge Media" />
+        <meta property="og:locale" content="ja_JP" />
+        {/* Twitter Card Tags */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content="LandBridge Media" />
+        <meta name="twitter:description" content="LandBridge株式会社の開発実績をご紹介。企業サイト、LP、Webアプリ、モバイルアプリなど幅広い制作実績。最新技術で課題解決をサポートします。無料相談受付中。" />
+        <meta name="twitter:image" content="https://portfolio-site-blond-eta.vercel.app/opengraph-image.png?v=5" />
+        <meta name="twitter:creator" content="@landbridge_jp" />
+        {/* Additional Meta Tags for Teams */}
+        <meta name="description" content="LandBridge株式会社の開発実績をご紹介。企業サイト、LP、Webアプリ、モバイルアプリなど幅広い制作実績。最新技術で課題解決をサポートします。無料相談受付中。" />
+        <meta name="msapplication-TileImage" content="https://portfolio-site-blond-eta.vercel.app/opengraph-image.png?v=5" />
       </head>
       <body className={`${inter.className} bg-youtube-dark overflow-x-hidden`} style={{ backgroundColor: '#0f0f0f' }}>
         <GoogleAnalytics />
