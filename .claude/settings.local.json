@@ -34,7 +34,9 @@
       "Bash(sed:*)",
       "Bash(kill:*)",
       "Bash(curl:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(npx tsx:*)",
+      "Bash(mv:*)"
     ],
     "deny": []
   }

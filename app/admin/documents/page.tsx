@@ -1,6 +1,8 @@
 import { createClient } from '@/app/lib/supabase/server'
 import DocumentsClient from './DocumentsClient'
 
+export const revalidate = 30 // 30秒ごとに再検証
+
 export default async function DocumentsPage() {
   const supabase = await createClient()
   

@@ -118,18 +118,30 @@ export default function GoogleAnalyticsDashboard() {
       avgSessionDuration: '0:00'
     }
 
-    if (overview.rows) {
+    if (overview.rows && overview.rows.length > 0) {
+      let totalBounceRate = 0
+      let totalDuration = 0
+      let bounceRateCount = 0
+      
       overview.rows.forEach((row: any) => {
         overviewMetrics.users += parseInt(row.metricValues[0]?.value || 0)
         overviewMetrics.sessions += parseInt(row.metricValues[1]?.value || 0)
         overviewMetrics.pageViews += parseInt(row.metricValues[2]?.value || 0)
-        overviewMetrics.bounceRate = parseFloat(row.metricValues[3]?.value || 0)
+        
+        const bounceRate = parseFloat(row.metricValues[3]?.value || 0)
+        if (bounceRate > 0) {
+          totalBounceRate += bounceRate
+          bounceRateCount++
+        }
+        
+        totalDuration += parseFloat(row.metricValues[4]?.value || 0)
       })
       
+      // 直帰率の平均
+      overviewMetrics.bounceRate = bounceRateCount > 0 ? totalBounceRate / bounceRateCount : 0
+      
       // 平均セッション時間の計算
-      const avgDuration = overview.rows.reduce((sum: number, row: any) => 
-        sum + parseFloat(row.metricValues[4]?.value || 0), 0
-      ) / overview.rows.length
+      const avgDuration = overview.rows.length > 0 ? totalDuration / overview.rows.length : 0
       
       const minutes = Math.floor(avgDuration / 60)
       const seconds = Math.floor(avgDuration % 60)
@@ -137,12 +149,15 @@ export default function GoogleAnalyticsDashboard() {
     }
 
     // 日別データ
-    const dailyData = overview.rows?.map((row: any) => ({
-      date: formatDate(row.dimensionValues[0]?.value || ''),
-      pageViews: parseInt(row.metricValues[2]?.value || 0),
-      users: parseInt(row.metricValues[0]?.value || 0),
-      sessions: parseInt(row.metricValues[1]?.value || 0)
-    })) || []
+    const dailyData = overview.rows?.map((row: any) => {
+      const dateValue = row.dimensionValues?.[0]?.value || ''
+      return {
+        date: formatDate(dateValue),
+        pageViews: parseInt(row.metricValues[2]?.value || 0),
+        users: parseInt(row.metricValues[0]?.value || 0),
+        sessions: parseInt(row.metricValues[1]?.value || 0)
+      }
+    }).filter(item => item.date !== '') || []
 
     // トラフィックソース
     const trafficData = traffic.rows?.map((row: any) => {
@@ -212,6 +227,7 @@ export default function GoogleAnalyticsDashboard() {
 
   // ヘルパー関数
   const formatDate = (dateStr: string) => {
+    if (!dateStr || dateStr.length !== 8) return ''
     const year = dateStr.substring(0, 4)
     const month = dateStr.substring(4, 6)
     const day = dateStr.substring(6, 8)
@@ -433,21 +449,27 @@ export default function GoogleAnalyticsDashboard() {
         <div className="lg:col-span-2 bg-white rounded-lg p-6 border border-gray-200">
           <h3 className="text-lg font-semibold mb-4 text-gray-900">ページビューの推移</h3>
           <div className="h-64 flex items-end justify-between gap-1">
-            {displayData.last30Days.slice(-14).map((day, index) => {
-              const maxViews = Math.max(...displayData.last30Days.slice(-14).map(d => d.pageViews))
-              const height = (day.pageViews / maxViews) * 100
-              
-              return (
-                <div key={index} className="flex-1 flex flex-col items-center">
-                  <div 
-                    className="w-full bg-portfolio-blue rounded-t hover:bg-portfolio-blue-dark transition-colors cursor-pointer"
-                    style={{ height: `${height}%` }}
-                    title={`${day.date}: ${formatNumber(day.pageViews)} ビュー`}
-                  />
-                  <span className="text-xs text-gray-500 mt-2 rotate-45 origin-left">{day.date}</span>
-                </div>
-              )
-            })}
+            {displayData.last30Days.length > 0 ? (
+              displayData.last30Days.map((day, index) => {
+                const maxViews = Math.max(...displayData.last30Days.map(d => d.pageViews), 1)
+                const height = maxViews > 0 ? (day.pageViews / maxViews) * 100 : 0
+                
+                return (
+                  <div key={index} className="flex-1 flex flex-col items-center">
+                    <div 
+                      className="w-full bg-portfolio-blue rounded-t hover:bg-portfolio-blue-dark transition-colors cursor-pointer"
+                      style={{ height: `${Math.max(height, 5)}%` }}
+                      title={`${day.date}: ${formatNumber(day.pageViews)} ビュー`}
+                    />
+                    <span className="text-xs text-gray-500 mt-2 rotate-45 origin-left">{day.date}</span>
+                  </div>
+                )
+              })
+            ) : (
+              <div className="w-full flex items-center justify-center text-gray-500">
+                データがありません
+              </div>
+            )}
           </div>
         </div>
 

@@ -312,11 +312,6 @@ export default function DocumentForm({ initialData, documentId }: DocumentFormPr
                   {thumbnailFile ? '画像を変更' : '画像を選択'}
                 </div>
               </label>
-              {thumbnailFile && (
-                <span className="ml-3 text-sm text-gray-600">
-                  {thumbnailFile.name}
-                </span>
-              )}
             </div>
             {uploading && (
               <p className="text-sm text-blue-600">アップロード中...</p>
@@ -353,17 +348,6 @@ export default function DocumentForm({ initialData, documentId }: DocumentFormPr
                     </a>
                   </div>
                 )}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setPdfFile(null)
-                    setPdfPreview('')
-                    setPdfUrl('')
-                  }}
-                  className="absolute top-2 right-2 p-1 bg-white rounded-full shadow-md hover:bg-gray-100"
-                >
-                  <X className="h-4 w-4 text-gray-600" />
-                </button>
               </div>
             ) : (
               <div 

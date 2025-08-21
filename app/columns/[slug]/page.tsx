@@ -90,6 +90,7 @@ export default async function ColumnDetailPage({ params }: PageProps) {
               alt={column.title}
               fill
               className="object-cover"
+              sizes="(max-width: 1024px) 100vw, 896px"
               priority
             />
           </div>
@@ -140,7 +141,8 @@ export default async function ColumnDetailPage({ params }: PageProps) {
             prose-pre:bg-gray-50 prose-pre:border prose-pre:border-gray-200 prose-pre:text-[14px]
             prose-blockquote:border-l-4 prose-blockquote:border-gray-300 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-gray-600
             prose-ul:text-[16px] prose-ul:text-gray-700 prose-ol:text-[16px] prose-ol:text-gray-700
-            prose-li:marker:text-gray-400"
+            prose-li:marker:text-gray-400
+            prose-img:max-w-full prose-img:h-auto prose-img:rounded-lg prose-img:shadow-md prose-img:my-6 prose-img:mx-auto"
           dangerouslySetInnerHTML={{ 
             __html: addIdsToHeadings(column.content)
           }}
@@ -177,6 +179,7 @@ export default async function ColumnDetailPage({ params }: PageProps) {
                           fill
                           className="object-cover group-hover:scale-105 transition-transform duration-300"
                           sizes="(max-width: 768px) 100vw, 33vw"
+                          loading="lazy"
                         />
                       </div>
                     )}

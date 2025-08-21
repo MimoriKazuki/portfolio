@@ -303,11 +303,6 @@ export default function ProjectForm({ initialData, projectId }: ProjectFormProps
                   {thumbnailFile ? '画像を変更' : '画像を選択'}
                 </div>
               </label>
-              {thumbnailFile && (
-                <span className="ml-3 text-sm text-gray-600">
-                  {thumbnailFile.name}
-                </span>
-              )}
             </div>
             {uploading && (
               <p className="text-sm text-blue-600">アップロード中...</p>

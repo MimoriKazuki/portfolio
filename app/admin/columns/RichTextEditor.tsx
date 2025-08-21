@@ -25,9 +25,11 @@ import {
   Code,
   Undo,
   Redo,
-  ChevronDown
+  ChevronDown,
+  Loader2
 } from 'lucide-react'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
+import { createClient } from '@/app/lib/supabase/client'
 
 interface RichTextEditorProps {
   content: string
@@ -37,6 +39,9 @@ interface RichTextEditorProps {
 export default function RichTextEditor({ content, onChange }: RichTextEditorProps) {
   const [showColorPicker, setShowColorPicker] = useState(false)
   const [showBgColorPicker, setShowBgColorPicker] = useState(false)
+  const [uploadingImage, setUploadingImage] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const supabase = createClient()
 
   const editor = useEditor({
     extensions: [
@@ -68,7 +73,7 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
     content: content || '',
     editorProps: {
       attributes: {
-        class: 'focus:outline-none min-h-[400px] px-4 py-3 text-sm'
+        class: 'focus:outline-none min-h-[500px] max-h-[500px] overflow-y-auto px-4 py-3 text-sm'
       }
     },
     onUpdate: ({ editor }) => {
@@ -99,11 +104,53 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
     }
   }
 
-  const addImage = () => {
-    const url = prompt('画像のURLを入力してください:')
-    if (url) {
-      editor.chain().focus().setImage({ src: url }).run()
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      alert('画像ファイルのみアップロード可能です。')
+      return
     }
+
+    setUploadingImage(true)
+
+    try {
+      // Upload to Supabase
+      const fileExt = file.name.split('.').pop()
+      const fileName = `${Math.random()}.${fileExt}`
+      const filePath = `${fileName}`
+
+      const { error: uploadError, data } = await supabase.storage
+        .from('column-thumbnails')
+        .upload(filePath, file)
+
+      if (uploadError) {
+        throw uploadError
+      }
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('column-thumbnails')
+        .getPublicUrl(filePath)
+
+      // Insert image into editor
+      editor.chain().focus().setImage({ src: publicUrl }).run()
+    } catch (error) {
+      console.error('Error uploading image:', error)
+      alert('画像のアップロードに失敗しました。')
+    } finally {
+      setUploadingImage(false)
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
+    }
+  }
+
+  const addImage = () => {
+    fileInputRef.current?.click()
   }
 
   const currentHeadingLevel = () => {
@@ -312,11 +359,23 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
           <button
             type="button"
             onClick={addImage}
-            className="p-1.5 rounded hover:bg-gray-200"
+            className="p-1.5 rounded hover:bg-gray-200 relative"
             title="画像"
+            disabled={uploadingImage}
           >
-            <ImageIcon className="w-3.5 h-3.5" />
+            {uploadingImage ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <ImageIcon className="w-3.5 h-3.5" />
+            )}
           </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            className="hidden"
+          />
 
           <div className="w-px h-5 bg-gray-300" />
 
@@ -361,7 +420,7 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
       </div>
 
       {/* Editor */}
-      <div className="bg-white border-l border-r border-b border-gray-300 rounded-b">
+      <div className="bg-white border-l border-r border-b border-gray-300 rounded-b h-[500px] overflow-hidden">
         <EditorContent editor={editor} />
       </div>
     </div>

@@ -1,5 +1,6 @@
 'use client'
 
+import { memo } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { Home, FolderOpen, FileText, Download, User, Mail, LogOut } from 'lucide-react'
@@ -12,7 +13,7 @@ interface AdminSidebarProps {
   user: SupabaseUser
 }
 
-export default function AdminSidebar({ user }: AdminSidebarProps) {
+const AdminSidebar = memo(function AdminSidebar({ user }: AdminSidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClient()
@@ -42,6 +43,7 @@ export default function AdminSidebar({ user }: AdminSidebarProps) {
             width={140} 
             height={40}
             className="object-contain"
+            priority
           />
         </Link>
       </div>
@@ -84,4 +86,6 @@ export default function AdminSidebar({ user }: AdminSidebarProps) {
       </div>
     </nav>
   )
-}
+})
+
+export default AdminSidebar

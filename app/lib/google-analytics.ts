@@ -41,6 +41,7 @@ export async function getAnalyticsData(
         { name: 'bounceRate' },
         { name: 'averageSessionDuration' },
       ],
+      orderBys: [{ dimension: { dimensionName: 'date' } }],
     })
 
     return response
