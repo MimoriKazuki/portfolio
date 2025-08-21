@@ -395,11 +395,6 @@ export default function DocumentForm({ initialData, documentId }: DocumentFormPr
                   {pdfFile ? 'PDFを変更' : 'PDFを選択'}
                 </div>
               </label>
-              {pdfFile && (
-                <span className="ml-3 text-sm text-gray-600">
-                  {pdfFile.name}
-                </span>
-              )}
             </div>
             {uploading && (
               <p className="text-sm text-blue-600">アップロード中...</p>

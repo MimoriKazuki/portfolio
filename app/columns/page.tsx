@@ -28,7 +28,7 @@ export default async function ColumnsPage() {
           <h1 className="text-[28px] font-bold text-gray-900">コラム</h1>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {columns?.map((column: Column) => (
             <Link 
               key={column.id} 
