@@ -3,6 +3,8 @@ export interface Project {
   title: string
   description: string
   thumbnail: string
+  live_url?: string
+  github_url?: string
   demo?: string
   technologies: string[]
   featured?: boolean
