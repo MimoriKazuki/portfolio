@@ -15,7 +15,7 @@ interface MainLayoutProps {
 
 export default function MainLayout({ children, hideRightSidebar = false, hideContactButton = false }: MainLayoutProps) {
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50 flex flex-col overflow-x-hidden">
       {/* Mobile Header */}
       <MobileHeader />
       

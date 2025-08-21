@@ -77,12 +77,12 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="ja" className="bg-youtube-dark overflow-x-hidden" style={{ backgroundColor: '#0f0f0f' }}>
+    <html lang="ja" className="bg-youtube-dark" style={{ backgroundColor: '#0f0f0f' }}>
       <head>
         <StructuredData />
         <meta name="theme-color" content="#0f0f0f" />
       </head>
-      <body className={`${inter.className} bg-youtube-dark overflow-x-hidden`} style={{ backgroundColor: '#0f0f0f' }}>
+      <body className={`${inter.className} bg-youtube-dark`} style={{ backgroundColor: '#0f0f0f' }}>
         <GoogleAnalytics />
         {children}
       </body>

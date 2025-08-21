@@ -6,7 +6,7 @@ interface StickySidebarProps {
 
 export default function StickySidebar({ children }: StickySidebarProps) {
   return (
-    <div className="sticky top-8">
+    <div className="sticky top-8 self-start">
       {children}
     </div>
   )

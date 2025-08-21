@@ -38,7 +38,8 @@
       "Bash(npx tsx:*)",
       "Bash(mv:*)",
       "WebFetch(domain:developers.facebook.com)",
-      "WebFetch(domain:portfolio-site-blond-eta.vercel.app)"
+      "WebFetch(domain:portfolio-site-blond-eta.vercel.app)",
+      "WebFetch(domain:localhost)"
     ],
     "deny": []
   }
