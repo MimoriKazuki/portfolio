@@ -12,6 +12,7 @@ import type { Metadata } from 'next'
 // ISRを使用してパフォーマンスを向上
 export const revalidate = 60 // 60秒ごとに再生成
 export const dynamicParams = true // 動的パラメータを許可
+export const fetchCache = 'force-no-store' // キャッシュを無効化
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -46,45 +47,44 @@ export async function generateMetadata({
 }: { 
   params: Promise<{ slug: string }> 
 }): Promise<Metadata> {
-  try {
-    const { slug } = await params
-    const supabase = createStaticClient()
-    
-    const { data: column, error } = await supabase
-      .from('columns')
-      .select('*')
-      .eq('slug', slug)
-      .eq('is_published', true)
-      .single()
-    
-    if (error || !column) {
-      return {
-        title: 'コラムが見つかりません - LandBridge Media',
-        description: '指定されたコラムは存在しません。',
-      }
-    }
-
-    const baseUrl = 'https://www.landbridge.ai'
+  const { slug } = await params
+  const supabase = createStaticClient()
   
-  // サムネイル画像のURLを完全なURLに変換
-  // Supabaseストレージの画像URLも考慮
+  const { data: column, error } = await supabase
+    .from('columns')
+    .select('*')
+    .eq('slug', slug)
+    .eq('is_published', true)
+    .single()
+  
+  if (error || !column) {
+    return {
+      title: 'LandBridge Media',
+      description: 'LandBridge株式会社の開発実績をご紹介。',
+    }
+  }
+
+  const baseUrl = 'https://www.landbridge.ai'
+  
+  // サムネイル画像のURLを完全なURLに変換（Teamsキャッシュ対策でタイムスタンプ追加）
+  const timestamp = Date.now()
   let imageUrl: string
   if (column.thumbnail) {
     if (column.thumbnail.startsWith('http')) {
-      imageUrl = column.thumbnail
+      imageUrl = `${column.thumbnail}?t=${timestamp}`
     } else if (column.thumbnail.startsWith('/')) {
-      imageUrl = `${baseUrl}${column.thumbnail}`
+      imageUrl = `${baseUrl}${column.thumbnail}?t=${timestamp}`
     } else {
       // Supabaseストレージの相対パス
-      imageUrl = column.thumbnail
+      imageUrl = `${column.thumbnail}?t=${timestamp}`
     }
   } else {
     // サムネイルがない場合は動的OG画像を生成
-    imageUrl = `${baseUrl}/columns/${column.slug}/opengraph-image.png`
+    imageUrl = `${baseUrl}/columns/${column.slug}/opengraph-image.png?t=${timestamp}`
   }
   
-  return {
-    title: column.title,
+  const metadata: Metadata = {
+    title: `${column.title} - LandBridge Media`,
     description: column.excerpt || column.title,
     metadataBase: new URL(baseUrl),
     alternates: {
@@ -118,14 +118,15 @@ export async function generateMetadata({
     other: {
       'msapplication-TileImage': imageUrl,
     },
+    robots: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   }
-  } catch (error) {
-    console.error('Error generating column metadata:', error)
-    return {
-      title: 'LandBridge Media',
-      description: 'LandBridge株式会社の開発実績をご紹介。',
-    }
-  }
+  
+  return metadata
 }
 
 export default async function ColumnDetailPage({ params }: PageProps) {
