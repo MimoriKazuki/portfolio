@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
-import { Plus, Edit, Trash2, FolderOpen, Search, Filter } from 'lucide-react'
+import { Plus, Edit, Trash2, FolderOpen, Search, Filter, FileText } from 'lucide-react'
 import Image from 'next/image'
 import DeleteProjectButton from './DeleteProjectButton'
 
@@ -14,6 +14,7 @@ interface Project {
   category: 'homepage' | 'landing-page' | 'web-app' | 'mobile-app'
   featured: boolean
   order: number
+  prompt?: string
 }
 
 interface ProjectsClientProps {
@@ -70,7 +71,7 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
       ) : (
         <div className="space-y-6">
           {/* Stats Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
             <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
               <div className="text-3xl font-bold text-portfolio-blue">{projects.length}</div>
               <div className="text-sm text-gray-600">総プロジェクト数</div>
@@ -98,6 +99,12 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
                 {projects.filter(p => p.category === 'mobile-app').length}
               </div>
               <div className="text-sm text-gray-600">モバイルアプリ</div>
+            </div>
+            <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+              <div className="text-3xl font-bold text-emerald-600">
+                {projects.filter(p => p.prompt).length}
+              </div>
+              <div className="text-sm text-gray-600">プロンプトあり</div>
             </div>
           </div>
 
@@ -184,7 +191,14 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
                       </td>
                       <td className="px-6 py-4">
                         <div className="text-left min-w-0">
-                          <h3 className="font-medium text-gray-900 truncate">{project.title}</h3>
+                          <h3 className="font-medium text-gray-900 truncate flex items-center gap-2">
+                            {project.title}
+                            {project.prompt && (
+                              <span className="text-emerald-600" title="プロンプトあり">
+                                <FileText className="h-4 w-4" />
+                              </span>
+                            )}
+                          </h3>
                           <p className="text-sm text-gray-600 truncate">
                             {project.description}
                           </p>

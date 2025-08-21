@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/app/lib/supabase/client'
-import { Check, X, Upload, Loader2 } from 'lucide-react'
+import { Check, X, Upload, Loader2, Eye } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -16,6 +16,7 @@ interface ProjectFormData {
   featured: boolean
   category: 'homepage' | 'landing-page' | 'web-app' | 'mobile-app'
   duration: string
+  prompt: string
 }
 
 interface ProjectFormProps {
@@ -33,6 +34,7 @@ export default function ProjectForm({ initialData, projectId }: ProjectFormProps
   const [thumbnailPreview, setThumbnailPreview] = useState<string>(initialData?.thumbnail || '')
   const [featuredCount, setFeaturedCount] = useState(0)
   const [dragOver, setDragOver] = useState(false)
+  const [showPromptPreview, setShowPromptPreview] = useState(false)
   
   const [formData, setFormData] = useState<ProjectFormData>({
     title: initialData?.title || '',
@@ -43,6 +45,7 @@ export default function ProjectForm({ initialData, projectId }: ProjectFormProps
     featured: initialData?.featured || false,
     category: initialData?.category || 'web-app',
     duration: initialData?.duration || '',
+    prompt: initialData?.prompt || '',
   })
 
   // Featured project countを取得
@@ -196,6 +199,27 @@ export default function ProjectForm({ initialData, projectId }: ProjectFormProps
       return
     }
     setFormData({ ...formData, featured: checked })
+  }
+
+  const parseCSVPrompt = (csvText: string) => {
+    if (!csvText.trim()) return []
+    
+    const lines = csvText.trim().split('\n')
+    const results = []
+    
+    for (const line of lines) {
+      const values = line.split(',').map(v => v.trim())
+      if (values.length >= 3) {
+        results.push({
+          number: values[0],
+          category: values[1],
+          prompt: values[2],
+          description: values[3] || ''
+        })
+      }
+    }
+    
+    return results
   }
 
   return (
@@ -361,6 +385,64 @@ export default function ProjectForm({ initialData, projectId }: ProjectFormProps
               </span>
             ))}
           </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2 text-gray-700">
+            プロンプト（CSV形式）
+          </label>
+          <textarea
+            value={formData.prompt}
+            onChange={(e) => setFormData({ ...formData, prompt: e.target.value })}
+            className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-portfolio-blue text-gray-900 font-mono text-sm"
+            rows={6}
+            placeholder={`番号,カテゴリ,プロンプト,説明
+1,UI設計,モダンなECサイトのUIを設計してください,レスポンシブデザインを重視
+2,実装,React + TypeScriptで実装してください,最新のベストプラクティスに従う`}
+          />
+          <div className="flex items-center justify-between mt-1">
+            <p className="text-xs text-gray-600">
+              CSV形式でプロンプトを入力してください。ヘッダー行は自動的に追加されます。
+            </p>
+            {formData.prompt && (
+              <button
+                type="button"
+                onClick={() => setShowPromptPreview(!showPromptPreview)}
+                className="text-xs text-portfolio-blue hover:text-portfolio-blue-dark flex items-center gap-1"
+              >
+                <Eye className="h-3 w-3" />
+                プレビュー
+              </button>
+            )}
+          </div>
+          
+          {showPromptPreview && formData.prompt && (
+            <div className="mt-3 p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <h4 className="text-sm font-medium mb-2 text-gray-700">プロンプトプレビュー</h4>
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr className="border-b border-gray-300">
+                      <th className="text-left p-2">番号</th>
+                      <th className="text-left p-2">カテゴリ</th>
+                      <th className="text-left p-2">プロンプト</th>
+                      <th className="text-left p-2">説明</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {parseCSVPrompt(formData.prompt).map((row, index) => (
+                      <tr key={index} className="border-b border-gray-200">
+                        <td className="p-2">{row.number}</td>
+                        <td className="p-2">{row.category}</td>
+                        <td className="p-2">{row.prompt}</td>
+                        <td className="p-2">{row.description}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
         </div>
 
         <div>
