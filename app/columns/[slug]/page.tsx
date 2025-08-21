@@ -64,14 +64,24 @@ export async function generateMetadata({
   const baseUrl = 'https://portfolio-site-blond-eta.vercel.app'
   
   // サムネイル画像のURLを完全なURLに変換
-  const imageUrl = column.thumbnail 
-    ? column.thumbnail.startsWith('http') 
-      ? column.thumbnail 
-      : `${baseUrl}${column.thumbnail}`
-    : `${baseUrl}/opengraph-image.png?v=5`
+  // Supabaseストレージの画像URLも考慮
+  let imageUrl: string
+  if (column.thumbnail) {
+    if (column.thumbnail.startsWith('http')) {
+      imageUrl = column.thumbnail
+    } else if (column.thumbnail.startsWith('/')) {
+      imageUrl = `${baseUrl}${column.thumbnail}`
+    } else {
+      // Supabaseストレージの相対パス
+      imageUrl = column.thumbnail
+    }
+  } else {
+    // サムネイルがない場合は動的OG画像を生成
+    imageUrl = `${baseUrl}/columns/${column.slug}/opengraph-image.png`
+  }
   
   return {
-    title: `${column.title} - LandBridge Media`,
+    title: column.title,
     description: column.excerpt || column.title,
     metadataBase: new URL(baseUrl),
     alternates: {
@@ -86,6 +96,7 @@ export async function generateMetadata({
           width: 1200,
           height: 630,
           alt: column.title,
+          type: 'image/png',
         }
       ],
       type: 'article',
@@ -103,6 +114,10 @@ export async function generateMetadata({
     },
     other: {
       'msapplication-TileImage': imageUrl,
+    },
+    viewport: {
+      width: 'device-width',
+      initialScale: 1,
     },
   }
 }

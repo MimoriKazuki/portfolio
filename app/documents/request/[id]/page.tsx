@@ -1,360 +1,121 @@
-'use client'
+import { notFound } from 'next/navigation'
+import { createStaticClient } from '@/app/lib/supabase/static'
+import DocumentRequestClient from './DocumentRequestClient'
+import type { Metadata } from 'next'
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import Image from 'next/image'
-import Link from 'next/link'
-import { createClient } from '@/app/lib/supabase/client'
-import { Document } from '@/app/types'
-import { ChevronLeft, FileText, Loader2 } from 'lucide-react'
-import MainLayout from '@/app/components/MainLayout'
-import ContactCompletionModal from '@/app/components/ContactCompletionModal'
+export const revalidate = 60 // ISR: 60秒ごとに再生成
+
+// 静的パラメータを生成
+export async function generateStaticParams() {
+  const supabase = createStaticClient()
+  const { data: documents } = await supabase
+    .from('documents')
+    .select('id')
+    .eq('is_active', true)
+  
+  return documents?.map((doc) => ({
+    id: doc.id,
+  })) || []
+}
+
+// ドキュメントデータを取得
+async function getDocument(id: string) {
+  const supabase = createStaticClient()
+  const { data: document } = await supabase
+    .from('documents')
+    .select('*')
+    .eq('id', id)
+    .eq('is_active', true)
+    .single()
+  
+  return document
+}
+
+// メタデータを生成
+export async function generateMetadata({ 
+  params 
+}: { 
+  params: Promise<{ id: string }> 
+}): Promise<Metadata> {
+  const resolvedParams = await params
+  const document = await getDocument(resolvedParams.id)
+  
+  if (!document) {
+    return {
+      title: '資料が見つかりません',
+    }
+  }
+
+  const baseUrl = 'https://portfolio-site-blond-eta.vercel.app'
+  
+  // サムネイル画像のURLを完全なURLに変換
+  let imageUrl: string
+  if (document.thumbnail) {
+    if (document.thumbnail.startsWith('http')) {
+      imageUrl = document.thumbnail
+    } else if (document.thumbnail.startsWith('/')) {
+      imageUrl = `${baseUrl}${document.thumbnail}`
+    } else {
+      // Supabaseストレージの相対パス
+      imageUrl = document.thumbnail
+    }
+  } else {
+    // サムネイルがない場合はデフォルトOG画像
+    imageUrl = `${baseUrl}/opengraph-image.png?v=5`
+  }
+  
+  return {
+    title: document.title,
+    description: document.description || document.title,
+    metadataBase: new URL(baseUrl),
+    alternates: {
+      canonical: `/documents/request/${document.id}`,
+    },
+    openGraph: {
+      title: document.title,
+      description: document.description || document.title,
+      images: [
+        {
+          url: imageUrl,
+          width: 1200,
+          height: 630,
+          alt: document.title,
+          type: 'image/png',
+        }
+      ],
+      type: 'article',
+      siteName: 'LandBridge Media',
+      url: `${baseUrl}/documents/request/${document.id}`,
+      locale: 'ja_JP',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: document.title,
+      description: document.description || document.title,
+      images: [imageUrl],
+      creator: '@landbridge_jp',
+    },
+    other: {
+      'msapplication-TileImage': imageUrl,
+    },
+    viewport: {
+      width: 'device-width',
+      initialScale: 1,
+    },
+  }
+}
 
 interface PageProps {
   params: Promise<{ id: string }>
 }
 
-export default function DocumentRequestPage({ params }: PageProps) {
-  const router = useRouter()
-  const [documentData, setDocumentData] = useState<Document | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [submitting, setSubmitting] = useState(false)
-  const [documentId, setDocumentId] = useState<string>('')
-  const [formData, setFormData] = useState({
-    company_name: '',
-    name: '',
-    email: '',
-    phone: '',
-    department: '',
-    position: '',
-    message: ''
-  })
-  const [emailError, setEmailError] = useState('')
-  const [showCompletionModal, setShowCompletionModal] = useState(false)
+export default async function DocumentRequestPage({ params }: PageProps) {
+  const resolvedParams = await params
+  const document = await getDocument(resolvedParams.id)
 
-  // メールアドレスのバリデーション
-  const validateEmail = (email: string) => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    return emailRegex.test(email)
+  if (!document) {
+    notFound()
   }
 
-  // フォームが有効かチェック
-  const isFormValid = formData.company_name.trim() !== '' && 
-                      formData.name.trim() !== '' && 
-                      formData.email.trim() !== '' &&
-                      validateEmail(formData.email)
-
-  useEffect(() => {
-    async function loadDocument() {
-      const { id } = await params
-      setDocumentId(id)
-      
-      const supabase = createClient()
-      const { data, error } = await supabase
-        .from('documents')
-        .select('*')
-        .eq('id', id)
-        .eq('is_active', true)
-        .single()
-
-      if (error || !data) {
-        router.push('/documents')
-        return
-      }
-
-      setDocumentData(data)
-      setLoading(false)
-    }
-
-    loadDocument()
-  }, [params, router])
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData({
-      ...formData,
-      [name]: value
-    })
-
-    // メールアドレスの場合はバリデーション
-    if (name === 'email') {
-      if (value && !validateEmail(value)) {
-        setEmailError('正しいメールアドレスを入力してください')
-      } else {
-        setEmailError('')
-      }
-    }
-  }
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setSubmitting(true)
-
-    const requestData = {
-      document_id: documentId,
-      ...formData
-    }
-
-    try {
-      const response = await fetch('/api/document-request', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestData),
-      })
-
-      if (response.ok) {
-        const result = await response.json()
-        
-        // PDFのダウンロードURLがある場合は自動ダウンロード
-        if (result.downloadUrl) {
-          // PDFファイルを直接ダウンロード
-          try {
-            const response = await fetch(result.downloadUrl)
-            const blob = await response.blob()
-            const url = window.URL.createObjectURL(blob)
-            const link = document.createElement('a')
-            link.href = url
-            link.download = `${documentData?.title || 'document'}.pdf`
-            document.body.appendChild(link)
-            link.click()
-            document.body.removeChild(link)
-            window.URL.revokeObjectURL(url)
-          } catch (error) {
-            console.error('Download failed:', error)
-            // フォールバック: 新しいウィンドウで開く
-            window.open(result.downloadUrl, '_blank')
-          }
-        }
-        
-        setShowCompletionModal(true)
-      } else {
-        alert('送信に失敗しました。もう一度お試しください。')
-      }
-    } catch (error) {
-      console.error('Error submitting request:', error)
-      alert('送信に失敗しました。もう一度お試しください。')
-    } finally {
-      setSubmitting(false)
-    }
-  }
-
-  const handleModalClose = () => {
-    setShowCompletionModal(false)
-    router.push('/')
-  }
-
-  if (loading) {
-    return (
-      <MainLayout hideRightSidebar={true} hideContactButton={true}>
-        <div className="flex justify-center items-center min-h-[400px]">
-          <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
-        </div>
-      </MainLayout>
-    )
-  }
-
-  if (!documentData) {
-    return null
-  }
-
-  return (
-    <MainLayout hideRightSidebar={true} hideContactButton={true}>
-      <div className="w-full">
-        <Link 
-          href="/documents" 
-          className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors"
-        >
-          <ChevronLeft className="w-4 h-4" />
-          資料一覧に戻る
-        </Link>
-
-        <div className="grid lg:grid-cols-2 gap-8">
-          <div>
-            <div className="bg-gray-100 rounded-lg p-6 mb-6">
-              {documentData.thumbnail && (
-                <div className="relative aspect-video mb-4 rounded-lg overflow-hidden">
-                  <Image
-                    src={documentData.thumbnail}
-                    alt={documentData.title}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-              )}
-              
-              <div>
-                <h2 className="text-lg font-semibold text-gray-900 mb-2">
-                  {documentData.title}
-                </h2>
-                {documentData.description && (
-                  <p className="text-gray-600 text-sm">
-                    {documentData.description}
-                  </p>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <div>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="bg-white border border-gray-200 rounded-lg p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  お客様情報
-                </h3>
-                
-                <div className="space-y-4">
-                  <div>
-                    <label htmlFor="company_name" className="block text-sm font-medium text-gray-700 mb-1">
-                      会社名 <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      id="company_name"
-                      name="company_name"
-                      required
-                      value={formData.company_name}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:border-portfolio-blue transition-colors"
-                      placeholder="株式会社〇〇"
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                      お名前 <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="text"
-                      id="name"
-                      name="name"
-                      required
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:border-portfolio-blue transition-colors"
-                      placeholder="山田 太郎"
-                    />
-                  </div>
-
-                  <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                      メールアドレス <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      required
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      className={`w-full px-4 py-2 bg-white border rounded-lg text-gray-900 focus:outline-none transition-colors ${
-                        emailError ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-portfolio-blue'
-                      }`}
-                      placeholder="example@company.com"
-                    />
-                    {emailError && (
-                      <p className="mt-1 text-sm text-red-600">{emailError}</p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-                      電話番号
-                    </label>
-                    <input
-                      type="tel"
-                      id="phone"
-                      name="phone"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:border-portfolio-blue transition-colors"
-                      placeholder="090-1234-5678"
-                    />
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label htmlFor="department" className="block text-sm font-medium text-gray-700 mb-1">
-                        部署
-                      </label>
-                      <input
-                        type="text"
-                        id="department"
-                        name="department"
-                        value={formData.department}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:border-portfolio-blue transition-colors"
-                        placeholder="営業部"
-                      />
-                    </div>
-
-                    <div>
-                      <label htmlFor="position" className="block text-sm font-medium text-gray-700 mb-1">
-                        役職
-                      </label>
-                      <input
-                        type="text"
-                        id="position"
-                        name="position"
-                        value={formData.position}
-                        onChange={handleInputChange}
-                        className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:border-portfolio-blue transition-colors"
-                        placeholder="部長"
-                      />
-                    </div>
-                  </div>
-
-                  <div>
-                    <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
-                      ご要望・ご質問
-                    </label>
-                    <textarea
-                      id="message"
-                      name="message"
-                      rows={4}
-                      value={formData.message}
-                      onChange={handleInputChange}
-                      className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:border-portfolio-blue transition-colors resize-none"
-                      placeholder="資料に関するご要望やご質問がございましたらご記入ください"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <button
-                type="submit"
-                disabled={submitting || !isFormValid}
-                className="w-full text-white font-medium py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:opacity-90"
-                style={{ backgroundColor: 'rgb(37, 99, 235)' }}
-              >
-                {submitting ? (
-                  <>
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                    送信中...
-                  </>
-                ) : (
-                  '資料をダウンロードする'
-                )}
-              </button>
-
-              <p className="text-xs text-gray-600 text-center">
-                送信することで、
-                <Link href="/privacy" className="text-portfolio-blue hover:underline">
-                  プライバシーポリシー
-                </Link>
-                に同意したものとします。
-              </p>
-            </form>
-          </div>
-        </div>
-      </div>
-      
-      <ContactCompletionModal 
-        isOpen={showCompletionModal}
-        onClose={handleModalClose}
-        type="document"
-      />
-    </MainLayout>
-  )
+  return <DocumentRequestClient documentId={resolvedParams.id} initialDocument={document} />
 }
