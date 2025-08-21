@@ -76,20 +76,6 @@ export default async function Image() {
                 LandBridge Media
               </h1>
               
-              {/* サブタイトル - ProfileCardのスタイルに合わせる */}
-              <p
-                style={{
-                  fontSize: '42px',
-                  fontWeight: '500',
-                  color: 'rgba(255, 255, 255, 0.95)',
-                  margin: '0',
-                  textAlign: 'center',
-                  textShadow: '0 2px 4px rgba(0, 0, 0, 0.15)',
-                  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-                }}
-              >
-                AIによる自動コーディングを活用した開発実績
-              </p>
             </div>
           </div>
         </div>
