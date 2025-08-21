@@ -28,11 +28,11 @@ export default function MainLayout({ children, hideRightSidebar = false, hideCon
         </aside>
         
         {/* Main Content Container */}
-        <div className="flex-1 px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex gap-8">
-            <div className="flex-1 min-w-0">
+        <div className="flex-1">
+          <div className="flex gap-8 px-4 sm:px-6 lg:px-8 py-8">
+            <main className="flex-1 min-w-0">
               {children}
-            </div>
+            </main>
             
             {/* Right Sidebar */}
             {!hideRightSidebar && (
