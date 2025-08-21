@@ -11,6 +11,7 @@ import type { Metadata } from 'next'
 
 // ISRを使用してパフォーマンスを向上
 export const revalidate = 60 // 60秒ごとに再生成
+export const dynamicParams = true // 動的パラメータを許可
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -45,23 +46,25 @@ export async function generateMetadata({
 }: { 
   params: Promise<{ slug: string }> 
 }): Promise<Metadata> {
-  const { slug } = await params
-  const supabase = createStaticClient()
-  
-  const { data: column, error } = await supabase
-    .from('columns')
-    .select('*')
-    .eq('slug', slug)
-    .eq('is_published', true)
-    .single()
-  
-  if (error || !column) {
-    return {
-      title: 'コラムが見つかりません',
+  try {
+    const { slug } = await params
+    const supabase = createStaticClient()
+    
+    const { data: column, error } = await supabase
+      .from('columns')
+      .select('*')
+      .eq('slug', slug)
+      .eq('is_published', true)
+      .single()
+    
+    if (error || !column) {
+      return {
+        title: 'コラムが見つかりません - LandBridge Media',
+        description: '指定されたコラムは存在しません。',
+      }
     }
-  }
 
-  const baseUrl = 'https://www.landbridge.ai'
+    const baseUrl = 'https://www.landbridge.ai'
   
   // サムネイル画像のURLを完全なURLに変換
   // Supabaseストレージの画像URLも考慮
@@ -115,10 +118,13 @@ export async function generateMetadata({
     other: {
       'msapplication-TileImage': imageUrl,
     },
-    viewport: {
-      width: 'device-width',
-      initialScale: 1,
-    },
+  }
+  } catch (error) {
+    console.error('Error generating column metadata:', error)
+    return {
+      title: 'LandBridge Media',
+      description: 'LandBridge株式会社の開発実績をご紹介。',
+    }
   }
 }
 

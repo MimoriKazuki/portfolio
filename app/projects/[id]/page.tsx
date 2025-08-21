@@ -8,17 +8,23 @@ import { createClient } from '@/app/lib/supabase/server'
 import type { Metadata } from 'next'
 
 export const revalidate = 60 // ISR: 60秒ごとに再生成
+export const dynamicParams = true // 動的パラメータを許可
 
 // 静的パラメータを生成
 export async function generateStaticParams() {
-  const supabase = createStaticClient()
-  const { data: projects } = await supabase
-    .from('projects')
-    .select('id')
-  
-  return projects?.map((project) => ({
-    id: project.id,
-  })) || []
+  try {
+    const supabase = createStaticClient()
+    const { data: projects } = await supabase
+      .from('projects')
+      .select('id')
+    
+    return projects?.map((project) => ({
+      id: project.id,
+    })) || []
+  } catch (error) {
+    console.error('Error in generateStaticParams:', error)
+    return []
+  }
 }
 
 // プロジェクトデータを取得
@@ -53,17 +59,18 @@ export async function generateMetadata({
 }: { 
   params: Promise<{ id: string }> 
 }): Promise<Metadata> {
-  const resolvedParams = await params
-  const project = await getProject(resolvedParams.id)
-  
-  if (!project) {
-    return {
-      title: 'プロジェクトが見つかりません',
+  try {
+    const resolvedParams = await params
+    const project = await getProject(resolvedParams.id)
+    
+    if (!project) {
+      return {
+        title: 'プロジェクトが見つかりません - LandBridge Media',
+        description: '指定されたプロジェクトは存在しません。',
+      }
     }
-  }
-  
-
-  const baseUrl = 'https://www.landbridge.ai'
+    
+    const baseUrl = 'https://www.landbridge.ai'
   
   // サムネイル画像のURLを完全なURLに変換
   let imageUrl: string
@@ -114,6 +121,13 @@ export async function generateMetadata({
     other: {
       'msapplication-TileImage': imageUrl,
     },
+  }
+  } catch (error) {
+    console.error('Error generating project metadata:', error)
+    return {
+      title: 'LandBridge Media',
+      description: 'LandBridge株式会社の開発実績をご紹介。',
+    }
   }
 }
 

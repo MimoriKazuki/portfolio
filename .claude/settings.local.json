@@ -36,7 +36,9 @@
       "Bash(curl:*)",
       "Bash(cat:*)",
       "Bash(npx tsx:*)",
-      "Bash(mv:*)"
+      "Bash(mv:*)",
+      "WebFetch(domain:developers.facebook.com)",
+      "WebFetch(domain:portfolio-site-blond-eta.vercel.app)"
     ],
     "deny": []
   }
