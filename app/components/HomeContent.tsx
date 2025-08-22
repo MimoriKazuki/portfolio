@@ -14,6 +14,7 @@ interface HomeContentProps {
     'landing-page': number
     'web-app': number
     'mobile-app': number
+    'video': number
   }
   featuredProjects: Project[]
   latestColumns: Column[]
