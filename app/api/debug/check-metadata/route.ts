@@ -4,7 +4,7 @@ import type { Metadata } from 'next'
 
 // Import the generateMetadata functions from different pages
 import { generateMetadata as generateProjectMetadata } from '@/app/projects/[id]/page'
-import { generateMetadata as generateColumnMetadata } from '@/app/columns/[slug]/page'
+import { generateMetadata as generateColumnMetadata } from '@/app/columns/[id]/page'
 
 export async function GET(request: NextRequest) {
   const type = request.nextUrl.searchParams.get('type')
@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
       const { data: column, error } = await supabase
         .from('columns')
         .select('*')
-        .eq('slug', id)
+        .eq('id', id)
         .single()
 
       if (error || !column) {
@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
 
       // Generate metadata using the same function as the page
       metadata = await generateColumnMetadata({ 
-        params: Promise.resolve({ slug: id }) 
+        params: Promise.resolve({ id: id }) 
       })
     } else {
       return NextResponse.json({ 
