@@ -14,7 +14,7 @@ interface ProjectFormData {
   live_url: string
   technologies: string[]
   featured: boolean
-  category: 'homepage' | 'landing-page' | 'web-app' | 'mobile-app'
+  category: 'homepage' | 'landing-page' | 'web-app' | 'mobile-app' | 'video'
   duration: string
   prompt: string
   prompt_filename: string

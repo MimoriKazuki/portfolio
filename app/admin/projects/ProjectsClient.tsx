@@ -11,7 +11,7 @@ interface Project {
   title: string
   description: string
   thumbnail: string
-  category: 'homepage' | 'landing-page' | 'web-app' | 'mobile-app'
+  category: 'homepage' | 'landing-page' | 'web-app' | 'mobile-app' | 'video'
   featured: boolean
   order: number
   prompt?: string
