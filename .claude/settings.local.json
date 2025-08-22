@@ -39,7 +39,18 @@
       "Bash(mv:*)",
       "WebFetch(domain:developers.facebook.com)",
       "WebFetch(domain:portfolio-site-blond-eta.vercel.app)",
-      "WebFetch(domain:localhost)"
+      "WebFetch(domain:localhost)",
+      "Bash(supabase/migrations/comprehensive_rls_check.sql )",
+      "Bash(supabase/migrations/check_storage_policies.sql )",
+      "Bash(supabase/migrations/check_video_projects_data.sql )",
+      "Bash(supabase:*)",
+      "Bash(supabase/migrations/disable_projects_rls_temporarily.sql )",
+      "Bash(supabase/migrations/disable_rls_projects.sql )",
+      "Bash(supabase/migrations/disable_storage_rls_temporarily.sql )",
+      "Bash(supabase/migrations/fix_storage_rls.sql )",
+      "Bash(supabase/migrations/production_rls_projects.sql )",
+      "Bash(supabase/migrations/check_and_create_video_bucket.sql)",
+      "Bash(git reset:*)"
     ],
     "deny": []
   }
