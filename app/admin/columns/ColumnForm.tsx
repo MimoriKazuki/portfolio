@@ -16,7 +16,6 @@ import './editor-styles.css'
 
 interface ColumnFormData {
   title: string
-  slug: string
   content: string
   excerpt?: string
   is_featured: boolean
@@ -42,7 +41,6 @@ export default function ColumnForm({ initialData, columnId }: ColumnFormProps) {
   
   const [formData, setFormData] = useState<ColumnFormData>({
     title: initialData?.title || '',
-    slug: initialData?.slug || '',
     content: initialData?.content || '',
     excerpt: initialData?.excerpt || '',
     is_featured: initialData?.is_featured || false,
@@ -51,42 +49,7 @@ export default function ColumnForm({ initialData, columnId }: ColumnFormProps) {
     thumbnail: initialData?.thumbnail || '',
     category: initialData?.category || 'topics-news',
   })
-  const [slugManuallyEdited, setSlugManuallyEdited] = useState(!!columnId && !!initialData?.slug)
-  const [columnCount, setColumnCount] = useState(0)
 
-  // コラムの総数を取得
-  useEffect(() => {
-    const fetchColumnCount = async () => {
-      const { count } = await supabase
-        .from('columns')
-        .select('*', { count: 'exact', head: true })
-      
-      setColumnCount(count || 0)
-    }
-    fetchColumnCount()
-  }, [supabase])
-
-  // Slugを自動生成（英数字のみ）
-  useEffect(() => {
-    // 手動で編集された場合は自動生成しない
-    if (slugManuallyEdited && formData.slug) return
-    
-    if (formData.title) {
-      // タイトルから英数字とスペースのみを抽出
-      const alphanumericTitle = formData.title
-        .toLowerCase()
-        .replace(/[^a-z0-9\s]/g, '') // 英数字とスペースのみ残す
-        .replace(/\s+/g, '-') // スペースをハイフンに
-        .replace(/--+/g, '-') // 連続するハイフンを単一に
-        .replace(/^-|-$/g, '') // 先頭と末尾のハイフンを削除
-        .trim()
-      
-      // 英数字が抽出できなかった場合は連番ベースのスラッグを生成
-      const generatedSlug = alphanumericTitle || `column-${columnCount + 1}`
-      
-      setFormData(prev => ({ ...prev, slug: generatedSlug }))
-    }
-  }, [formData.title, slugManuallyEdited, columnCount])
 
   const handleThumbnailChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -260,43 +223,6 @@ export default function ColumnForm({ initialData, columnId }: ColumnFormProps) {
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-2 text-gray-700">
-              スラッグ
-            </label>
-            <input
-              type="text"
-              value={formData.slug}
-              onChange={(e) => {
-                // 半角英数字とハイフンのみを許可（URLセーフな文字のみ）
-                const value = e.target.value
-                  .toLowerCase()
-                  .replace(/[^a-z0-9\-]/g, '') // 半角英数字とハイフンのみ（ハイフンをエスケープ）
-                  .replace(/--+/g, '-') // 連続するハイフンを単一に
-                  .replace(/^-+|-+$/g, '') // 先頭と末尾のハイフンを削除
-                setFormData({ ...formData, slug: value })
-                setSlugManuallyEdited(true) // 手動編集フラグを立てる
-              }}
-              onBlur={() => {
-                // フォーカスが外れた時に先頭・末尾のハイフンを削除
-                const cleanedSlug = formData.slug.replace(/^-+|-+$/g, '')
-                if (cleanedSlug !== formData.slug) {
-                  setFormData({ ...formData, slug: cleanedSlug })
-                }
-              }}
-              className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-portfolio-blue text-gray-900"
-              placeholder="自動生成されます"
-              pattern="[a-z0-9-]+"
-              title="半角英数字とハイフンのみ使用可能です"
-            />
-            <p className="text-xs text-gray-600 mt-1">
-              URLに使用される識別子です。半角英数字とハイフンのみ使用可能です。
-              日本語タイトルの場合は自動的に連番ベースのスラッグが生成されます。
-            </p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-medium mb-2 text-gray-700">
               カテゴリ <span className="text-red-500">*</span>

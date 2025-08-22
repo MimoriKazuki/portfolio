@@ -80,7 +80,7 @@ export default function HomeContent({ profiles, categoryStats, featuredProjects,
               {latestColumns.map((column) => (
                 <Link 
                   key={column.id} 
-                  href={`/columns/${column.slug}`}
+                  href={`/columns/${column.id}`}
                   className="group"
                 >
                   <article className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 h-full flex flex-col">

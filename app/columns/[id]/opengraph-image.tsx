@@ -12,17 +12,17 @@ export const size = {
 export const contentType = 'image/png'
 
 interface Props {
-  params: Promise<{ slug: string }>
+  params: Promise<{ id: string }>
 }
 
 export default async function Image({ params }: Props) {
-  const { slug } = await params
+  const { id } = await params
   const supabase = createStaticClient()
   
   const { data: column } = await supabase
     .from('columns')
     .select('title, excerpt')
-    .eq('slug', slug)
+    .eq('id', id)
     .eq('is_published', true)
     .single()
 

@@ -94,7 +94,7 @@ const RightSidebar = () => {
               {columns.map((column) => (
                 <Link
                   key={column.id}
-                  href={`/columns/${column.slug}`}
+                  href={`/columns/${column.id}`}
                   className="block group"
                 >
                   <article className="block border-2 border-transparent rounded-lg p-3 transition-all duration-200 hover:border-portfolio-blue">

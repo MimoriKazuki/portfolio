@@ -15,7 +15,7 @@ export const dynamicParams = true // 動的パラメータを許可
 export const fetchCache = 'force-no-store' // キャッシュを無効化
 
 interface PageProps {
-  params: Promise<{ slug: string }>
+  params: Promise<{ id: string }>
 }
 
 // 静的パラメータを生成
@@ -24,7 +24,7 @@ export async function generateStaticParams() {
     const supabase = createStaticClient()
     const { data: columns, error } = await supabase
       .from('columns')
-      .select('slug')
+      .select('id')
       .eq('is_published', true)
 
     if (error) {
@@ -33,7 +33,7 @@ export async function generateStaticParams() {
     }
     
     return columns?.map((column) => ({
-      slug: column.slug,
+      id: column.id,
     })) || []
   } catch (err) {
     console.error('Error generating static params:', err)
@@ -45,15 +45,15 @@ export async function generateStaticParams() {
 export async function generateMetadata({ 
   params 
 }: { 
-  params: Promise<{ slug: string }> 
+  params: Promise<{ id: string }> 
 }): Promise<Metadata> {
-  const { slug } = await params
+  const { id } = await params
   const supabase = createStaticClient()
   
   const { data: column, error } = await supabase
     .from('columns')
     .select('*')
-    .eq('slug', slug)
+    .eq('id', id)
     .eq('is_published', true)
     .single()
   
@@ -80,7 +80,7 @@ export async function generateMetadata({
     }
   } else {
     // サムネイルがない場合は動的OG画像を生成
-    imageUrl = `${baseUrl}/columns/${column.slug}/opengraph-image?t=${timestamp}`
+    imageUrl = `${baseUrl}/columns/${column.id}/opengraph-image?t=${timestamp}`
   }
   
   const metadata: Metadata = {
@@ -88,7 +88,7 @@ export async function generateMetadata({
     description: column.excerpt || column.title,
     metadataBase: new URL(baseUrl),
     alternates: {
-      canonical: `/columns/${column.slug}`,
+      canonical: `/columns/${column.id}`,
     },
     openGraph: {
       title: column.title,
@@ -104,7 +104,7 @@ export async function generateMetadata({
       ],
       type: 'article',
       siteName: 'LandBridge Media',
-      url: `${baseUrl}/columns/${column.slug}`,
+      url: `${baseUrl}/columns/${column.id}`,
       publishedTime: column.published_date,
       locale: 'ja_JP',
     },
@@ -130,13 +130,13 @@ export async function generateMetadata({
 }
 
 export default async function ColumnDetailPage({ params }: PageProps) {
-  const { slug } = await params
+  const { id } = await params
   const supabase = await createClient()
 
   const { data: column, error } = await supabase
     .from('columns')
     .select('*')
-    .eq('slug', slug)
+    .eq('id', id)
     .eq('is_published', true)
     .single()
 
@@ -259,7 +259,7 @@ export default async function ColumnDetailPage({ params }: PageProps) {
               {relatedColumns.map((relatedColumn) => (
                 <Link 
                   key={relatedColumn.id} 
-                  href={`/columns/${relatedColumn.slug}`}
+                  href={`/columns/${relatedColumn.id}`}
                   className="group"
                 >
                   <article className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 h-full flex flex-col">
