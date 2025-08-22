@@ -326,63 +326,54 @@ export default function DocumentForm({ initialData, documentId }: DocumentFormPr
           <label className="block text-sm font-medium mb-2 text-gray-700">
             PDFファイル <span className="text-red-500">*</span>
           </label>
+          
           <div className="space-y-4">
             {(pdfFile || pdfUrl) ? (
-              <div className="w-80 aspect-video relative">
-                {pdfFile ? (
-                  // 新しくアップロードされたPDFのプレビュー
-                  <div className="w-full h-full bg-gray-100 rounded-lg border border-gray-200 flex flex-col items-center justify-center">
-                    <FileText className="h-16 w-16 text-gray-400 mb-2" />
-                    <p className="text-sm text-gray-600 font-medium">{pdfFile.name}</p>
-                    <p className="text-xs text-gray-500 mt-1">{(pdfFile.size / 1024 / 1024).toFixed(2)} MB</p>
-                  </div>
-                ) : (
-                  // 既存のPDFファイル
-                  <div className="w-full h-full bg-gray-100 rounded-lg border border-gray-200 flex flex-col items-center justify-center">
-                    <FileText className="h-16 w-16 text-gray-400 mb-2" />
-                    <p className="text-sm text-gray-600 font-medium">現在のPDFファイル</p>
-                    <a 
-                      href={pdfUrl} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="text-portfolio-blue hover:text-portfolio-blue-dark underline text-sm mt-2"
-                    >
-                      PDFを表示
-                    </a>
-                  </div>
+              <div className="space-y-3">
+                <div className="bg-gray-100 p-3 rounded-lg flex items-center justify-between">
+                  <span className="text-sm text-gray-700">
+                    {pdfFile ? pdfFile.name : '現在のPDFファイル'}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPdfFile(null)
+                      setPdfUrl('')
+                      setPdfPreview('')
+                    }}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+                {pdfUrl && !pdfFile && (
+                  <a 
+                    href={pdfUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-portfolio-blue hover:text-portfolio-blue-dark underline text-sm"
+                  >
+                    PDFを表示
+                  </a>
                 )}
               </div>
             ) : (
-              <div 
-                className={`w-80 aspect-video border-2 border-dashed rounded-lg flex items-center justify-center cursor-pointer transition-colors ${
-                  dragOverPdf 
-                    ? 'bg-blue-50 border-blue-300' 
-                    : 'bg-gray-100 border-gray-300 hover:bg-gray-200'
-                }`}
-                onDrop={handlePdfDrop}
-                onDragOver={handlePdfDragOver}
-                onDragLeave={handlePdfDragLeave}
-                onClick={() => document.getElementById('document-pdf-input')?.click()}
-              >
-                <span className="text-gray-500">ここにファイルをドラッグ&ドロップ</span>
+              <div>
+                <label className="cursor-pointer inline-block">
+                  <input
+                    type="file"
+                    accept="application/pdf"
+                    onChange={handlePdfChange}
+                    className="hidden"
+                    required={!pdfUrl}
+                  />
+                  <div className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition-colors">
+                    <Upload className="h-5 w-5" />
+                    PDFファイルを選択
+                  </div>
+                </label>
               </div>
             )}
-            <div>
-              <label className="cursor-pointer inline-block">
-                <input
-                  id="document-pdf-input"
-                  type="file"
-                  accept="application/pdf"
-                  onChange={handlePdfChange}
-                  className="hidden"
-                  required={!pdfUrl}
-                />
-                <div className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition-colors">
-                  <Upload className="h-5 w-5" />
-                  {pdfFile ? 'PDFを変更' : 'PDFを選択'}
-                </div>
-              </label>
-            </div>
             {uploading && (
               <p className="text-sm text-blue-600">アップロード中...</p>
             )}

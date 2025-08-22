@@ -22,10 +22,10 @@ export default async function AdminLayout({
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50" style={{ overscrollBehavior: 'none' }}>
       <div className="flex">
         <AdminSidebar user={user} />
-        <main className="flex-1 p-6 overflow-x-hidden ml-56">
+        <main className="flex-1 p-6 overflow-x-hidden ml-56" style={{ overscrollBehavior: 'none' }}>
           {children}
         </main>
       </div>

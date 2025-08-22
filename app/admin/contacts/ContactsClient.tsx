@@ -268,7 +268,7 @@ export default function ContactsClient({ contacts, documentRequests, promptReque
                   <option value="in_progress">対応中</option>
                   <option value="completed">完了</option>
                 </select>
-                <Filter className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                <Filter className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
               </div>
 
               {/* Type filter */}
@@ -286,7 +286,7 @@ export default function ContactsClient({ contacts, documentRequests, promptReque
                   <option value="recruit">採用関連</option>
                   <option value="other">その他</option>
                 </select>
-                <Filter className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                <Filter className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
               </div>
 
               {/* Source filter */}
@@ -301,7 +301,7 @@ export default function ContactsClient({ contacts, documentRequests, promptReque
                   <option value="document">資料請求</option>
                   <option value="prompt">プロンプト</option>
                 </select>
-                <Filter className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+                <Filter className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
               </div>
 
               {/* Search box */}

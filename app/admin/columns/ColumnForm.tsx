@@ -301,16 +301,23 @@ export default function ColumnForm({ initialData, columnId }: ColumnFormProps) {
             <label className="block text-sm font-medium mb-2 text-gray-700">
               カテゴリ <span className="text-red-500">*</span>
             </label>
-            <select
-              value={formData.category}
-              onChange={(e) => setFormData({ ...formData, category: e.target.value as ColumnFormData['category'] })}
-              className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-portfolio-blue text-gray-900"
-              required
-            >
-              <option value="ai-tools">生成AIツール</option>
-              <option value="industry">業界別</option>
-              <option value="topics-news">トピック・ニュース</option>
-            </select>
+            <div className="relative">
+              <select
+                value={formData.category}
+                onChange={(e) => setFormData({ ...formData, category: e.target.value as ColumnFormData['category'] })}
+                className="w-full appearance-none px-3 py-2 pr-10 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-portfolio-blue text-gray-900"
+                required
+              >
+                <option value="ai-tools">生成AIツール</option>
+                <option value="industry">業界別</option>
+                <option value="topics-news">トピック・ニュース</option>
+              </select>
+              <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </div>
           </div>
         </div>
 
