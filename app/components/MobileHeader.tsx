@@ -28,8 +28,8 @@ export default function MobileHeader() {
           {/* Logo */}
           <Link href="/" className="flex items-center">
             <Image
-              src="/会社ロゴ.png"
-              alt="LandBridge"
+              src="/logo_media_light.png"
+              alt="LandBridge Media"
               width={120}
               height={34}
               className="h-8 w-auto"

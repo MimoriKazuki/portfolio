@@ -24,8 +24,8 @@ const Sidebar = () => {
       <div className="mb-6 flex justify-center">
         <Link href="/" className="block group">
           <Image 
-            src="/会社ロゴ.png" 
-            alt="LandBridge" 
+            src="/logo_media_light.png" 
+            alt="LandBridge Media" 
             width={150} 
             height={48} 
             className="h-12 w-auto object-contain transition-opacity duration-200 group-hover:opacity-80"

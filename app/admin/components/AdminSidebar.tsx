@@ -38,8 +38,8 @@ const AdminSidebar = memo(function AdminSidebar({ user }: AdminSidebarProps) {
       <div className="p-6 border-b border-gray-200 flex justify-center">
         <Link href="/admin" className="block">
           <Image 
-            src="/logo_portfolio.png" 
-            alt="Portfolio Admin" 
+            src="/logo_media_light.png" 
+            alt="LandBridge Media Admin" 
             width={140} 
             height={40}
             className="object-contain"
