@@ -10,6 +10,7 @@ interface ProfileCardProps {
     'landing-page': number
     'web-app': number
     'mobile-app': number
+    video: number
   }
 }
 
@@ -65,52 +66,74 @@ export default function ProfileCard({ categoryStats }: ProfileCardProps) {
 
   // 実績セクションのコンポーネント
   const StatsSection = () => (
-    <div className="flex flex-col gap-3 lg:gap-4 lg:max-w-[400px]">
+    <div className="flex flex-col gap-2 lg:gap-2.5 lg:max-w-[400px]">
       {categoryStats?.homepage > 0 && (
-        <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 lg:p-5 border border-white/20">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-2.5 lg:w-3 h-2.5 lg:h-3 bg-purple-400 rounded-full flex-shrink-0"></div>
-            <span className="text-white/90 font-medium text-sm lg:text-base">コーポレートサイト</span>
-          </div>
-          <div className="flex items-baseline gap-1">
-            <span className="text-3xl lg:text-4xl font-bold text-white">{categoryStats.homepage}</span>
-            <span className="text-white/60 text-xs lg:text-sm">件</span>
+        <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 lg:p-3.5 border border-white/20">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="w-2 lg:w-2.5 h-2 lg:h-2.5 bg-purple-400 rounded-full flex-shrink-0"></div>
+              <span className="text-white/90 font-medium text-sm">コーポレートサイト</span>
+            </div>
+            <div className="flex items-baseline gap-0.5">
+              <span className="text-2xl lg:text-3xl font-bold text-white">{categoryStats.homepage}</span>
+              <span className="text-white/60 text-xs">件</span>
+            </div>
           </div>
         </div>
       )}
       {categoryStats?.['landing-page'] > 0 && (
-        <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 lg:p-5 border border-white/20">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-2.5 lg:w-3 h-2.5 lg:h-3 bg-pink-400 rounded-full flex-shrink-0"></div>
-            <span className="text-white/90 font-medium text-sm lg:text-base">ランディングページ</span>
-          </div>
-          <div className="flex items-baseline gap-1">
-            <span className="text-3xl lg:text-4xl font-bold text-white">{categoryStats['landing-page']}</span>
-            <span className="text-white/60 text-xs lg:text-sm">件</span>
+        <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 lg:p-3.5 border border-white/20">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="w-2 lg:w-2.5 h-2 lg:h-2.5 bg-pink-400 rounded-full flex-shrink-0"></div>
+              <span className="text-white/90 font-medium text-sm">ランディングページ</span>
+            </div>
+            <div className="flex items-baseline gap-0.5">
+              <span className="text-2xl lg:text-3xl font-bold text-white">{categoryStats['landing-page']}</span>
+              <span className="text-white/60 text-xs">件</span>
+            </div>
           </div>
         </div>
       )}
       {categoryStats?.['web-app'] > 0 && (
-        <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 lg:p-5 border border-white/20">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-2.5 lg:w-3 h-2.5 lg:h-3 bg-blue-400 rounded-full flex-shrink-0"></div>
-            <span className="text-white/90 font-medium text-sm lg:text-base">Webアプリ</span>
-          </div>
-          <div className="flex items-baseline gap-1">
-            <span className="text-3xl lg:text-4xl font-bold text-white">{categoryStats['web-app']}</span>
-            <span className="text-white/60 text-xs lg:text-sm">件</span>
+        <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 lg:p-3.5 border border-white/20">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="w-2 lg:w-2.5 h-2 lg:h-2.5 bg-blue-400 rounded-full flex-shrink-0"></div>
+              <span className="text-white/90 font-medium text-sm">Webアプリ</span>
+            </div>
+            <div className="flex items-baseline gap-0.5">
+              <span className="text-2xl lg:text-3xl font-bold text-white">{categoryStats['web-app']}</span>
+              <span className="text-white/60 text-xs">件</span>
+            </div>
           </div>
         </div>
       )}
       {categoryStats?.['mobile-app'] > 0 && (
-        <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 lg:p-5 border border-white/20">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-2.5 lg:w-3 h-2.5 lg:h-3 bg-green-400 rounded-full flex-shrink-0"></div>
-            <span className="text-white/90 font-medium text-sm lg:text-base">モバイルアプリ</span>
+        <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 lg:p-3.5 border border-white/20">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="w-2 lg:w-2.5 h-2 lg:h-2.5 bg-green-400 rounded-full flex-shrink-0"></div>
+              <span className="text-white/90 font-medium text-sm">モバイルアプリ</span>
+            </div>
+            <div className="flex items-baseline gap-0.5">
+              <span className="text-2xl lg:text-3xl font-bold text-white">{categoryStats['mobile-app']}</span>
+              <span className="text-white/60 text-xs">件</span>
+            </div>
           </div>
-          <div className="flex items-baseline gap-1">
-            <span className="text-3xl lg:text-4xl font-bold text-white">{categoryStats['mobile-app']}</span>
-            <span className="text-white/60 text-xs lg:text-sm">件</span>
+        </div>
+      )}
+      {categoryStats?.video > 0 && (
+        <div className="bg-white/10 backdrop-blur-sm rounded-lg p-3 lg:p-3.5 border border-white/20">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="w-2 lg:w-2.5 h-2 lg:h-2.5 bg-orange-400 rounded-full flex-shrink-0"></div>
+              <span className="text-white/90 font-medium text-sm">動画制作</span>
+            </div>
+            <div className="flex items-baseline gap-0.5">
+              <span className="text-2xl lg:text-3xl font-bold text-white">{categoryStats.video}</span>
+              <span className="text-white/60 text-xs">件</span>
+            </div>
           </div>
         </div>
       )}

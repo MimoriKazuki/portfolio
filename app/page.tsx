@@ -45,6 +45,7 @@ export default async function HomePage() {
     'landing-page': projects.filter(p => p.category === 'landing-page').length,
     'web-app': projects.filter(p => p.category === 'web-app').length,
     'mobile-app': projects.filter(p => p.category === 'mobile-app').length,
+    'video': projects.filter(p => p.category === 'video').length,
   }
 
   return (
