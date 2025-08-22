@@ -8,8 +8,10 @@ export interface Project {
   demo?: string
   technologies: string[]
   featured?: boolean
-  category: 'homepage' | 'landing-page' | 'web-app' | 'mobile-app'
+  category: 'homepage' | 'landing-page' | 'web-app' | 'mobile-app' | 'video'
   duration: string
+  prompt?: string
+  prompt_filename?: string
 }
 
 export interface Skill {
@@ -48,6 +50,7 @@ export interface Column {
   is_published: boolean
   is_featured?: boolean
   view_count?: number
+  category?: 'ai-tools' | 'industry' | 'topics-news'
   created_at: string
   updated_at: string
 }
@@ -61,6 +64,7 @@ export interface Document {
   category?: string
   tags?: string[]
   is_active: boolean
+  is_featured?: boolean
   download_count?: number
   created_at: string
   updated_at: string

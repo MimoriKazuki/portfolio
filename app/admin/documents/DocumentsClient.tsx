@@ -18,6 +18,7 @@ interface Document {
   created_at: string
   updated_at: string
   thumbnail?: string
+  is_featured?: boolean
   is_active: boolean
 }
 
@@ -64,19 +65,19 @@ export default function DocumentsClient({ documents }: DocumentsClientProps) {
 
   return (
     <div className="w-full">
-      <h1 className="text-3xl font-bold mb-8 text-gray-900">ドキュメント管理</h1>
+      <h1 className="text-3xl font-bold mb-8 text-gray-900">掲載資料管理</h1>
       
       {!documents || documents.length === 0 ? (
         <div className="bg-white rounded-lg p-16 text-center border border-gray-200">
           <FileText className="h-20 w-20 mx-auto mb-6 text-gray-400" />
-          <h2 className="text-2xl font-bold mb-4 text-gray-900">ドキュメントがありません</h2>
-          <p className="text-gray-600 mb-8">最初のドキュメントを追加して資料を共有しましょう</p>
+          <h2 className="text-2xl font-bold mb-4 text-gray-900">掲載資料がありません</h2>
+          <p className="text-gray-600 mb-8">最初の掲載資料を追加して共有しましょう</p>
           <Link
             href="/admin/documents/new"
             className="inline-flex items-center gap-2 bg-portfolio-blue hover:bg-portfolio-blue-dark text-white px-6 py-3 rounded-lg transition-colors text-lg"
           >
             <Plus className="h-6 w-6" />
-            ドキュメントを追加
+            掲載資料を追加
           </Link>
         </div>
       ) : (
@@ -85,7 +86,7 @@ export default function DocumentsClient({ documents }: DocumentsClientProps) {
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
               <div className="text-3xl font-bold text-portfolio-blue">{documents.length}</div>
-              <div className="text-sm text-gray-600">総ドキュメント数</div>
+              <div className="text-sm text-gray-600">総掲載資料数</div>
             </div>
             <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
               <div className="text-3xl font-bold text-green-600">
@@ -108,7 +109,7 @@ export default function DocumentsClient({ documents }: DocumentsClientProps) {
               className="flex items-center gap-2 bg-portfolio-blue hover:bg-portfolio-blue-dark text-white px-4 py-2 rounded-lg transition-colors"
             >
               <Plus className="h-5 w-5" />
-              ドキュメントを追加
+              掲載資料を追加
             </Link>
 
             <div className="flex items-center gap-4 flex-1 justify-end">
@@ -147,6 +148,7 @@ export default function DocumentsClient({ documents }: DocumentsClientProps) {
                 <tr>
                   <th className="w-40 text-center px-6 py-3 text-sm font-medium text-gray-700">画像</th>
                   <th className="text-center px-6 py-3 text-sm font-medium text-gray-700">内容</th>
+                  <th className="w-[80px] text-center px-6 py-3 text-sm font-medium text-gray-700">注目</th>
                   <th className="w-[120px] text-center px-6 py-3 text-xs font-medium text-gray-700">ダウンロード</th>
                   <th className="w-[120px] text-center px-6 py-3 text-sm font-medium text-gray-700">アクション</th>
                 </tr>
@@ -154,7 +156,7 @@ export default function DocumentsClient({ documents }: DocumentsClientProps) {
               <tbody className="divide-y divide-gray-200">
                 {filteredAndSortedDocuments.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="px-6 py-12 text-center text-gray-500">
+                    <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
                       検索結果が見つかりませんでした
                     </td>
                   </tr>
@@ -191,6 +193,11 @@ export default function DocumentsClient({ documents }: DocumentsClientProps) {
                             </p>
                           )}
                         </div>
+                      </td>
+                      <td className="w-[80px] px-6 py-4 text-center text-sm">
+                        <span className={document.is_featured ? 'text-green-600 font-medium' : 'text-gray-600'}>
+                          {document.is_featured ? 'ON' : 'OFF'}
+                        </span>
                       </td>
                       <td className="w-[120px] px-6 py-4 text-center">
                         <span className="text-sm text-gray-600">{document.download_count}回</span>

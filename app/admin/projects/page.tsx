@@ -9,7 +9,7 @@ export default async function AdminProjectsPage() {
   const { data: projects, error } = await supabase
     .from('projects')
     .select('*')
-    .order('order', { ascending: true })
+    .order('created_at', { ascending: false })
 
   if (error) {
     console.error('Error fetching projects:', error)

@@ -3,6 +3,7 @@ import { ExternalLink, Github, Clock, ArrowLeft } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import MainLayout from '@/app/components/MainLayout'
+import VideoPlayer from './VideoPlayer'
 import { createStaticClient } from '@/app/lib/supabase/static'
 import { createClient } from '@/app/lib/supabase/server'
 import type { Metadata } from 'next'
@@ -154,14 +155,16 @@ export default async function ProjectDetailPage({
     'homepage': 'bg-purple-100 text-purple-700',
     'landing-page': 'bg-pink-100 text-pink-700',
     'web-app': 'bg-blue-100 text-blue-700',
-    'mobile-app': 'bg-green-100 text-green-700'
+    'mobile-app': 'bg-green-100 text-green-700',
+    'video': 'bg-orange-100 text-orange-700'
   }
 
   const categoryLabels = {
     'homepage': 'ホームページ',
     'landing-page': 'ランディングページ',
     'web-app': 'Webアプリ',
-    'mobile-app': 'モバイルアプリ'
+    'mobile-app': 'モバイルアプリ',
+    'video': '動画制作'
   }
 
   return (
@@ -178,43 +181,50 @@ export default async function ProjectDetailPage({
         <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-gray-900">{project.title}</h1>
 
         <div className="flex flex-col lg:flex-row gap-6 sm:gap-8">
-          {/* Left column - Thumbnail */}
+          {/* Left column - Thumbnail or Video */}
           <div className="lg:w-1/2">
-            <div className="relative aspect-video rounded-lg overflow-hidden">
-              <Image
-                src={project.thumbnail}
-                alt={project.title}
-                fill
-                className="object-cover"
-                priority
+            {project.category === 'video' && project.live_url ? (
+              <VideoPlayer
+                thumbnail={project.thumbnail}
+                videoUrl={project.live_url}
+                title={project.title}
               />
-              <div className={`absolute top-2 right-2 sm:top-4 sm:right-4 ${categoryColors[project.category]} text-xs sm:text-sm px-2 sm:px-3 py-0.5 sm:py-1 rounded`}>
-                {categoryLabels[project.category]}
+            ) : (
+              <div className="relative aspect-video rounded-lg overflow-hidden">
+                <Image
+                  src={project.thumbnail}
+                  alt={project.title}
+                  fill
+                  className="object-cover"
+                  priority
+                />
+                <div className={`absolute top-2 right-2 sm:top-4 sm:right-4 ${categoryColors[project.category]} text-xs sm:text-sm px-2 sm:px-3 py-0.5 sm:py-1 rounded`}>
+                  {categoryLabels[project.category]}
+                </div>
               </div>
-            </div>
+            )}
             
             {/* Action buttons below thumbnail */}
-            <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
-              {project.live_url && (
+            <div className="mt-8 flex flex-col gap-3">
+            {project.live_url && project.category !== 'video' && (
                 <a
                   href={project.live_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-portfolio-blue-dark hover:opacity-90 rounded-full transition-opacity text-white text-sm font-medium"
+                  className="inline-flex items-center justify-center gap-2 text-white px-6 py-3 rounded-lg transition-opacity hover:opacity-90 font-medium w-full"
+                  style={{ backgroundColor: 'rgb(37, 99, 235)' }}
                 >
-                  <ExternalLink className="w-4 h-4" />
                   サイトを見る
+                  <ExternalLink className="w-4 h-4" />
                 </a>
               )}
               {project.prompt && (
                 <Link
                   href={`/projects/${project.id}/prompt`}
-                  className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 rounded-full transition-colors text-white text-sm font-medium"
+                  className="inline-flex items-center justify-center gap-2 text-white px-6 py-3 rounded-lg transition-opacity hover:opacity-90 font-medium w-full"
+                  style={{ backgroundColor: 'rgb(16, 185, 129)' }}
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
-                  プロンプトを見る
+                  プロンプトをダウンロード
                 </Link>
               )}
               {project.github_url && (
@@ -222,7 +232,8 @@ export default async function ProjectDetailPage({
                   href={project.github_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-900 rounded-lg transition-colors text-white"
+                  className="inline-flex items-center justify-center gap-2 text-white px-6 py-3 rounded-lg transition-opacity hover:opacity-90 font-medium w-full"
+                  style={{ backgroundColor: 'rgb(31, 41, 55)' }}
                 >
                   <Github className="w-4 h-4" />
                   ソースコード
@@ -255,19 +266,20 @@ export default async function ProjectDetailPage({
                 )}
               </div>
 
-              <div>
-                <h3 className="text-base font-medium text-gray-600 mb-2">使用技術</h3>
-                <div className="flex flex-wrap gap-2">
-                  {project.technologies.map((tech: string) => (
-                    <span key={tech} className="bg-gray-100 border border-gray-200 px-3 py-1 rounded text-sm text-gray-700">
-                      {tech}
-                    </span>
-                  ))}
+              {project.technologies && project.technologies.length > 0 && (
+                <div>
+                  <h3 className="text-base font-medium text-gray-600 mb-2">使用技術</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {project.technologies.map((tech: string) => (
+                      <span key={tech} className="bg-gray-100 border border-gray-200 px-3 py-1 rounded text-sm text-gray-700">
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              </div>
-
+              )}
+            </div>
           </div>
-        </div>
 
         {/* 関連プロジェクト */}
         {relatedProjects.length > 0 && (

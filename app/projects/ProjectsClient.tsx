@@ -11,6 +11,7 @@ const categories = [
   { id: 'landing-page', label: 'ランディングページ' },
   { id: 'web-app', label: 'Webアプリ' },
   { id: 'mobile-app', label: 'モバイルアプリ' },
+  { id: 'video', label: '動画制作' },
 ]
 
 interface ProjectsClientProps {
@@ -48,15 +49,16 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
   }, [activeCategory, projects])
     
   return (
-      <div className="w-full">
+    <div className="w-full">
       <div className="mb-8">
         <h1 className="text-[28px] font-bold text-gray-900">開発実績一覧</h1>
       </div>
       
       {/* Category Tabs */}
-      <div className="mb-6 -mx-4 sm:-mx-6 lg:mx-0">
-        <div className="overflow-x-auto scrollbar-hide">
-          <div className="flex gap-2 px-4 sm:px-6 lg:px-0 pb-2 lg:pb-0 lg:flex-wrap">
+      <div className="mb-6 relative">
+        <div className="absolute inset-x-0 -mx-4 sm:-mx-6 lg:static lg:mx-0">
+          <div className="overflow-x-auto scrollbar-hide">
+            <div className="flex gap-2 px-4 sm:px-6 lg:px-0 pb-2 lg:pb-0 lg:flex-wrap">
               {visibleCategories.map((category) => (
                 <button
                   key={category.id}
@@ -73,8 +75,11 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
                   </span>
                 </button>
               ))}
+            </div>
           </div>
         </div>
+        {/* スペーサー */}
+        <div className="h-10 lg:hidden" />
       </div>
       
       {/* カードコンテナ */}

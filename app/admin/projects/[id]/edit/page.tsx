@@ -22,7 +22,7 @@ export default async function EditProjectPage({ params }: PageProps) {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-6">プロジェクトを編集</h1>
+      <h1 className="text-3xl font-bold mb-6">ポートフォリオを編集</h1>
       
       <div className="bg-youtube-gray rounded-lg">
         <ProjectForm initialData={project} projectId={id} />

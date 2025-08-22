@@ -35,13 +35,26 @@ const RightSidebar = () => {
         .order('created_at', { ascending: false })
         .limit(2)
       
-      // Fetch documents
-      const { data: documentsData } = await supabase
+      // Fetch featured documents
+      let { data: documentsData } = await supabase
         .from('documents')
         .select('*')
         .eq('is_active', true)
+        .eq('is_featured', true)
         .order('created_at', { ascending: false })
         .limit(1)
+      
+      // If no featured documents, get the latest one
+      if (!documentsData || documentsData.length === 0) {
+        const { data: latestDocumentData } = await supabase
+          .from('documents')
+          .select('*')
+          .eq('is_active', true)
+          .order('created_at', { ascending: false })
+          .limit(1)
+        
+        documentsData = latestDocumentData
+      }
       
       if (columnsData) setColumns(columnsData)
       if (projectsData) setProjects(projectsData)

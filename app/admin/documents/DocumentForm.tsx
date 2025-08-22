@@ -15,6 +15,7 @@ interface DocumentFormData {
   category?: string
   tags?: string[]
   is_active: boolean
+  is_featured: boolean
 }
 
 interface DocumentFormProps {
@@ -43,6 +44,7 @@ export default function DocumentForm({ initialData, documentId }: DocumentFormPr
     category: initialData?.category || 'サービス紹介',
     tags: initialData?.tags || [],
     is_active: initialData?.is_active ?? true,
+    is_featured: initialData?.is_featured ?? false,
   })
   const [tagInput, setTagInput] = useState('')
 
@@ -222,6 +224,7 @@ export default function DocumentForm({ initialData, documentId }: DocumentFormPr
         file_url: fileUrl,
         thumbnail: thumbnailUrl,
         is_active: true,
+        is_featured: formData.is_featured,
       }
 
       if (documentId) {
@@ -397,6 +400,20 @@ export default function DocumentForm({ initialData, documentId }: DocumentFormPr
             rows={4}
             placeholder="資料の内容について簡潔に説明してください"
           />
+        </div>
+
+        <div className="flex items-center gap-4">
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={formData.is_featured}
+              onChange={(e) => setFormData({ ...formData, is_featured: e.target.checked })}
+              className="w-4 h-4 text-portfolio-blue bg-white border-gray-300 rounded focus:ring-portfolio-blue"
+            />
+            <span className="text-sm font-medium text-gray-700">
+              注目資料
+            </span>
+          </label>
         </div>
 
         <div className="flex justify-end gap-4">

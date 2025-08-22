@@ -33,13 +33,32 @@ interface DocumentRequest {
   }
 }
 
+interface PromptRequest {
+  id: string
+  type: string
+  company_name: string
+  name: string
+  email: string
+  phone?: string
+  department?: string
+  position?: string
+  message?: string
+  metadata?: {
+    project_id?: string
+    project_title?: string
+  }
+  created_at: string
+  status?: string
+}
+
 interface ContactDetailModalProps {
   contact?: Contact | null
   documentRequest?: DocumentRequest | null
+  promptRequest?: PromptRequest | null
   onClose: () => void
 }
 
-export default function ContactDetailModal({ contact, documentRequest, onClose }: ContactDetailModalProps) {
+export default function ContactDetailModal({ contact, documentRequest, promptRequest, onClose }: ContactDetailModalProps) {
   const statusColors = {
     'new': 'bg-red-100 text-red-700',
     'in_progress': 'bg-yellow-100 text-yellow-700',
@@ -67,7 +86,8 @@ export default function ContactDetailModal({ contact, documentRequest, onClose }
   }
 
   const isDocumentRequest = !!documentRequest
-  const data = documentRequest || contact
+  const isPromptRequest = !!promptRequest
+  const data = promptRequest || documentRequest || contact
   if (!data) return null
 
   return (
@@ -76,7 +96,7 @@ export default function ContactDetailModal({ contact, documentRequest, onClose }
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <h2 className="text-xl font-semibold text-gray-900">
-            {isDocumentRequest ? '資料請求詳細' : 'お問い合わせ詳細'}
+            {isPromptRequest ? 'プロンプト請求詳細' : isDocumentRequest ? '資料請求詳細' : 'お問い合わせ詳細'}
           </h2>
           <button
             onClick={onClose}
@@ -98,11 +118,13 @@ export default function ContactDetailModal({ contact, documentRequest, onClose }
                   <div className="text-sm text-gray-600">送信元</div>
                   <div className="font-medium">
                     <span className={`inline-flex px-3 py-1 rounded-full text-sm ${
-                      isDocumentRequest
+                      isPromptRequest
+                        ? 'bg-green-100 text-green-700'
+                        : isDocumentRequest
                         ? 'bg-purple-100 text-purple-700'
                         : 'bg-blue-100 text-blue-700'
                     }`}>
-                      {isDocumentRequest ? '資料請求' : 'フォーム'}
+                      {isPromptRequest ? 'プロンプト' : isDocumentRequest ? '資料請求' : 'フォーム'}
                     </span>
                   </div>
                 </div>
@@ -129,6 +151,10 @@ export default function ContactDetailModal({ contact, documentRequest, onClose }
                       <span className={`inline-flex px-3 py-1 rounded-full text-sm ${statusColors[contact.status]}`}>
                         {statusLabels[contact.status]}
                       </span>
+                    ) : promptRequest && promptRequest.status ? (
+                      <span className={`inline-flex px-3 py-1 rounded-full text-sm ${statusColors[promptRequest.status as keyof typeof statusColors] || 'bg-red-100 text-red-700'}`}>
+                        {statusLabels[promptRequest.status as keyof typeof statusLabels] || '新規'}
+                      </span>
                     ) : (
                       <span className="inline-flex px-3 py-1 rounded-full text-sm bg-red-100 text-red-700">
                         新規
@@ -137,12 +163,16 @@ export default function ContactDetailModal({ contact, documentRequest, onClose }
                   </div>
                 </div>
                 
-                {/* 資料名 */}
-                {isDocumentRequest && (
+                {/* 資料名/プロジェクト名 */}
+                {(isDocumentRequest || isPromptRequest) && (
                   <div className="space-y-2">
-                    <div className="text-sm text-gray-600">資料名</div>
+                    <div className="text-sm text-gray-600">
+                      {isPromptRequest ? 'プロジェクト名' : '資料名'}
+                    </div>
                     <div className="font-medium text-gray-900">
-                      {documentRequest?.document?.title || '-'}
+                      {isPromptRequest 
+                        ? promptRequest?.metadata?.project_title || '-'
+                        : documentRequest?.document?.title || '-'}
                     </div>
                   </div>
                 )}
@@ -157,7 +187,7 @@ export default function ContactDetailModal({ contact, documentRequest, onClose }
                 <div className="space-y-2">
                   <div className="text-sm text-gray-600">お名前</div>
                   <div className="font-medium text-gray-900">
-                    {contact?.name || documentRequest?.name || '-'}
+                    {contact?.name || documentRequest?.name || promptRequest?.name || '-'}
                   </div>
                 </div>
                 
@@ -165,7 +195,7 @@ export default function ContactDetailModal({ contact, documentRequest, onClose }
                 <div className="space-y-2">
                   <div className="text-sm text-gray-600">会社名</div>
                   <div className="font-medium text-gray-900">
-                    {contact?.company || documentRequest?.company_name || '-'}
+                    {contact?.company || documentRequest?.company_name || promptRequest?.company_name || '-'}
                   </div>
                 </div>
                 
@@ -174,10 +204,10 @@ export default function ContactDetailModal({ contact, documentRequest, onClose }
                   <div className="text-sm text-gray-600">メールアドレス</div>
                   <div className="font-medium">
                     <a 
-                      href={`mailto:${contact?.email || documentRequest?.email}`}
+                      href={`mailto:${contact?.email || documentRequest?.email || promptRequest?.email}`}
                       className="text-portfolio-blue hover:underline"
                     >
-                      {contact?.email || documentRequest?.email || '-'}
+                      {contact?.email || documentRequest?.email || promptRequest?.email || '-'}
                     </a>
                   </div>
                 </div>
@@ -186,7 +216,7 @@ export default function ContactDetailModal({ contact, documentRequest, onClose }
                 <div className="space-y-2">
                   <div className="text-sm text-gray-600">電話番号</div>
                   <div className="font-medium text-gray-900">
-                    {documentRequest?.phone || '-'}
+                    {documentRequest?.phone || promptRequest?.phone || '-'}
                   </div>
                 </div>
                 
@@ -194,7 +224,7 @@ export default function ContactDetailModal({ contact, documentRequest, onClose }
                 <div className="space-y-2">
                   <div className="text-sm text-gray-600">部署</div>
                   <div className="font-medium text-gray-900">
-                    {documentRequest?.department || '-'}
+                    {documentRequest?.department || promptRequest?.department || '-'}
                   </div>
                 </div>
                 
@@ -202,7 +232,7 @@ export default function ContactDetailModal({ contact, documentRequest, onClose }
                 <div className="space-y-2">
                   <div className="text-sm text-gray-600">役職</div>
                   <div className="font-medium text-gray-900">
-                    {documentRequest?.position || '-'}
+                    {documentRequest?.position || promptRequest?.position || '-'}
                   </div>
                 </div>
               </div>
@@ -213,11 +243,11 @@ export default function ContactDetailModal({ contact, documentRequest, onClose }
               {/* 左側 - お問い合わせ内容 */}
               <div className="bg-gray-50 rounded-lg p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">
-                  {isDocumentRequest ? 'ご要望・ご質問' : 'お問い合わせ内容'}
+                  {isDocumentRequest || isPromptRequest ? 'ご要望・ご質問' : 'お問い合わせ内容'}
                 </h3>
                 <div className="bg-white rounded-lg p-6 border border-gray-200 min-h-[200px]">
                   <p className="text-gray-700 whitespace-pre-wrap">
-                    {contact?.message || documentRequest?.message || '-'}
+                    {contact?.message || documentRequest?.message || promptRequest?.message || '-'}
                   </p>
                 </div>
               </div>
@@ -231,7 +261,7 @@ export default function ContactDetailModal({ contact, documentRequest, onClose }
                     <div className="text-sm text-gray-600">受信日時</div>
                     <div className="font-medium text-gray-900">
                       {format(
-                        new Date(contact?.created_at || documentRequest?.created_at || ''), 
+                        new Date(contact?.created_at || documentRequest?.created_at || promptRequest?.created_at || ''), 
                         'yyyy年MM月dd日 HH:mm', 
                         { locale: ja }
                       )}
@@ -242,7 +272,7 @@ export default function ContactDetailModal({ contact, documentRequest, onClose }
                   <div className="space-y-2">
                     <div className="text-sm text-gray-600">最終更新日時</div>
                     <div className="font-medium text-gray-900">
-                      {contact && contact.updated_at !== contact.created_at ? (
+                      {(contact && contact.updated_at !== contact.created_at) ? (
                         format(new Date(contact.updated_at), 'yyyy年MM月dd日 HH:mm', { locale: ja })
                       ) : (
                         '-'
@@ -257,11 +287,13 @@ export default function ContactDetailModal({ contact, documentRequest, onClose }
             <div className="flex gap-3 pt-2">
               <button
                 onClick={() => {
-                  const email = contact?.email || documentRequest?.email || ''
-                  const subject = isDocumentRequest 
+                  const email = contact?.email || documentRequest?.email || promptRequest?.email || ''
+                  const subject = isPromptRequest
+                    ? `Re: プロンプト請求について - ${promptRequest?.metadata?.project_title || ''}`
+                    : isDocumentRequest 
                     ? `Re: 資料請求について - ${documentRequest?.document?.title || ''}` 
                     : `Re: お問い合わせについて - ${contact?.inquiry_type ? typeLabels[contact.inquiry_type] : ''}`
-                  const body = `${contact?.name || documentRequest?.name} 様\n\nお問い合わせいただきありがとうございます。\n\n`
+                  const body = `${contact?.name || documentRequest?.name || promptRequest?.name} 様\n\nお問い合わせいただきありがとうございます。\n\n`
                   
                   // mailtoリンクを作成して直接クリック
                   const mailtoLink = document.createElement('a')

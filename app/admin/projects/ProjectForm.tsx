@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/app/lib/supabase/client'
-import { Check, X, Upload, Loader2, Eye } from 'lucide-react'
+import { Check, X, Upload, Loader2, FileText, Download } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -17,6 +17,7 @@ interface ProjectFormData {
   category: 'homepage' | 'landing-page' | 'web-app' | 'mobile-app'
   duration: string
   prompt: string
+  prompt_filename: string
 }
 
 interface ProjectFormProps {
@@ -34,7 +35,10 @@ export default function ProjectForm({ initialData, projectId }: ProjectFormProps
   const [thumbnailPreview, setThumbnailPreview] = useState<string>(initialData?.thumbnail || '')
   const [featuredCount, setFeaturedCount] = useState(0)
   const [dragOver, setDragOver] = useState(false)
-  const [showPromptPreview, setShowPromptPreview] = useState(false)
+  const [promptFile, setPromptFile] = useState<File | null>(null)
+  const [promptFileName, setPromptFileName] = useState<string>('')
+  const [videoFile, setVideoFile] = useState<File | null>(null)
+  const [videoFileName, setVideoFileName] = useState<string>('')
   
   const [formData, setFormData] = useState<ProjectFormData>({
     title: initialData?.title || '',
@@ -46,6 +50,7 @@ export default function ProjectForm({ initialData, projectId }: ProjectFormProps
     category: initialData?.category || 'web-app',
     duration: initialData?.duration || '',
     prompt: initialData?.prompt || '',
+    prompt_filename: initialData?.prompt_filename || '',
   })
 
   // Featured project countを取得
@@ -63,6 +68,13 @@ export default function ProjectForm({ initialData, projectId }: ProjectFormProps
     }
     fetchFeaturedCount()
   }, [supabase, projectId])
+
+  // 初期データにプロンプトファイル名がある場合は設定
+  useEffect(() => {
+    if (initialData?.prompt_filename) {
+      setPromptFileName(initialData.prompt_filename)
+    }
+  }, [initialData?.prompt_filename])
 
   const handleThumbnailChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -127,12 +139,50 @@ export default function ProjectForm({ initialData, projectId }: ProjectFormProps
     return publicUrl
   }
 
+  const uploadVideo = async (file: File): Promise<string> => {
+    const fileExt = file.name.split('.').pop()
+    const fileName = `${Math.random()}.${fileExt}`
+    const filePath = fileName
+
+    const { error: uploadError, data } = await supabase.storage
+      .from('project-videos')
+      .upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: false
+      })
+
+    if (uploadError) {
+      console.error('Video upload error:', uploadError)
+      throw uploadError
+    }
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('project-videos')
+      .getPublicUrl(filePath)
+
+    return publicUrl
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // 開発期間が必須
+    if (!formData.duration) {
+      alert('開発期間は必須項目です。')
+      return
+    }
+    
+    // 動画制作カテゴリの場合、動画ファイルまたはURLが必須
+    if (formData.category === 'video' && !formData.live_url && !videoFile) {
+      alert('動画制作カテゴリでは動画ファイルのアップロードまたはURLが必須です。')
+      return
+    }
+    
     setLoading(true)
 
     try {
       let thumbnailUrl = formData.thumbnail
+      let videoUrl = formData.live_url
 
       // Upload new thumbnail if selected
       if (thumbnailFile) {
@@ -141,24 +191,40 @@ export default function ProjectForm({ initialData, projectId }: ProjectFormProps
         setUploading(false)
       }
 
+      // Upload video file if selected (for video category)
+      if (formData.category === 'video' && videoFile) {
+        setUploading(true)
+        videoUrl = await uploadVideo(videoFile)
+        setUploading(false)
+      }
+
       const projectData = {
         ...formData,
-        thumbnail: thumbnailUrl
+        thumbnail: thumbnailUrl,
+        live_url: videoUrl
       }
+
+      console.log('Attempting to save project data:', projectData)
+      console.log('Current auth status:', await supabase.auth.getUser())
 
       if (projectId) {
         // Update existing project
-        const { error } = await supabase
+        const { error, data } = await supabase
           .from('projects')
           .update(projectData)
           .eq('id', projectId)
+          .select()
 
+        console.log('Update result:', { error, data })
         if (error) throw error
       } else {
         // Create new project
-        const { error } = await supabase
+        const { error, data } = await supabase
           .from('projects')
           .insert([projectData])
+          .select()
+
+        console.log('Insert result:', { error, data })
 
         if (error) throw error
       }
@@ -195,32 +261,79 @@ export default function ProjectForm({ initialData, projectId }: ProjectFormProps
   const handleFeaturedChange = (checked: boolean) => {
     // 3つまでの制限をチェック
     if (checked && featuredCount >= 3 && !initialData?.featured) {
-      alert('注目プロジェクトは最大3つまでです。')
+      alert('注目ポートフォリオは最大3つまでです。')
       return
     }
     setFormData({ ...formData, featured: checked })
   }
 
-  const parseCSVPrompt = (csvText: string) => {
-    if (!csvText.trim()) return []
+  const handleVideoFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // 動画ファイルの検証
+    const validTypes = ['video/mp4', 'video/webm', 'video/ogg', 'video/quicktime']
+    if (!validTypes.includes(file.type)) {
+      alert('MP4、WebM、OGG、MOV形式の動画ファイルを選択してください')
+      return
+    }
+
+    // ファイルサイズの制限（100MB）
+    const maxSize = 100 * 1024 * 1024 // 100MB
+    if (file.size > maxSize) {
+      alert('動画ファイルのサイズは100MB以下にしてください')
+      return
+    }
+
+    setVideoFile(file)
+    setVideoFileName(file.name)
+  }
+
+  const handlePromptFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file || !file.name.endsWith('.csv')) {
+      alert('CSVファイルを選択してください')
+      return
+    }
+
+    setPromptFile(file)
+    setPromptFileName(file.name)
     
-    const lines = csvText.trim().split('\n')
-    const results = []
-    
-    for (const line of lines) {
-      const values = line.split(',').map(v => v.trim())
-      if (values.length >= 3) {
-        results.push({
-          number: values[0],
-          category: values[1],
-          prompt: values[2],
-          description: values[3] || ''
-        })
-      }
+    // エンコーディングを自動検出して読み込む
+    const tryReadWithEncoding = (encoding: string) => {
+      return new Promise<string>((resolve, reject) => {
+        const reader = new FileReader()
+        reader.onload = (event) => {
+          const text = event.target?.result as string
+          resolve(text)
+        }
+        reader.onerror = reject
+        reader.readAsText(file, encoding)
+      })
     }
     
-    return results
+    try {
+      // まずShift-JISで試す（日本語CSVの一般的なエンコーディング）
+      let csvText = await tryReadWithEncoding('Shift-JIS')
+      console.log('Shift-JIS CSV preview:', csvText.substring(0, 200))
+      
+      // 文字化けチェック
+      const hasReplacementChar = csvText.includes('�') || csvText.includes('\ufffd')
+      
+      if (hasReplacementChar) {
+        console.log('Shift-JIS has replacement chars, trying UTF-8...')
+        // UTF-8で再試行
+        csvText = await tryReadWithEncoding('UTF-8')
+        console.log('UTF-8 CSV preview:', csvText.substring(0, 200))
+      }
+      
+      setFormData({ ...formData, prompt: csvText, prompt_filename: file.name })
+    } catch (error) {
+      console.error('Error reading CSV file:', error)
+      alert('CSVファイルの読み込みに失敗しました')
+    }
   }
+
 
   return (
     <div className="bg-white rounded-lg p-4">
@@ -228,7 +341,7 @@ export default function ProjectForm({ initialData, projectId }: ProjectFormProps
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-medium mb-2 text-gray-700">
-              プロジェクト名 <span className="text-red-500">*</span>
+              ポートフォリオ名 <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -252,6 +365,7 @@ export default function ProjectForm({ initialData, projectId }: ProjectFormProps
               <option value="landing-page">ランディングページ</option>
               <option value="web-app">Webアプリ</option>
               <option value="mobile-app">モバイルアプリ</option>
+              <option value="video">動画制作</option>
             </select>
           </div>
         </div>
@@ -259,7 +373,7 @@ export default function ProjectForm({ initialData, projectId }: ProjectFormProps
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-medium mb-2 text-gray-700">
-              開発期間
+              開発期間 <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -267,21 +381,85 @@ export default function ProjectForm({ initialData, projectId }: ProjectFormProps
               onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
               className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-portfolio-blue text-gray-900"
               placeholder="2週間"
+              required
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-2 text-gray-700">
-              サイトURL
-            </label>
-            <input
-              type="url"
-              value={formData.live_url}
-              onChange={(e) => setFormData({ ...formData, live_url: e.target.value })}
-              className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-portfolio-blue text-gray-900"
-              placeholder="https://example.com"
-            />
-          </div>
+          {formData.category === 'video' ? (
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-700">
+                動画ファイル <span className="text-red-500">*</span>
+              </label>
+              {videoFileName ? (
+                <div className="space-y-3">
+                  <div className="bg-gray-100 p-3 rounded-lg flex items-center justify-between">
+                    <span className="text-sm text-gray-700">{videoFileName}</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setVideoFile(null)
+                        setVideoFileName('')
+                      }}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      <X className="h-5 w-5" />
+                    </button>
+                  </div>
+                  <p className="text-xs text-gray-600">
+                    または、外部動画URLを入力:
+                  </p>
+                  <input
+                    type="url"
+                    value={formData.live_url}
+                    onChange={(e) => setFormData({ ...formData, live_url: e.target.value })}
+                    className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-portfolio-blue text-gray-900"
+                    placeholder="https://example.com/video.mp4"
+                  />
+                </div>
+              ) : (
+                <div>
+                  <label className="cursor-pointer inline-block">
+                    <input
+                      type="file"
+                      accept="video/mp4,video/webm,video/ogg,video/quicktime"
+                      onChange={handleVideoFileChange}
+                      className="hidden"
+                    />
+                    <div className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition-colors">
+                      <Upload className="h-5 w-5" />
+                      動画ファイルを選択
+                    </div>
+                  </label>
+                  <p className="text-xs text-gray-600 mt-2">
+                    MP4、WebM、OGG、MOV形式（最大100MB）
+                  </p>
+                  <p className="text-xs text-gray-600 mt-2">
+                    または、外部動画URLを入力:
+                  </p>
+                  <input
+                    type="url"
+                    value={formData.live_url}
+                    onChange={(e) => setFormData({ ...formData, live_url: e.target.value })}
+                    className="w-full mt-2 px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-portfolio-blue text-gray-900"
+                    placeholder="https://example.com/video.mp4"
+                  />
+                </div>
+              )}
+            </div>
+          ) : (
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-700">
+                サイトURL
+              </label>
+              <input
+                type="url"
+                value={formData.live_url}
+                onChange={(e) => setFormData({ ...formData, live_url: e.target.value })}
+                className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-portfolio-blue text-gray-900"
+                placeholder="https://example.com"
+              />
+            </div>
+          )}
         </div>
 
         <div>
@@ -389,60 +567,46 @@ export default function ProjectForm({ initialData, projectId }: ProjectFormProps
 
         <div>
           <label className="block text-sm font-medium mb-2 text-gray-700">
-            プロンプト（CSV形式）
+            プロンプト（CSVファイル）
           </label>
-          <textarea
-            value={formData.prompt}
-            onChange={(e) => setFormData({ ...formData, prompt: e.target.value })}
-            className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-portfolio-blue text-gray-900 font-mono text-sm"
-            rows={6}
-            placeholder={`番号,カテゴリ,プロンプト,説明
-1,UI設計,モダンなECサイトのUIを設計してください,レスポンシブデザインを重視
-2,実装,React + TypeScriptで実装してください,最新のベストプラクティスに従う`}
-          />
-          <div className="flex items-center justify-between mt-1">
-            <p className="text-xs text-gray-600">
-              CSV形式でプロンプトを入力してください。ヘッダー行は自動的に追加されます。
-            </p>
-            {formData.prompt && (
-              <button
-                type="button"
-                onClick={() => setShowPromptPreview(!showPromptPreview)}
-                className="text-xs text-portfolio-blue hover:text-portfolio-blue-dark flex items-center gap-1"
-              >
-                <Eye className="h-3 w-3" />
-                プレビュー
-              </button>
+          
+          <div className="space-y-4">
+            {(promptFile || formData.prompt) ? (
+              <div className="space-y-3">
+                <div className="bg-gray-100 p-3 rounded-lg flex items-center justify-between">
+                  <span className="text-sm text-gray-700">
+                    {promptFileName || formData.prompt_filename || 'prompt_data.csv'}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setPromptFile(null)
+                      setPromptFileName('')
+                      setFormData({ ...formData, prompt: '', prompt_filename: '' })
+                    }}
+                    className="text-red-500 hover:text-red-700"
+                  >
+                    <X className="h-5 w-5" />
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <label className="cursor-pointer inline-block">
+                  <input
+                    type="file"
+                    accept=".csv"
+                    onChange={handlePromptFileChange}
+                    className="hidden"
+                  />
+                  <div className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition-colors">
+                    <Upload className="h-5 w-5" />
+                    CSVファイルを選択
+                  </div>
+                </label>
+              </div>
             )}
           </div>
-          
-          {showPromptPreview && formData.prompt && (
-            <div className="mt-3 p-4 bg-gray-50 rounded-lg border border-gray-200">
-              <h4 className="text-sm font-medium mb-2 text-gray-700">プロンプトプレビュー</h4>
-              <div className="overflow-x-auto">
-                <table className="w-full text-xs">
-                  <thead>
-                    <tr className="border-b border-gray-300">
-                      <th className="text-left p-2">番号</th>
-                      <th className="text-left p-2">カテゴリ</th>
-                      <th className="text-left p-2">プロンプト</th>
-                      <th className="text-left p-2">説明</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {parseCSVPrompt(formData.prompt).map((row, index) => (
-                      <tr key={index} className="border-b border-gray-200">
-                        <td className="p-2">{row.number}</td>
-                        <td className="p-2">{row.category}</td>
-                        <td className="p-2">{row.prompt}</td>
-                        <td className="p-2">{row.description}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
         </div>
 
         <div>
@@ -455,14 +619,14 @@ export default function ProjectForm({ initialData, projectId }: ProjectFormProps
               className="w-4 h-4 text-portfolio-blue bg-white border-gray-300 rounded focus:ring-portfolio-blue disabled:opacity-50"
             />
             <span className="text-sm font-medium text-gray-700">
-              注目プロジェクト
+              注目ポートフォリオ
               {featuredCount >= 3 && !formData.featured && (
                 <span className="text-xs text-red-500 ml-2">(上限達成: {featuredCount}/3)</span>
               )}
             </span>
           </label>
           <p className="text-xs text-gray-600 mt-1">
-            現在の注目プロジェクト: {featuredCount}/3
+            現在の注目ポートフォリオ: {featuredCount}/3
           </p>
         </div>
 

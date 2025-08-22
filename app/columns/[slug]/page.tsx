@@ -154,11 +154,12 @@ export default async function ColumnDetailPage({ params }: PageProps) {
   const headings = extractHeadingsFromHtml(column.content)
   const hasMultipleHeadings = headings.length >= 2
 
-  // 関連コラムを取得（現在の記事を除く最新3件）
+  // 関連コラムを取得（同じカテゴリの記事、現在の記事を除く最新3件）
   const { data: relatedColumns } = await supabase
     .from('columns')
     .select('*')
     .eq('is_published', true)
+    .eq('category', column.category)
     .neq('id', column.id)
     .order('published_date', { ascending: false })
     .limit(3)

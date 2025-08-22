@@ -23,6 +23,7 @@ interface ColumnFormData {
   is_published: boolean
   author?: string
   thumbnail?: string
+  category: 'ai-tools' | 'industry' | 'topics-news'
 }
 
 interface ColumnFormProps {
@@ -48,6 +49,7 @@ export default function ColumnForm({ initialData, columnId }: ColumnFormProps) {
     is_published: initialData?.is_published || false,
     author: initialData?.author || 'LandBridge開発チーム',
     thumbnail: initialData?.thumbnail || '',
+    category: initialData?.category || 'topics-news',
   })
   const [slugManuallyEdited, setSlugManuallyEdited] = useState(!!columnId && !!initialData?.slug)
   const [columnCount, setColumnCount] = useState(0)
@@ -294,6 +296,23 @@ export default function ColumnForm({ initialData, columnId }: ColumnFormProps) {
           </div>
         </div>
 
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium mb-2 text-gray-700">
+              カテゴリ <span className="text-red-500">*</span>
+            </label>
+            <select
+              value={formData.category}
+              onChange={(e) => setFormData({ ...formData, category: e.target.value as ColumnFormData['category'] })}
+              className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-portfolio-blue text-gray-900"
+              required
+            >
+              <option value="ai-tools">生成AIツール</option>
+              <option value="industry">業界別</option>
+              <option value="topics-news">トピック・ニュース</option>
+            </select>
+          </div>
+        </div>
 
         <div>
           <label className="block text-sm font-medium mb-2 text-gray-700">

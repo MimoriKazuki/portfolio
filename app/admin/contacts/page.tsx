@@ -32,7 +32,7 @@ import ContactsClient from './ContactsClient'
 export default async function AdminContactsPage() {
   const supabase = await createClient()
   
-  // フォームからの問い合わせを取得
+  // すべての問い合わせを取得（フォーム、プロンプトリクエストを含む）
   const { data: contacts, error: contactsError } = await supabase
     .from('contacts')
     .select('*')
@@ -62,9 +62,22 @@ export default async function AdminContactsPage() {
     console.error('Error fetching document requests:', requestsError)
   }
 
+  // プロンプトリクエストを通常のcontactsから抽出し、フィールドをマッピング
+  const promptRequests = (contacts || [])
+    .filter(contact => contact.type === 'prompt_request')
+    .map(contact => ({
+      ...contact,
+      company_name: contact.company, // フィールド名の変換
+      phone: contact.metadata?.phone,
+      department: contact.metadata?.department,
+      position: contact.metadata?.position
+    }))
+  const normalContacts = (contacts || []).filter(contact => !contact.type || contact.type === 'contact')
+
   // 両方のデータを統合して渡す
   return <ContactsClient 
-    contacts={contacts || []} 
+    contacts={normalContacts} 
     documentRequests={documentRequests || []}
+    promptRequests={promptRequests}
   />
 }

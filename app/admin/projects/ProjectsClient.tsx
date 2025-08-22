@@ -29,14 +29,16 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
     'homepage': 'bg-purple-100 text-purple-700',
     'landing-page': 'bg-pink-100 text-pink-700',
     'web-app': 'bg-blue-100 text-blue-700',
-    'mobile-app': 'bg-green-100 text-green-700'
+    'mobile-app': 'bg-green-100 text-green-700',
+    'video': 'bg-orange-100 text-orange-700'
   }
 
   const categoryLabels = {
     'homepage': 'ホームページ',
     'landing-page': 'ランディングページ',
     'web-app': 'Webアプリ',
-    'mobile-app': 'モバイルアプリ'
+    'mobile-app': 'モバイルアプリ',
+    'video': '動画制作'
   }
 
   const filteredProjects = useMemo(() => {
@@ -53,19 +55,19 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
 
   return (
     <div className="w-full">
-      <h1 className="text-3xl font-bold mb-8 text-gray-900">プロジェクト管理</h1>
+      <h1 className="text-3xl font-bold mb-8 text-gray-900">ポートフォリオ管理</h1>
       
       {!projects || projects.length === 0 ? (
         <div className="bg-white rounded-lg p-16 text-center border border-gray-200">
           <FolderOpen className="h-20 w-20 mx-auto mb-6 text-gray-400" />
-          <h2 className="text-2xl font-bold mb-4 text-gray-900">プロジェクトがありません</h2>
-          <p className="text-gray-600 mb-8">最初のプロジェクトを追加して実績を公開しましょう</p>
+          <h2 className="text-2xl font-bold mb-4 text-gray-900">ポートフォリオがありません</h2>
+          <p className="text-gray-600 mb-8">最初のポートフォリオを追加して実績を公開しましょう</p>
           <Link
             href="/admin/projects/new"
             className="inline-flex items-center gap-2 bg-portfolio-blue hover:bg-portfolio-blue-dark text-white px-6 py-3 rounded-lg transition-colors text-lg"
           >
             <Plus className="h-6 w-6" />
-            プロジェクトを追加
+            ポートフォリオを追加
           </Link>
         </div>
       ) : (
@@ -101,10 +103,10 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
               <div className="text-sm text-gray-600">モバイルアプリ</div>
             </div>
             <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
-              <div className="text-3xl font-bold text-emerald-600">
-                {projects.filter(p => p.prompt).length}
+              <div className="text-3xl font-bold text-orange-600">
+                {projects.filter(p => p.category === 'video').length}
               </div>
-              <div className="text-sm text-gray-600">プロンプトあり</div>
+              <div className="text-sm text-gray-600">動画制作</div>
             </div>
           </div>
 
@@ -115,7 +117,7 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
               className="flex items-center gap-2 bg-portfolio-blue hover:bg-portfolio-blue-dark text-white px-4 py-2 rounded-lg transition-colors"
             >
               <Plus className="h-5 w-5" />
-              プロジェクトを追加
+              ポートフォリオを追加
             </Link>
 
             <div className="flex items-center gap-4 flex-1 justify-end">
@@ -131,6 +133,7 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
                   <option value="landing-page">ランディングページ</option>
                   <option value="web-app">Webアプリ</option>
                   <option value="mobile-app">モバイルアプリ</option>
+                  <option value="video">動画制作</option>
                 </select>
                 <Filter className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
               </div>
@@ -211,7 +214,7 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
                       </td>
                       <td className="w-[120px] px-6 py-4 text-center text-sm">
                         <span className={project.featured ? 'text-green-600 font-medium' : 'text-gray-600'}>
-                          {project.featured ? 'YES' : 'NO'}
+                          {project.featured ? 'ON' : 'OFF'}
                         </span>
                       </td>
                       <td className="w-[120px] px-6 py-4">

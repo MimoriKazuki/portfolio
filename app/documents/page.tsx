@@ -65,7 +65,7 @@ export default async function DocumentsPage() {
                   className="inline-flex items-center justify-center text-white px-6 py-3 rounded-lg transition-opacity hover:opacity-90 font-medium w-full"
                   style={{ backgroundColor: 'rgb(37, 99, 235)' }}
                 >
-                  資料ダウンロード
+                  資料をダウンロード
                 </Link>
               </div>
             </article>

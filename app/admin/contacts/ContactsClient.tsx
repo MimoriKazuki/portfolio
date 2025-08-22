@@ -37,18 +37,38 @@ interface DocumentRequest {
   }
 }
 
+interface PromptRequest {
+  id: string
+  type: string
+  company_name: string
+  name: string
+  email: string
+  phone?: string
+  department?: string
+  position?: string
+  message?: string
+  metadata?: {
+    project_id?: string
+    project_title?: string
+  }
+  created_at: string
+  status?: string
+}
+
 interface ContactsClientProps {
   contacts: Contact[]
   documentRequests: DocumentRequest[]
+  promptRequests?: PromptRequest[]
 }
 
-export default function ContactsClient({ contacts, documentRequests }: ContactsClientProps) {
+export default function ContactsClient({ contacts, documentRequests, promptRequests = [] }: ContactsClientProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [typeFilter, setTypeFilter] = useState<string>('all')
   const [sourceFilter, setSourceFilter] = useState<string>('all') // フォーム/資料請求のフィルター
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null)
   const [selectedDocRequest, setSelectedDocRequest] = useState<DocumentRequest | null>(null)
+  const [selectedPromptRequest, setSelectedPromptRequest] = useState<PromptRequest | null>(null)
   const [showDetailModal, setShowDetailModal] = useState(false)
 
   const statusColors = {
@@ -84,11 +104,12 @@ export default function ContactsClient({ contacts, documentRequests }: ContactsC
     company: string
     email: string
     message: string
-    type: 'contact' | 'document_request'
+    type: 'contact' | 'document_request' | 'prompt_request'
     inquiry_type?: string
     status: 'new' | 'in_progress' | 'completed'
     created_at: string
     document_title?: string
+    project_title?: string
     phone?: string
     department?: string
     position?: string
@@ -124,10 +145,26 @@ export default function ContactsClient({ contacts, documentRequests }: ContactsC
       position: req.position
     }))
 
-    return [...contactInquiries, ...documentInquiries].sort((a, b) => 
+    const promptInquiries: UnifiedInquiry[] = promptRequests.map(req => ({
+      id: req.id,
+      name: req.name,
+      company: req.company_name,
+      email: req.email,
+      message: req.message || '',
+      type: 'prompt_request' as const,
+      inquiry_type: 'prompt',
+      status: (req.status || 'new') as 'new' | 'in_progress' | 'completed',
+      created_at: req.created_at,
+      project_title: req.metadata?.project_title,
+      phone: req.phone,
+      department: req.department,
+      position: req.position
+    }))
+
+    return [...contactInquiries, ...documentInquiries, ...promptInquiries].sort((a, b) => 
       new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
     )
-  }, [contacts, documentRequests])
+  }, [contacts, documentRequests, promptRequests])
 
   const filteredInquiries = useMemo(() => {
     return unifiedInquiries.filter(inquiry => {
@@ -141,10 +178,12 @@ export default function ContactsClient({ contacts, documentRequests }: ContactsC
       const matchesStatus = statusFilter === 'all' || inquiry.status === statusFilter
       const matchesType = typeFilter === 'all' || 
         (typeFilter === 'document' && inquiry.type === 'document_request') ||
-        (typeFilter !== 'document' && inquiry.inquiry_type === typeFilter)
+        (typeFilter === 'prompt' && inquiry.type === 'prompt_request') ||
+        (typeFilter !== 'document' && typeFilter !== 'prompt' && inquiry.inquiry_type === typeFilter)
       const matchesSource = sourceFilter === 'all' || 
         (sourceFilter === 'form' && inquiry.type === 'contact') ||
-        (sourceFilter === 'document' && inquiry.type === 'document_request')
+        (sourceFilter === 'document' && inquiry.type === 'document_request') ||
+        (sourceFilter === 'prompt' && inquiry.type === 'prompt_request')
 
       return matchesSearch && matchesStatus && matchesType && matchesSource
     })
@@ -156,12 +195,21 @@ export default function ContactsClient({ contacts, documentRequests }: ContactsC
       if (contact) {
         setSelectedContact(contact)
         setSelectedDocRequest(null)
+        setSelectedPromptRequest(null)
       }
-    } else {
+    } else if (inquiry.type === 'document_request') {
       const docRequest = documentRequests.find(d => d.id === inquiry.id)
       if (docRequest) {
         setSelectedDocRequest(docRequest)
         setSelectedContact(null)
+        setSelectedPromptRequest(null)
+      }
+    } else if (inquiry.type === 'prompt_request') {
+      const promptReq = promptRequests.find(p => p.id === inquiry.id)
+      if (promptReq) {
+        setSelectedPromptRequest(promptReq)
+        setSelectedContact(null)
+        setSelectedDocRequest(null)
       }
     }
     setShowDetailModal(true)
@@ -232,6 +280,7 @@ export default function ContactsClient({ contacts, documentRequests }: ContactsC
                 >
                   <option value="all">すべての種別</option>
                   <option value="document">資料請求</option>
+                  <option value="prompt">プロンプト</option>
                   <option value="service">サービスについて</option>
                   <option value="partnership">提携・協業</option>
                   <option value="recruit">採用関連</option>
@@ -250,6 +299,7 @@ export default function ContactsClient({ contacts, documentRequests }: ContactsC
                   <option value="all">すべての送信元</option>
                   <option value="form">フォーム</option>
                   <option value="document">資料請求</option>
+                  <option value="prompt">プロンプト</option>
                 </select>
                 <Filter className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
               </div>
@@ -322,6 +372,8 @@ export default function ContactsClient({ contacts, documentRequests }: ContactsC
                                 e.preventDefault()
                                 const subject = inquiry.type === 'document_request'
                                   ? `Re: 資料請求について - ${inquiry.document_title || ''}`
+                                  : inquiry.type === 'prompt_request'
+                                  ? `Re: プロンプトダウンロードについて - ${inquiry.project_title || ''}`
                                   : `Re: お問い合わせについて - ${inquiry.inquiry_type ? typeLabels[inquiry.inquiry_type as keyof typeof typeLabels] : ''}`
                                 const body = `${inquiry.name} 様\n\nお問い合わせいただきありがとうございます。\n\n`
                                 
@@ -354,13 +406,16 @@ export default function ContactsClient({ contacts, documentRequests }: ContactsC
                         <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${
                           inquiry.type === 'document_request' 
                             ? 'bg-purple-100 text-purple-700' 
+                            : inquiry.type === 'prompt_request'
+                            ? 'bg-emerald-100 text-emerald-700'
                             : 'bg-blue-100 text-blue-700'
                         }`}>
-                          {inquiry.type === 'document_request' ? '資料請求' : 'フォーム'}
+                          {inquiry.type === 'document_request' ? '資料請求' : 
+                           inquiry.type === 'prompt_request' ? 'プロンプト' : 'フォーム'}
                         </span>
                       </td>
                       <td className="px-6 py-4 text-center">
-                        {inquiry.type === 'document_request' ? (
+                        {inquiry.type === 'document_request' || inquiry.type === 'prompt_request' ? (
                           <span className="text-gray-400">-</span>
                         ) : (
                           <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${
@@ -413,14 +468,16 @@ export default function ContactsClient({ contacts, documentRequests }: ContactsC
       )}
 
       {/* Detail Modal */}
-      {showDetailModal && (selectedContact || selectedDocRequest) && (
+      {showDetailModal && (selectedContact || selectedDocRequest || selectedPromptRequest) && (
         <ContactDetailModal
           contact={selectedContact}
           documentRequest={selectedDocRequest}
+          promptRequest={selectedPromptRequest}
           onClose={() => {
             setShowDetailModal(false)
             setSelectedContact(null)
             setSelectedDocRequest(null)
+            setSelectedPromptRequest(null)
           }}
         />
       )}

@@ -1,44 +1,71 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/app/lib/supabase/server'
 
+// Slack Webhook URL
+const SLACK_WEBHOOK_URL = process.env.SLACK_WEBHOOK_URL || ''
+
 export async function POST(request: Request) {
   try {
     const body = await request.json()
     const { project_id, company_name, name, email, phone, department, position, message } = body
+
+    console.log('Prompt request received:', { project_id, company_name, name, email })
 
     const supabase = await createClient()
 
     // プロジェクト情報を取得
     const { data: project, error: projectError } = await supabase
       .from('projects')
-      .select('id, title, prompt')
+      .select('id, title, prompt, prompt_filename')
       .eq('id', project_id)
       .single()
 
-    if (projectError || !project || !project.prompt) {
+    if (projectError) {
+      console.error('Project fetch error:', projectError)
       return NextResponse.json(
-        { error: 'プロジェクトまたはプロンプトが見つかりません' },
+        { error: 'プロジェクトの取得に失敗しました' },
+        { status: 500 }
+      )
+    }
+
+    if (!project) {
+      console.error('Project not found:', project_id)
+      return NextResponse.json(
+        { error: 'プロジェクトが見つかりません' },
+        { status: 404 }
+      )
+    }
+
+    if (!project.prompt) {
+      console.error('Project has no prompt:', project_id)
+      return NextResponse.json(
+        { error: 'このプロジェクトにはプロンプトが設定されていません' },
         { status: 404 }
       )
     }
 
     // お問い合わせ情報を保存
-    const { error: contactError } = await supabase
-      .from('contacts')
-      .insert({
-        type: 'prompt_request',
-        company_name,
-        name,
-        email,
+    const contactData = {
+      type: 'prompt_request',
+      company: company_name, // contactsテーブルではcompanyフィールド
+      name,
+      email,
+      message: message || `プロンプトダウンロード: ${project.title}`,
+      status: 'new',
+      metadata: {
+        project_id,
+        project_title: project.title,
         phone,
         department,
-        position,
-        message,
-        metadata: {
-          project_id,
-          project_title: project.title
-        }
-      })
+        position
+      }
+    }
+    
+    console.log('Saving contact data:', contactData)
+    
+    const { error: contactError } = await supabase
+      .from('contacts')
+      .insert(contactData)
 
     if (contactError) {
       console.error('Contact save error:', contactError)
@@ -50,6 +77,69 @@ export async function POST(request: Request) {
 
     // プロンプトをCSV形式に変換
     const csvContent = convertPromptsToCSV(project.prompt, project.title)
+
+    // Send to Slack
+    if (SLACK_WEBHOOK_URL) {
+      const slackMessage = {
+        text: '新しいプロンプトダウンロード',
+        blocks: [
+          {
+            type: 'header',
+            text: {
+              type: 'plain_text',
+              text: '📄 新しいプロンプトダウンロード',
+              emoji: true
+            }
+          },
+          {
+            type: 'section',
+            fields: [
+              {
+                type: 'mrkdwn',
+                text: `*プロジェクト:*\n${project.title}`
+              },
+              {
+                type: 'mrkdwn',
+                text: `*会社名:*\n${company_name}`
+              },
+              {
+                type: 'mrkdwn',
+                text: `*お名前:*\n${name}`
+              },
+              {
+                type: 'mrkdwn',
+                text: `*メール:*\n${email}`
+              }
+            ]
+          },
+          {
+            type: 'divider'
+          },
+          {
+            type: 'context',
+            elements: [
+              {
+                type: 'mrkdwn',
+                text: `送信日時: ${new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' })}`
+              }
+            ]
+          }
+        ]
+      }
+
+      try {
+        await fetch(SLACK_WEBHOOK_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(slackMessage),
+        })
+      } catch (slackError) {
+        console.error('Slack notification failed:', slackError)
+        // Continue processing even if Slack fails
+      }
+    }
 
     return NextResponse.json({
       success: true,
@@ -67,63 +157,12 @@ export async function POST(request: Request) {
 
 function convertPromptsToCSV(promptData: string, projectTitle: string): string {
   try {
-    // プロンプトデータがJSON形式の場合
-    const prompts = typeof promptData === 'string' ? JSON.parse(promptData) : promptData
-    
-    // CSV ヘッダー
-    const headers = ['番号', 'カテゴリ', 'プロンプト', '説明', '作成日時']
-    const rows = [headers]
-
-    // プロンプトが配列の場合
-    if (Array.isArray(prompts)) {
-      prompts.forEach((prompt, index) => {
-        rows.push([
-          (index + 1).toString(),
-          prompt.category || '',
-          prompt.prompt || '',
-          prompt.description || '',
-          prompt.created_at || new Date().toISOString()
-        ])
-      })
-    } else if (typeof prompts === 'object') {
-      // プロンプトがオブジェクトの場合
-      Object.entries(prompts).forEach(([key, value], index) => {
-        rows.push([
-          (index + 1).toString(),
-          key,
-          String(value),
-          '',
-          new Date().toISOString()
-        ])
-      })
-    } else {
-      // プロンプトが文字列の場合
-      rows.push([
-        '1',
-        'general',
-        String(prompts),
-        projectTitle,
-        new Date().toISOString()
-      ])
-    }
-
-    // CSVに変換（日本語対応）
-    const csvString = rows
-      .map(row => row.map(cell => {
-        // セル内にカンマ、改行、ダブルクォートが含まれる場合はダブルクォートで囲む
-        const cellStr = String(cell)
-        if (cellStr.includes(',') || cellStr.includes('\n') || cellStr.includes('"')) {
-          return `"${cellStr.replace(/"/g, '""')}"`
-        }
-        return cellStr
-      }).join(','))
-      .join('\n')
-
-    // BOMを付けて日本語の文字化けを防ぐ
-    return '\ufeff' + csvString
+    // プロンプトデータは既にCSV形式で保存されているので、そのまま返す
+    // BOMは追加しない（クライアント側で追加する）
+    return promptData
   } catch (error) {
     console.error('CSV conversion error:', error)
     // エラーの場合はシンプルなCSVを返す
-    return '\ufeff番号,プロンプト\n1,' + String(promptData)
+    return '番号,カテゴリ,プロンプト,説明\n1,general,プロンプトデータの読み込みに失敗しました,' + projectTitle
   }
 }

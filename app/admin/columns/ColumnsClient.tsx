@@ -15,6 +15,7 @@ interface Column {
   is_featured: boolean
   view_count: number
   thumbnail?: string
+  category?: 'ai-tools' | 'industry' | 'topics-news'
 }
 
 interface ColumnsClientProps {
@@ -24,6 +25,19 @@ interface ColumnsClientProps {
 export default function ColumnsClient({ columns }: ColumnsClientProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('all')
+  const [categoryFilter, setCategoryFilter] = useState<string>('all')
+
+  const categoryColors = {
+    'ai-tools': 'bg-emerald-100 text-emerald-700',
+    'industry': 'bg-blue-100 text-blue-700',
+    'topics-news': 'bg-purple-100 text-purple-700'
+  }
+
+  const categoryLabels = {
+    'ai-tools': '生成AIツール',
+    'industry': '業界別',
+    'topics-news': 'トピック・ニュース'
+  }
 
   const filteredColumns = useMemo(() => {
     return columns.filter(column => {
@@ -35,9 +49,11 @@ export default function ColumnsClient({ columns }: ColumnsClientProps) {
         (statusFilter === 'published' && column.is_published) ||
         (statusFilter === 'draft' && !column.is_published)
 
-      return matchesSearch && matchesStatus
+      const matchesCategory = categoryFilter === 'all' || column.category === categoryFilter
+
+      return matchesSearch && matchesStatus && matchesCategory
     })
-  }, [columns, searchQuery, statusFilter])
+  }, [columns, searchQuery, statusFilter, categoryFilter])
 
   return (
     <div className="w-full">
@@ -65,22 +81,22 @@ export default function ColumnsClient({ columns }: ColumnsClientProps) {
               <div className="text-sm text-gray-600">総コラム数</div>
             </div>
             <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
-              <div className="text-3xl font-bold text-green-600">
-                {columns.filter(c => c.is_published).length}
+              <div className="text-3xl font-bold text-emerald-600">
+                {columns.filter(c => c.category === 'ai-tools').length}
               </div>
-              <div className="text-sm text-gray-600">公開中</div>
+              <div className="text-sm text-gray-600">生成AIツール</div>
             </div>
             <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
-              <div className="text-3xl font-bold text-gray-600">
-                {columns.filter(c => !c.is_published).length}
+              <div className="text-3xl font-bold text-blue-600">
+                {columns.filter(c => c.category === 'industry').length}
               </div>
-              <div className="text-sm text-gray-600">下書き</div>
+              <div className="text-sm text-gray-600">業界別</div>
             </div>
             <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
               <div className="text-3xl font-bold text-purple-600">
-                {columns.filter(c => c.is_featured).length}
+                {columns.filter(c => c.category === 'topics-news').length}
               </div>
-              <div className="text-sm text-gray-600">注目</div>
+              <div className="text-sm text-gray-600">トピック・ニュース</div>
             </div>
           </div>
 
@@ -95,6 +111,21 @@ export default function ColumnsClient({ columns }: ColumnsClientProps) {
             </Link>
 
             <div className="flex items-center gap-4 flex-1 justify-end">
+              {/* Category filter */}
+              <div className="relative">
+                <select
+                  value={categoryFilter}
+                  onChange={(e) => setCategoryFilter(e.target.value)}
+                  className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-10 text-gray-700 focus:outline-none focus:ring-2 focus:ring-portfolio-blue"
+                >
+                  <option value="all">すべてのカテゴリ</option>
+                  <option value="ai-tools">生成AIツール</option>
+                  <option value="industry">業界別</option>
+                  <option value="topics-news">トピック・ニュース</option>
+                </select>
+                <Filter className="absolute right-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+              </div>
+
               {/* Status filter */}
               <div className="relative">
                 <select
@@ -130,6 +161,7 @@ export default function ColumnsClient({ columns }: ColumnsClientProps) {
                 <tr>
                   <th className="w-40 text-center px-6 py-3 text-sm font-medium text-gray-700">画像</th>
                   <th className="text-center px-6 py-3 text-sm font-medium text-gray-700">内容</th>
+                  <th className="w-[140px] text-center px-6 py-3 text-sm font-medium text-gray-700">カテゴリ</th>
                   <th className="w-[120px] text-center px-6 py-3 text-sm font-medium text-gray-700">ステータス</th>
                   <th className="w-[120px] text-center px-6 py-3 text-sm font-medium text-gray-700">注目</th>
                   <th className="w-[120px] text-center px-6 py-3 text-sm font-medium text-gray-700">アクション</th>
@@ -138,7 +170,7 @@ export default function ColumnsClient({ columns }: ColumnsClientProps) {
               <tbody className="divide-y divide-gray-200">
                 {filteredColumns.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
+                    <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
                       検索結果が見つかりませんでした
                     </td>
                   </tr>
@@ -173,6 +205,15 @@ export default function ColumnsClient({ columns }: ColumnsClientProps) {
                           )}
                         </div>
                       </td>
+                      <td className="w-[140px] px-6 py-4 text-center">
+                        {column.category && (
+                          <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${
+                            categoryColors[column.category] || 'bg-gray-100 text-gray-700'
+                          }`}>
+                            {categoryLabels[column.category] || column.category}
+                          </span>
+                        )}
+                      </td>
                       <td className="w-[120px] px-6 py-4 text-center">
                         <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${
                           column.is_published 
@@ -184,7 +225,7 @@ export default function ColumnsClient({ columns }: ColumnsClientProps) {
                       </td>
                       <td className="w-[120px] px-6 py-4 text-center text-sm">
                         <span className={column.is_featured ? 'text-green-600 font-medium' : 'text-gray-600'}>
-                          {column.is_featured ? 'YES' : 'NO'}
+                          {column.is_featured ? 'ON' : 'OFF'}
                         </span>
                       </td>
                       <td className="w-[120px] px-6 py-4">

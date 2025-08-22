@@ -82,8 +82,12 @@ export default function PromptRequestClient({ projectId, initialProject }: Promp
         
         // CSVファイルのダウンロード
         if (result.csvContent) {
-          // CSVデータからBlobを作成
-          const blob = new Blob([result.csvContent], { type: 'text/csv;charset=utf-8;' })
+          // デバッグ: CSVコンテンツの最初の200文字を確認
+          console.log('API CSV content preview:', result.csvContent.substring(0, 200))
+          console.log('API CSV length:', result.csvContent.length)
+          
+          // CSVデータをそのまま使用
+          const blob = new Blob([result.csvContent], { type: 'text/csv' })
           const url = window.URL.createObjectURL(blob)
           const link = document.createElement('a')
           link.href = url
@@ -96,7 +100,9 @@ export default function PromptRequestClient({ projectId, initialProject }: Promp
         
         setShowCompletionModal(true)
       } else {
-        alert('送信に失敗しました。もう一度お試しください。')
+        const errorData = await response.json()
+        console.error('API Error:', errorData)
+        alert(`エラー: ${errorData.error || '送信に失敗しました'}`)
       }
     } catch (error) {
       console.error('Error submitting request:', error)
