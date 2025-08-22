@@ -77,12 +77,15 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="ja" className="bg-youtube-dark overscroll-none" style={{ backgroundColor: '#0f0f0f', overscrollBehavior: 'none' }}>
+    <html lang="ja" className="bg-youtube-dark" style={{ backgroundColor: '#0f0f0f' }}>
       <head>
         <StructuredData />
         <meta name="theme-color" content="#0f0f0f" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
       </head>
-      <body className={`${inter.className} bg-youtube-dark overscroll-none`} style={{ backgroundColor: '#0f0f0f', overscrollBehavior: 'none', WebkitOverflowScrolling: 'touch' }}>
+      <body className={`${inter.className} bg-youtube-dark`} style={{ backgroundColor: '#0f0f0f' }}>
+        <div className="fixed inset-0 bg-youtube-dark" style={{ backgroundColor: '#0f0f0f', zIndex: -1 }} aria-hidden="true" />
         <GoogleAnalytics />
         {children}
       </body>

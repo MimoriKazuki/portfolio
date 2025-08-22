@@ -55,17 +55,17 @@
     background-color: hsl(var(--background));
   }
 
+  html {
+    @apply bg-background;
+    background-color: hsl(var(--background));
+  }
+  
   body {
     @apply bg-background text-foreground font-sans;
     background-color: hsl(var(--background));
     min-height: 100vh;
     position: relative;
-    overscroll-behavior: none;
     -webkit-overflow-scrolling: touch;
-  }
-  
-  html {
-    overscroll-behavior: none;
   }
 
   .hover-scale {

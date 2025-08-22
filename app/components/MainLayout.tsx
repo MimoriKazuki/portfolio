@@ -15,6 +15,9 @@ interface MainLayoutProps {
 export default function MainLayout({ children, hideRightSidebar = false, hideContactButton = false }: MainLayoutProps) {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
+      {/* Fixed background layer to prevent overscroll color */}
+      <div className="fixed inset-0 bg-gray-50" style={{ zIndex: -1 }} aria-hidden="true" />
+      
       {/* Mobile Header */}
       <MobileHeader />
       
