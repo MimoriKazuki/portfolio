@@ -21,7 +21,7 @@ export function initializeAnalyticsClient(credentials: GoogleCredentials) {
   })
 }
 
-// 基本的なレポートデータを取得
+// 基本的なレポートデータを取得（日別と総計の両方）
 export async function getAnalyticsData(
   analyticsDataClient: BetaAnalyticsDataClient,
   propertyId: string,
@@ -29,22 +29,47 @@ export async function getAnalyticsData(
   endDate: string = 'today'
 ) {
   try {
-    // ユーザー数、セッション数、ページビューなどの基本メトリクス
-    const [response] = await analyticsDataClient.runReport({
-      property: `properties/${propertyId}`,
-      dateRanges: [{ startDate, endDate }],
-      dimensions: [{ name: 'date' }],
-      metrics: [
-        { name: 'activeUsers' },
-        { name: 'sessions' },
-        { name: 'screenPageViews' },
-        { name: 'bounceRate' },
-        { name: 'averageSessionDuration' },
-      ],
-      orderBys: [{ dimension: { dimensionName: 'date' } }],
-    })
+    // 日別データと総計データを並行して取得
+    const [dailyResponse, totalsResponse] = await Promise.all([
+      // 日別データ
+      analyticsDataClient.runReport({
+        property: `properties/${propertyId}`,
+        dateRanges: [{ startDate, endDate }],
+        dimensions: [{ name: 'date' }],
+        metrics: [
+          { name: 'activeUsers' },
+          { name: 'newUsers' },
+          { name: 'sessions' },
+          { name: 'screenPageViews' },
+          { name: 'bounceRate' },
+          { name: 'averageSessionDuration' },
+          { name: 'engagementRate' },
+          { name: 'engagedSessions' },
+        ],
+        orderBys: [{ dimension: { dimensionName: 'date' } }],
+      }),
+      // 総計データ（ディメンションなし）
+      analyticsDataClient.runReport({
+        property: `properties/${propertyId}`,
+        dateRanges: [{ startDate, endDate }],
+        metrics: [
+          { name: 'activeUsers' },
+          { name: 'newUsers' },
+          { name: 'sessions' },
+          { name: 'screenPageViews' },
+          { name: 'bounceRate' },
+          { name: 'averageSessionDuration' },
+          { name: 'engagementRate' },
+          { name: 'engagedSessions' },
+        ],
+      })
+    ])
 
-    return response
+    // 両方のデータを含むレスポンスを返す
+    return {
+      daily: dailyResponse[0],
+      totals: totalsResponse[0]
+    }
   } catch (error) {
     console.error('Error fetching analytics data:', error)
     throw error
@@ -162,9 +187,119 @@ export async function getLocationData(
       limit: 10,
     })
 
+    // デバッグ: 地域データの詳細を確認
+    if (response.rows) {
+      console.log('Location data debug:')
+      response.rows.forEach((row: any) => {
+        console.log(`Country: ${row.dimensionValues[0]?.value}, Sessions: ${row.metricValues[0]?.value}`)
+      })
+    }
+
     return response
   } catch (error) {
     console.error('Error fetching location data:', error)
+    throw error
+  }
+}
+
+// ユーザー属性データを取得（新規 vs リピーター）
+export async function getUserAcquisitionData(
+  analyticsDataClient: BetaAnalyticsDataClient,
+  propertyId: string,
+  startDate: string = '30daysAgo',
+  endDate: string = 'today'
+) {
+  try {
+    const [response] = await analyticsDataClient.runReport({
+      property: `properties/${propertyId}`,
+      dateRanges: [{ startDate, endDate }],
+      dimensions: [{ name: 'newVsReturning' }],
+      metrics: [{ name: 'activeUsers' }, { name: 'sessions' }],
+    })
+
+    return response
+  } catch (error) {
+    console.error('Error fetching user acquisition data:', error)
+    throw error
+  }
+}
+
+// 時間帯別データを取得
+export async function getHourlyData(
+  analyticsDataClient: BetaAnalyticsDataClient,
+  propertyId: string,
+  startDate: string = '30daysAgo',
+  endDate: string = 'today'
+) {
+  try {
+    const [response] = await analyticsDataClient.runReport({
+      property: `properties/${propertyId}`,
+      dateRanges: [{ startDate, endDate }],
+      dimensions: [{ name: 'hour' }],
+      metrics: [{ name: 'activeUsers' }, { name: 'sessions' }],
+      orderBys: [{ dimension: { dimensionName: 'hour' } }],
+    })
+
+    return response
+  } catch (error) {
+    console.error('Error fetching hourly data:', error)
+    throw error
+  }
+}
+
+// ブラウザ別データを取得
+export async function getBrowserData(
+  analyticsDataClient: BetaAnalyticsDataClient,
+  propertyId: string,
+  startDate: string = '30daysAgo',
+  endDate: string = 'today'
+) {
+  try {
+    const [response] = await analyticsDataClient.runReport({
+      property: `properties/${propertyId}`,
+      dateRanges: [{ startDate, endDate }],
+      dimensions: [{ name: 'browser' }],
+      metrics: [{ name: 'sessions' }],
+      orderBys: [{ metric: { metricName: 'sessions' }, desc: true }],
+      limit: 5,
+    })
+
+    return response
+  } catch (error) {
+    console.error('Error fetching browser data:', error)
+    throw error
+  }
+}
+
+// 人気ページのエンゲージメント時間付きデータを取得
+export async function getTopPagesWithEngagement(
+  analyticsDataClient: BetaAnalyticsDataClient,
+  propertyId: string,
+  startDate: string = '30daysAgo',
+  endDate: string = 'today',
+  limit: number = 10
+) {
+  try {
+    const [response] = await analyticsDataClient.runReport({
+      property: `properties/${propertyId}`,
+      dateRanges: [{ startDate, endDate }],
+      dimensions: [
+        { name: 'pagePath' },
+        { name: 'pageTitle' },
+      ],
+      metrics: [
+        { name: 'screenPageViews' },
+        { name: 'averageSessionDuration' },
+        { name: 'userEngagementDuration' },
+        { name: 'bounceRate' },
+      ],
+      orderBys: [{ metric: { metricName: 'screenPageViews' }, desc: true }],
+      limit,
+    })
+
+    return response
+  } catch (error) {
+    console.error('Error fetching top pages with engagement:', error)
     throw error
   }
 }
