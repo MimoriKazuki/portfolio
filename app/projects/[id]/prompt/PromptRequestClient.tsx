@@ -312,8 +312,7 @@ export default function PromptRequestClient({ projectId, initialProject }: Promp
               <button
                 type="submit"
                 disabled={submitting || !isFormValid}
-                className="w-full text-white font-medium py-3 px-6 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 hover:opacity-90"
-                style={{ backgroundColor: 'rgb(16, 185, 129)' }}
+                className="w-full bg-portfolio-blue text-white font-medium py-3 px-6 rounded-lg transition-all hover:opacity-90 hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {submitting ? (
                   <>

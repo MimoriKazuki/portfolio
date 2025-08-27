@@ -15,7 +15,7 @@ async function getProjects() {
   const { data: projects } = await supabase
     .from('projects')
     .select('*')
-    .order('order', { ascending: true })
+    .order('created_at', { ascending: false })
   return projects || []
 }
 

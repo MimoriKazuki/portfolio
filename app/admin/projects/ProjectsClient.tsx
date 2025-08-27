@@ -2,9 +2,11 @@
 
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
-import { Plus, Edit, Trash2, FolderOpen, Search, Filter, FileText } from 'lucide-react'
+import { Plus, Edit, Trash2, FolderOpen, Search, Filter } from 'lucide-react'
 import Image from 'next/image'
 import DeleteProjectButton from './DeleteProjectButton'
+import ProjectMetaIcons from '@/app/components/ProjectMetaIcons'
+import { CATEGORY_COLORS, CATEGORY_LABELS, CATEGORY_ICON_COLORS } from '@/app/lib/constants/project'
 
 interface Project {
   id: string
@@ -15,6 +17,7 @@ interface Project {
   featured: boolean
   order: number
   prompt?: string
+  video_url?: string
 }
 
 interface ProjectsClientProps {
@@ -24,22 +27,6 @@ interface ProjectsClientProps {
 export default function ProjectsClient({ projects }: ProjectsClientProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [categoryFilter, setCategoryFilter] = useState<string>('all')
-
-  const categoryColors = {
-    'homepage': 'bg-purple-100 text-purple-700',
-    'landing-page': 'bg-pink-100 text-pink-700',
-    'web-app': 'bg-blue-100 text-blue-700',
-    'mobile-app': 'bg-green-100 text-green-700',
-    'video': 'bg-orange-100 text-orange-700'
-  }
-
-  const categoryLabels = {
-    'homepage': 'ホームページ',
-    'landing-page': 'ランディングページ',
-    'web-app': 'Webアプリ',
-    'mobile-app': 'モバイルアプリ',
-    'video': '動画制作'
-  }
 
   const filteredProjects = useMemo(() => {
     return projects.filter(project => {
@@ -79,34 +66,34 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
               <div className="text-sm text-gray-600">総プロジェクト数</div>
             </div>
             <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
-              <div className="text-3xl font-bold text-purple-600">
+              <div className={`text-3xl font-bold ${CATEGORY_ICON_COLORS['homepage']}`}>
                 {projects.filter(p => p.category === 'homepage').length}
               </div>
-              <div className="text-sm text-gray-600">ホームページ</div>
+              <div className="text-sm text-gray-600">{CATEGORY_LABELS['homepage']}</div>
             </div>
             <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
-              <div className="text-3xl font-bold text-pink-600">
+              <div className={`text-3xl font-bold ${CATEGORY_ICON_COLORS['landing-page']}`}>
                 {projects.filter(p => p.category === 'landing-page').length}
               </div>
-              <div className="text-sm text-gray-600">ランディングページ</div>
+              <div className="text-sm text-gray-600">{CATEGORY_LABELS['landing-page']}</div>
             </div>
             <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
-              <div className="text-3xl font-bold text-blue-600">
+              <div className={`text-3xl font-bold ${CATEGORY_ICON_COLORS['web-app']}`}>
                 {projects.filter(p => p.category === 'web-app').length}
               </div>
-              <div className="text-sm text-gray-600">Webアプリ</div>
+              <div className="text-sm text-gray-600">{CATEGORY_LABELS['web-app']}</div>
             </div>
             <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
-              <div className="text-3xl font-bold text-green-600">
+              <div className={`text-3xl font-bold ${CATEGORY_ICON_COLORS['mobile-app']}`}>
                 {projects.filter(p => p.category === 'mobile-app').length}
               </div>
-              <div className="text-sm text-gray-600">モバイルアプリ</div>
+              <div className="text-sm text-gray-600">{CATEGORY_LABELS['mobile-app']}</div>
             </div>
             <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
-              <div className="text-3xl font-bold text-orange-600">
+              <div className={`text-3xl font-bold ${CATEGORY_ICON_COLORS['video']}`}>
                 {projects.filter(p => p.category === 'video').length}
               </div>
-              <div className="text-sm text-gray-600">動画制作</div>
+              <div className="text-sm text-gray-600">{CATEGORY_LABELS['video']}</div>
             </div>
           </div>
 
@@ -196,11 +183,10 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
                         <div className="text-left min-w-0">
                           <h3 className="font-medium text-gray-900 truncate flex items-center gap-2">
                             {project.title}
-                            {project.prompt && (
-                              <span className="text-emerald-600" title="プロンプトあり">
-                                <FileText className="h-4 w-4" />
-                              </span>
-                            )}
+                            <ProjectMetaIcons 
+                              hasPrompt={!!project.prompt}
+                              hasVideoUrl={!!project.video_url}
+                            />
                           </h3>
                           <p className="text-sm text-gray-600 truncate">
                             {project.description}
@@ -208,8 +194,8 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
                         </div>
                       </td>
                       <td className="w-[200px] px-6 py-4 text-center">
-                        <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ${categoryColors[project.category]}`}>
-                          {categoryLabels[project.category]}
+                        <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ${CATEGORY_COLORS[project.category]}`}>
+                          {CATEGORY_LABELS[project.category]}
                         </span>
                       </td>
                       <td className="w-[120px] px-6 py-4 text-center text-sm">

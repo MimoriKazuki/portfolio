@@ -18,10 +18,16 @@ export interface Database {
           description: string
           thumbnail: string
           live_url: string | null
+          video_url: string | null
+          github_url: string | null
           technologies: string[]
           featured: boolean
-          category: 'hp-lp' | 'web-app' | 'mobile-app'
+          category: 'homepage' | 'landing-page' | 'web-app' | 'mobile-app' | 'video'
           order: number
+          duration: string | null
+          client: string | null
+          prompt: string | null
+          prompt_filename: string | null
         }
         Insert: {
           id?: string
@@ -31,10 +37,16 @@ export interface Database {
           description: string
           thumbnail: string
           live_url?: string | null
+          video_url?: string | null
+          github_url?: string | null
           technologies?: string[]
           featured?: boolean
-          category?: 'hp-lp' | 'web-app' | 'mobile-app'
+          category?: 'homepage' | 'landing-page' | 'web-app' | 'mobile-app' | 'video'
           order?: number
+          duration?: string | null
+          client?: string | null
+          prompt?: string | null
+          prompt_filename?: string | null
         }
         Update: {
           id?: string
@@ -44,10 +56,16 @@ export interface Database {
           description?: string
           thumbnail?: string
           live_url?: string | null
+          video_url?: string | null
+          github_url?: string | null
           technologies?: string[]
           featured?: boolean
-          category?: 'hp-lp' | 'web-app' | 'mobile-app'
+          category?: 'homepage' | 'landing-page' | 'web-app' | 'mobile-app' | 'video'
           order?: number
+          duration?: string | null
+          client?: string | null
+          prompt?: string | null
+          prompt_filename?: string | null
         }
       }
       profiles: {

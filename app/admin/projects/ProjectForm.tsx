@@ -12,6 +12,7 @@ interface ProjectFormData {
   description: string
   thumbnail: string
   live_url: string
+  video_url: string
   technologies: string[]
   featured: boolean
   category: 'homepage' | 'landing-page' | 'web-app' | 'mobile-app' | 'video'
@@ -45,6 +46,7 @@ export default function ProjectForm({ initialData, projectId }: ProjectFormProps
     description: initialData?.description || '',
     thumbnail: initialData?.thumbnail || '',
     live_url: initialData?.live_url || '',
+    video_url: initialData?.video_url || '',
     technologies: initialData?.technologies || [],
     featured: initialData?.featured || false,
     category: initialData?.category || 'web-app',
@@ -467,6 +469,22 @@ export default function ProjectForm({ initialData, projectId }: ProjectFormProps
               />
             </div>
           )}
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2 text-gray-700">
+            解説動画URL
+          </label>
+          <input
+            type="url"
+            value={formData.video_url}
+            onChange={(e) => setFormData({ ...formData, video_url: e.target.value })}
+            className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-portfolio-blue text-gray-900"
+            placeholder="https://www.youtube.com/watch?v=..."
+          />
+          <p className="text-xs text-gray-600 mt-1">
+            YouTube、Vimeo等の動画URLを入力してください
+          </p>
         </div>
 
         <div>

@@ -1,11 +1,12 @@
 import { notFound } from 'next/navigation'
-import { ExternalLink, Github, Clock, ArrowLeft } from 'lucide-react'
+import { ExternalLink, Github, Clock, ArrowLeft, Download } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import MainLayout from '@/app/components/MainLayout'
 import VideoPlayer from './VideoPlayer'
 import { createStaticClient } from '@/app/lib/supabase/static'
 import { createClient } from '@/app/lib/supabase/server'
+import { CATEGORY_COLORS, CATEGORY_LABELS, PROJECT_BUTTON_STYLES } from '@/app/lib/constants/project'
 import type { Metadata } from 'next'
 
 export const revalidate = 60 // ISR: 60秒ごとに再生成
@@ -151,22 +152,6 @@ export default async function ProjectDetailPage({
   // 関連プロジェクトを取得
   const relatedProjects = await getRelatedProjects(project.id, project.category)
 
-  const categoryColors = {
-    'homepage': 'bg-purple-100 text-purple-700',
-    'landing-page': 'bg-pink-100 text-pink-700',
-    'web-app': 'bg-blue-100 text-blue-700',
-    'mobile-app': 'bg-green-100 text-green-700',
-    'video': 'bg-orange-100 text-orange-700'
-  }
-
-  const categoryLabels = {
-    'homepage': 'ホームページ',
-    'landing-page': 'ランディングページ',
-    'web-app': 'Webアプリ',
-    'mobile-app': 'モバイルアプリ',
-    'video': '動画制作'
-  }
-
   return (
     <MainLayout>
       <div className="p-4 sm:p-6 pt-2 sm:pt-3">
@@ -198,33 +183,43 @@ export default async function ProjectDetailPage({
                   className="object-cover"
                   priority
                 />
-                <div className={`absolute top-2 right-2 sm:top-4 sm:right-4 ${categoryColors[project.category]} text-xs sm:text-sm px-2 sm:px-3 py-0.5 sm:py-1 rounded`}>
-                  {categoryLabels[project.category]}
+                <div className={`absolute top-2 right-2 sm:top-4 sm:right-4 ${CATEGORY_COLORS[project.category]} text-xs sm:text-sm px-2 sm:px-3 py-0.5 sm:py-1 rounded`}>
+                  {CATEGORY_LABELS[project.category]}
                 </div>
               </div>
             )}
             
             {/* Action buttons below thumbnail */}
             <div className="mt-8 flex flex-col gap-3">
-            {project.live_url && project.category !== 'video' && (
+              {project.live_url && project.category !== 'video' && (
                 <a
                   href={project.live_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 text-white px-6 py-3 rounded-lg transition-opacity hover:opacity-90 font-medium w-full"
-                  style={{ backgroundColor: 'rgb(37, 99, 235)' }}
+                  className={`inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg transition-all font-medium w-full ${PROJECT_BUTTON_STYLES.primary}`}
                 >
                   サイトを見る
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+              )}
+              {project.video_url && (
+                <a
+                  href={project.video_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg transition-all font-medium w-full ${PROJECT_BUTTON_STYLES.videoSecondary}`}
+                >
+                  解説動画を見る
                   <ExternalLink className="w-4 h-4" />
                 </a>
               )}
               {project.prompt && (
                 <Link
                   href={`/projects/${project.id}/prompt`}
-                  className="inline-flex items-center justify-center gap-2 text-white px-6 py-3 rounded-lg transition-opacity hover:opacity-90 font-medium w-full"
-                  style={{ backgroundColor: 'rgb(16, 185, 129)' }}
+                  className={`inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg transition-all font-medium w-full ${PROJECT_BUTTON_STYLES.promptSecondary}`}
                 >
                   プロンプトをダウンロード
+                  <Download className="w-4 h-4" />
                 </Link>
               )}
               {project.github_url && (
@@ -232,8 +227,7 @@ export default async function ProjectDetailPage({
                   href={project.github_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 text-white px-6 py-3 rounded-lg transition-opacity hover:opacity-90 font-medium w-full"
-                  style={{ backgroundColor: 'rgb(31, 41, 55)' }}
+                  className={`inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg transition-all font-medium w-full ${PROJECT_BUTTON_STYLES.github}`}
                 >
                   <Github className="w-4 h-4" />
                   ソースコード
@@ -301,8 +295,8 @@ export default async function ProjectDetailPage({
                         className="object-cover group-hover:scale-105 transition-transform duration-300"
                         sizes="(max-width: 768px) 100vw, 33vw"
                       />
-                      <div className={`absolute top-4 right-4 ${categoryColors[relatedProject.category]} text-xs px-3 py-1 rounded`}>
-                        {categoryLabels[relatedProject.category]}
+                      <div className={`absolute top-4 right-4 ${CATEGORY_COLORS[relatedProject.category]} text-xs px-3 py-1 rounded`}>
+                        {CATEGORY_LABELS[relatedProject.category]}
                       </div>
                     </div>
                     
