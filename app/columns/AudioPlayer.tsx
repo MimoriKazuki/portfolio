@@ -167,17 +167,19 @@ export default function AudioPlayer({ audioUrl }: AudioPlayerProps) {
             overflow: 'hidden',
             transition: 'all 250ms cubic-bezier(0.4, 0, 0.2, 1)'
           }}>
-            <input
-              type="range"
-              min={0}
-              max={duration || 0}
-              value={currentTime}
-              onChange={handleSliderChange}
-              className="w-24 md:w-32 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-              style={{
-                background: `linear-gradient(to right, #003B70 0%, #003B70 ${(currentTime / (duration || 1)) * 100}%, #E5E7EB ${(currentTime / (duration || 1)) * 100}%, #E5E7EB 100%)`
-              }}
-            />
+            <div className="relative flex items-center h-6">
+              <input
+                type="range"
+                min={0}
+                max={duration || 0}
+                value={currentTime}
+                onChange={handleSliderChange}
+                className="w-24 md:w-32 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                style={{
+                  background: `linear-gradient(to right, #003B70 0%, #003B70 ${(currentTime / (duration || 1)) * 100}%, #E5E7EB ${(currentTime / (duration || 1)) * 100}%, #E5E7EB 100%)`
+                }}
+              />
+            </div>
             <span className="text-xs text-gray-500 whitespace-nowrap pr-1">
               {formatTime(currentTime)}/{formatTime(duration)}
             </span>
