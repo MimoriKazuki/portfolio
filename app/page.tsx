@@ -34,9 +34,26 @@ async function getLatestColumns() {
   return columns || []
 }
 
+async function getLatestNotices() {
+  const supabase = createStaticClient()
+  const { data: notices, error } = await supabase
+    .from('notices')
+    .select('*')
+    .eq('is_published', true)
+    .order('published_date', { ascending: false })
+    .limit(3)
+  
+  if (error) {
+    console.error('Error fetching notices:', error)
+  }
+  
+  return notices || []
+}
+
 export default async function HomePage() {
   const projects = await getProjects()
   const columns = await getLatestColumns()
+  const notices = await getLatestNotices()
   const featuredProjects = projects.filter(p => p.featured).slice(0, 3)
   
   // カテゴリ別に集計
@@ -55,6 +72,7 @@ export default async function HomePage() {
         categoryStats={categoryStats}
         featuredProjects={featuredProjects}
         latestColumns={columns}
+        latestNotices={notices}
       />
     </MainLayout>
   )

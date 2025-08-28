@@ -18,14 +18,26 @@ const RightSidebar = () => {
     async function fetchData() {
       const supabase = createClient()
       
-      // Fetch notices - 注目優先、最新順
-      const { data: noticesData } = await supabase
+      // Fetch notices - 注目があれば注目を、なければ最新を1件取得
+      let { data: noticesData } = await supabase
         .from('notices')
         .select('*')
         .eq('is_published', true)
-        .order('is_featured', { ascending: false })
-        .order('published_date', { ascending: false })
+        .eq('is_featured', true)
+        .order('created_at', { ascending: false })
         .limit(1)
+      
+      // 注目のお知らせがない場合は最新のお知らせを取得
+      if (!noticesData || noticesData.length === 0) {
+        const { data: latestNotice } = await supabase
+          .from('notices')
+          .select('*')
+          .eq('is_published', true)
+          .order('created_at', { ascending: false })
+          .limit(1)
+        
+        noticesData = latestNotice
+      }
       
       // Fetch documents - 注目優先、最新順、2つまで
       const { data: documentsData } = await supabase
@@ -60,6 +72,14 @@ const RightSidebar = () => {
 
   // お知らせページ配下ではお知らせを非表示
   const isNoticesPage = pathname.startsWith('/notices')
+  
+  // 表示するコンテンツがあるかチェック
+  const hasContent = (!isNoticesPage && notices.length > 0) || documents.length > 0
+  
+  // コンテンツがない場合は何も表示しない
+  if (!hasContent) {
+    return null
+  }
 
   const categoryColors = {
     news: 'bg-blue-100 text-blue-700',

@@ -2,10 +2,10 @@
 
 import ProjectCard from './ProjectCard'
 import ProfileCard from './ProfileCard'
-import { ArrowRight, FolderOpen, FileText, Calendar } from 'lucide-react'
+import { ArrowRight, FolderOpen, FileText, Calendar, Bell, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Project, Column } from '@/app/types'
+import { Project, Column, Notice } from '@/app/types'
 
 interface HomeContentProps {
   profiles: any
@@ -18,9 +18,10 @@ interface HomeContentProps {
   }
   featuredProjects: Project[]
   latestColumns: Column[]
+  latestNotices?: Notice[]
 }
 
-export default function HomeContent({ profiles, categoryStats, featuredProjects, latestColumns }: HomeContentProps) {
+export default function HomeContent({ profiles, categoryStats, featuredProjects, latestColumns, latestNotices }: HomeContentProps) {
   return (
       <div className="w-full">
         {/* SEO用の非表示h1 */}
@@ -29,8 +30,67 @@ export default function HomeContent({ profiles, categoryStats, featuredProjects,
         {/* Profile Card */}
         <ProfileCard categoryStats={categoryStats} />
 
+        {/* Latest Notices */}
+        {latestNotices && latestNotices.length > 0 && (
+          <section className="mb-12">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold">お知らせ</h2>
+              <Link
+                href="/notices"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-portfolio-blue-dark text-white rounded-full hover:opacity-90 transition-opacity text-sm font-medium"
+              >
+                すべて見る <ArrowRight className="w-4 h-4" />
+              </Link>
+            </div>
+            
+            <div className="bg-white rounded-lg border border-gray-200 divide-y divide-gray-100">
+              {latestNotices.map((notice) => (
+                <Link
+                  key={notice.id}
+                  href={`/notices/${notice.id}`}
+                  className="block px-6 py-4 hover:bg-gray-50 transition-colors group"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-gray-900 line-clamp-1 group-hover:text-portfolio-blue transition-colors mb-2">
+                        {notice.title}
+                      </h3>
+                      <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-1 text-sm text-gray-500">
+                          <Calendar className="h-4 w-4" />
+                          <span>
+                            {new Date(notice.published_date).toLocaleDateString('ja-JP', {
+                              year: 'numeric',
+                              month: 'long',
+                              day: 'numeric'
+                            })}
+                          </span>
+                        </div>
+                        <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          notice.category === 'news' ? 'bg-blue-100 text-blue-700' :
+                          notice.category === 'webinar' ? 'bg-purple-100 text-purple-700' :
+                          notice.category === 'event' ? 'bg-pink-100 text-pink-700' :
+                          notice.category === 'maintenance' ? 'bg-yellow-100 text-yellow-700' :
+                          'bg-gray-100 text-gray-700'
+                        }`}>
+                          {notice.category === 'news' ? 'ニュース' :
+                           notice.category === 'webinar' ? 'ウェビナー' :
+                           notice.category === 'event' ? 'イベント' :
+                           notice.category === 'maintenance' ? 'メンテナンス' :
+                           'その他'}
+                        </span>
+                      </div>
+                    </div>
+                    <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-portfolio-blue transition-colors ml-4" />
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
         {/* Featured Projects */}
-        <section className="mb-8">
+        <section className="mb-12">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold">注目のプロジェクト</h2>
             <Link
@@ -60,7 +120,7 @@ export default function HomeContent({ profiles, categoryStats, featuredProjects,
         </section>
         
         {/* Columns Section */}
-        <section className="mb-8">
+        <section className="mb-12">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold">最新のコラム</h2>
             <Link
