@@ -132,7 +132,7 @@ const RightSidebar = () => {
                 <div className="flex items-center gap-1 text-xs text-gray-500">
                   <Calendar className="w-3 h-3" />
                   <span>
-                    {new Date(notice.published_date).toLocaleDateString('ja-JP')}
+                    {new Date(notice.created_at).toLocaleDateString('ja-JP')}
                   </span>
                 </div>
               </div>

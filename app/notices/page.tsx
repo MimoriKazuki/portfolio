@@ -17,7 +17,7 @@ export default async function NoticesPage() {
     .select('*')
     .eq('is_published', true)
     .order('is_featured', { ascending: false })
-    .order('published_date', { ascending: false })
+    .order('created_at', { ascending: false })
     .returns<Notice[]>()
 
   if (error) {

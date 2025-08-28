@@ -59,7 +59,7 @@ export default function HomeContent({ profiles, categoryStats, featuredProjects,
                         <div className="flex items-center gap-1 text-sm text-gray-500">
                           <Calendar className="h-4 w-4" />
                           <span>
-                            {new Date(notice.published_date).toLocaleDateString('ja-JP', {
+                            {new Date(notice.created_at).toLocaleDateString('ja-JP', {
                               year: 'numeric',
                               month: 'long',
                               day: 'numeric'
@@ -170,7 +170,7 @@ export default function HomeContent({ profiles, categoryStats, featuredProjects,
                       <div className="flex items-center gap-1 text-xs text-gray-500">
                         <Calendar className="w-3 h-3" />
                         <span>
-                          {new Date(column.published_date).toLocaleDateString('ja-JP')}
+                          {new Date(column.created_at).toLocaleDateString('ja-JP')}
                         </span>
                       </div>
                     </div>

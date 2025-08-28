@@ -106,7 +106,7 @@ export async function generateMetadata({
       type: 'article',
       siteName: 'LandBridge Media',
       url: `${baseUrl}/columns/${column.id}`,
-      publishedTime: column.published_date,
+      publishedTime: column.created_at,
       locale: 'ja_JP',
     },
     twitter: {
@@ -196,8 +196,8 @@ export default async function ColumnDetailPage({ params }: PageProps) {
 
           <div className="flex items-center gap-2 text-sm text-gray-500">
             <Calendar className="w-4 h-4" />
-            <time dateTime={column.published_date}>
-              {new Date(column.published_date).toLocaleDateString('ja-JP', {
+            <time dateTime={column.created_at}>
+              {new Date(column.created_at).toLocaleDateString('ja-JP', {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric'
@@ -300,7 +300,7 @@ export default async function ColumnDetailPage({ params }: PageProps) {
                       <div className="flex items-center gap-1 text-xs text-gray-500">
                         <Calendar className="w-3 h-3" />
                         <span>
-                          {new Date(relatedColumn.published_date).toLocaleDateString('ja-JP')}
+                          {new Date(relatedColumn.created_at).toLocaleDateString('ja-JP')}
                         </span>
                       </div>
                     </div>

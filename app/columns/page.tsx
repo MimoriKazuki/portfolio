@@ -17,7 +17,7 @@ export default async function ColumnsPage() {
     .from('columns')
     .select('*')
     .eq('is_published', true)
-    .order('published_date', { ascending: false })
+    .order('created_at', { ascending: false })
 
   if (error) {
     console.error('Error fetching columns:', error)

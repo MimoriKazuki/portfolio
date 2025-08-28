@@ -181,7 +181,7 @@ export default async function NoticeDetailPage({
               </span>
               <div className="flex items-center gap-1 text-gray-500 text-sm">
                 <Calendar className="h-4 w-4" />
-                {formatDate(notice.published_date)}
+                {formatDate(notice.created_at)}
               </div>
             </div>
 
@@ -237,7 +237,7 @@ export default async function NoticeDetailPage({
                       
                       <div className="flex items-center gap-1 text-xs text-gray-500">
                         <Calendar className="w-3 h-3" />
-                        <span>{formatDate(relatedNotice.published_date)}</span>
+                        <span>{formatDate(relatedNotice.created_at)}</span>
                       </div>
                     </div>
                   </article>

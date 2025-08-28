@@ -24,7 +24,7 @@ async function getLatestColumns() {
     .from('columns')
     .select('*')
     .eq('is_published', true)
-    .order('published_date', { ascending: false })
+    .order('created_at', { ascending: false })
     .limit(3)
   
   if (error) {
@@ -40,7 +40,7 @@ async function getLatestNotices() {
     .from('notices')
     .select('*')
     .eq('is_published', true)
-    .order('published_date', { ascending: false })
+    .order('created_at', { ascending: false })
     .limit(3)
   
   if (error) {

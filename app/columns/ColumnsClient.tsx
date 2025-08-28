@@ -149,7 +149,7 @@ export default function ColumnsClient({ columns }: ColumnsClientProps) {
                   <div className="flex items-center gap-1 text-xs text-gray-500">
                     <Calendar className="w-3 h-3" />
                     <span>
-                      {new Date(column.published_date).toLocaleDateString('ja-JP')}
+                      {new Date(column.created_at).toLocaleDateString('ja-JP')}
                     </span>
                   </div>
                 </div>

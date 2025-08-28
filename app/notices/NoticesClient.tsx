@@ -154,7 +154,7 @@ export default function NoticesClient({ notices }: NoticesClientProps) {
                     <div className="flex items-center gap-2 md:mb-2">
                       <div className="flex items-center gap-1 text-gray-500 text-xs md:hidden">
                         <Calendar className="h-3 w-3" />
-                        <span>{formatDate(notice.published_date)}</span>
+                        <span>{formatDate(notice.created_at)}</span>
                       </div>
                       <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium ${
                         categoryColors[notice.category]
@@ -163,7 +163,7 @@ export default function NoticesClient({ notices }: NoticesClientProps) {
                       </span>
                       <div className="hidden md:flex items-center gap-1 text-gray-500 text-xs">
                         <Calendar className="h-3 w-3" />
-                        {formatDate(notice.published_date)}
+                        {formatDate(notice.created_at)}
                       </div>
                     </div>
                     
