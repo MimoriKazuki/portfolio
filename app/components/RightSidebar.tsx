@@ -6,7 +6,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { createClient } from '@/app/lib/supabase/client'
 import { Notice, Document } from '@/app/types'
-import { Calendar, Bell, FileText, ExternalLink } from 'lucide-react'
+import { Calendar, Bell, FileText } from 'lucide-react'
 
 const RightSidebar = () => {
   const pathname = usePathname()
@@ -102,85 +102,42 @@ const RightSidebar = () => {
       <div className="space-y-4">
         {/* お知らせ - お知らせページ配下以外で表示 */}
         {!isNoticesPage && notices.map((notice) => (
-          notice.site_url ? (
-            <a
-              key={notice.id}
-              href={notice.site_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block group"
-            >
-              <article className="block border-2 border-transparent rounded-lg p-3 transition-all duration-200 hover:border-portfolio-blue">
-                {notice.thumbnail && (
-                  <div className="relative aspect-video mb-3">
-                    <Image
-                      src={notice.thumbnail}
-                      alt={notice.title}
-                      fill
-                      className="object-cover rounded"
-                    />
-                  </div>
-                )}
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className={`text-xs px-2 py-0.5 rounded ${
-                      categoryColors[notice.category]
-                    }`}>
-                      {categoryLabels[notice.category]}
-                    </span>
-                  </div>
-                  <h4 className="text-sm font-medium text-gray-900 group-hover:text-portfolio-blue transition-colors line-clamp-2 mb-1">
-                    {notice.title}
-                  </h4>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1 text-xs text-gray-500">
-                      <Calendar className="w-3 h-3" />
-                      <span>
-                        {new Date(notice.published_date).toLocaleDateString('ja-JP')}
-                      </span>
-                    </div>
-                    <ExternalLink className="w-3 h-3 text-portfolio-blue" />
-                  </div>
+          <Link
+            key={notice.id}
+            href={`/notices/${notice.id}`}
+            className="block group"
+          >
+            <article className="block border-2 border-transparent rounded-lg p-3 transition-all duration-200 hover:border-portfolio-blue">
+              {notice.thumbnail && (
+                <div className="relative aspect-video mb-3">
+                  <Image
+                    src={notice.thumbnail}
+                    alt={notice.title}
+                    fill
+                    className="object-cover rounded"
+                  />
                 </div>
-              </article>
-            </a>
-          ) : (
-            <div
-              key={notice.id}
-              className="block group"
-            >
-              <article className="block border-2 border-transparent rounded-lg p-3 transition-all duration-200">
-                {notice.thumbnail && (
-                  <div className="relative aspect-video mb-3">
-                    <Image
-                      src={notice.thumbnail}
-                      alt={notice.title}
-                      fill
-                      className="object-cover rounded"
-                    />
-                  </div>
-                )}
-                <div>
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className={`text-xs px-2 py-0.5 rounded ${
-                      categoryColors[notice.category]
-                    }`}>
-                      {categoryLabels[notice.category]}
-                    </span>
-                  </div>
-                  <h4 className="text-sm font-medium text-gray-900 line-clamp-2 mb-1">
-                    {notice.title}
-                  </h4>
-                  <div className="flex items-center gap-1 text-xs text-gray-500">
-                    <Calendar className="w-3 h-3" />
-                    <span>
-                      {new Date(notice.published_date).toLocaleDateString('ja-JP')}
-                    </span>
-                  </div>
+              )}
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className={`text-xs px-2 py-0.5 rounded ${
+                    categoryColors[notice.category]
+                  }`}>
+                    {categoryLabels[notice.category]}
+                  </span>
                 </div>
-              </article>
-            </div>
-          )
+                <h4 className="text-sm font-medium text-gray-900 group-hover:text-portfolio-blue transition-colors line-clamp-2 mb-1">
+                  {notice.title}
+                </h4>
+                <div className="flex items-center gap-1 text-xs text-gray-500">
+                  <Calendar className="w-3 h-3" />
+                  <span>
+                    {new Date(notice.published_date).toLocaleDateString('ja-JP')}
+                  </span>
+                </div>
+              </div>
+            </article>
+          </Link>
         ))}
 
         {/* 資料 - 常に表示 */}

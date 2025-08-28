@@ -125,10 +125,10 @@ export default function NoticesClient({ notices }: NoticesClientProps) {
               href={`/notices/${notice.id}`}
               className="block group"
             >
-              <div className="bg-white rounded-lg overflow-hidden border border-gray-200 hover:shadow-lg transition-all duration-300 hover:border-blue-300 h-[118px]">
-                <div className="flex h-full p-5">
-                  {/* Thumbnail with padding included */}
-                  <div className="relative w-[139px] h-[78px] flex-shrink-0 overflow-hidden rounded">
+              <div className="bg-white rounded-lg overflow-hidden border border-gray-200 hover:shadow-lg transition-all duration-300 hover:border-blue-300 md:h-[118px]">
+                <div className="flex h-full p-4 md:p-5">
+                  {/* Thumbnail - PC only */}
+                  <div className="hidden md:block relative w-[139px] h-[78px] flex-shrink-0 overflow-hidden rounded">
                     {notice.thumbnail ? (
                       <Image
                         src={notice.thumbnail}
@@ -144,19 +144,31 @@ export default function NoticesClient({ notices }: NoticesClientProps) {
                   </div>
 
                   {/* Content */}
-                  <div className="flex-1 ml-5 flex flex-col justify-center">
-                    <div className="flex items-center gap-2 mb-2">
+                  <div className="flex-1 md:ml-5 flex flex-col justify-center">
+                    {/* Mobile layout - title first */}
+                    <h3 className="md:hidden font-semibold text-gray-900 group-hover:text-portfolio-blue transition-colors line-clamp-1 mb-2">
+                      {notice.title}
+                    </h3>
+                    
+                    {/* PC layout - category and date first */}
+                    <div className="flex items-center gap-2 md:mb-2">
+                      <div className="flex items-center gap-1 text-gray-500 text-xs md:hidden">
+                        <Calendar className="h-3 w-3" />
+                        <span>{formatDate(notice.published_date)}</span>
+                      </div>
                       <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium ${
                         categoryColors[notice.category]
                       }`}>
                         {categoryLabels[notice.category]}
                       </span>
-                      <div className="flex items-center gap-1 text-gray-500 text-xs">
+                      <div className="hidden md:flex items-center gap-1 text-gray-500 text-xs">
                         <Calendar className="h-3 w-3" />
                         {formatDate(notice.published_date)}
                       </div>
                     </div>
-                    <h3 className="font-bold text-lg text-gray-900 group-hover:text-portfolio-blue transition-colors line-clamp-1">
+                    
+                    {/* PC - title after category/date */}
+                    <h3 className="hidden md:block font-bold text-lg text-gray-900 group-hover:text-portfolio-blue transition-colors line-clamp-1">
                       {notice.title}
                     </h3>
                   </div>

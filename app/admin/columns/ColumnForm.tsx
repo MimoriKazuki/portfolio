@@ -105,6 +105,7 @@ export default function ColumnForm({ initialData, columnId }: ColumnFormProps) {
     // Check if file is .m4a
     if (!file.name.toLowerCase().endsWith('.m4a')) {
       alert('.m4a形式のファイルを選択してください')
+      e.target.value = '' // Reset input
       return
     }
 
@@ -350,34 +351,38 @@ export default function ColumnForm({ initialData, columnId }: ColumnFormProps) {
           </label>
           <div className="space-y-4">
             {audioFile || formData.audio_url ? (
-              <div className="p-4 bg-gray-50 rounded-lg flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <Headphones className="h-6 w-6 text-gray-600" />
-                  <span className="text-sm text-gray-700">
-                    {audioFile ? audioFile.name : '音声ファイルがアップロード済み'}
-                  </span>
-                </div>
-                {formData.audio_url && !audioFile && (
-                  <button
-                    type="button"
-                    onClick={() => setFormData({ ...formData, audio_url: '' })}
-                    className="text-sm text-red-600 hover:text-red-700"
-                  >
-                    削除
-                  </button>
-                )}
+              <div className="bg-gray-100 p-3 rounded-lg flex items-center justify-between">
+                <span className="text-sm text-gray-700">
+                  {audioFile ? audioFile.name : '音声ファイルがアップロード済み'}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAudioFile(null)
+                    setFormData({ ...formData, audio_url: '' })
+                    // Reset file input
+                    const audioInput = document.getElementById('audio-file-input') as HTMLInputElement
+                    if (audioInput) {
+                      audioInput.value = ''
+                    }
+                  }}
+                  className="text-red-500 hover:text-red-700"
+                >
+                  <X className="h-5 w-5" />
+                </button>
               </div>
             ) : null}
             <div>
               <label className="cursor-pointer inline-block">
                 <input
+                  id="audio-file-input"
                   type="file"
                   accept=".m4a"
                   onChange={handleAudioChange}
                   className="hidden"
                 />
                 <div className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition-colors">
-                  <Headphones className="h-5 w-5" />
+                  <Upload className="h-5 w-5" />
                   {audioFile || formData.audio_url ? '音声を変更' : '音声をアップロード'}
                 </div>
               </label>
