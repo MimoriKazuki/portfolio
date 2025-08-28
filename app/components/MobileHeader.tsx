@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Menu, X, Home, FolderOpen, BookOpen, Download, Mail } from 'lucide-react'
+import { Menu, X, Home, FolderOpen, BookOpen, Download, Mail, Bell } from 'lucide-react'
 
 export default function MobileHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -16,6 +16,7 @@ export default function MobileHeader() {
     { href: '/', label: 'トップページ', icon: Home },
     { href: '/projects', label: 'ポートフォリオ', icon: FolderOpen },
     { href: '/columns', label: 'コラム', icon: BookOpen },
+    { href: '/notices', label: 'お知らせ', icon: Bell },
     { href: '/documents', label: '資料ダウンロード', icon: Download },
     { href: '/contact', label: 'お問い合わせ', icon: Mail },
   ]

@@ -31,7 +31,7 @@ export default function PrivacyPage() {
           <ol className="list-decimal list-inside text-gray-600 mb-6 space-y-2">
             <li>本サービスの提供・運営のため</li>
             <li>お問い合わせへの対応（本人確認を含む）</li>
-            <li>新機能・更新情報・キャンペーン等の案内送付のため</li>
+            <li>新機能・更新情報・イベント等の案内送付のため</li>
             <li>メンテナンスや重要なお知らせ等の連絡のため</li>
             <li>不正利用防止や利用規約違反への対応のため</li>
             <li>登録情報の閲覧・変更・削除等を利用者が行うため</li>

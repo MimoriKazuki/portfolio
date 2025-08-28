@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/app/lib/supabase/client'
 import { Check, X, Upload, Loader2, FileText } from 'lucide-react'
@@ -24,6 +24,7 @@ interface DocumentFormProps {
 }
 
 export default function DocumentForm({ initialData, documentId }: DocumentFormProps) {
+  const [featuredCount, setFeaturedCount] = useState(0)
   const router = useRouter()
   const supabase = createClient()
   const [loading, setLoading] = useState(false)
@@ -47,6 +48,30 @@ export default function DocumentForm({ initialData, documentId }: DocumentFormPr
     is_featured: initialData?.is_featured ?? false,
   })
   const [tagInput, setTagInput] = useState('')
+
+  // 注目資料の数を取得
+  useEffect(() => {
+    const fetchFeaturedCount = async () => {
+      const query = supabase
+        .from('documents')
+        .select('id', { count: 'exact', head: true })
+        .eq('is_featured', true)
+      
+      // 編集時は自分自身を除外
+      if (documentId) {
+        query.neq('id', documentId)
+      }
+      
+      const { count, error } = await query
+      
+      if (error) {
+        console.error('Error fetching featured count:', error)
+      } else {
+        setFeaturedCount(count || 0)
+      }
+    }
+    fetchFeaturedCount()
+  }, [documentId, supabase])
 
   const generatePdfPreview = async (file: File) => {
     try {
@@ -398,11 +423,23 @@ export default function DocumentForm({ initialData, documentId }: DocumentFormPr
             <input
               type="checkbox"
               checked={formData.is_featured}
-              onChange={(e) => setFormData({ ...formData, is_featured: e.target.checked })}
-              className="w-4 h-4 text-portfolio-blue bg-white border-gray-300 rounded focus:ring-portfolio-blue"
+              onChange={(e) => {
+                const checked = e.target.checked
+                // 2つまでの制限をチェック
+                if (checked && featuredCount >= 2 && !initialData?.is_featured) {
+                  alert('注目資料は最大2つまでです。')
+                  return
+                }
+                setFormData({ ...formData, is_featured: checked })
+              }}
+              disabled={!formData.is_featured && featuredCount >= 2}
+              className="w-4 h-4 text-portfolio-blue bg-white border-gray-300 rounded focus:ring-portfolio-blue disabled:opacity-50"
             />
             <span className="text-sm font-medium text-gray-700">
               注目資料
+              {featuredCount >= 2 && !formData.is_featured && (
+                <span className="text-xs text-red-500 ml-2">(上限達成: {featuredCount}/2)</span>
+              )}
             </span>
           </label>
         </div>

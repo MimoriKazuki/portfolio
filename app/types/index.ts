@@ -45,6 +45,7 @@ export interface Column {
   content: string
   thumbnail?: string
   author?: string
+  audio_url?: string
   published_date: string
   tags?: string[]
   is_published: boolean
@@ -81,4 +82,18 @@ export interface DocumentRequest {
   position?: string
   message?: string
   created_at?: string
+}
+
+export interface Notice {
+  id: string
+  title: string
+  category: 'news' | 'webinar' | 'event' | 'maintenance' | 'other'
+  site_url?: string
+  thumbnail?: string
+  description?: string
+  is_featured: boolean
+  is_published: boolean
+  published_date: string
+  created_at: string
+  updated_at: string
 }

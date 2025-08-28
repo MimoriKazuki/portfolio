@@ -50,7 +50,10 @@
       "Bash(supabase/migrations/fix_storage_rls.sql )",
       "Bash(supabase/migrations/production_rls_projects.sql )",
       "Bash(supabase/migrations/check_and_create_video_bucket.sql)",
-      "Bash(git reset:*)"
+      "Bash(git reset:*)",
+      "Bash(git restore:*)",
+      "Bash(git rm:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": []
   }

@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/app/lib/supabase/client'
-import { Check, X, Upload, Loader2 } from 'lucide-react'
+import { Check, X, Upload, Loader2, Headphones } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import dynamic from 'next/dynamic'
@@ -22,6 +22,7 @@ interface ColumnFormData {
   is_published: boolean
   author?: string
   thumbnail?: string
+  audio_url?: string
   category: 'ai-tools' | 'industry' | 'topics-news'
 }
 
@@ -35,7 +36,9 @@ export default function ColumnForm({ initialData, columnId }: ColumnFormProps) {
   const supabase = createClient()
   const [loading, setLoading] = useState(false)
   const [uploading, setUploading] = useState(false)
+  const [audioUploading, setAudioUploading] = useState(false)
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null)
+  const [audioFile, setAudioFile] = useState<File | null>(null)
   const [thumbnailPreview, setThumbnailPreview] = useState<string>(initialData?.thumbnail || '')
   const [dragOver, setDragOver] = useState(false)
   
@@ -47,6 +50,7 @@ export default function ColumnForm({ initialData, columnId }: ColumnFormProps) {
     is_published: initialData?.is_published || false,
     author: initialData?.author || 'LandBridge開発チーム',
     thumbnail: initialData?.thumbnail || '',
+    audio_url: initialData?.audio_url || '',
     category: initialData?.category || 'topics-news',
   })
 
@@ -94,6 +98,19 @@ export default function ColumnForm({ initialData, columnId }: ColumnFormProps) {
     setDragOver(false)
   }
 
+  const handleAudioChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    // Check if file is .m4a
+    if (!file.name.toLowerCase().endsWith('.m4a')) {
+      alert('.m4a形式のファイルを選択してください')
+      return
+    }
+
+    setAudioFile(file)
+  }
+
   const uploadThumbnail = async (file: File): Promise<string> => {
     const fileExt = file.name.split('.').pop()
     const fileName = `${Math.random()}.${fileExt}`
@@ -114,6 +131,26 @@ export default function ColumnForm({ initialData, columnId }: ColumnFormProps) {
     return publicUrl
   }
 
+  const uploadAudio = async (file: File): Promise<string> => {
+    const fileExt = file.name.split('.').pop()
+    const fileName = `${Math.random()}.${fileExt}`
+    const filePath = `${fileName}`
+
+    const { error: uploadError, data } = await supabase.storage
+      .from('column-audio')
+      .upload(filePath, file)
+
+    if (uploadError) {
+      throw uploadError
+    }
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('column-audio')
+      .getPublicUrl(filePath)
+
+    return publicUrl
+  }
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -124,6 +161,7 @@ export default function ColumnForm({ initialData, columnId }: ColumnFormProps) {
 
     try {
       let thumbnailUrl = formData.thumbnail
+      let audioUrl = formData.audio_url
 
       // Upload new thumbnail if selected
       if (thumbnailFile) {
@@ -132,9 +170,17 @@ export default function ColumnForm({ initialData, columnId }: ColumnFormProps) {
         setUploading(false)
       }
 
+      // Upload new audio if selected
+      if (audioFile) {
+        setAudioUploading(true)
+        audioUrl = await uploadAudio(audioFile)
+        setAudioUploading(false)
+      }
+
       const columnData = {
         ...formData,
         thumbnail: thumbnailUrl,
+        audio_url: audioUrl,
         published_date: new Date().toISOString() // 公開日時を追加
       }
 
@@ -203,6 +249,7 @@ export default function ColumnForm({ initialData, columnId }: ColumnFormProps) {
     } finally {
       setLoading(false)
       setUploading(false)
+      setAudioUploading(false)
     }
   }
 
@@ -293,6 +340,50 @@ export default function ColumnForm({ initialData, columnId }: ColumnFormProps) {
             </div>
             {uploading && (
               <p className="text-sm text-blue-600">アップロード中...</p>
+            )}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2 text-gray-700">
+            ラジオ解説音声ファイル（.m4a）
+          </label>
+          <div className="space-y-4">
+            {audioFile || formData.audio_url ? (
+              <div className="p-4 bg-gray-50 rounded-lg flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Headphones className="h-6 w-6 text-gray-600" />
+                  <span className="text-sm text-gray-700">
+                    {audioFile ? audioFile.name : '音声ファイルがアップロード済み'}
+                  </span>
+                </div>
+                {formData.audio_url && !audioFile && (
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ ...formData, audio_url: '' })}
+                    className="text-sm text-red-600 hover:text-red-700"
+                  >
+                    削除
+                  </button>
+                )}
+              </div>
+            ) : null}
+            <div>
+              <label className="cursor-pointer inline-block">
+                <input
+                  type="file"
+                  accept=".m4a"
+                  onChange={handleAudioChange}
+                  className="hidden"
+                />
+                <div className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition-colors">
+                  <Headphones className="h-5 w-5" />
+                  {audioFile || formData.audio_url ? '音声を変更' : '音声をアップロード'}
+                </div>
+              </label>
+            </div>
+            {audioUploading && (
+              <p className="text-sm text-blue-600">音声ファイルをアップロード中...</p>
             )}
           </div>
         </div>

@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { useState } from 'react'
-import { Menu, X, Home, FolderOpen, Mail, FileText, Download } from 'lucide-react'
+import { Menu, X, Home, FolderOpen, Mail, FileText, Download, Bell } from 'lucide-react'
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -12,6 +12,7 @@ const Header = () => {
     { icon: Home, label: 'トップ', href: '/' },
     { icon: FolderOpen, label: 'ポートフォリオ', href: '/projects' },
     { icon: FileText, label: 'コラム', href: '/columns' },
+    { icon: Bell, label: 'お知らせ', href: '/notices' },
     { icon: Download, label: '資料請求', href: '/documents' },
     { icon: Mail, label: '問い合わせ', href: '/contact' },
   ]

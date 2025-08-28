@@ -16,7 +16,9 @@ export default function TableOfContents({ headings }: TableOfContentsProps) {
     if (element) {
       // より確実なスクロール方法を使用
       const elementPosition = element.getBoundingClientRect().top + window.scrollY
-      const offsetPosition = elementPosition - 100 // 上部に100pxの余白を確保
+      // SP画面では180px（ヘッダー80px + プレイヤー高さ約60px + 余白40px）、PC画面では120pxの余白を確保
+      const offset = window.innerWidth < 768 ? 180 : 120
+      const offsetPosition = elementPosition - offset
       
       window.scrollTo({
         top: offsetPosition,

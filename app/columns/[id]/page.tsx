@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { Calendar, ChevronLeft } from 'lucide-react'
 import MainLayout from '@/app/components/MainLayout'
 import TableOfContents from '@/app/components/TableOfContents'
+import AudioPlayerWrapper from '@/app/columns/AudioPlayerWrapper'
 import type { Metadata } from 'next'
 
 // ISRを使用してパフォーマンスを向上
@@ -211,6 +212,15 @@ export default async function ColumnDetailPage({ params }: PageProps) {
             <p className="text-gray-700 leading-relaxed text-lg">
               {column.excerpt}
             </p>
+          </div>
+        )}
+
+        {/* 音声プレイヤー */}
+        {column.audio_url && (
+          <div className="relative mb-8">
+            <div className="flex justify-center">
+              <AudioPlayerWrapper audioUrl={column.audio_url} />
+            </div>
           </div>
         )}
 

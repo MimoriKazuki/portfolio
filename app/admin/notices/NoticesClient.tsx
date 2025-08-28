@@ -2,113 +2,106 @@
 
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
-import { Plus, Edit, Trash2, FileText, Search, Filter, FolderOpen, Headphones } from 'lucide-react'
+import { Plus, Edit, FileText, Search, Filter, Bell } from 'lucide-react'
 import Image from 'next/image'
-import DeleteColumnButton from './DeleteColumnButton'
+import DeleteNoticeButton from './DeleteNoticeButton'
 
-interface Column {
+interface Notice {
   id: string
   title: string
-  slug: string
-  excerpt?: string
-  is_published: boolean
-  is_featured: boolean
-  view_count: number
+  category: 'news' | 'webinar' | 'event' | 'maintenance' | 'other'
+  site_url?: string
   thumbnail?: string
-  audio_url?: string
-  category?: 'ai-tools' | 'industry' | 'topics-news'
+  description?: string
+  is_featured: boolean
+  is_published: boolean
+  published_date: string
 }
 
-interface ColumnsClientProps {
-  columns: Column[]
+interface NoticesClientProps {
+  notices: Notice[]
 }
 
-export default function ColumnsClient({ columns }: ColumnsClientProps) {
+export default function NoticesClient({ notices }: NoticesClientProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [categoryFilter, setCategoryFilter] = useState<string>('all')
 
   const categoryColors = {
-    'ai-tools': 'bg-emerald-100 text-emerald-700',
-    'industry': 'bg-blue-100 text-blue-700',
-    'topics-news': 'bg-purple-100 text-purple-700'
+    news: 'bg-blue-100 text-blue-700',
+    webinar: 'bg-purple-100 text-purple-700',
+    event: 'bg-pink-100 text-pink-700',
+    maintenance: 'bg-yellow-100 text-yellow-700',
+    other: 'bg-gray-100 text-gray-700'
   }
 
   const categoryLabels = {
-    'ai-tools': '生成AIツール',
-    'industry': '業界別',
-    'topics-news': 'トピック・ニュース'
+    news: 'ニュース',
+    webinar: 'ウェビナー',
+    event: 'イベント',
+    maintenance: 'メンテナンス',
+    other: 'その他'
   }
 
-  const filteredColumns = useMemo(() => {
-    return columns.filter(column => {
+  const filteredNotices = useMemo(() => {
+    return notices.filter(notice => {
       const matchesSearch = searchQuery === '' || 
-        column.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        column.slug.toLowerCase().includes(searchQuery.toLowerCase())
+        notice.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        notice.description?.toLowerCase().includes(searchQuery.toLowerCase())
       
       const matchesStatus = statusFilter === 'all' || 
-        (statusFilter === 'published' && column.is_published) ||
-        (statusFilter === 'draft' && !column.is_published)
+        (statusFilter === 'published' && notice.is_published) ||
+        (statusFilter === 'draft' && !notice.is_published)
 
-      const matchesCategory = categoryFilter === 'all' || column.category === categoryFilter
+      const matchesCategory = categoryFilter === 'all' || notice.category === categoryFilter
 
       return matchesSearch && matchesStatus && matchesCategory
     })
-  }, [columns, searchQuery, statusFilter, categoryFilter])
+  }, [notices, searchQuery, statusFilter, categoryFilter])
 
   return (
     <div className="w-full">
-      <h1 className="text-3xl font-bold mb-8 text-gray-900">コラム管理</h1>
+      <h1 className="text-3xl font-bold mb-8 text-gray-900">お知らせ管理</h1>
       
-      {!columns || columns.length === 0 ? (
+      {!notices || notices.length === 0 ? (
         <div className="bg-white rounded-lg p-16 text-center border border-gray-200">
-          <FileText className="h-20 w-20 mx-auto mb-6 text-gray-400" />
-          <h2 className="text-2xl font-bold mb-4 text-gray-900">コラムがありません</h2>
-          <p className="text-gray-600 mb-8">最初のコラムを追加して情報を発信しましょう</p>
+          <Bell className="h-20 w-20 mx-auto mb-6 text-gray-400" />
+          <h2 className="text-2xl font-bold mb-4 text-gray-900">お知らせがありません</h2>
+          <p className="text-gray-600 mb-8">最初のお知らせを追加してユーザーに情報を届けましょう</p>
           <Link
-            href="/admin/columns/new"
+            href="/admin/notices/new"
             className="inline-flex items-center gap-2 bg-portfolio-blue hover:bg-portfolio-blue-dark text-white px-6 py-3 rounded-lg transition-colors text-lg"
           >
             <Plus className="h-6 w-6" />
-            コラムを追加
+            お知らせを追加
           </Link>
         </div>
       ) : (
         <div className="space-y-6">
           {/* Stats Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
             <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
-              <div className="text-3xl font-bold text-portfolio-blue">{columns.length}</div>
-              <div className="text-sm text-gray-600">総コラム数</div>
+              <div className="text-3xl font-bold text-portfolio-blue">{notices.length}</div>
+              <div className="text-sm text-gray-600">総お知らせ数</div>
             </div>
-            <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
-              <div className="text-3xl font-bold text-emerald-600">
-                {columns.filter(c => c.category === 'ai-tools').length}
+            {Object.entries(categoryLabels).map(([key, label]) => (
+              <div key={key} className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+                <div className={`text-3xl font-bold ${categoryColors[key as keyof typeof categoryColors].split(' ')[1]}`}>
+                  {notices.filter(n => n.category === key).length}
+                </div>
+                <div className="text-sm text-gray-600">{label}</div>
               </div>
-              <div className="text-sm text-gray-600">生成AIツール</div>
-            </div>
-            <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
-              <div className="text-3xl font-bold text-blue-600">
-                {columns.filter(c => c.category === 'industry').length}
-              </div>
-              <div className="text-sm text-gray-600">業界別</div>
-            </div>
-            <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
-              <div className="text-3xl font-bold text-purple-600">
-                {columns.filter(c => c.category === 'topics-news').length}
-              </div>
-              <div className="text-sm text-gray-600">トピック・ニュース</div>
-            </div>
+            ))}
           </div>
 
           {/* Action bar */}
           <div className="flex items-center justify-between gap-4">
             <Link
-              href="/admin/columns/new"
+              href="/admin/notices/new"
               className="flex items-center gap-2 bg-portfolio-blue hover:bg-portfolio-blue-dark text-white px-4 py-2 rounded-lg transition-colors"
             >
               <Plus className="h-5 w-5" />
-              コラムを追加
+              お知らせを追加
             </Link>
 
             <div className="flex items-center gap-4 flex-1 justify-end">
@@ -120,9 +113,9 @@ export default function ColumnsClient({ columns }: ColumnsClientProps) {
                   className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-10 text-gray-700 focus:outline-none focus:ring-2 focus:ring-portfolio-blue"
                 >
                   <option value="all">すべてのカテゴリ</option>
-                  <option value="ai-tools">生成AIツール</option>
-                  <option value="industry">業界別</option>
-                  <option value="topics-news">トピック・ニュース</option>
+                  {Object.entries(categoryLabels).map(([key, label]) => (
+                    <option key={key} value={key}>{label}</option>
+                  ))}
                 </select>
                 <Filter className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
               </div>
@@ -155,7 +148,7 @@ export default function ColumnsClient({ columns }: ColumnsClientProps) {
             </div>
           </div>
 
-          {/* Columns Table */}
+          {/* Notices Table */}
           <div className="bg-white rounded-lg border border-gray-200 overflow-x-auto">
             <table className="w-full table-fixed">
               <thead className="bg-gray-50 border-b border-gray-200">
@@ -169,81 +162,74 @@ export default function ColumnsClient({ columns }: ColumnsClientProps) {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {filteredColumns.length === 0 ? (
+                {filteredNotices.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
                       検索結果が見つかりませんでした
                     </td>
                   </tr>
                 ) : (
-                  filteredColumns.map((column) => (
-                    <tr key={column.id} className="hover:bg-gray-50 transition-colors">
+                  filteredNotices.map((notice) => (
+                    <tr key={notice.id} className="hover:bg-gray-50 transition-colors">
                       <td className="w-40 px-6 py-4">
                         <div className="flex justify-center">
-                          {column.thumbnail ? (
+                          {notice.thumbnail ? (
                             <div className="relative w-20 h-12 flex-shrink-0">
                               <Image
-                                src={column.thumbnail}
-                                alt={column.title}
+                                src={notice.thumbnail}
+                                alt={notice.title}
                                 fill
                                 className="object-cover rounded"
                               />
                             </div>
                           ) : (
                             <div className="w-20 h-12 bg-gray-100 rounded flex items-center justify-center">
-                              <FileText className="w-6 h-6 text-gray-400" />
+                              <Bell className="w-6 h-6 text-gray-400" />
                             </div>
                           )}
                         </div>
                       </td>
                       <td className="px-6 py-4">
                         <div className="text-left min-w-0">
-                          <div className="flex items-center gap-2">
-                            <h3 className="font-medium text-gray-900 truncate">{column.title}</h3>
-                            {column.audio_url && (
-                              <Headphones className="h-4 w-4 text-portfolio-blue flex-shrink-0" title="音声ファイルあり" />
-                            )}
-                          </div>
-                          {column.excerpt && (
+                          <h3 className="font-medium text-gray-900 truncate">{notice.title}</h3>
+                          {notice.description && (
                             <p className="text-sm text-gray-600 truncate">
-                              {column.excerpt}
+                              {notice.description}
                             </p>
                           )}
                         </div>
                       </td>
                       <td className="w-[140px] px-6 py-4 text-center">
-                        {column.category && (
-                          <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${
-                            categoryColors[column.category] || 'bg-gray-100 text-gray-700'
-                          }`}>
-                            {categoryLabels[column.category] || column.category}
-                          </span>
-                        )}
+                        <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${
+                          categoryColors[notice.category] || 'bg-gray-100 text-gray-700'
+                        }`}>
+                          {categoryLabels[notice.category] || notice.category}
+                        </span>
                       </td>
                       <td className="w-[120px] px-6 py-4 text-center">
                         <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${
-                          column.is_published 
+                          notice.is_published 
                             ? 'bg-green-100 text-green-700' 
                             : 'bg-gray-100 text-gray-700'
                         }`}>
-                          {column.is_published ? '公開中' : '下書き'}
+                          {notice.is_published ? '公開中' : '下書き'}
                         </span>
                       </td>
                       <td className="w-[120px] px-6 py-4 text-center text-sm">
-                        <span className={column.is_featured ? 'text-green-600 font-medium' : 'text-gray-600'}>
-                          {column.is_featured ? 'ON' : 'OFF'}
+                        <span className={notice.is_featured ? 'text-green-600 font-medium' : 'text-gray-600'}>
+                          {notice.is_featured ? 'ON' : 'OFF'}
                         </span>
                       </td>
                       <td className="w-[120px] px-6 py-4">
                         <div className="flex items-center justify-center gap-2">
                           <Link
-                            href={`/admin/columns/${column.id}/edit`}
+                            href={`/admin/notices/${notice.id}/edit`}
                             className="p-2 hover:bg-blue-100 rounded-lg transition-colors text-blue-600"
                             title="編集"
                           >
                             <Edit className="h-4 w-4" />
                           </Link>
-                          <DeleteColumnButton columnId={column.id} columnTitle={column.title} />
+                          <DeleteNoticeButton noticeId={notice.id} noticeTitle={notice.title} />
                         </div>
                       </td>
                     </tr>
