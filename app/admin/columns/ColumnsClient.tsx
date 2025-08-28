@@ -201,7 +201,9 @@ export default function ColumnsClient({ columns }: ColumnsClientProps) {
                           <div className="flex items-center gap-2">
                             <h3 className="font-medium text-gray-900 truncate">{column.title}</h3>
                             {column.audio_url && (
-                              <Headphones className="h-4 w-4 text-portfolio-blue flex-shrink-0" title="音声ファイルあり" />
+                              <div title="音声ファイルあり">
+                                <Headphones className="h-4 w-4 text-portfolio-blue flex-shrink-0" />
+                              </div>
                             )}
                           </div>
                           {column.excerpt && (
