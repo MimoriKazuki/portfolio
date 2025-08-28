@@ -164,10 +164,9 @@ export default function AudioPlayer({ audioUrl }: AudioPlayerProps) {
           <div className={`flex items-center gap-2 ${
             isPlaying ? 'opacity-100 w-auto ml-3' : 'opacity-0 w-0'
           }`} style={{ 
-            overflow: 'hidden',
             transition: 'all 250ms cubic-bezier(0.4, 0, 0.2, 1)'
           }}>
-            <div className="relative flex items-center h-6">
+            <div className="relative flex items-center h-8 py-2" style={{ overflow: 'visible' }}>
               <input
                 type="range"
                 min={0}

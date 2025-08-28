@@ -48,9 +48,12 @@
 /* Audio Player Slider Styles */
 input[type="range"].audio-slider {
   -webkit-appearance: none;
+  -moz-appearance: none;
   appearance: none;
   background: transparent;
   cursor: pointer;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Webkit browsers (Chrome, Safari, etc.) */
@@ -63,7 +66,13 @@ input[type="range"].audio-slider::-webkit-slider-thumb {
   border-radius: 50%;
   cursor: pointer;
   margin-top: -6px;
-  border: none;
+  border: 0;
+  box-shadow: none !important;
+  -webkit-box-shadow: none !important;
+  filter: none !important;
+  -webkit-filter: none !important;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
 }
 
 /* Firefox */
@@ -74,17 +83,30 @@ input[type="range"].audio-slider::-moz-range-thumb {
   border-radius: 50%;
   cursor: pointer;
   border: none;
+  box-shadow: none !important;
 }
 
 /* Track styles */
 input[type="range"].audio-slider::-webkit-slider-runnable-track {
   height: 4px;
   background: transparent;
+  border: none;
+  box-shadow: none;
 }
 
 input[type="range"].audio-slider::-moz-range-track {
   height: 4px;
   background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+/* Additional mobile-specific overrides */
+@media (max-width: 768px) {
+  input[type="range"].audio-slider::-webkit-slider-thumb {
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+  }
 }
 
 @layer base {
