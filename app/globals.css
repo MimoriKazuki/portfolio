@@ -45,6 +45,48 @@
   }
 }
 
+/* Audio Player Slider Styles */
+input[type="range"].audio-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+/* Webkit browsers (Chrome, Safari, etc.) */
+input[type="range"].audio-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  background: #003B70;
+  border-radius: 50%;
+  cursor: pointer;
+  margin-top: -6px;
+  border: none;
+}
+
+/* Firefox */
+input[type="range"].audio-slider::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: #003B70;
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+}
+
+/* Track styles */
+input[type="range"].audio-slider::-webkit-slider-runnable-track {
+  height: 4px;
+  background: transparent;
+}
+
+input[type="range"].audio-slider::-moz-range-track {
+  height: 4px;
+  background: transparent;
+}
+
 @layer base {
   * {
     @apply border-border;

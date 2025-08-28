@@ -174,7 +174,7 @@ export default function AudioPlayer({ audioUrl }: AudioPlayerProps) {
                 max={duration || 0}
                 value={currentTime}
                 onChange={handleSliderChange}
-                className="w-24 md:w-32 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                className="audio-slider w-24 md:w-32 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                 style={{
                   background: `linear-gradient(to right, #003B70 0%, #003B70 ${(currentTime / (duration || 1)) * 100}%, #E5E7EB ${(currentTime / (duration || 1)) * 100}%, #E5E7EB 100%)`
                 }}
