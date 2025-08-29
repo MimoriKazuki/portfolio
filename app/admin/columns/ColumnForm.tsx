@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/app/lib/supabase/client'
-import { Check, X, Upload, Loader2, Headphones } from 'lucide-react'
+import { Check, X, Upload, Loader2, Headphones, AlertTriangle } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import dynamic from 'next/dynamic'
@@ -41,6 +41,7 @@ export default function ColumnForm({ initialData, columnId }: ColumnFormProps) {
   const [audioFile, setAudioFile] = useState<File | null>(null)
   const [thumbnailPreview, setThumbnailPreview] = useState<string>(initialData?.thumbnail || '')
   const [dragOver, setDragOver] = useState(false)
+  const [audioWarning, setAudioWarning] = useState<string>('')
   
   const [formData, setFormData] = useState<ColumnFormData>({
     title: initialData?.title || '',
@@ -109,6 +110,16 @@ export default function ColumnForm({ initialData, columnId }: ColumnFormProps) {
       return
     }
 
+    // Check file size and set warning
+    const fileSize = file.size / (1024 * 1024) // Size in MB
+    
+    // Set warning for files over 6MB
+    if (fileSize > 6) {
+      setAudioWarning('ファイルサイズが6MBを超えています。アップロードに失敗する可能性があります。')
+    } else {
+      setAudioWarning('')
+    }
+
     setAudioFile(file)
   }
 
@@ -173,9 +184,20 @@ export default function ColumnForm({ initialData, columnId }: ColumnFormProps) {
 
       // Upload new audio if selected
       if (audioFile) {
-        setAudioUploading(true)
-        audioUrl = await uploadAudio(audioFile)
-        setAudioUploading(false)
+        try {
+          setAudioUploading(true)
+          audioUrl = await uploadAudio(audioFile)
+          setAudioUploading(false)
+        } catch (error: any) {
+          setAudioUploading(false)
+          if (error.message?.includes('exceeded the maximum allowed size')) {
+            alert('音声ファイルのサイズが大きすぎます。6MB以下のファイルを推奨します。')
+          } else {
+            alert('音声ファイルのアップロードに失敗しました: ' + error.message)
+          }
+          setLoading(false)
+          return
+        }
       }
 
       const columnData = {
@@ -245,8 +267,15 @@ export default function ColumnForm({ initialData, columnId }: ColumnFormProps) {
         toString: error?.toString ? error.toString() : 'No toString method',
         stack: error?.stack
       })
-      const errorMessage = error?.message || error?.toString?.() || 'Unknown error'
-      alert('Error saving column: ' + errorMessage)
+      
+      let errorMessage = 'コラムの保存に失敗しました'
+      if (error?.message?.includes('exceeded the maximum allowed size')) {
+        errorMessage = 'ファイルサイズが大きすぎます。音声ファイルは6MB以下を推奨します。'
+      } else if (error?.message) {
+        errorMessage = `保存エラー: ${error.message}`
+      }
+      
+      alert(errorMessage)
     } finally {
       setLoading(false)
       setUploading(false)
@@ -360,6 +389,7 @@ export default function ColumnForm({ initialData, columnId }: ColumnFormProps) {
                   onClick={() => {
                     setAudioFile(null)
                     setFormData({ ...formData, audio_url: '' })
+                    setAudioWarning('')
                     // Reset file input
                     const audioInput = document.getElementById('audio-file-input') as HTMLInputElement
                     if (audioInput) {
@@ -389,6 +419,12 @@ export default function ColumnForm({ initialData, columnId }: ColumnFormProps) {
             </div>
             {audioUploading && (
               <p className="text-sm text-blue-600">音声ファイルをアップロード中...</p>
+            )}
+            {audioWarning && (
+              <div className="flex items-start gap-2 mt-2">
+                <AlertTriangle className="h-4 w-4 text-yellow-600 mt-0.5 flex-shrink-0" />
+                <p className="text-sm text-yellow-600">{audioWarning}</p>
+              </div>
             )}
           </div>
         </div>
