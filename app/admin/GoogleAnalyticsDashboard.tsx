@@ -15,6 +15,7 @@ import {
   AlertCircle
 } from 'lucide-react'
 import Link from 'next/link'
+import UserActivityTrend from './UserActivityTrend'
 
 // データの型定義
 interface AnalyticsData {
@@ -75,6 +76,27 @@ interface AnalyticsData {
     sessions: number
     percentage: number
   }>
+  userActivity?: {
+    dailyActivity: Array<{
+      date: string
+      originalDate: string
+      activeUsers: number
+      newUsers: number
+      sessions: number
+    }>
+    userGrowth: {
+      activeUsers: {
+        value: number
+        change: number
+        changePercent: string
+      }
+      newUsers: {
+        value: number
+        change: number
+        changePercent: string
+      }
+    }
+  }
 }
 
 export default function GoogleAnalyticsDashboard() {
@@ -104,7 +126,7 @@ export default function GoogleAnalyticsDashboard() {
       }
 
       // 各種データを並行して取得（デフォルトは過去30日間）
-      const [overview, realtime, traffic, devices, pages, locations, userAcquisition, hourly, browsers] = await Promise.all([
+      const [overview, realtime, traffic, devices, pages, locations, userAcquisition, hourly, browsers, userActivity] = await Promise.all([
         fetchWithErrorHandling(`/api/analytics?type=overview&startDate=${timeRange}`),
         fetchWithErrorHandling('/api/analytics?type=realtime'),
         fetchWithErrorHandling(`/api/analytics?type=traffic&startDate=${timeRange}`),
@@ -113,7 +135,8 @@ export default function GoogleAnalyticsDashboard() {
         fetchWithErrorHandling(`/api/analytics?type=locations&startDate=${timeRange}`),
         fetchWithErrorHandling(`/api/analytics?type=user-acquisition&startDate=${timeRange}`),
         fetchWithErrorHandling(`/api/analytics?type=hourly&startDate=${timeRange}`),
-        fetchWithErrorHandling(`/api/analytics?type=browsers&startDate=${timeRange}`)
+        fetchWithErrorHandling(`/api/analytics?type=browsers&startDate=${timeRange}`),
+        fetchWithErrorHandling(`/api/analytics/user-activity?timeRange=${timeRange}`)
       ])
 
       // データを整形
@@ -127,6 +150,7 @@ export default function GoogleAnalyticsDashboard() {
         userAcquisition,
         hourly,
         browsers,
+        userActivity,
         timeRange
       )
 
@@ -153,6 +177,7 @@ export default function GoogleAnalyticsDashboard() {
     userAcquisition: any,
     hourly: any,
     browsers: any,
+    userActivity: any,
     timeRange: string
   ): AnalyticsData => {
     console.log('Processing analytics response:', { overview, realtime, traffic, devices, pages, locations, userAcquisition, hourly, browsers })
@@ -386,7 +411,8 @@ export default function GoogleAnalyticsDashboard() {
       locations: locationData,
       userAcquisition: userAcquisitionData,
       hourlyData: hourlyDataProcessed,
-      browsers: browserData
+      browsers: browserData,
+      userActivity: userActivity || null
     }
     
     console.log('Processed data:', result)
@@ -683,21 +709,21 @@ export default function GoogleAnalyticsDashboard() {
         </div>
       </div>
 
-      {/* Page Views Trend and User Acquisition */}
+      {/* Page Views Trend and User Activity Trend */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* Page Views Trend Line Chart */}
         <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
           <h3 className="text-lg font-semibold mb-4 text-gray-900">ページビュー推移</h3>
           <div className="relative h-64 pl-12 pb-6">
             <div className="relative w-full h-full">
-              <svg className="absolute inset-0 w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+              <svg className="absolute inset-0 w-full h-full" viewBox="0 0 400 100" preserveAspectRatio="none">
               {/* Grid lines */}
               {[0, 1, 2, 3, 4].map((i) => (
                 <line
                   key={i}
                   x1="0"
                   y1={10 + i * 20}
-                  x2="100"
+                  x2="400"
                   y2={10 + i * 20}
                   stroke="#f3f4f6"
                   strokeWidth="0.5"
@@ -714,7 +740,7 @@ export default function GoogleAnalyticsDashboard() {
                 const padding = range * 0.1 // 10%のパディング
                 
                 const points = chartData.map((day, index) => {
-                  const x = (index / Math.max(chartData.length - 1, 1)) * 100
+                  const x = (index / Math.max(chartData.length - 1, 1)) * 400
                   const normalizedValue = (day.pageViews - minViews + padding) / (range + padding * 2)
                   const y = 90 - (normalizedValue * 80)
                   return { x, y, value: day.pageViews, date: day.date, index }
@@ -758,9 +784,9 @@ export default function GoogleAnalyticsDashboard() {
                       <g key={idx}>
                         {/* Hover area - vertical line for better interaction */}
                         <rect
-                          x={point.x - 5}
+                          x={point.x - 10}
                           y="0"
-                          width="10"
+                          width="20"
                           height="100"
                           fill="transparent"
                           className="cursor-pointer"
@@ -888,29 +914,45 @@ export default function GoogleAnalyticsDashboard() {
             {hoveredPoint && displayData.last30Days.length > 1 && (() => {
               const chartData = displayData.last30Days
               const point = chartData[hoveredPoint.index]
+              const prevPoint = chartData[hoveredPoint.index - 1]
               if (!point) return null
               
               // Calculate position based on actual chart area (considering left padding)
-              const chartAreaWidth = 100
-              const xPosition = (hoveredPoint.index / Math.max(chartData.length - 1, 1)) * chartAreaWidth
+              const xPosition = (hoveredPoint.index / Math.max(chartData.length - 1, 1)) * 100
               
-              // Calculate actual pixel position
-              const elementRect = { width: 100, left: 48 } // Approximation for left padding
-              const actualX = (xPosition / 100) * (elementRect.width - elementRect.left) + elementRect.left
+              // Calculate change from previous day
+              let change = 0
+              let changePercent = '0'
+              if (prevPoint && prevPoint.pageViews > 0) {
+                change = point.pageViews - prevPoint.pageViews
+                changePercent = ((change / prevPoint.pageViews) * 100).toFixed(1)
+              }
+              
+              // 画面端での位置調整
+              let transform = 'translateX(-50%)'
+              let leftPosition = `${xPosition}%`
+              
+              if (xPosition > 80) {
+                // 右端80%以降は右寄せ
+                transform = 'translateX(-100%)'
+              } else if (xPosition < 20) {
+                // 左端20%以前は左寄せ
+                transform = 'translateX(0%)'
+              }
               
               // Position tooltip above the chart
               return (
                 <div
                   className="absolute pointer-events-none z-20"
                   style={{
-                    left: `${xPosition}%`,
+                    left: leftPosition,
                     top: '5px',
-                    transform: 'translateX(-50%)',
+                    transform,
                     marginLeft: '48px' // Account for pl-12
                   }}
                 >
-                  <div className="bg-gray-900 text-white px-4 py-3 rounded-lg shadow-xl">
-                    <div className="text-xs text-gray-400 mb-1">
+                  <div className="bg-gray-900 text-white px-4 py-3 rounded-lg shadow-xl min-w-[180px]">
+                    <div className="text-xs text-gray-400 mb-2">
                       {(() => {
                         // Get the original date string from the data
                         const originalData = displayData.last30Days[hoveredPoint.index]
@@ -926,74 +968,36 @@ export default function GoogleAnalyticsDashboard() {
                         return `${hoveredPoint.date}日`
                       })()}
                     </div>
-                    <div className="text-lg font-semibold">{formatNumber(hoveredPoint.value)}</div>
-                    <div className="text-xs text-gray-300">ページビュー</div>
-                  </div>
-                  
-                  {/* Additional info if there are other metrics */}
-                  {(() => {
-                    const prevPoint = chartData[hoveredPoint.index - 1]
-                    if (!prevPoint) return null
                     
-                    const change = ((point.pageViews - prevPoint.pageViews) / prevPoint.pageViews) * 100
-                    const isPositive = change > 0
-                    
-                    return (
-                      <div className="mt-2 bg-white border border-gray-200 px-3 py-2 rounded-lg shadow-lg">
-                        <div className="flex items-center gap-2 text-xs">
-                          <span className="text-gray-600">前日比</span>
-                          <span className={`font-medium ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
-                            {isPositive ? '+' : ''}{change.toFixed(1)}%
-                          </span>
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5">
+                          <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                          <span className="text-xs text-gray-300">ページビュー</span>
                         </div>
+                        <span className="text-sm font-semibold text-white">
+                          {formatNumber(hoveredPoint.value)}
+                        </span>
                       </div>
-                    )
-                  })()}
-                </div>
-              )
-            })()}
-          </div>
-        </div>
-
-        {/* User Acquisition Pie Chart */}
-        <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
-          <h3 className="text-lg font-semibold mb-4 text-gray-900">新規 vs リピーター</h3>
-          <div className="flex items-center justify-center h-64">
-            {displayData.userAcquisition.length > 0 && (() => {
-              const newUser = displayData.userAcquisition.find(u => u.type === '新規ユーザー') || { percentage: 0 }
-              const returningUser = displayData.userAcquisition.find(u => u.type === 'リピーター') || { percentage: 0 }
-              const newUserAngle = (newUser.percentage / 100) * 360
-              const returningUserAngle = (returningUser.percentage / 100) * 360
-              
-              const radius = 80
-              const centerX = 100
-              const centerY = 100
-              
-              const newUserPath = `M ${centerX} ${centerY} L ${centerX} ${centerY - radius} A ${radius} ${radius} 0 ${newUserAngle > 180 ? 1 : 0} 1 ${centerX + radius * Math.sin((newUserAngle * Math.PI) / 180)} ${centerY - radius * Math.cos((newUserAngle * Math.PI) / 180)} Z`
-              const returningUserPath = `M ${centerX} ${centerY} L ${centerX + radius * Math.sin((newUserAngle * Math.PI) / 180)} ${centerY - radius * Math.cos((newUserAngle * Math.PI) / 180)} A ${radius} ${radius} 0 ${returningUserAngle > 180 ? 1 : 0} 1 ${centerX} ${centerY - radius} Z`
-
-              return (
-                <div className="flex items-center gap-8">
-                  <svg width="200" height="200" viewBox="0 0 200 200">
-                    {/* New Users */}
-                    <path
-                      d={newUserPath}
-                      fill="#3b82f6"
-                    />
-                    {/* Returning Users */}
-                    <path
-                      d={returningUserPath}
-                      fill="#10b981"
-                    />
-                  </svg>
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                      <span className="text-sm text-gray-700">新規ユーザー {newUser.percentage}%</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                      <span className="text-sm text-gray-700">リピーター {returningUser.percentage}%</span>
+                      
+                      {/* Previous day comparison */}
+                      {prevPoint && (
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-gray-400">前日比</span>
+                          <div className="flex items-center gap-1">
+                            <span className={`text-xs font-medium ${
+                              change >= 0 ? 'text-green-400' : 'text-red-400'
+                            }`}>
+                              {change >= 0 ? '+' : ''}{change.toLocaleString()}
+                            </span>
+                            <span className={`text-xs ${
+                              change >= 0 ? 'text-green-400' : 'text-red-400'
+                            }`}>
+                              ({change >= 0 ? '+' : ''}{changePercent}%)
+                            </span>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -1001,6 +1005,9 @@ export default function GoogleAnalyticsDashboard() {
             })()}
           </div>
         </div>
+
+        {/* User Activity Trend */}
+        <UserActivityTrend timeRange={timeRange} userActivityData={displayData.userActivity} />
       </div>
 
       {/* Top Pages - Full Width */}
@@ -1035,43 +1042,29 @@ export default function GoogleAnalyticsDashboard() {
         </div>
       </div>
 
-      {/* Device Breakdown and Traffic Sources - Side by Side */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+      {/* Device Breakdown, Traffic Sources, and User Acquisition - Three Columns */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
         {/* Device Breakdown */}
         <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
           <h3 className="text-lg font-semibold mb-6 text-gray-900">デバイス別</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="space-y-4">
             {displayData.devices.map((device) => {
               const Icon = device.icon
               return (
-                <div key={device.type} className="text-center">
-                  <div className="relative inline-flex items-center justify-center mb-2">
-                    <svg className="w-24 h-24" viewBox="0 0 100 100">
-                      <circle
-                        cx="50"
-                        cy="50"
-                        r="40"
-                        stroke="#e5e7eb"
-                        strokeWidth="8"
-                        fill="none"
-                      />
-                      <circle
-                        cx="50"
-                        cy="50"
-                        r="40"
-                        stroke="#3b82f6"
-                        strokeWidth="8"
-                        fill="none"
-                        strokeDasharray={`${2 * Math.PI * 40 * device.value / 100} ${2 * Math.PI * 40}`}
-                        strokeDashoffset="0"
-                        transform="rotate(-90 50 50)"
-                        className="transition-all duration-1000"
-                      />
-                    </svg>
-                    <Icon className="h-8 w-8 text-gray-600 absolute" />
+                <div key={device.type}>
+                  <div className="flex justify-between text-sm mb-1">
+                    <div className="flex items-center gap-2">
+                      <Icon className="h-4 w-4 text-gray-600" />
+                      <span className="text-gray-700">{device.type}</span>
+                    </div>
+                    <span className="font-medium">{device.value}%</span>
                   </div>
-                  <div className="text-2xl font-bold text-gray-900">{device.value}%</div>
-                  <div className="text-sm text-gray-600">{device.type}</div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div 
+                      className="bg-blue-500 h-2 rounded-full transition-all duration-500"
+                      style={{ width: `${device.value}%` }}
+                    />
+                  </div>
                 </div>
               )
             })}
@@ -1096,6 +1089,59 @@ export default function GoogleAnalyticsDashboard() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* User Acquisition Pie Chart */}
+        <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+          <h3 className="text-lg font-semibold mb-6 text-gray-900">新規 vs リピーター</h3>
+          <div className="flex items-center justify-center">
+            {displayData.userAcquisition.length > 0 && (() => {
+              const newUser = displayData.userAcquisition.find(u => u.type === '新規ユーザー') || { percentage: 0 }
+              const returningUser = displayData.userAcquisition.find(u => u.type === 'リピーター') || { percentage: 0 }
+              const newUserAngle = (newUser.percentage / 100) * 360
+              const returningUserAngle = (returningUser.percentage / 100) * 360
+              
+              const radius = 60
+              const centerX = 80
+              const centerY = 80
+              
+              const newUserPath = `M ${centerX} ${centerY} L ${centerX} ${centerY - radius} A ${radius} ${radius} 0 ${newUserAngle > 180 ? 1 : 0} 1 ${centerX + radius * Math.sin((newUserAngle * Math.PI) / 180)} ${centerY - radius * Math.cos((newUserAngle * Math.PI) / 180)} Z`
+              const returningUserPath = `M ${centerX} ${centerY} L ${centerX + radius * Math.sin((newUserAngle * Math.PI) / 180)} ${centerY - radius * Math.cos((newUserAngle * Math.PI) / 180)} A ${radius} ${radius} 0 ${returningUserAngle > 180 ? 1 : 0} 1 ${centerX} ${centerY - radius} Z`
+
+              return (
+                <div className="flex items-center gap-6">
+                  <svg width="160" height="160" viewBox="0 0 160 160">
+                    {/* New Users */}
+                    <path
+                      d={newUserPath}
+                      fill="#3b82f6"
+                    />
+                    {/* Returning Users */}
+                    <path
+                      d={returningUserPath}
+                      fill="#10b981"
+                    />
+                  </svg>
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 bg-blue-500 rounded-full"></div>
+                      <div>
+                        <div className="text-sm font-medium text-gray-900">新規ユーザー</div>
+                        <div className="text-lg font-bold text-blue-600">{newUser.percentage}%</div>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="w-4 h-4 bg-green-500 rounded-full"></div>
+                      <div>
+                        <div className="text-sm font-medium text-gray-900">リピーター</div>
+                        <div className="text-lg font-bold text-green-600">{returningUser.percentage}%</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )
+            })()}
           </div>
         </div>
       </div>
