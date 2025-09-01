@@ -713,7 +713,41 @@ export default function GoogleAnalyticsDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         {/* Page Views Trend Line Chart */}
         <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
-          <h3 className="text-lg font-semibold mb-4 text-gray-900">ページビュー推移</h3>
+          <h3 className="text-lg font-semibold mb-2 text-gray-900">ページビュー推移</h3>
+          <div className="bg-gray-50 rounded-lg p-4 mb-4">
+            {displayData.last30Days.length > 0 && (() => {
+              const todayData = displayData.last30Days[displayData.last30Days.length - 1]
+              const yesterdayData = displayData.last30Days[displayData.last30Days.length - 2]
+              const change = yesterdayData ? todayData.pageViews - yesterdayData.pageViews : 0
+              const changePercent = yesterdayData && yesterdayData.pageViews > 0 
+                ? ((change / yesterdayData.pageViews) * 100).toFixed(1) 
+                : '0'
+              const isPositive = change >= 0
+              
+              return (
+                <div>
+                  <div className="flex items-center gap-1.5 mb-1">
+                    <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    <span className="text-xs text-gray-600">本日のページビュー</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <div className="text-3xl font-bold text-gray-900">{formatNumber(todayData.pageViews)}</div>
+                    {yesterdayData && (
+                      <div className="flex items-center gap-1">
+                        <span className="text-xs text-gray-600">前日比</span>
+                        <span className={`font-semibold ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
+                          {isPositive ? '▲' : '▼'} {Math.abs(change).toLocaleString()}
+                        </span>
+                        <span className={`text-sm ${isPositive ? 'text-green-600' : 'text-red-600'}`}>
+                          ({isPositive ? '+' : ''}{changePercent}%)
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )
+            })()}
+          </div>
           <div className="relative h-64 pl-12 pb-6">
             <div className="relative w-full h-full">
               <svg className="absolute inset-0 w-full h-full" viewBox="0 0 400 100" preserveAspectRatio="none">

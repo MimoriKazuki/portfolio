@@ -104,8 +104,8 @@ export async function GET(request: Request) {
         sessions: 0
       }
       
-      // 日付をMM/DD形式に変換
-      const formattedDate = `${date.getMonth() + 1}/${date.getDate()}`
+      // 日付を日のみに変換（「日」付き）
+      const formattedDate = `${date.getDate()}日`
       
       dailyActivity.push({
         date: formattedDate,

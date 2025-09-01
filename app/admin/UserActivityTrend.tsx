@@ -44,7 +44,7 @@ export default function UserActivityTrend({ timeRange = '30daysAgo', userActivit
   } | null>(null)
   const showActiveUsers = true
   const showNewUsers = true
-  const showSessions = true
+  const showSessions = false
 
   const formatNumber = (num: number) => {
     return new Intl.NumberFormat('ja-JP').format(num)
@@ -54,7 +54,7 @@ export default function UserActivityTrend({ timeRange = '30daysAgo', userActivit
     switch (metric) {
       case 'activeUsers': return '#3b82f6' // blue
       case 'newUsers': return '#10b981' // green
-      case 'sessions': return '#8b5cf6' // purple
+      // case 'sessions': return '#8b5cf6' // purple
       default: return '#6b7280'
     }
   }
@@ -63,7 +63,7 @@ export default function UserActivityTrend({ timeRange = '30daysAgo', userActivit
     switch (metric) {
       case 'activeUsers': return 'アクティブユーザー'
       case 'newUsers': return '新規ユーザー'
-      case 'sessions': return 'セッション'
+      // case 'sessions': return 'セッション'
       default: return metric
     }
   }
@@ -91,7 +91,63 @@ export default function UserActivityTrend({ timeRange = '30daysAgo', userActivit
 
   return (
     <div className="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
-      <h3 className="text-lg font-semibold mb-4 text-gray-900">ユーザーのアクティビティ推移</h3>
+      <h3 className="text-lg font-semibold mb-2 text-gray-900">ユーザーのアクティビティ推移</h3>
+      {dailyActivity.length > 0 && (() => {
+        const todayData = dailyActivity[dailyActivity.length - 1]
+        const yesterdayData = dailyActivity[dailyActivity.length - 2]
+        
+        return (
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            {/* Active Users */}
+            {showActiveUsers && (
+              <div className="bg-gray-50 rounded-lg p-4">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                  <span className="text-xs text-gray-600">本日のアクティブユーザー</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="text-3xl font-bold text-gray-900">{formatNumber(todayData.activeUsers)}</div>
+                  {yesterdayData && (
+                    <div className="flex items-center gap-1">
+                      <span className="text-xs text-gray-600">前日比</span>
+                      <span className={`font-semibold ${todayData.activeUsers >= yesterdayData.activeUsers ? 'text-green-600' : 'text-red-600'}`}>
+                        {todayData.activeUsers >= yesterdayData.activeUsers ? '▲' : '▼'} {Math.abs(todayData.activeUsers - yesterdayData.activeUsers)}
+                      </span>
+                      <span className={`text-sm ${todayData.activeUsers >= yesterdayData.activeUsers ? 'text-green-600' : 'text-red-600'}`}>
+                        ({todayData.activeUsers >= yesterdayData.activeUsers ? '+' : ''}{yesterdayData.activeUsers > 0 ? ((todayData.activeUsers - yesterdayData.activeUsers) / yesterdayData.activeUsers * 100).toFixed(1) : '0'}%)
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+            
+            {/* New Users */}
+            {showNewUsers && (
+              <div className="bg-gray-50 rounded-lg p-4">
+                <div className="flex items-center gap-1.5 mb-1">
+                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <span className="text-xs text-gray-600">本日の新規ユーザー</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="text-3xl font-bold text-gray-900">{formatNumber(todayData.newUsers)}</div>
+                  {yesterdayData && (
+                    <div className="flex items-center gap-1">
+                      <span className="text-xs text-gray-600">前日比</span>
+                      <span className={`font-semibold ${todayData.newUsers >= yesterdayData.newUsers ? 'text-green-600' : 'text-red-600'}`}>
+                        {todayData.newUsers >= yesterdayData.newUsers ? '▲' : '▼'} {Math.abs(todayData.newUsers - yesterdayData.newUsers)}
+                      </span>
+                      <span className={`text-sm ${todayData.newUsers >= yesterdayData.newUsers ? 'text-green-600' : 'text-red-600'}`}>
+                        ({todayData.newUsers >= yesterdayData.newUsers ? '+' : ''}{yesterdayData.newUsers > 0 ? ((todayData.newUsers - yesterdayData.newUsers) / yesterdayData.newUsers * 100).toFixed(1) : '0'}%)
+                      </span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        )
+      })()}
 
       {/* Chart */}
       <div className="relative h-64 pl-12 pb-6">
@@ -204,64 +260,19 @@ export default function UserActivityTrend({ timeRange = '30daysAgo', userActivit
                     )
                   })}
                   
-                  {/* Hover indicators */}
+                  {/* Hover indicators - vertical line only */}
                   {hoveredPoint && (() => {
                     const x = (hoveredPoint.index / Math.max(dailyActivity.length - 1, 1)) * 400
                     return (
-                      <>
-                        <line
-                          x1={x}
-                          y1="0"
-                          x2={x}
-                          y2="100"
-                          stroke="#e5e7eb"
-                          strokeWidth="0.5"
-                          strokeDasharray="2 2"
-                        />
-                        
-                        {/* Show dots for active lines at hover position */}
-                        {showActiveUsers && (() => {
-                          const point = activeUsersPoints[hoveredPoint.index]
-                          return (
-                            <circle
-                              cx={x}
-                              cy={point.y}
-                              r="3"
-                              fill="#3b82f6"
-                              stroke="white"
-                              strokeWidth="2"
-                            />
-                          )
-                        })()}
-                        
-                        {showNewUsers && (() => {
-                          const point = newUsersPoints[hoveredPoint.index]
-                          return (
-                            <circle
-                              cx={x}
-                              cy={point.y}
-                              r="3"
-                              fill="#10b981"
-                              stroke="white"
-                              strokeWidth="2"
-                            />
-                          )
-                        })()}
-                        
-                        {showSessions && (() => {
-                          const point = sessionsPoints[hoveredPoint.index]
-                          return (
-                            <circle
-                              cx={x}
-                              cy={point.y}
-                              r="3"
-                              fill="#8b5cf6"
-                              stroke="white"
-                              strokeWidth="2"
-                            />
-                          )
-                        })()}
-                      </>
+                      <line
+                        x1={x}
+                        y1="0"
+                        x2={x}
+                        y2="100"
+                        stroke="#e5e7eb"
+                        strokeWidth="0.5"
+                        strokeDasharray="2 2"
+                      />
                     )
                   })()}
                 </g>
@@ -309,7 +320,7 @@ export default function UserActivityTrend({ timeRange = '30daysAgo', userActivit
                 {dailyActivity.map((day, index) => {
                   const shouldShow = index % skipInterval === 0 || index === dailyActivity.length - 1
                   
-                  // 月日形式で表示（最初の日付のみ）
+                  // 日付形式で表示（最初の日付は月/日、それ以外は日のみ）
                   let displayText = day.date
                   if (showMonthOnFirst && index === 0 && day.originalDate) {
                     const month = parseInt(day.originalDate.substring(4, 6), 10)
