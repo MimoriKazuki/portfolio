@@ -40,6 +40,10 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
   const [showColorPicker, setShowColorPicker] = useState(false)
   const [showBgColorPicker, setShowBgColorPicker] = useState(false)
   const [uploadingImage, setUploadingImage] = useState(false)
+  const [showLinkModal, setShowLinkModal] = useState(false)
+  const [linkText, setLinkText] = useState('')
+  const [linkUrl, setLinkUrl] = useState('')
+  const [isEditingLink, setIsEditingLink] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const supabase = createClient()
 
@@ -51,9 +55,11 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
         }
       }),
       Link.configure({
-        openOnClick: false,
+        openOnClick: true,
         HTMLAttributes: {
-          class: 'text-blue-600 underline hover:text-blue-800'
+          class: 'text-blue-600 underline hover:text-blue-800 cursor-pointer',
+          target: '_blank',
+          rel: 'noopener noreferrer'
         }
       }),
       Image,
@@ -98,10 +104,50 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
   ]
 
   const addLink = () => {
-    const url = prompt('リンクのURLを入力してください:')
-    if (url) {
-      editor.chain().focus().setLink({ href: url }).run()
+    const { from, to } = editor.state.selection
+    const selectedText = editor.state.doc.textBetween(from, to)
+    const previousUrl = editor.getAttributes('link').href
+    
+    // Set initial values for the modal
+    setLinkText(selectedText || '')
+    setLinkUrl(previousUrl || '')
+    setIsEditingLink(!!selectedText || !!previousUrl)
+    setShowLinkModal(true)
+  }
+
+  const handleLinkSubmit = () => {
+    if (!linkUrl.trim()) {
+      // If URL is empty, remove link if editing
+      if (isEditingLink) {
+        editor.chain().focus().extendMarkRange('link').unsetLink().run()
+      }
+      setShowLinkModal(false)
+      return
     }
+
+    if (!linkText.trim()) {
+      // If no link text provided, use URL as text
+      editor.chain().focus().insertContent(`<a href="${linkUrl.trim()}">${linkUrl.trim()}</a>`).run()
+    } else if (isEditingLink) {
+      // Update existing link or selected text
+      editor.chain().focus().extendMarkRange('link').setLink({ href: linkUrl.trim() }).run()
+    } else {
+      // Insert new link with custom text
+      editor.chain().focus().insertContent(`<a href="${linkUrl.trim()}">${linkText.trim()}</a>`).run()
+    }
+
+    // Reset modal state
+    setShowLinkModal(false)
+    setLinkText('')
+    setLinkUrl('')
+    setIsEditingLink(false)
+  }
+
+  const handleLinkCancel = () => {
+    setShowLinkModal(false)
+    setLinkText('')
+    setLinkUrl('')
+    setIsEditingLink(false)
   }
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -423,6 +469,83 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
       <div className="bg-white border-l border-r border-b border-gray-300 rounded-b h-[500px] overflow-hidden">
         <EditorContent editor={editor} />
       </div>
+
+      {/* Link Modal */}
+      {showLinkModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <h3 className="text-lg font-semibold mb-4 text-gray-900">
+              {isEditingLink ? 'リンクを編集' : 'リンクを追加'}
+            </h3>
+            
+            <div className="space-y-4">
+              {/* Link Text Input */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  リンクテキスト
+                </label>
+                <input
+                  type="text"
+                  value={linkText}
+                  onChange={(e) => setLinkText(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder={isEditingLink && linkText ? linkText : "リンクテキストを入力"}
+                />
+                {!isEditingLink && (
+                  <p className="text-xs text-gray-500 mt-1">
+                    空の場合はURLがテキストとして使用されます
+                  </p>
+                )}
+              </div>
+
+              {/* URL Input */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  URL <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="url"
+                  value={linkUrl}
+                  onChange={(e) => setLinkUrl(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="https://example.com"
+                  required
+                />
+              </div>
+            </div>
+
+            {/* Buttons */}
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                type="button"
+                onClick={handleLinkCancel}
+                className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+              >
+                キャンセル
+              </button>
+              {isEditingLink && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    editor.chain().focus().extendMarkRange('link').unsetLink().run()
+                    handleLinkCancel()
+                  }}
+                  className="px-4 py-2 text-red-700 bg-red-100 hover:bg-red-200 rounded-lg transition-colors"
+                >
+                  削除
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={handleLinkSubmit}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+              >
+                {isEditingLink ? '更新' : '追加'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
-import { Plus, Edit, Trash2, FolderOpen, Search, Filter } from 'lucide-react'
+import { Plus, Edit, Trash2, FolderOpen, Search, Filter, Eye } from 'lucide-react'
 import Image from 'next/image'
 import DeleteProjectButton from './DeleteProjectButton'
 import ProjectMetaIcons from '@/app/components/ProjectMetaIcons'
@@ -205,6 +205,13 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
                       </td>
                       <td className="w-[120px] px-6 py-4">
                         <div className="flex items-center justify-center gap-2">
+                          <Link
+                            href={`/admin/projects/${project.id}`}
+                            className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-600"
+                            title="詳細"
+                          >
+                            <Eye className="h-4 w-4" />
+                          </Link>
                           <Link
                             href={`/admin/projects/${project.id}/edit`}
                             className="p-2 hover:bg-blue-100 rounded-lg transition-colors text-blue-600"
