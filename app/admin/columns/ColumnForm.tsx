@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/app/lib/supabase/client'
-import { Check, X, Upload, Loader2, Headphones, AlertTriangle, Target, TrendingUp } from 'lucide-react'
+import { Check, X, Upload, Loader2, Headphones, AlertTriangle } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import dynamic from 'next/dynamic'
@@ -24,8 +24,6 @@ interface ColumnFormData {
   thumbnail?: string
   audio_url?: string
   category: 'ai-tools' | 'industry' | 'topics-news'
-  base_goal?: number
-  stretch_goal?: number
 }
 
 interface ColumnFormProps {
@@ -55,34 +53,8 @@ export default function ColumnForm({ initialData, columnId }: ColumnFormProps) {
     thumbnail: initialData?.thumbnail || '',
     audio_url: initialData?.audio_url || '',
     category: initialData?.category || 'topics-news',
-    base_goal: initialData?.base_goal,
-    stretch_goal: initialData?.stretch_goal,
   })
 
-  // 新規作成時に推奨目標値を取得
-  useEffect(() => {
-    const fetchRecommendedGoals = async () => {
-      if (!columnId && !formData.base_goal && !formData.stretch_goal) {
-        try {
-          const response = await fetch('/api/analytics/column/goals')
-          if (response.ok) {
-            const { data } = await response.json()
-            if (data) {
-              setFormData(prev => ({
-                ...prev,
-                base_goal: data.baseGoal,
-                stretch_goal: data.stretchGoal,
-              }))
-            }
-          }
-        } catch (error) {
-          console.error('Failed to fetch recommended goals:', error)
-        }
-      }
-    }
-
-    fetchRecommendedGoals()
-  }, [columnId])
 
 
   const handleThumbnailChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -353,39 +325,6 @@ export default function ColumnForm({ initialData, columnId }: ColumnFormProps) {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium mb-2 text-gray-700">
-              <Target className="inline h-4 w-4 mr-1" />
-              ベース目標（推奨）
-            </label>
-            <input
-              type="number"
-              value={formData.base_goal || ''}
-              onChange={(e) => setFormData({ ...formData, base_goal: e.target.value ? parseInt(e.target.value) : undefined })}
-              className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-portfolio-blue text-gray-900"
-              placeholder="自動設定"
-              min="0"
-            />
-            <p className="text-xs text-gray-500 mt-1">中央値ベースの目標値</p>
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium mb-2 text-gray-700">
-              <TrendingUp className="inline h-4 w-4 mr-1" />
-              ストレッチ目標（推奨）
-            </label>
-            <input
-              type="number"
-              value={formData.stretch_goal || ''}
-              onChange={(e) => setFormData({ ...formData, stretch_goal: e.target.value ? parseInt(e.target.value) : undefined })}
-              className="w-full px-3 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-portfolio-blue text-gray-900"
-              placeholder="自動設定"
-              min="0"
-            />
-            <p className="text-xs text-gray-500 mt-1">90パーセンタイルベースの目標値</p>
-          </div>
-        </div>
 
         <div>
           <label className="block text-sm font-medium mb-2 text-gray-700">
