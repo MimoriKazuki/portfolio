@@ -229,10 +229,7 @@ export default function ColumnGoalsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold">コラム分析</h1>
-        <p className="text-gray-600 mt-1">過去のコラムのパフォーマンスから目標値を自動算出</p>
-      </div>
+      <h1 className="text-3xl font-bold mb-8 text-gray-900">コラム分析</h1>
 
       {error && (
         <div className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3">
