@@ -6,6 +6,7 @@ import { ExternalLink } from 'lucide-react'
 export default function AnalyticsButtons() {
   const clarityUrl = 'https://clarity.microsoft.com/projects/view/t7b2215g90/dashboard?date=Last%203%20days&URL=2%3B6%3B%5Ehttps%3A%2F%2Fwww%5C.landbridge%5C.ai%2F(%5C%3F.*)%3F%24'
   const gaUrl = 'https://analytics.google.com/analytics/web/?authuser=1#/a365674072p501740063/reports/intelligenthome'
+  const searchConsoleUrl = 'https://search.google.com/u/1/search-console?resource_id=https://www.landbridge.ai/'
 
   return (
     <div className="flex items-center gap-3">
@@ -45,6 +46,25 @@ export default function AnalyticsButtons() {
         />
         <span className="hidden sm:inline">Analytics</span>
         <ExternalLink className="h-4 w-4 text-orange-400 ml-1" />
+      </a>
+
+      {/* Google Search Console Button */}
+      <a
+        href={searchConsoleUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex items-center gap-2 px-3 py-2 bg-white border-2 border-green-500 text-green-600 text-sm font-medium rounded-lg hover:bg-green-50 hover:border-green-600 transition-all duration-200 shadow-sm"
+        title="Google Search Console ダッシュボード"
+      >
+        <Image
+          src="/GoogleSearchConsole_logoIcon.png"
+          alt="Google Search Console"
+          width={16}
+          height={16}
+          className="h-4 w-4"
+        />
+        <span className="hidden sm:inline">Console</span>
+        <ExternalLink className="h-4 w-4 text-green-400 ml-1" />
       </a>
     </div>
   )
