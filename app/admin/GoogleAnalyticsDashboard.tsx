@@ -16,6 +16,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import UserActivityTrend from './UserActivityTrend'
+import AnalyticsButtons from './components/AnalyticsButtons'
 
 // データの型定義
 interface AnalyticsData {
@@ -628,7 +629,9 @@ export default function GoogleAnalyticsDashboard() {
     <div className="w-full">
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-3xl font-bold text-gray-900">ダッシュボード</h1>
-        <div className="relative">
+        <div className="flex items-center gap-4">
+          <AnalyticsButtons />
+          <div className="relative">
           <select 
             value={timeRange}
             onChange={(e) => setTimeRange(e.target.value)}
@@ -643,6 +646,7 @@ export default function GoogleAnalyticsDashboard() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
             </svg>
           </div>
+        </div>
         </div>
       </div>
 
