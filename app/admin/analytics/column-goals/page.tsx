@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { BarChart2, RefreshCw, Target, TrendingUp, Users, Activity, AlertCircle } from 'lucide-react'
+import { BarChart2, Target, TrendingUp, Users, Activity, AlertCircle } from 'lucide-react'
 import { Line, LineChart, Bar, BarChart, ResponsiveContainer, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Cell } from 'recharts'
 import { format } from 'date-fns'
 import { ja } from 'date-fns/locale'
@@ -33,7 +33,6 @@ export default function ColumnGoalsPage() {
   const [goals, setGoals] = useState<ColumnGoals | null>(null)
   const [loading, setLoading] = useState(true)
   const [initialLoad, setInitialLoad] = useState(true)
-  const [recomputing, setRecomputing] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [distribution, setDistribution] = useState<any[]>([])
   const [topPages, setTopPages] = useState<any[]>([])
@@ -46,15 +45,17 @@ export default function ColumnGoalsPage() {
   })
 
   // 最新の目標値を取得
-  const fetchGoals = async () => {
+  const fetchGoals = async (skipLoadingState = false) => {
     try {
-      setLoading(true)
+      if (!skipLoadingState && !initialLoad) {
+        setLoading(true)
+      }
       setError(null)
       const response = await fetch('/api/analytics/column/goals')
       
       if (!response.ok) {
         if (response.status === 404) {
-          setError('目標値がまだ計算されていません。「再計算」ボタンを押してください。')
+          setError('目標値がまだ計算されていません。')
         } else {
           throw new Error('Failed to fetch goals')
         }
@@ -77,18 +78,16 @@ export default function ColumnGoalsPage() {
       console.error('Error fetching goals:', err)
       setError('目標値の取得に失敗しました')
     } finally {
-      setLoading(false)
-      setInitialLoad(false)
+      if (!skipLoadingState && !initialLoad) {
+        setLoading(false)
+      }
     }
   }
 
-  // 目標値を再計算
-  const recomputeGoals = async () => {
+  // 目標値を初回計算
+  const computeInitialGoals = async () => {
     try {
-      setRecomputing(true)
       setError(null)
-      setLoading(true) // 再計算時もローディング表示
-      setGoals(null) // 既存データをクリア
       
       const response = await fetch('/api/analytics/column/recompute', {
         method: 'POST',
@@ -100,25 +99,20 @@ export default function ColumnGoalsPage() {
 
       if (!response.ok) {
         const errorData = await response.json()
-        console.error('Recompute error:', errorData)
-        throw new Error(errorData.message || 'Failed to recompute goals')
+        console.error('Compute error:', errorData)
+        throw new Error(errorData.message || 'Failed to compute goals')
       }
 
       const data = await response.json()
       
-      // 最新のデータを取得
-      await fetchGoals()
+      // 最新のデータを取得（初回読み込み時はローディング状態を変更しない）
+      await fetchGoals(true)
       
       // 分布データも再取得
       await fetchDistribution()
-      
-      // トースト通知の代わりに簡易的なアラート
-      alert('目標値の再計算が完了しました')
     } catch (err) {
-      console.error('Error recomputing goals:', err)
-      setError(`再計算に失敗しました: ${err.message}`)
-    } finally {
-      setRecomputing(false)
+      console.error('Error computing goals:', err)
+      setError(`目標値の計算に失敗しました: ${err.message}`)
     }
   }
 
@@ -175,11 +169,30 @@ export default function ColumnGoalsPage() {
 
   useEffect(() => {
     const init = async () => {
-      const tableExists = await checkTable()
-      if (tableExists) {
-        fetchGoals()
-        fetchDistribution()
-        fetchColumns()
+      try {
+        const tableExists = await checkTable()
+        if (tableExists) {
+          await fetchColumns()
+          
+          // 目標値を取得し、データがない場合は自動的に再計算
+          const response = await fetch('/api/analytics/column/goals')
+          if (response.status === 404) {
+            // データがない場合は初回ローディング中に計算を完了
+            setError('目標値を初回計算中...')
+            await computeInitialGoals()
+          } else {
+            // データがある場合は通常の取得処理（ローディング状態管理をスキップ）
+            await fetchGoals(true)
+            await fetchDistribution()
+          }
+        }
+      } catch (err) {
+        console.error('Initialization error:', err)
+        setError('初期化に失敗しました')
+      } finally {
+        // 初回ローディングを完了
+        setLoading(false)
+        setInitialLoad(false)
       }
     }
     init()
@@ -216,20 +229,9 @@ export default function ColumnGoalsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold">コラム分析</h1>
-          <p className="text-gray-600 mt-1">過去のコラムのパフォーマンスから目標値を自動算出</p>
-        </div>
-        
-        <button
-          onClick={recomputeGoals}
-          disabled={recomputing}
-          className="flex items-center gap-2 bg-portfolio-blue text-white px-4 py-2 rounded-lg hover:bg-portfolio-darkblue transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          <RefreshCw className={`h-4 w-4 ${recomputing ? 'animate-spin' : ''}`} />
-          {recomputing ? '計算中...' : '再計算'}
-        </button>
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold">コラム分析</h1>
+        <p className="text-gray-600 mt-1">過去のコラムのパフォーマンスから目標値を自動算出</p>
       </div>
 
       {error && (

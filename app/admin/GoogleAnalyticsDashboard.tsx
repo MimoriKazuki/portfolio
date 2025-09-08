@@ -113,6 +113,10 @@ export default function GoogleAnalyticsDashboard() {
     try {
       setLoading(true)
       setError(null)
+      
+      // 最小ローディング時間を設定（UXの一貫性のため）
+      const startTime = Date.now()
+      const minLoadingTime = 1000 // 1秒
 
       console.log('Fetching analytics data...')
 
@@ -158,6 +162,12 @@ export default function GoogleAnalyticsDashboard() {
       setData(processedData)
       setRealTimeUsers(processedData.realTimeUsers)
       console.log('Analytics data loaded successfully', processedData)
+      
+      // 最小ローディング時間を確保
+      const elapsedTime = Date.now() - startTime
+      if (elapsedTime < minLoadingTime) {
+        await new Promise(resolve => setTimeout(resolve, minLoadingTime - elapsedTime))
+      }
     } catch (err) {
       console.error('Failed to fetch analytics data:', err)
       const errorMessage = err instanceof Error ? err.message : 'アナリティクスデータの取得に失敗しました'
