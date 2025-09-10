@@ -12,17 +12,29 @@ interface VideoPlayerProps {
 
 export default function VideoPlayer({ thumbnail, videoUrl, title }: VideoPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
-  // Extract video ID from YouTube URL
   const getYouTubeId = (url: string) => {
     const regex = /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([^&\n?#]+)/
     const match = url.match(regex)
     return match ? match[1] : null
   }
 
-  // Check if it's a YouTube URL
+  const getGoogleDriveEmbedUrl = (url: string) => {
+    const regex = /\/file\/d\/([a-zA-Z0-9_-]+)/
+    const match = url.match(regex)
+    if (match) {
+      const fileId = match[1]
+      return `https://drive.google.com/file/d/${fileId}/preview`
+    }
+    return null
+  }
+
   const isYouTube = videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be')
+  const isGoogleDrive = videoUrl.includes('drive.google.com')
+  
   const youTubeId = isYouTube ? getYouTubeId(videoUrl) : null
+  const googleDriveEmbedUrl = isGoogleDrive ? getGoogleDriveEmbedUrl(videoUrl) : null
 
   return (
     <div className="relative aspect-video w-full rounded-lg overflow-hidden bg-black">
@@ -37,13 +49,25 @@ export default function VideoPlayer({ thumbnail, videoUrl, title }: VideoPlayerP
             priority
           />
           <button
-            onClick={() => setIsPlaying(true)}
+            onClick={() => {
+              setIsLoading(true)
+              setTimeout(() => {
+                setIsPlaying(true)
+                setIsLoading(false)
+              }, 500)
+            }}
             className="absolute inset-0 flex items-center justify-center bg-black/30 hover:bg-black/40 transition-colors group"
             aria-label="動画を再生"
           >
-            <div className="w-20 h-20 bg-white/90 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-              <Play className="w-10 h-10 text-gray-900 ml-1" fill="currentColor" />
-            </div>
+            {isLoading ? (
+              <div className="w-20 h-20 bg-white/90 rounded-full flex items-center justify-center shadow-lg">
+                <div className="w-8 h-8 border-4 border-gray-300 border-t-gray-900 rounded-full animate-spin"></div>
+              </div>
+            ) : (
+              <div className="w-20 h-20 bg-white/90 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                <Play className="w-10 h-10 text-gray-900 ml-1" fill="currentColor" />
+              </div>
+            )}
           </button>
         </>
       ) : (
@@ -56,6 +80,16 @@ export default function VideoPlayer({ thumbnail, videoUrl, title }: VideoPlayerP
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
+            />
+          ) : isGoogleDrive && googleDriveEmbedUrl ? (
+            <iframe
+              className="absolute inset-0 w-full h-full"
+              src={googleDriveEmbedUrl}
+              title={title}
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+              loading="lazy"
             />
           ) : (
             <video
