@@ -104,9 +104,10 @@ export default function ColumnForm({ initialData, columnId }: ColumnFormProps) {
     const file = e.target.files?.[0]
     if (!file) return
 
-    // Check if file is .m4a
-    if (!file.name.toLowerCase().endsWith('.m4a')) {
-      alert('.m4a形式のファイルを選択してください')
+    // Check if file is .m4a, .mp3, or .mp4
+    const fileName = file.name.toLowerCase()
+    if (!fileName.endsWith('.m4a') && !fileName.endsWith('.mp3') && !fileName.endsWith('.mp4')) {
+      alert('.m4a、.mp3、または.mp4形式のファイルを選択してください')
       e.target.value = '' // Reset input
       return
     }
@@ -378,7 +379,7 @@ export default function ColumnForm({ initialData, columnId }: ColumnFormProps) {
 
         <div>
           <label className="block text-sm font-medium mb-2 text-gray-700">
-            ラジオ解説音声ファイル（.m4a）
+            ラジオ解説音声ファイル（.m4a / .mp3 / .mp4）
           </label>
           <div className="space-y-4">
             {audioFile || formData.audio_url ? (
@@ -409,7 +410,7 @@ export default function ColumnForm({ initialData, columnId }: ColumnFormProps) {
                 <input
                   id="audio-file-input"
                   type="file"
-                  accept=".m4a"
+                  accept=".m4a,.mp3,.mp4"
                   onChange={handleAudioChange}
                   className="hidden"
                 />
