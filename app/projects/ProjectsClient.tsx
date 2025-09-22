@@ -51,7 +51,7 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
   return (
     <div className="w-full">
       <div className="mb-8">
-        <h1 className="text-[28px] font-bold text-gray-900">開発実績一覧</h1>
+        <h1 className="text-[28px] font-bold text-gray-900">AI制作物</h1>
       </div>
       
       {/* Category Tabs */}

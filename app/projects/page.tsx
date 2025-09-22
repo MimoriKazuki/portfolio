@@ -4,8 +4,8 @@ import { createStaticClient } from '@/app/lib/supabase/static'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: '開発実績 - LandBridge Media',
-  description: '企業サイト、LP、Webアプリ、モバイルアプリなど豊富な開発実績。最新のReact、Next.js、TypeScriptを活用した高品質な制作事例をご覧ください。',
+  title: 'AI制作物 - LandBridge株式会社',
+  description: 'AIを活用したホームページ、LP、Webアプリ、モバイルアプリの制作実績。ChatGPT、Claude等の生成AIとNext.js、TypeScriptを組み合わせた高品質な制作事例をご覧ください。',
 }
 
 export const revalidate = 60 // ISR: 60秒ごとに再生成

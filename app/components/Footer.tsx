@@ -24,8 +24,8 @@ const Footer = () => {
             </div>
             <h2 className="sr-only">LandBridge株式会社について</h2>
             <p className="text-sm mb-4">
-              AIによる自動コーディング「バイブコーディング」を活用し、<br />
-              高品質なWebサイト・アプリケーションを迅速に開発します。
+              AIを活用したWebサイト・アプリケーション制作と<br />
+              企業向けAI研修で、デジタル変革をトータルサポートします。
             </p>
             <Link 
               href="https://www.landbridge.co.jp/"
@@ -53,13 +53,18 @@ const Footer = () => {
                     </Link>
                   </li>
                   <li>
+                    <Link href="/services" className="hover:text-white transition-colors">
+                      サービス - AI研修・制作サービス
+                    </Link>
+                  </li>
+                  <li>
                     <Link href="/projects" className="hover:text-white transition-colors">
-                      ポートフォリオ - 開発実績一覧
+                      AI制作物 - 制作実績
                     </Link>
                   </li>
                   <li>
                     <Link href="/columns" className="hover:text-white transition-colors">
-                      技術コラム - AI開発の最新情報
+                      コラム - AI活用の最新情報
                     </Link>
                   </li>
                   <li>
@@ -78,46 +83,77 @@ const Footer = () => {
 
             {/* Service Categories */}
             <div className="lg:flex-shrink-0">
-              <h3 className="text-white text-lg font-semibold mb-4">開発サービス</h3>
-              <nav aria-label="サービスカテゴリー">
-                <ul className="space-y-2 text-sm">
-                  <li>
-                    <Link 
-                      href="/projects?category=homepage" 
-                      className="hover:text-white transition-colors"
-                      title="企業ホームページ・コーポレートサイト制作"
-                    >
-                      ホームページ制作
-                    </Link>
-                  </li>
-                  <li>
-                    <Link 
-                      href="/projects?category=landing-page" 
-                      className="hover:text-white transition-colors"
-                      title="LP・ランディングページ制作"
-                    >
-                      ランディングページ制作
-                    </Link>
-                  </li>
-                  <li>
-                    <Link 
-                      href="/projects?category=web-app" 
-                      className="hover:text-white transition-colors"
-                      title="Webアプリケーション・SaaS開発"
-                    >
-                      Webアプリ開発
-                    </Link>
-                  </li>
-                  <li>
-                    <Link 
-                      href="/projects?category=mobile-app" 
-                      className="hover:text-white transition-colors"
-                      title="iOS・Androidアプリ開発"
-                    >
-                      モバイルアプリ開発
-                    </Link>
-                  </li>
-                </ul>
+              <h3 className="text-white text-lg font-semibold mb-4">AI人材育成サービス</h3>
+              <nav aria-label="AI人材育成サービス">
+                <div className="space-y-4">
+                  {/* 企業向けサービス */}
+                  <div>
+                    <h4 className="text-white text-base font-bold mb-2">企業向け</h4>
+                    <ul className="space-y-2 text-sm">
+                      <li>
+                        <Link 
+                          href="/services/comprehensive-ai-training" 
+                          className="hover:text-white transition-colors"
+                          title="生成AI活用研修"
+                        >
+                          生成AI活用研修
+                        </Link>
+                      </li>
+                      <li>
+                        <Link 
+                          href="/services" 
+                          className="hover:text-white transition-colors"
+                          title="AIライティング研修"
+                        >
+                          AIライティング研修
+                        </Link>
+                      </li>
+                      <li>
+                        <Link 
+                          href="/services" 
+                          className="hover:text-white transition-colors"
+                          title="AI動画生成研修"
+                        >
+                          AI動画生成研修
+                        </Link>
+                      </li>
+                      <li>
+                        <Link 
+                          href="/services" 
+                          className="hover:text-white transition-colors"
+                          title="AIコーディング研修"
+                        >
+                          AIコーディング研修
+                        </Link>
+                      </li>
+                      <li>
+                        <Link 
+                          href="/services" 
+                          className="hover:text-white transition-colors"
+                          title="生成AI実務活用研修"
+                        >
+                          生成AI実務活用研修
+                        </Link>
+                      </li>
+                    </ul>
+                  </div>
+                  
+                  {/* 個人向けサービス */}
+                  <div>
+                    <h4 className="text-white text-base font-bold mb-2">個人向け</h4>
+                    <ul className="space-y-2 text-sm">
+                      <li>
+                        <Link 
+                          href="/services" 
+                          className="hover:text-white transition-colors"
+                          title="AI人材育成所（個人向け）"
+                        >
+                          AI人材育成所
+                        </Link>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
               </nav>
             </div>
 

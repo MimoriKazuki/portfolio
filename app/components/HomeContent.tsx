@@ -2,6 +2,8 @@
 
 import ProjectCard from './ProjectCard'
 import ProfileCard from './ProfileCard'
+import { HeroSection } from './ui/light-saas-hero-section'
+import { AIServicesCarousel } from './ui/ai-services-carousel'
 import { ArrowRight, FolderOpen, FileText, Calendar, Bell, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -25,10 +27,21 @@ export default function HomeContent({ profiles, categoryStats, featuredProjects,
   return (
       <div className="w-full">
         {/* SEO用の非表示h1 */}
-        <h1 className="sr-only">LandBridge株式会社 - AIによる自動コーディングを活用した開発実績</h1>
+        <h1 className="sr-only">LandBridge株式会社 - AI人材育成サービスとAI制作実績</h1>
         
-        {/* Profile Card */}
-        <ProfileCard categoryStats={categoryStats} />
+        {/* Hero Section - 画面いっぱい */}
+        <div className="-mx-4 sm:-mx-6 lg:-mx-8 -mt-8">
+          <HeroSection />
+        </div>
+
+        <div className="max-w-[1023px] mx-auto px-4 sm:px-6 lg:px-8">
+        {/* AI Human Resource Development Services - Carousel */}
+        <div>
+          <AIServicesCarousel 
+            titleSize="text-2xl font-bold"
+            sectionPadding="pt-16 pb-16"
+          />
+        </div>
 
         {/* Latest Notices */}
         {latestNotices && latestNotices.length > 0 && (
@@ -92,7 +105,7 @@ export default function HomeContent({ profiles, categoryStats, featuredProjects,
         {/* Featured Projects */}
         <section className="mb-12">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold">注目のプロジェクト</h2>
+            <h2 className="text-2xl font-bold">AI制作物</h2>
             <Link
               href="/projects"
               className="inline-flex items-center gap-2 px-4 py-2 bg-portfolio-blue-dark text-white rounded-full hover:opacity-90 transition-opacity text-sm font-medium"
@@ -151,6 +164,7 @@ export default function HomeContent({ profiles, categoryStats, featuredProjects,
                           src={column.thumbnail}
                           alt={column.title}
                           fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                           className="object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                       </div>
@@ -181,8 +195,9 @@ export default function HomeContent({ profiles, categoryStats, featuredProjects,
           )}
         </section>
         
-        {/* 問い合わせボタンとの重なりを防ぐためのスペース */}
-        <div className="h-24" />
+          {/* 問い合わせボタンとの重なりを防ぐためのスペース */}
+          <div className="h-24" />
+        </div>
       </div>
   )
 }

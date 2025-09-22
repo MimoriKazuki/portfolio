@@ -82,7 +82,7 @@ export default function RootLayout({
       <head>
         <StructuredData />
         <meta name="theme-color" content="#0f0f0f" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black" />
       </head>
       <body className={`${inter.className} bg-youtube-dark`} style={{ backgroundColor: '#0f0f0f' }}>

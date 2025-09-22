@@ -13,6 +13,9 @@
   },
   "dependencies": {
     "@google-analytics/data": "^5.2.0",
+    "@radix-ui/react-slot": "^1.2.3",
+    "@react-three/drei": "^9.122.0",
+    "@react-three/fiber": "^8.18.0",
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.50.3",
     "@tailwindcss/typography": "^0.5.16",
@@ -26,16 +29,22 @@
     "@tiptap/extension-underline": "^3.2.0",
     "@tiptap/react": "^3.2.0",
     "@tiptap/starter-kit": "^3.2.0",
+    "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "embla-carousel-react": "^8.6.0",
     "googleapis": "^156.0.0",
+    "gsap": "^3.13.0",
     "lucide-react": "^0.462.0",
     "next": "^15.3.5",
+    "ogl": "^1.0.11",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
+    "react-is": "^19.1.1",
     "recharts": "^3.1.2",
     "tailwind-merge": "^2.5.2",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "three": "^0.155.0"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^15.3.5",

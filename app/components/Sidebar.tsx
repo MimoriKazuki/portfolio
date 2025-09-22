@@ -1,6 +1,6 @@
 'use client'
 
-import { Home, FolderOpen, Mail, FileText, Download, Bell } from 'lucide-react'
+import { Home, FolderOpen, Mail, FileText, Download, Bell, Briefcase } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
@@ -11,7 +11,8 @@ const Sidebar = () => {
   
   const menuItems = [
     { icon: Home, label: 'トップ', href: '/' },
-    { icon: FolderOpen, label: 'ポートフォリオ', href: '/projects' },
+    { icon: Briefcase, label: 'サービス', href: '/services' },
+    { icon: FolderOpen, label: 'AI制作物', href: '/projects' },
     { icon: FileText, label: 'コラム', href: '/columns' },
     { icon: Bell, label: 'お知らせ', href: '/notices' },
     { icon: Download, label: '資料請求', href: '/documents' },
@@ -29,6 +30,7 @@ const Sidebar = () => {
             alt="LandBridge Media" 
             width={150} 
             height={48} 
+            style={{ height: 'auto', width: 'auto' }}
             className="h-12 w-auto object-contain transition-opacity duration-200 group-hover:opacity-80"
             priority
           />
