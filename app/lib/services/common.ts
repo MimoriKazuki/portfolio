@@ -65,4 +65,4 @@ export function generateServiceMetadata(meta: ServicePageMetadata): Metadata {
 /**
  * ISR revalidation time for service pages
  */
-export const SERVICE_REVALIDATE_TIME = 60 // 60 seconds
+export const SERVICE_REVALIDATE_TIME = 60 as const // 60 seconds

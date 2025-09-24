@@ -1,49 +1,20 @@
-import React, { Suspense } from "react";
-import dynamic from 'next/dynamic';
-
-// Dynamically import the shader background to avoid SSR issues
-const NeuralShaderBackground = dynamic(
-  () => import('./neural-shader-background'),
-  { 
-    ssr: false,
-    loading: () => (
-      <div className="absolute inset-0 z-0 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute top-1/4 left-1/4 w-32 h-32 rounded-full bg-blue-300/30 blur-xl animate-pulse"></div>
-          <div className="absolute top-3/4 right-1/4 w-24 h-24 rounded-full bg-indigo-300/30 blur-xl animate-pulse" style={{animationDelay: '1s'}}></div>
-          <div className="absolute bottom-1/4 left-1/3 w-20 h-20 rounded-full bg-purple-300/30 blur-xl animate-pulse" style={{animationDelay: '2s'}}></div>
-          <div className="absolute top-1/2 right-1/3 w-28 h-28 rounded-full bg-blue-300/30 blur-xl animate-pulse" style={{animationDelay: '3s'}}></div>
-        </div>
-      </div>
-    )
-  }
-);
+import React from "react";
+import NeuralShaderBackground from './neural-shader-background';
 
 const HeroSection = () => {
     return (
         <div className="h-[60vh] relative overflow-hidden w-full">
-            {/* Neural Shader Background */}
-            <div className="absolute inset-0 z-0 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-                <Suspense fallback={
-                  <div className="absolute inset-0 opacity-20">
-                    <div className="absolute top-1/4 left-1/4 w-32 h-32 rounded-full bg-blue-300/30 blur-xl animate-pulse"></div>
-                    <div className="absolute top-3/4 right-1/4 w-24 h-24 rounded-full bg-indigo-300/30 blur-xl animate-pulse" style={{animationDelay: '1s'}}></div>
-                    <div className="absolute bottom-1/4 left-1/3 w-20 h-20 rounded-full bg-purple-300/30 blur-xl animate-pulse" style={{animationDelay: '2s'}}></div>
-                    <div className="absolute top-1/2 right-1/3 w-28 h-28 rounded-full bg-blue-300/30 blur-xl animate-pulse" style={{animationDelay: '3s'}}></div>
-                  </div>
-                }>
-                  <NeuralShaderBackground />
-                </Suspense>
-                
-                {/* Enhanced gradient overlay for text readability */}
-                <div className="absolute inset-0 bg-gradient-to-b from-white/40 to-white/90"></div>
+            {/* Background */}
+            <div className="absolute inset-0 z-0">
+                <NeuralShaderBackground />
+                <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-white/30"></div>
             </div>
 
             {/* Content */}
             <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-12 text-center flex flex-col justify-center h-full">
                 {/* Main headline */}
                 <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight pb-4">
-                    企業のAI人材を
+                    時代を生き抜くAI人材を
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 block mt-1 pb-2">
                         ゼロから育成する
                     </span>
@@ -51,7 +22,7 @@ const HeroSection = () => {
 
                 {/* Subheadline */}
                 <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
-                    ChatGPT、Claude等の生成AIを活用した実践的な研修プログラム。未経験者でも短期間で業務に活かせるAIスキルを習得できます。
+                    AIを使いこなせる人材こそが、変化の激しい時代の競争優位を創造します。<br />実践重視の研修プログラムで、未来を切り開く真のAI人材を育成します。
                 </p>
 
                 {/* CTA Buttons */}
@@ -79,13 +50,7 @@ const HeroSection = () => {
                         <span className="group-hover:text-blue-700 transition-colors duration-200">サービス詳細</span>
                     </a>
                 </div>
-
             </div>
-
-            {/* Floating elements for visual interest */}
-            <div className="absolute top-1/4 left-10 w-6 h-6 rounded-full bg-blue-200/40 blur-xl"></div>
-            <div className="absolute bottom-1/3 right-16 w-10 h-10 rounded-full bg-indigo-200/30 blur-xl"></div>
-            <div className="absolute top-1/3 right-1/4 w-8 h-8 rounded-full bg-blue-200/40 blur-xl"></div>
         </div>
     );
 };

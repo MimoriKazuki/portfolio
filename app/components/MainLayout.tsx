@@ -2,6 +2,7 @@
 
 import Sidebar from './Sidebar'
 import RightSidebar from './RightSidebar'
+import DynamicRightSidebar from './DynamicRightSidebar'
 import FloatingButtons from './FloatingButtons'
 import Footer from './Footer'
 import MobileHeader from './MobileHeader'
@@ -10,9 +11,13 @@ interface MainLayoutProps {
   children: React.ReactNode
   hideRightSidebar?: boolean
   hideContactButton?: boolean
+  dynamicSidebar?: {
+    enterpriseServiceId?: string
+    individualServiceId?: string
+  }
 }
 
-export default function MainLayout({ children, hideRightSidebar = false, hideContactButton = false }: MainLayoutProps) {
+export default function MainLayout({ children, hideRightSidebar = false, hideContactButton = false, dynamicSidebar }: MainLayoutProps) {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Fixed background layer to prevent overscroll color */}
@@ -41,7 +46,14 @@ export default function MainLayout({ children, hideRightSidebar = false, hideCon
             {!hideRightSidebar && (
               <aside className="w-[260px] flex-shrink-0 hidden lg:block">
                 <div className="sticky top-8">
-                  <RightSidebar />
+                  {dynamicSidebar ? (
+                    <DynamicRightSidebar 
+                      enterpriseServiceId={dynamicSidebar.enterpriseServiceId}
+                      individualServiceId={dynamicSidebar.individualServiceId}
+                    />
+                  ) : (
+                    <RightSidebar />
+                  )}
                 </div>
               </aside>
             )}

@@ -567,23 +567,6 @@ export default function ServiceTrainingLP({
         {/* Divider */}
         <div className="border-t border-gray-200 my-16"></div>
 
-        {/* Other Training Programs Section */}
-        <section className="mb-16">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8">{otherTrainingPrograms.title}</h2>
-          </div>
-          <div className="-mx-4 sm:-mx-6 lg:-mx-8">
-            <AIServicesCarousel 
-              showHeader={false}
-              sectionPadding=""
-              items={otherTrainingPrograms.programs.filter(program => program.id !== otherTrainingPrograms.currentPageId)}
-            />
-          </div>
-        </section>
-
-        {/* Divider */}
-        <div className="border-t border-gray-200 my-16"></div>
-
         {/* Final CTA Section */}
         <section className="bg-gradient-to-r from-blue-50 to-indigo-50 text-gray-900 py-16 lg:py-20 rounded-xl text-center border border-blue-100">
           <div className="max-w-2xl mx-auto px-6">
@@ -615,6 +598,23 @@ export default function ServiceTrainingLP({
                 <span className="group-hover:text-blue-700 transition-colors duration-200">資料をダウンロード</span>
               </Link>
             </div>
+          </div>
+        </section>
+
+        {/* Divider */}
+        <div className="border-t border-gray-200 my-16"></div>
+
+        {/* Other Training Programs Section */}
+        <section className="mb-16">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-gray-900 mb-8">{otherTrainingPrograms.title}</h2>
+          </div>
+          <div className="-mx-4 sm:-mx-6 lg:-mx-8">
+            <AIServicesCarousel 
+              showHeader={false}
+              sectionPadding=""
+              items={otherTrainingPrograms.programs.filter(program => program.id !== otherTrainingPrograms.currentPageId)}
+            />
           </div>
         </section>
 

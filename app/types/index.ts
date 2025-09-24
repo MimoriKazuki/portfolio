@@ -12,6 +12,8 @@ export interface Project {
   duration: string
   prompt?: string
   prompt_filename?: string
+  enterprise_service?: string
+  individual_service?: string
 }
 
 export interface Skill {
@@ -54,6 +56,8 @@ export interface Column {
   category?: 'ai-tools' | 'industry' | 'topics-news'
   created_at: string
   updated_at: string
+  enterprise_service?: string
+  individual_service?: string
 }
 
 export interface Document {

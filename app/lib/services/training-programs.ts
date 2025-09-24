@@ -6,7 +6,7 @@ import type { OtherTrainingProgram } from '@/app/lib/types/service'
 export const ALL_TRAINING_PROGRAMS: OtherTrainingProgram[] = [
   {
     id: "comprehensive-ai-training",
-    title: "生成AI活用研修",
+    title: "生成AI総合研修",
     description: "ChatGPTやClaude等の生成AIツールを活用し、未経験者から実務レベルまで体系的に学習。企業の現場で即戦力として活躍できる人材を育成します。",
     href: "/services/comprehensive-ai-training",
     image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=300&fit=crop&crop=center",
@@ -54,7 +54,7 @@ export const ALL_TRAINING_PROGRAMS: OtherTrainingProgram[] = [
     title: "AI人材育成所",
     description: "個人向けAIスキル向上プログラム。自分のペースでAIを学び、キャリアアップを目指せます。",
     href: "/services/ai-talent-development",
-    image: "https://images.unsplash.com/photo-1507925921958-8a62f3d1a50d?w=400&h=300&fit=crop&crop=center",
+    image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=300&fit=crop&crop=center",
     available: true,
     category: "individual"
   }

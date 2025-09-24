@@ -22,7 +22,7 @@ export const AI_CODING_TRAINING_DATA: ServiceData = {
   },
   
   serviceOverview: {
-    title: "AIコーディング研修",
+    title: "AIコーディング研修の特徴",
     subtitle: "ソフトウェア開発の世界において、AI支援プログラミングは新たなスタンダードとなりつつあります。当研修では、GitHub Copilot、Claude Code等の最先端AIツールを活用して、従来の開発プロセスを革新し、コード品質と開発効率を飛躍的に向上させる技術を習得していただけます。",
     items: [
       {

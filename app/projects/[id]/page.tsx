@@ -35,7 +35,7 @@ async function getProject(id: string) {
   const supabase = createStaticClient()
   const { data: project } = await supabase
     .from('projects')
-    .select('*')
+    .select('*, enterprise_service, individual_service')
     .eq('id', id)
     .single()
   
@@ -153,7 +153,12 @@ export default async function ProjectDetailPage({
   const relatedProjects = await getRelatedProjects(project.id, project.category)
 
   return (
-    <MainLayout>
+    <MainLayout
+      dynamicSidebar={{
+        enterpriseServiceId: project.enterprise_service,
+        individualServiceId: project.individual_service
+      }}
+    >
       <div className="p-4 sm:p-6 pt-2 sm:pt-3">
         <Link
           href="/projects"

@@ -1,10 +1,10 @@
 import MainLayout from '../../components/MainLayout'
 import ServiceTrainingLP from '../../components/ServiceTrainingLP'
-import { getProjects, getLatestColumns, generateServiceMetadata, SERVICE_REVALIDATE_TIME } from '@/app/lib/services/common'
+import { getProjects, getLatestColumns, generateServiceMetadata } from '@/app/lib/services/common'
 import { COMPREHENSIVE_AI_TRAINING_METADATA, COMPREHENSIVE_AI_TRAINING_DATA } from '@/app/lib/services/data/comprehensive-ai-training'
 
 export const metadata = generateServiceMetadata(COMPREHENSIVE_AI_TRAINING_METADATA)
-export const revalidate = SERVICE_REVALIDATE_TIME
+export const revalidate = 60
 
 export default async function ComprehensiveAITrainingPage() {
   const projects = await getProjects()

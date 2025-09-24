@@ -1,38 +1,27 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { createClient } from '@/app/lib/supabase/client'
 import { Document } from '@/app/types'
 import { Building2, User, FileText } from 'lucide-react'
+import { getSelectedServices } from '@/app/lib/services/service-selector'
 
-// サービス定義（固定）
-const corporateService = {
-  id: "comprehensive-ai-training",
-  title: "生成AI総合研修",
-  description: "生成AIの基礎から実践まで、企業の現場で即戦力として活躍できる人材を育成する包括的な研修プログラムです。",
-  href: "/services/comprehensive-ai-training",
-  image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=300&fit=crop&crop=center",
-  icon: Building2,
-  label: "企業向けサービス"
+interface DynamicRightSidebarProps {
+  enterpriseServiceId?: string
+  individualServiceId?: string
 }
 
-const individualService = {
-  id: "individual-coaching",
-  title: "AI人材育成所",
-  description: "個人向けAIスキル向上プログラム。自分のペースでAIを学び、キャリアアップを目指せます。",
-  href: "/services/ai-talent-development",
-  image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=300&fit=crop&crop=center",
-  icon: User,
-  label: "個人向けサービス"
-}
-
-const RightSidebar = () => {
-  const pathname = usePathname()
+const DynamicRightSidebar = ({ enterpriseServiceId, individualServiceId }: DynamicRightSidebarProps) => {
   const [documents, setDocuments] = useState<Document[]>([])
   const [loading, setLoading] = useState(true)
+
+  // Get selected services based on props
+  const { enterprise: enterpriseService, individual: individualService } = getSelectedServices(
+    enterpriseServiceId,
+    individualServiceId
+  )
 
   useEffect(() => {
     async function fetchData() {
@@ -68,34 +57,40 @@ const RightSidebar = () => {
     )
   }
 
+  if (!enterpriseService || !individualService) {
+    console.warn('Services not found for:', { enterpriseServiceId, individualServiceId })
+    return null
+  }
+
   return (
     <div className="bg-white rounded-lg shadow-sm p-6">
       <div className="space-y-4">
         {/* 企業向けサービス */}
         <Link
-          href={corporateService.href}
+          href={enterpriseService.href}
           className="block group"
         >
           <article className="block border-2 border-transparent rounded-lg p-3 transition-all duration-200 hover:border-portfolio-blue">
             <div className="relative aspect-video mb-3">
               <Image
-                src={corporateService.image}
-                alt={corporateService.title}
+                src={enterpriseService.image}
+                alt={enterpriseService.title}
                 fill
                 className="object-cover rounded"
+                sizes="(max-width: 260px) 100vw, 220px"
               />
             </div>
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <div className="flex items-center gap-1">
-                  <corporateService.icon className="w-3 h-3 text-portfolio-blue" />
+                  <Building2 className="w-3 h-3 text-portfolio-blue" />
                   <span className="text-xs text-portfolio-blue font-medium">
-                    {corporateService.label}
+                    企業向けサービス
                   </span>
                 </div>
               </div>
               <h4 className="text-sm font-medium text-gray-900 group-hover:text-portfolio-blue transition-colors line-clamp-2 mb-1">
-                {corporateService.title}
+                {enterpriseService.title}
               </h4>
             </div>
           </article>
@@ -113,14 +108,15 @@ const RightSidebar = () => {
                 alt={individualService.title}
                 fill
                 className="object-cover rounded"
+                sizes="(max-width: 260px) 100vw, 220px"
               />
             </div>
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <div className="flex items-center gap-1">
-                  <individualService.icon className="w-3 h-3 text-green-600" />
+                  <User className="w-3 h-3 text-green-600" />
                   <span className="text-xs text-green-600 font-medium">
-                    {individualService.label}
+                    個人向けサービス
                   </span>
                 </div>
               </div>
@@ -146,6 +142,7 @@ const RightSidebar = () => {
                     alt={document.title}
                     fill
                     className="object-cover rounded"
+                    sizes="(max-width: 260px) 100vw, 220px"
                   />
                 </div>
               )}
@@ -170,4 +167,4 @@ const RightSidebar = () => {
   )
 }
 
-export default RightSidebar
+export default DynamicRightSidebar

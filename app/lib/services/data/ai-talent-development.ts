@@ -22,7 +22,7 @@ export const AI_TALENT_DEVELOPMENT_DATA: ServiceData = {
   },
   
   serviceOverview: {
-    title: "AI人材育成所",
+    title: "AI人材育成所の特徴",
     subtitle: "AIが変革する未来に向けて、個人のキャリアアップと市場価値向上をサポートします。あなたのペースで学べる柔軟なプログラムにより、実践的なAIスキルを身につけ、次のキャリアステップを実現していただけます。",
     items: [
       {

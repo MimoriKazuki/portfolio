@@ -19,7 +19,7 @@ export interface AIServiceItem {
 export interface AIServicesCarouselProps {
   title?: string;
   description?: string;
-  items: AIServiceItem[];
+  items?: AIServiceItem[];
   showHeader?: boolean;
   showButton?: boolean;
   sectionPadding?: string;
@@ -29,7 +29,7 @@ export interface AIServicesCarouselProps {
 const defaultData: AIServiceItem[] = [
   {
     id: "comprehensive-ai-training",
-    title: "生成AI活用研修",
+    title: "生成AI総合研修",
     description:
       "生成AIの基礎から実践まで、企業の現場で即戦力として活躍できる人材を育成する包括的な研修プログラムです。",
     href: "/services/comprehensive-ai-training",
@@ -97,19 +97,19 @@ const defaultData: AIServiceItem[] = [
 
 const AIServicesCarousel = ({
   title = "AI人材育成サービス",
-  description = "ChatGPT、Claude等の生成AIを活用した実践的な研修プログラム。未経験者でも短期間で業務に活かせるAIスキルを習得できます。",
+  description = "お客様のニーズに合わせてカスタマイズ可能な研修プログラムを提供。基礎から専門的な活用まで、企業・個人それぞれの目標に応じたAI人材育成を実現します。",
   items = defaultData,
   showHeader = true,
   showButton = true,
   sectionPadding = "py-16",
-  titleSize = "text-2xl font-bold md:text-3xl lg:text-4xl",
+  titleSize = "text-2xl font-bold md:text-3xl",
 }: AIServicesCarouselProps) => {
   const [emblaRef, emblaApi] = useEmblaCarousel({
     align: 'start',
     loop: false,
     dragFree: false,
     containScroll: 'trimSnaps',
-    slidesToScroll: 3, // 3枚ずつスクロール
+    slidesToScroll: 3, // 一度に3枚移動
   });
   
   const [canScrollPrev, setCanScrollPrev] = useState(false);
@@ -121,7 +121,7 @@ const AIServicesCarousel = ({
     
     setCanScrollPrev(emblaApi.canScrollPrev());
     setCanScrollNext(emblaApi.canScrollNext());
-    setCurrentSlide(emblaApi.selectedScrollSnap());
+    setCurrentSlide(Math.floor(emblaApi.selectedScrollSnap() / 3));
   }, [emblaApi]);
 
   const scrollPrev = useCallback(() => {
@@ -156,37 +156,33 @@ const AIServicesCarousel = ({
   return (
     <section className={sectionPadding}>
       {showHeader && (
-        <div className="max-w-[1023px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="mb-6">
-            <div className="text-center">
-              <h2 className={`${titleSize} mb-4`}>
-                {title}
-              </h2>
-              <p className="max-w-2xl mx-auto text-gray-600 mb-6">{description}</p>
-              
-              {/* 詳しく見るボタン */}
-              {showButton && (
-                <div className="flex justify-center">
-                  <a
-                    href="/services"
-                    className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
-                  >
-                    すべての研修を見る
-                    <ArrowRight className="size-4" />
-                  </a>
-                </div>
-              )}
+        <div className="text-center mb-12">
+          <h2 className={`${titleSize} mb-6`}>
+            {title}
+          </h2>
+          <p className="max-w-2xl mx-auto text-base text-gray-600 mb-8 leading-relaxed">{description}</p>
+          
+          {/* 詳しく見るボタン */}
+          {showButton && (
+            <div className="flex justify-center">
+              <a
+                href="/services"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors text-base"
+              >
+                すべての研修を見る
+                <ArrowRight className="size-4" />
+              </a>
             </div>
-          </div>
+          )}
         </div>
       )}
       <div className="w-full">        
         <div className="overflow-hidden" ref={emblaRef}>
           <div className="flex">
-            {items.map((item) => (
+            {items.map((item, index) => (
               <div
                 key={item.id}
-                className="flex-shrink-0 w-full md:w-1/2 lg:w-1/3 px-2"
+                className="flex-shrink-0 w-full md:w-1/2 lg:w-1/3 px-3"
               >
                 {item.available ? (
                   <Link href={item.href} className="group rounded-xl">
@@ -197,16 +193,18 @@ const AIServicesCarousel = ({
                         fill
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                         className="absolute h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-105"
+                        priority={index < 3}
+                        loading={index < 3 ? "eager" : "lazy"}
                       />
                       <div className="absolute inset-0 h-full bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-                      <div className="absolute inset-x-0 bottom-0 flex flex-col items-start p-6 text-white md:p-8">
-                        <div className="mb-2 pt-4 text-xl font-semibold md:mb-3 md:pt-4 lg:pt-4">
+                      <div className="absolute inset-x-0 bottom-0 flex flex-col items-start p-6 text-white">
+                        <div className="mb-3 pt-4 text-xl font-semibold">
                           {item.title}
                         </div>
-                        <div className="mb-8 line-clamp-2 md:mb-12 lg:mb-9">
+                        <div className="mb-6 line-clamp-2 text-base leading-relaxed">
                           {item.description}
                         </div>
-                        <div className="flex items-center text-sm">
+                        <div className="flex items-center text-base font-medium">
                           詳しく見る{" "}
                           <ArrowRight className="ml-2 size-5 transition-transform group-hover:translate-x-1" />
                         </div>
@@ -224,11 +222,11 @@ const AIServicesCarousel = ({
                         className="absolute h-full w-full object-cover object-center"
                       />
                       <div className="absolute inset-0 h-full bg-gradient-to-t from-gray-900/80 via-gray-600/40 to-transparent" />
-                      <div className="absolute inset-x-0 bottom-0 flex flex-col items-start p-6 text-white md:p-8">
-                        <div className="mb-2 pt-4 text-xl font-semibold md:mb-3 md:pt-4 lg:pt-4">
+                      <div className="absolute inset-x-0 bottom-0 flex flex-col items-start p-6 text-white">
+                        <div className="mb-3 pt-4 text-xl font-semibold">
                           {item.title}
                         </div>
-                        <div className="mb-8 line-clamp-2 md:mb-12 lg:mb-9">
+                        <div className="mb-6 line-clamp-2 text-base leading-relaxed">
                           {item.description}
                         </div>
                         <div className="flex items-center text-sm opacity-75">
@@ -247,39 +245,37 @@ const AIServicesCarousel = ({
         
         
         {/* Container for dots and arrows with proper positioning */}
-        <div className="mt-8 relative">
-          {/* Dots centered - 2 dots for 2 pages */}
-          <div className="flex justify-center gap-2">
+        <div className="mt-12 relative">
+          {/* Dots centered */}
+          <div className="flex justify-center gap-4">
             {Array.from({ length: Math.ceil(items.length / 3) }).map((_, index) => (
               <button
                 key={index}
                 className={`h-2 w-2 rounded-full transition-colors ${
                   currentSlide === index ? "bg-blue-600" : "bg-blue-600/20"
                 }`}
-                onClick={() => scrollTo(index)}
+                onClick={() => scrollTo(index * 3)}
                 aria-label={`Go to page ${index + 1}`}
               />
             ))}
           </div>
           
-          {/* Navigation arrows positioned at content width right */}
-          <div className="hidden md:block">
-            <div className="absolute top-1/2 -translate-y-1/2 right-0 flex gap-4">
-              <button
-                onClick={scrollPrev}
-                disabled={!canScrollPrev}
-                className="p-2 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <ArrowLeft className="size-5 text-gray-600" />
-              </button>
-              <button
-                onClick={scrollNext}
-                disabled={!canScrollNext}
-                className="p-2 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <ArrowRight className="size-5 text-gray-600" />
-              </button>
-            </div>
+          {/* Navigation arrows */}
+          <div className="absolute top-1/2 -translate-y-1/2 right-0 flex gap-5">
+            <button
+              onClick={scrollPrev}
+              disabled={!canScrollPrev}
+              className="p-3 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <ArrowLeft className="size-5 text-gray-600" />
+            </button>
+            <button
+              onClick={scrollNext}
+              disabled={!canScrollNext}
+              className="p-3 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <ArrowRight className="size-5 text-gray-600" />
+            </button>
           </div>
         </div>
       </div>

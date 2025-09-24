@@ -187,6 +187,7 @@ export default function ColumnsClient({ columns }: ColumnsClientProps) {
                                 alt={column.title}
                                 fill
                                 className="object-cover rounded"
+                                sizes="80px"
                               />
                             </div>
                           ) : (

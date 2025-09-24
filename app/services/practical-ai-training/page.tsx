@@ -1,10 +1,10 @@
 import MainLayout from '../../components/MainLayout'
 import ServiceTrainingLP from '../../components/ServiceTrainingLP'
-import { getProjects, getLatestColumns, generateServiceMetadata, SERVICE_REVALIDATE_TIME } from '@/app/lib/services/common'
+import { getProjects, getLatestColumns, generateServiceMetadata } from '@/app/lib/services/common'
 import { PRACTICAL_AI_TRAINING_METADATA, PRACTICAL_AI_TRAINING_DATA } from '@/app/lib/services/data/practical-ai-training'
 
 export const metadata = generateServiceMetadata(PRACTICAL_AI_TRAINING_METADATA)
-export const revalidate = SERVICE_REVALIDATE_TIME
+export const revalidate = 60
 
 export default async function PracticalAITrainingPage() {
   const projects = await getProjects()

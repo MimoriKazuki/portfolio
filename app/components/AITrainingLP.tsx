@@ -73,7 +73,7 @@ export default function AITrainingLP({ latestColumns, featuredProjects }: AITrai
         {/* Service Overview Section */}
         <section className="mb-16 mt-8">
         <div className="text-center mb-10">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">生成AI活用研修</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">生成AI総合研修</h2>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto">
             現代のビジネス環境において、AI技術の活用は競争優位を築く重要な要素となっています。
             当研修では、ChatGPTをはじめとする生成AIツールを実際の業務で効果的に活用するためのスキルを、
@@ -407,7 +407,7 @@ export default function AITrainingLP({ latestColumns, featuredProjects }: AITrai
           <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">研修導入をご検討の皆さまへ</h3>
           <div className="max-w-2xl mx-auto text-center">
             <p className="text-lg text-gray-700 leading-relaxed">
-              AIは話題で終わらせる時代ではありません。貴社の業務に根ざした実践型研修で、現場に"使えるAI"を届けます。LandBridgeは、現場にフィットしたAI教育設計を支援します。
+              AIは話題で終わらせる時代ではありません。貴社の業務に根ざした実践型研修で、現場に&ldquo;使えるAI&rdquo;を届けます。LandBridgeは、現場にフィットしたAI教育設計を支援します。
             </p>
           </div>
         </div>

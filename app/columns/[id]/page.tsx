@@ -136,7 +136,7 @@ export default async function ColumnDetailPage({ params }: PageProps) {
 
   const { data: column, error } = await supabase
     .from('columns')
-    .select('*')
+    .select('*, enterprise_service, individual_service')
     .eq('id', id)
     .eq('is_published', true)
     .single()
@@ -166,7 +166,12 @@ export default async function ColumnDetailPage({ params }: PageProps) {
     .limit(3)
 
   return (
-    <MainLayout>
+    <MainLayout
+      dynamicSidebar={{
+        enterpriseServiceId: column.enterprise_service,
+        individualServiceId: column.individual_service
+      }}
+    >
       <article className="w-full max-w-4xl mx-auto">
         <Link 
           href="/columns" 

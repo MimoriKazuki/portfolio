@@ -20,6 +20,7 @@ const Footer = () => {
                 alt="LandBridge Media - AIコーディングによるシステム開発"
                 width={140}
                 height={40}
+                style={{ height: 'auto', width: 'auto' }}
               />
             </div>
             <h2 className="sr-only">LandBridge株式会社について</h2>
@@ -94,9 +95,9 @@ const Footer = () => {
                         <Link 
                           href="/services/comprehensive-ai-training" 
                           className="hover:text-white transition-colors"
-                          title="生成AI活用研修"
+                          title="生成AI総合研修"
                         >
-                          生成AI活用研修
+                          生成AI総合研修
                         </Link>
                       </li>
                       <li>

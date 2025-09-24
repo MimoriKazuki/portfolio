@@ -22,7 +22,7 @@ export const AI_WRITING_TRAINING_DATA: ServiceData = {
   },
   
   serviceOverview: {
-    title: "AIライティング研修",
+    title: "AIライティング研修の特徴",
     subtitle: "現代のビジネスにおいて、高品質な文書作成は競争力の源泉となっています。当研修では、ChatGPTやClaude等の生成AIツールを活用して、効果的で魅力的な文章を素早く作成する技術を習得していただけます。",
     items: [
       {

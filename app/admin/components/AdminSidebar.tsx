@@ -26,7 +26,7 @@ const AdminSidebar = memo(function AdminSidebar({ user }: AdminSidebarProps) {
   
   const menuItems = [
     { icon: Home, label: 'ダッシュボード', href: '/admin' },
-    { icon: FolderOpen, label: 'ポートフォリオ', href: '/admin/projects' },
+    { icon: FolderOpen, label: 'AI制作物', href: '/admin/projects' },
     { icon: FileText, label: 'コラム', href: '/admin/columns' },
     { icon: BarChart2, label: 'コラム分析', href: '/admin/analytics/column-goals' },
     { icon: Bell, label: 'お知らせ', href: '/admin/notices' },
@@ -45,6 +45,7 @@ const AdminSidebar = memo(function AdminSidebar({ user }: AdminSidebarProps) {
             width={140} 
             height={40}
             className="object-contain"
+            style={{ width: 'auto', height: 'auto' }}
             priority
           />
         </Link>

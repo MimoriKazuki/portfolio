@@ -14,10 +14,14 @@ export interface TargetAudience {
   iconName: string
 }
 
-export interface ExpectedChange {
+export interface ExpectedChangeBefore {
   category: string
-  issue?: string
-  achievement?: string
+  issue: string
+}
+
+export interface ExpectedChangeAfter {
+  category: string
+  achievement: string
 }
 
 export interface CurriculumModule {
@@ -82,8 +86,8 @@ export interface ServiceData {
   expectedChanges: {
     title: string
     subtitle: string
-    beforeItems: ExpectedChange[]
-    afterItems: ExpectedChange[]
+    beforeItems: ExpectedChangeBefore[]
+    afterItems: ExpectedChangeAfter[]
   }
   
   // Curriculum section

@@ -7,6 +7,7 @@ import { Check, X, Upload, Loader2, Headphones, AlertTriangle } from 'lucide-rea
 import Link from 'next/link'
 import Image from 'next/image'
 import dynamic from 'next/dynamic'
+import { ENTERPRISE_SERVICE_OPTIONS, INDIVIDUAL_SERVICE_OPTIONS, DEFAULT_ENTERPRISE_SERVICE, DEFAULT_INDIVIDUAL_SERVICE } from '@/app/lib/services/service-selector'
 
 const RichTextEditor = dynamic(() => import('./RichTextEditor'), {
   ssr: false,
@@ -24,6 +25,8 @@ interface ColumnFormData {
   thumbnail?: string
   audio_url?: string
   category: 'ai-tools' | 'industry' | 'topics-news'
+  enterprise_service: string
+  individual_service: string
 }
 
 interface ColumnFormProps {
@@ -53,6 +56,8 @@ export default function ColumnForm({ initialData, columnId }: ColumnFormProps) {
     thumbnail: initialData?.thumbnail || '',
     audio_url: initialData?.audio_url || '',
     category: initialData?.category || 'topics-news',
+    enterprise_service: initialData?.enterprise_service || DEFAULT_ENTERPRISE_SERVICE,
+    individual_service: initialData?.individual_service || DEFAULT_INDIVIDUAL_SERVICE,
   })
 
 
@@ -481,6 +486,63 @@ export default function ColumnForm({ initialData, columnId }: ColumnFormProps) {
               公開する
             </span>
           </label>
+        </div>
+
+        <div className="bg-gray-50 p-4 rounded-lg">
+          <h3 className="text-lg font-medium mb-4 text-gray-800">右サイドバー表示サービス設定</h3>
+          <p className="text-sm text-gray-600 mb-4">
+            このコラム詳細ページの右サイドバーに表示するサービスを選択してください。
+          </p>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-700">
+                企業向けサービス
+              </label>
+              <div className="relative">
+                <select
+                  value={formData.enterprise_service}
+                  onChange={(e) => setFormData({ ...formData, enterprise_service: e.target.value })}
+                  className="w-full appearance-none px-3 py-2 pr-10 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-portfolio-blue text-gray-900"
+                >
+                  {ENTERPRISE_SERVICE_OPTIONS.map(option => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                  <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-2 text-gray-700">
+                個人向けサービス
+              </label>
+              <div className="relative">
+                <select
+                  value={formData.individual_service}
+                  onChange={(e) => setFormData({ ...formData, individual_service: e.target.value })}
+                  className="w-full appearance-none px-3 py-2 pr-10 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-portfolio-blue text-gray-900"
+                >
+                  {INDIVIDUAL_SERVICE_OPTIONS.map(option => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                  <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <div className="flex justify-end gap-4">

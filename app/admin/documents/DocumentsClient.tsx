@@ -172,6 +172,7 @@ export default function DocumentsClient({ documents }: DocumentsClientProps) {
                                 alt={document.title}
                                 fill
                                 className="object-cover rounded"
+                                sizes="80px"
                               />
                             </div>
                           ) : (

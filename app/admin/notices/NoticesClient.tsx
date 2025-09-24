@@ -180,6 +180,7 @@ export default function NoticesClient({ notices }: NoticesClientProps) {
                                 alt={notice.title}
                                 fill
                                 className="object-cover rounded"
+                                sizes="80px"
                               />
                             </div>
                           ) : (

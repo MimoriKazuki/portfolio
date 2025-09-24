@@ -22,7 +22,7 @@ export const AI_VIDEO_TRAINING_DATA: ServiceData = {
   },
   
   serviceOverview: {
-    title: "AI動画生成研修",
+    title: "AI動画生成研修の特徴",
     subtitle: "動画コンテンツが求められる現代において、高品質な動画制作技術は強力なビジネス武器となります。当研修では、最新のAI動画生成ツールを活用して、従来の制作工程を大幅に効率化しながらプロレベルの動画を制作する技術を習得していただけます。",
     items: [
       {

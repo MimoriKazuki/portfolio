@@ -22,7 +22,7 @@ export const PRACTICAL_AI_TRAINING_DATA: ServiceData = {
   },
   
   serviceOverview: {
-    title: "生成AI実務活用研修",
+    title: "生成AI実務活用研修の特徴",
     subtitle: "AI技術が急速に進歩する中、日常業務での具体的な活用方法を知ることが競争力の源泉となっています。当研修では、様々な業務シーンにおける生成AIの実践的な活用方法を学び、業務プロセス全体の効率化と品質向上を実現する技術を習得していただけます。",
     items: [
       {

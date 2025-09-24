@@ -7,7 +7,7 @@ const AITrainingHeroSection = () => {
       {/* Background Image */}
       <Image
         src="https://images.unsplash.com/photo-1552664730-d307ca884978?w=1920&h=1080&fit=crop&crop=center"
-        alt="生成AI活用研修"
+        alt="生成AI総合研修"
         fill
         className="object-cover object-center"
         priority
@@ -19,7 +19,7 @@ const AITrainingHeroSection = () => {
       {/* Title */}
       <div className="relative z-10 flex items-center justify-center h-full">
         <h1 className="text-4xl md:text-5xl text-white tracking-tight">
-          生成AI活用研修
+          生成AI総合研修
         </h1>
       </div>
     </div>

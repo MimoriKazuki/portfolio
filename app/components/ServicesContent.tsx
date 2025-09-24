@@ -8,7 +8,7 @@ export default function ServicesContent() {
   const corporateServices = [
     {
       id: 'corporate-training',
-      title: '生成AI活用研修',
+      title: '生成AI総合研修',
       description: '生成AIの基礎から実践まで、企業の現場で即戦力として活躍できる人材を育成する包括的な研修プログラムです。',
       icon: Building2,
       href: '/services/comprehensive-ai-training',
@@ -86,12 +86,12 @@ export default function ServicesContent() {
   return (
     <div className="w-full">
       {/* SEO用のh1 */}
-      <h1 className="sr-only">LandBridge サービス一覧 - AI研修・教育プログラム</h1>
+      <h1 className="sr-only">LandBridge サービス - AI研修・教育プログラム</h1>
       
       {/* Hero Section */}
       <section className="mb-8">
         <div className="mb-12">
-          <h2 className="text-[28px] font-bold text-gray-900 mb-4">サービス一覧</h2>
+          <h2 className="text-[28px] font-bold text-gray-900 mb-4">サービス</h2>
           <p className="text-xl text-gray-600 max-w-3xl">
             企業向けから個人向けまで、多様なAI研修・教育プログラムをご提供しています。
             <br />貴社・個人のニーズに合わせて最適なプログラムをお選びいただけます。
@@ -101,14 +101,14 @@ export default function ServicesContent() {
 
       {/* Corporate Services (toB) */}
       <section className="mb-16">
-        <div className="flex items-center gap-3 mb-8">
-          <div className="h-10 w-10 bg-portfolio-blue/10 rounded-lg flex items-center justify-center">
-            <Building2 className="h-6 w-6 text-portfolio-blue" />
-          </div>
-          <div>
+        <div className="mb-8">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 bg-portfolio-blue/10 rounded-lg flex items-center justify-center">
+              <Building2 className="h-6 w-6 text-portfolio-blue" />
+            </div>
             <h3 className="text-2xl font-bold text-gray-900">企業向けサービス</h3>
-            <p className="text-gray-600">法人・組織向けのAI研修プログラム</p>
           </div>
+          <p className="text-gray-600 ml-[52px]">法人・組織向けのAI研修プログラム</p>
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -224,14 +224,14 @@ export default function ServicesContent() {
 
       {/* Consumer Services (toC) */}
       <section className="mb-16">
-        <div className="flex items-center gap-3 mb-8">
-          <div className="h-10 w-10 bg-green-100 rounded-lg flex items-center justify-center">
-            <Users className="h-6 w-6 text-green-600" />
-          </div>
-          <div>
+        <div className="mb-8">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 bg-green-100 rounded-lg flex items-center justify-center">
+              <Users className="h-6 w-6 text-green-600" />
+            </div>
             <h3 className="text-2xl font-bold text-gray-900">個人向けサービス</h3>
-            <p className="text-gray-600">個人のキャリアアップ向けAI教育プログラム</p>
           </div>
+          <p className="text-gray-600 ml-[52px]">個人のキャリアアップ向けAI教育プログラム</p>
         </div>
         
         <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">

@@ -55,7 +55,9 @@
       "Bash(git rm:*)",
       "Bash(git checkout:*)",
       "Bash(git config:*)",
-      "Bash(rg:*)"
+      "Bash(rg:*)",
+      "mcp__ide__getDiagnostics",
+      "Bash(source:*)"
     ],
     "deny": []
   }
