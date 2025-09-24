@@ -57,7 +57,8 @@
       "Bash(git config:*)",
       "Bash(rg:*)",
       "mcp__ide__getDiagnostics",
-      "Bash(source:*)"
+      "Bash(source:*)",
+      "Bash(npx next:*)"
     ],
     "deny": []
   }
