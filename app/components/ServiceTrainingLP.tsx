@@ -232,13 +232,13 @@ export default function ServiceTrainingLP({
       {/* Hero CTA Buttons */}
       <section className="py-8">
         <div className="max-w-[1023px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link
               href={heroCTA.inquiryHref}
-              className="group relative overflow-hidden px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:bg-blue-700 transform hover:-translate-y-1 flex items-center justify-center"
+              className="group relative overflow-hidden px-8 py-4 bg-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:bg-blue-700 transform hover:-translate-y-1 flex items-center"
             >
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out"></div>
-              <svg className="w-4 h-4 mr-2 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+              <svg className="w-5 h-5 mr-2 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                 <rect width="20" height="16" x="2" y="4" rx="2"/>
                 <path d="m22 7-10 5L2 7"/>
               </svg>
@@ -246,9 +246,9 @@ export default function ServiceTrainingLP({
             </Link>
             <Link
               href={heroCTA.documentHref}
-              className="group px-6 py-3 bg-white text-gray-900 font-semibold rounded-lg border-2 border-blue-200 shadow-sm hover:shadow-lg hover:border-blue-300 hover:bg-blue-50 transition-all duration-300 flex items-center justify-center"
+              className="group px-8 py-4 bg-white text-gray-900 font-semibold rounded-xl border-2 border-blue-200 shadow-sm hover:shadow-lg hover:border-blue-300 hover:bg-blue-50 transition-all duration-300 flex items-center"
             >
-              <svg className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+              <svg className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                 <polyline points="7,10 12,15 17,10"/>
                 <line x1="12" y1="15" x2="12" y2="3"/>
@@ -371,13 +371,13 @@ export default function ServiceTrainingLP({
               <p className="text-lg text-gray-600 mb-8">
                 {midCTA.description}
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 <Link
                   href={midCTA.inquiryHref}
-                  className="group relative overflow-hidden px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:bg-blue-700 transform hover:-translate-y-1 flex items-center justify-center"
+                  className="group relative overflow-hidden px-8 py-4 bg-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:bg-blue-700 transform hover:-translate-y-1 flex items-center"
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out"></div>
-                  <svg className="w-4 h-4 mr-2 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                  <svg className="w-5 h-5 mr-2 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                     <rect width="20" height="16" x="2" y="4" rx="2"/>
                     <path d="m22 7-10 5L2 7"/>
                   </svg>
@@ -385,9 +385,9 @@ export default function ServiceTrainingLP({
                 </Link>
                 <Link
                   href={midCTA.documentHref}
-                  className="group px-6 py-3 bg-white text-gray-900 font-semibold rounded-lg border-2 border-blue-200 shadow-sm hover:shadow-lg hover:border-blue-300 hover:bg-blue-50 transition-all duration-300 flex items-center justify-center"
+                  className="group px-8 py-4 bg-white text-gray-900 font-semibold rounded-xl border-2 border-blue-200 shadow-sm hover:shadow-lg hover:border-blue-300 hover:bg-blue-50 transition-all duration-300 flex items-center"
                 >
-                  <svg className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                  <svg className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                     <polyline points="7,10 12,15 17,10"/>
                     <line x1="12" y1="15" x2="12" y2="3"/>
@@ -410,14 +410,14 @@ export default function ServiceTrainingLP({
           <div className="space-y-6">
             {curriculum.modules.map((module, index) => (
               <div key={index} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-200">
-                <div className="flex">
-                  <div className="relative w-48 flex-shrink-0">
+                <div className="flex flex-col md:flex-row">
+                  <div className="relative w-full md:w-48 md:flex-shrink-0 overflow-hidden">
                     <Image
                       src={module.image}
                       alt={module.title}
-                      width={192}
-                      height={160}
-                      className="object-cover w-full h-40"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 192px"
+                      className="object-cover w-full h-48 md:h-40"
                     />
                   </div>
                   <div className="flex-1 p-6 flex flex-col justify-center">
@@ -471,13 +471,13 @@ export default function ServiceTrainingLP({
         {/* Additional CTA Section (if provided) */}
         {additionalCTA && (
           <section className="mt-16 mb-0">
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link
                 href={additionalCTA.inquiryHref}
-                className="group relative overflow-hidden px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:bg-blue-700 transform hover:-translate-y-1 flex items-center justify-center"
+                className="group relative overflow-hidden px-8 py-4 bg-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:bg-blue-700 transform hover:-translate-y-1 flex items-center"
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out"></div>
-                <svg className="w-4 h-4 mr-2 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                <svg className="w-5 h-5 mr-2 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                   <rect width="20" height="16" x="2" y="4" rx="2"/>
                   <path d="m22 7-10 5L2 7"/>
                 </svg>
@@ -485,9 +485,9 @@ export default function ServiceTrainingLP({
               </Link>
               <Link
                 href={additionalCTA.documentHref}
-                className="group px-6 py-3 bg-white text-gray-900 font-semibold rounded-lg border-2 border-blue-200 shadow-sm hover:shadow-lg hover:border-blue-300 hover:bg-blue-50 transition-all duration-300 flex items-center justify-center"
+                className="group px-8 py-4 bg-white text-gray-900 font-semibold rounded-xl border-2 border-blue-200 shadow-sm hover:shadow-lg hover:border-blue-300 hover:bg-blue-50 transition-all duration-300 flex items-center"
               >
-                <svg className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                <svg className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                   <polyline points="7,10 12,15 17,10"/>
                   <line x1="12" y1="15" x2="12" y2="3"/>

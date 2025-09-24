@@ -29,34 +29,37 @@ export default function MainLayout({ children, hideRightSidebar = false, hideCon
       {/* Body - contains all main content */}
       <div className="flex-1 flex">
         {/* Left Sidebar - Fixed to left edge */}
-        <aside className="w-[178px] flex-shrink-0 hidden lg:block bg-white border-r border-gray-200">
+        <aside className="w-[178px] flex-shrink-0 hidden xl:block bg-white border-r border-gray-200">
           <div className="sticky top-0 h-screen overflow-y-auto">
             <Sidebar />
           </div>
         </aside>
         
-        {/* Main Content Container */}
-        <div className="flex-1">
-          <div className="flex gap-8 px-4 sm:px-6 lg:px-8 py-8">
-            <main className="flex-1 min-w-0">
-              {children}
-            </main>
-            
-            {/* Right Sidebar */}
-            {!hideRightSidebar && (
-              <aside className="w-[260px] flex-shrink-0 hidden lg:block">
-                <div className="sticky top-8">
-                  {dynamicSidebar ? (
-                    <DynamicRightSidebar 
-                      enterpriseServiceId={dynamicSidebar.enterpriseServiceId}
-                      individualServiceId={dynamicSidebar.individualServiceId}
-                    />
-                  ) : (
-                    <RightSidebar />
-                  )}
-                </div>
-              </aside>
-            )}
+        {/* Main Content Container with Horizontal Scroll for 1025px-1280px */}
+        <div className="flex-1 min-w-0">
+          {/* Scrollable container for mid-range sizes */}
+          <div className="h-full overflow-x-visible">
+            <div className="flex gap-8 px-4 sm:px-6 lg:px-8 py-8">
+              <main className="flex-1 min-w-0">
+                {children}
+              </main>
+              
+              {/* Right Sidebar */}
+              {!hideRightSidebar && (
+                <aside className="w-[260px] flex-shrink-0 hidden xl:block">
+                  <div className="sticky top-8">
+                    {dynamicSidebar ? (
+                      <DynamicRightSidebar 
+                        enterpriseServiceId={dynamicSidebar.enterpriseServiceId}
+                        individualServiceId={dynamicSidebar.individualServiceId}
+                      />
+                    ) : (
+                      <RightSidebar />
+                    )}
+                  </div>
+                </aside>
+              )}
+            </div>
           </div>
         </div>
       </div>

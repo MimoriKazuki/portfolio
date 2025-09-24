@@ -152,7 +152,7 @@ export default function DynamicHomeContent() {
         </div>
         
         {isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-1 mid:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
             {[...Array(3)].map((_, index) => (
               <ProjectCardSkeleton key={index} />
             ))}
@@ -163,7 +163,7 @@ export default function DynamicHomeContent() {
             <p className="text-xl text-muted-foreground">No featured projects yet</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-1 mid:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
             {featuredProjects.map((project, index) => (
               <ProjectCard 
                 key={project.id} 
@@ -188,7 +188,7 @@ export default function DynamicHomeContent() {
         </div>
         
         {isLoading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-1 mid:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
             {[...Array(3)].map((_, index) => (
               <ColumnCardSkeleton key={index} />
             ))}
@@ -199,7 +199,7 @@ export default function DynamicHomeContent() {
             <p className="text-xl text-gray-500">まだコラムがありません</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-1 mid:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
             {latestColumns.map((column, index) => (
               <Link 
                 key={column.id} 

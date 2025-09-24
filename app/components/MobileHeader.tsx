@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Menu, X, Home, FolderOpen, BookOpen, Download, Mail, Bell } from 'lucide-react'
+import { Menu, X, Home, FolderOpen, BookOpen, Download, Mail, Bell, Briefcase } from 'lucide-react'
 
 export default function MobileHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
@@ -14,7 +14,8 @@ export default function MobileHeader() {
 
   const menuItems = [
     { href: '/', label: 'トップページ', icon: Home },
-    { href: '/projects', label: 'ポートフォリオ', icon: FolderOpen },
+    { href: '/services', label: 'サービス', icon: Briefcase },
+    { href: '/projects', label: 'AI制作物', icon: FolderOpen },
     { href: '/columns', label: 'コラム', icon: BookOpen },
     { href: '/notices', label: 'お知らせ', icon: Bell },
     { href: '/documents', label: '資料ダウンロード', icon: Download },
@@ -24,7 +25,7 @@ export default function MobileHeader() {
   return (
     <>
       {/* Mobile Header */}
-      <header className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200">
+      <header className="xl:hidden fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200">
         <div className="flex items-center justify-between px-4 h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center">

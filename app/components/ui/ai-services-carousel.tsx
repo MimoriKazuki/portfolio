@@ -1,7 +1,7 @@
 "use client";
 
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import useEmblaCarousel from 'embla-carousel-react';
@@ -104,50 +104,174 @@ const AIServicesCarousel = ({
   sectionPadding = "py-16",
   titleSize = "text-2xl font-bold md:text-3xl",
 }: AIServicesCarouselProps) => {
+  const [windowWidth, setWindowWidth] = useState(1200); // PCサイズで初期化
+  const [currentPage, setCurrentPage] = useState(0); // ページ番号を直接管理
+  
+  // 表示枚数とページ数を計算
+  const getDisplayConfig = useCallback(() => {
+    let cardsPerView = 3; // デフォルトは3枚表示
+    
+    if (windowWidth >= 1025) cardsPerView = 3;      // PC: 3枚
+    else if (windowWidth >= 900) cardsPerView = 3;  // 900-1024px: 3枚
+    else if (windowWidth >= 641) cardsPerView = 2;  // 641-899px: 2枚
+    else if (windowWidth >= 540) cardsPerView = 2;  // 540-640px: 2枚
+    else cardsPerView = 1; // 539px以下: 1枚
+    
+    const totalPages = Math.ceil(items.length / cardsPerView);
+    
+    return { cardsPerView, totalPages };
+  }, [windowWidth, items.length]);
+
+  // シンプルな固定設定でEmblaCarouselを初期化
   const [emblaRef, emblaApi] = useEmblaCarousel({
     align: 'start',
     loop: false,
-    dragFree: false,
-    containScroll: 'trimSnaps',
-    slidesToScroll: 3, // 一度に3枚移動
+    containScroll: 'keepSnaps',
+    skipSnaps: false,
   });
   
   const [canScrollPrev, setCanScrollPrev] = useState(false);
   const [canScrollNext, setCanScrollNext] = useState(false);
-  const [currentSlide, setCurrentSlide] = useState(0);
+
+  // ウィンドウサイズ監視とカルーセル再初期化
+  useEffect(() => {
+    const handleResize = () => {
+      if (typeof window !== 'undefined') {
+        setWindowWidth(window.innerWidth);
+      }
+    };
+    
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const updateSelection = useCallback(() => {
     if (!emblaApi) return;
     
     setCanScrollPrev(emblaApi.canScrollPrev());
     setCanScrollNext(emblaApi.canScrollNext());
-    setCurrentSlide(Math.floor(emblaApi.selectedScrollSnap() / 3));
-  }, [emblaApi]);
+    
+    // カーソルスクロール時のページ検出
+    const currentSnapIndex = emblaApi.selectedScrollSnap();
+    const { cardsPerView } = getDisplayConfig();
+    
+    // 現在の表示カードからページを計算
+    let detectedPage = 0;
+    
+    if (cardsPerView === 3) {
+      // 3枚表示: インデックス0-2=ページ0、インデックス3-5=ページ1
+      detectedPage = currentSnapIndex >= 3 ? 1 : 0;
+    } else if (cardsPerView === 2) {
+      // 2枚表示: インデックス0-1=ページ0、2-3=ページ1、4-5=ページ2
+      if (currentSnapIndex >= 4) detectedPage = 2;
+      else if (currentSnapIndex >= 2) detectedPage = 1;
+      else detectedPage = 0;
+    } else {
+      // 1枚表示
+      detectedPage = currentSnapIndex;
+    }
+    
+    // currentPageと異なる場合のみ更新（カーソル操作検出）
+    if (detectedPage !== currentPage) {
+      console.log(`🖱️ Cursor scroll detected: Page ${currentPage} → ${detectedPage}`);
+      setCurrentPage(detectedPage);
+    }
+    
+    console.log(`📍 Current state: Snap ${currentSnapIndex}, Page ${currentPage} (${cardsPerView} cards)`);
+  }, [emblaApi, getDisplayConfig, currentPage]);
+
+  // ウィンドウサイズ変更時にページをリセット
+  useEffect(() => {
+    setCurrentPage(0);
+    if (emblaApi) {
+      emblaApi.scrollTo(0);
+      console.log(`📱 Screen size changed to ${windowWidth}px`);
+    }
+  }, [windowWidth, emblaApi]);
 
   const scrollPrev = useCallback(() => {
-    if (!emblaApi) return;
-    emblaApi.scrollPrev();
-  }, [emblaApi]);
+    if (!emblaApi || currentPage === 0) return;
+    
+    const { cardsPerView } = getDisplayConfig();
+    const newPage = currentPage - 1;
+    
+    // 正確なターゲットインデックスを計算
+    let targetIndex = 0;
+    if (cardsPerView === 3) {
+      targetIndex = newPage * 3;
+    } else if (cardsPerView === 2) {
+      targetIndex = newPage * 2;
+    } else {
+      targetIndex = newPage;
+    }
+    
+    console.log(`ARROW PREV: Page ${currentPage} → Page ${newPage} (Index ${targetIndex})`);
+    emblaApi.scrollTo(targetIndex);
+    setCurrentPage(newPage);
+  }, [emblaApi, currentPage, getDisplayConfig]);
 
   const scrollNext = useCallback(() => {
     if (!emblaApi) return;
-    emblaApi.scrollNext();
-  }, [emblaApi]);
+    
+    const { cardsPerView, totalPages } = getDisplayConfig();
+    if (currentPage >= totalPages - 1) return;
+    
+    const newPage = currentPage + 1;
+    
+    // 正確なターゲットインデックスを計算
+    let targetIndex = 0;
+    if (cardsPerView === 3) {
+      // 3枚表示: ページ0→インデックス0、ページ1→インデックス3
+      targetIndex = newPage * 3;
+    } else if (cardsPerView === 2) {
+      // 2枚表示: ページ0→インデックス0、ページ1→インデックス2、ページ2→インデックス4
+      targetIndex = newPage * 2;
+    } else {
+      // 1枚表示
+      targetIndex = newPage;
+    }
+    
+    console.log(`ARROW NEXT: Page ${currentPage} → Page ${newPage} (Index ${targetIndex})`);
+    emblaApi.scrollTo(targetIndex);
+    setCurrentPage(newPage);
+  }, [emblaApi, currentPage, getDisplayConfig]);
 
-  const scrollTo = useCallback((index: number) => {
+  const scrollTo = useCallback((pageIndex: number) => {
     if (!emblaApi) return;
-    emblaApi.scrollTo(index);
-  }, [emblaApi]);
+    
+    const { cardsPerView } = getDisplayConfig();
+    
+    // 正確なターゲットインデックスを計算
+    let targetIndex = 0;
+    if (cardsPerView === 3) {
+      targetIndex = pageIndex * 3;
+    } else if (cardsPerView === 2) {
+      targetIndex = pageIndex * 2;
+    } else {
+      targetIndex = pageIndex;
+    }
+    
+    console.log(`DOT CLICK: Page ${pageIndex} (Index ${targetIndex})`);
+    emblaApi.scrollTo(targetIndex);
+    setCurrentPage(pageIndex);
+  }, [emblaApi, getDisplayConfig]);
 
   useEffect(() => {
     if (!emblaApi) return;
     
-    updateSelection();
-    
-    emblaApi.on('select', updateSelection);
-    emblaApi.on('reInit', updateSelection);
+    // 少し遅延してイベントリスナーを登録（初期化完了後）
+    const timer = setTimeout(() => {
+      updateSelection();
+      
+      emblaApi.on('select', updateSelection);
+      emblaApi.on('reInit', updateSelection);
+      
+      console.log('📡 Event listeners attached');
+    }, 100);
     
     return () => {
+      clearTimeout(timer);
       emblaApi.off('select', updateSelection);
       emblaApi.off('reInit', updateSelection);
     };
@@ -182,7 +306,7 @@ const AIServicesCarousel = ({
             {items.map((item, index) => (
               <div
                 key={item.id}
-                className="flex-shrink-0 w-full md:w-1/2 lg:w-1/3 px-3"
+                className="flex-shrink-0 w-full xs:w-1/2 md:w-1/2 lg:w-1/3 xl:w-1/3 px-3"
               >
                 {item.available ? (
                   <Link href={item.href} className="group rounded-xl">
@@ -246,37 +370,37 @@ const AIServicesCarousel = ({
         
         {/* Container for dots and arrows with proper positioning */}
         <div className="mt-12 relative">
-          {/* Dots centered */}
+          {/* Dots centered - 全ての範囲で表示 */}
           <div className="flex justify-center gap-4">
-            {Array.from({ length: Math.ceil(items.length / 3) }).map((_, index) => (
+            {Array.from({ length: getDisplayConfig().totalPages }).map((_, index) => (
               <button
                 key={index}
                 className={`h-2 w-2 rounded-full transition-colors ${
-                  currentSlide === index ? "bg-blue-600" : "bg-blue-600/20"
+                  currentPage === index ? "bg-blue-600" : "bg-blue-600/20"
                 }`}
-                onClick={() => scrollTo(index * 3)}
+                onClick={() => scrollTo(index)}
                 aria-label={`Go to page ${index + 1}`}
               />
             ))}
           </div>
           
-          {/* Navigation arrows */}
+          {/* Navigation arrows - 全ての範囲で表示 */}
           <div className="absolute top-1/2 -translate-y-1/2 right-0 flex gap-5">
-            <button
-              onClick={scrollPrev}
-              disabled={!canScrollPrev}
-              className="p-3 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <ArrowLeft className="size-5 text-gray-600" />
-            </button>
-            <button
-              onClick={scrollNext}
-              disabled={!canScrollNext}
-              className="p-3 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <ArrowRight className="size-5 text-gray-600" />
-            </button>
-          </div>
+              <button
+                onClick={scrollPrev}
+                disabled={!canScrollPrev}
+                className="p-3 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ArrowLeft className="size-5 text-gray-600" />
+              </button>
+              <button
+                onClick={scrollNext}
+                disabled={!canScrollNext}
+                className="p-3 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <ArrowRight className="size-5 text-gray-600" />
+              </button>
+            </div>
         </div>
       </div>
     </section>
