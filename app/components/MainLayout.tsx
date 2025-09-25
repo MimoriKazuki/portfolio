@@ -1,8 +1,10 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Sidebar from './Sidebar'
 import RightSidebar from './RightSidebar'
 import DynamicRightSidebar from './DynamicRightSidebar'
+import RightSidebarSkeleton from './skeletons/RightSidebarSkeleton'
 import FloatingButtons from './FloatingButtons'
 import Footer from './Footer'
 import MobileHeader from './MobileHeader'
@@ -11,13 +13,25 @@ interface MainLayoutProps {
   children: React.ReactNode
   hideRightSidebar?: boolean
   hideContactButton?: boolean
+  isLoading?: boolean // 全体のローディング状態
   dynamicSidebar?: {
     enterpriseServiceId?: string
     individualServiceId?: string
   }
 }
 
-export default function MainLayout({ children, hideRightSidebar = false, hideContactButton = false, dynamicSidebar }: MainLayoutProps) {
+export default function MainLayout({ children, hideRightSidebar = false, hideContactButton = false, isLoading = false, dynamicSidebar }: MainLayoutProps) {
+  const [isInitialLoading, setIsInitialLoading] = useState(true)
+
+  useEffect(() => {
+    if (!isLoading) {
+      // 外部からのローディング状態が完了したら表示
+      const timer = setTimeout(() => {
+        setIsInitialLoading(false)
+      }, 100)
+      return () => clearTimeout(timer)
+    }
+  }, [isLoading])
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Fixed background layer to prevent overscroll color */}
@@ -48,7 +62,9 @@ export default function MainLayout({ children, hideRightSidebar = false, hideCon
               {!hideRightSidebar && (
                 <aside className="w-[260px] flex-shrink-0 hidden xl:block">
                   <div className="sticky top-8">
-                    {dynamicSidebar ? (
+                    {isInitialLoading || isLoading ? (
+                      <RightSidebarSkeleton />
+                    ) : dynamicSidebar ? (
                       <DynamicRightSidebar 
                         enterpriseServiceId={dynamicSidebar.enterpriseServiceId}
                         individualServiceId={dynamicSidebar.individualServiceId}

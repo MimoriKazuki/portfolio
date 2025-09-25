@@ -17,8 +17,8 @@ export const AI_VIDEO_TRAINING_DATA: ServiceData = {
   heroCTA: {
     inquiryText: "無料相談を予約する",
     documentText: "研修資料をダウンロード",
-    inquiryHref: "/contact?source=ai_video_hero_inquiry",
-    documentHref: "/documents/request/ai-video-overview"
+    inquiryHref: "/contact",
+    documentHref: "/documents"
   },
   
   serviceOverview: {
@@ -46,8 +46,8 @@ export const AI_VIDEO_TRAINING_DATA: ServiceData = {
   midCTA: {
     title: "動画制作を革新しませんか？",
     description: "AI技術で動画制作の常識を変える研修プログラムをご提案します",
-    inquiryHref: "/contact?source=ai_video_mid_inquiry",
-    documentHref: "/documents/request/ai-video-overview"
+    inquiryHref: "/contact",
+    documentHref: "/documents"
   },
   
   targetAudience: {
@@ -185,8 +185,8 @@ export const AI_VIDEO_TRAINING_DATA: ServiceData = {
   additionalCTA: {
     title: "AI動画生成研修でマーケティング革新",
     description: "効率的な動画制作で訴求力を大幅向上します",
-    inquiryHref: "/contact?source=ai_video_training_additional_inquiry",
-    documentHref: "/documents/request/ai-video-training-overview"
+    inquiryHref: "/contact",
+    documentHref: "/documents"
   },
   
   overviewTable: {
@@ -231,7 +231,7 @@ export const AI_VIDEO_TRAINING_DATA: ServiceData = {
   finalCTA: {
     title: "動画制作革新の第一歩を踏み出しませんか？",
     description: "貴社の動画制作プロセスを劇的に効率化するAI動画生成研修をご提案いたします",
-    inquiryHref: "/contact?source=ai_video_final_inquiry",
-    documentHref: "/documents/request/ai-video-overview"
+    inquiryHref: "/contact",
+    documentHref: "/documents"
   }
 }

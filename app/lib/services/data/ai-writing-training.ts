@@ -17,8 +17,8 @@ export const AI_WRITING_TRAINING_DATA: ServiceData = {
   heroCTA: {
     inquiryText: "無料相談を予約する",
     documentText: "研修資料をダウンロード",
-    inquiryHref: "/contact?source=ai_writing_hero_inquiry",
-    documentHref: "/documents/request/ai-writing-overview"
+    inquiryHref: "/contact",
+    documentHref: "/documents"
   },
   
   serviceOverview: {
@@ -46,8 +46,8 @@ export const AI_WRITING_TRAINING_DATA: ServiceData = {
   midCTA: {
     title: "文書作成効率を劇的に改善しませんか？",
     description: "貴社の文書作成業務に特化したAIライティング技術をお教えします",
-    inquiryHref: "/contact?source=ai_writing_mid_inquiry",
-    documentHref: "/documents/request/ai-writing-overview"
+    inquiryHref: "/contact",
+    documentHref: "/documents"
   },
   
   targetAudience: {
@@ -185,8 +185,8 @@ export const AI_WRITING_TRAINING_DATA: ServiceData = {
   additionalCTA: {
     title: "AIライティング研修で文書作成を革新",
     description: "貴社の文書品質と作業効率を劇的に改善します",
-    inquiryHref: "/contact?source=ai_writing_additional_inquiry",
-    documentHref: "/documents/request/ai-writing-overview"
+    inquiryHref: "/contact",
+    documentHref: "/documents"
   },
   
   overviewTable: {
@@ -231,7 +231,7 @@ export const AI_WRITING_TRAINING_DATA: ServiceData = {
   finalCTA: {
     title: "文書作成革新の第一歩を踏み出しませんか？",
     description: "貴社の文書品質と作業効率を劇的に改善するAIライティング研修をご提案いたします",
-    inquiryHref: "/contact?source=ai_writing_final_inquiry",
-    documentHref: "/documents/request/ai-writing-overview"
+    inquiryHref: "/contact",
+    documentHref: "/documents"
   }
 }

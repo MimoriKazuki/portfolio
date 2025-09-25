@@ -2,7 +2,7 @@ import MainLayout from '@/app/components/MainLayout'
 
 export default function DocumentRequestLoading() {
   return (
-    <MainLayout hideRightSidebar={true}>
+    <MainLayout hideRightSidebar={true} isLoading={true}>
       <div className="max-w-2xl mx-auto animate-pulse">
         <div className="bg-white rounded-lg p-8 shadow-md">
           <div className="mb-6">

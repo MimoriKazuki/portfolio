@@ -2,7 +2,7 @@ import MainLayout from '@/app/components/MainLayout'
 
 export default function ColumnDetailLoading() {
   return (
-    <MainLayout>
+    <MainLayout isLoading={true}>
       <article className="w-full max-w-4xl mx-auto animate-pulse">
         <div className="h-6 bg-gray-200 rounded w-32 mb-6" />
 

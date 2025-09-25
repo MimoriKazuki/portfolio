@@ -60,7 +60,7 @@ export default function DynamicHomeContent() {
   }, [])
 
   return (
-    <div className="max-w-[1023px] mx-auto px-8">
+    <div className="max-w-[1023px] mx-auto">
       {/* Latest Notices */}
       {(isLoading || latestNotices.length > 0) && (
         <section className="mb-12">

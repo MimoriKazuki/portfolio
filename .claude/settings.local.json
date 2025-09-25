@@ -58,7 +58,10 @@
       "Bash(rg:*)",
       "mcp__ide__getDiagnostics",
       "Bash(source:*)",
-      "Bash(npx next:*)"
+      "Bash(npx next:*)",
+      "Bash(for:*)",
+      "Bash(do echo \"=== $file ===\")",
+      "Bash(done)"
     ],
     "deny": []
   }

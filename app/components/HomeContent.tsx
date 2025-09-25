@@ -17,7 +17,7 @@ export default function HomeContent() {
       </div>
 
       {/* AI Human Resource Development Services - Carousel */}
-      <div className="max-w-[1023px] mx-auto px-8">
+      <div className="max-w-[1023px] mx-auto">
         <AIServicesCarousel />
       </div>
 

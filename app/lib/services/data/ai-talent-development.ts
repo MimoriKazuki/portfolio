@@ -17,8 +17,8 @@ export const AI_TALENT_DEVELOPMENT_DATA: ServiceData = {
   heroCTA: {
     inquiryText: "無料相談を予約する",
     documentText: "プログラム資料をダウンロード",
-    inquiryHref: "/contact?source=ai_talent_hero_inquiry",
-    documentHref: "/documents/request/ai-talent-overview"
+    inquiryHref: "/contact",
+    documentHref: "/documents"
   },
   
   serviceOverview: {
@@ -46,8 +46,8 @@ export const AI_TALENT_DEVELOPMENT_DATA: ServiceData = {
   midCTA: {
     title: "AIスキルでキャリアを変えませんか？",
     description: "あなたの目標に合わせた個別プログラムで、確実にスキルアップを実現します",
-    inquiryHref: "/contact?source=ai_talent_mid_inquiry",
-    documentHref: "/documents/request/ai-talent-overview"
+    inquiryHref: "/contact",
+    documentHref: "/documents"
   },
   
   targetAudience: {
@@ -185,8 +185,8 @@ export const AI_TALENT_DEVELOPMENT_DATA: ServiceData = {
   additionalCTA: {
     title: "AI人材へのキャリアアップ",
     description: "あなたの理想のキャリアを実現します",
-    inquiryHref: "/contact?source=ai_talent_additional_inquiry",
-    documentHref: "/documents/request/ai-talent-overview"
+    inquiryHref: "/contact",
+    documentHref: "/documents"
   },
   
   overviewTable: {
@@ -232,7 +232,7 @@ export const AI_TALENT_DEVELOPMENT_DATA: ServiceData = {
   finalCTA: {
     title: "AI人材への第一歩を踏み出しませんか？",
     description: "あなたの理想のキャリアを実現するAI人材育成プログラムをご提案いたします",
-    inquiryHref: "/contact?source=ai_talent_final_inquiry",
-    documentHref: "/documents/request/ai-talent-overview"
+    inquiryHref: "/contact",
+    documentHref: "/documents"
   }
 }

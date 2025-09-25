@@ -3,7 +3,7 @@ import ColumnCardSkeleton from '@/app/components/skeletons/ColumnCardSkeleton'
 
 export default function ColumnsLoading() {
   return (
-    <MainLayout>
+    <MainLayout isLoading={true}>
       <div className="w-full">
         <div className="mb-8">
           <div className="h-8 bg-gray-200 rounded w-32 animate-pulse" />

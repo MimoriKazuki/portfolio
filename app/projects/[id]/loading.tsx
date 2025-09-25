@@ -2,7 +2,7 @@ import MainLayout from '@/app/components/MainLayout'
 
 export default function ProjectDetailLoading() {
   return (
-    <MainLayout>
+    <MainLayout isLoading={true}>
       <div className="p-4 sm:p-6 pt-2 sm:pt-3 animate-pulse">
         {/* Back button skeleton */}
         <div className="h-6 bg-gray-200 rounded w-40 mb-6" />

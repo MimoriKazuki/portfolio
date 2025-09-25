@@ -17,8 +17,8 @@ export const PRACTICAL_AI_TRAINING_DATA: ServiceData = {
   heroCTA: {
     inquiryText: "無料相談を予約する",
     documentText: "研修資料をダウンロード",
-    inquiryHref: "/contact?source=practical_ai_hero_inquiry",
-    documentHref: "/documents/request/practical-ai-overview"
+    inquiryHref: "/contact",
+    documentHref: "/documents"
   },
   
   serviceOverview: {
@@ -46,8 +46,8 @@ export const PRACTICAL_AI_TRAINING_DATA: ServiceData = {
   midCTA: {
     title: "業務革新を実現しませんか？",
     description: "貴社の業務プロセスに特化したAI活用方法をお教えします",
-    inquiryHref: "/contact?source=practical_ai_mid_inquiry",
-    documentHref: "/documents/request/practical-ai-overview"
+    inquiryHref: "/contact",
+    documentHref: "/documents"
   },
   
   targetAudience: {
@@ -185,8 +185,8 @@ export const PRACTICAL_AI_TRAINING_DATA: ServiceData = {
   additionalCTA: {
     title: "生成AI実務活用で業務を革新",
     description: "貴社の業務プロセスを劇的に効率化します",
-    inquiryHref: "/contact?source=practical_ai_additional_inquiry",
-    documentHref: "/documents/request/practical-ai-overview"
+    inquiryHref: "/contact",
+    documentHref: "/documents"
   },
   
   overviewTable: {
@@ -231,7 +231,7 @@ export const PRACTICAL_AI_TRAINING_DATA: ServiceData = {
   finalCTA: {
     title: "業務革新の第一歩を踏み出しませんか？",
     description: "貴社の日常業務を劇的に効率化する生成AI実務活用研修をご提案いたします",
-    inquiryHref: "/contact?source=practical_ai_final_inquiry",
-    documentHref: "/documents/request/practical-ai-overview"
+    inquiryHref: "/contact",
+    documentHref: "/documents"
   }
 }

@@ -20,7 +20,7 @@ const Footer = () => {
                 alt="LandBridge Media - AIコーディングによるシステム開発"
                 width={140}
                 height={40}
-                className="w-[140px] h-auto"
+                className="h-auto"
               />
             </div>
             <h2 className="sr-only">LandBridge株式会社について</h2>

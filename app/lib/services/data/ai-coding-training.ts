@@ -17,8 +17,8 @@ export const AI_CODING_TRAINING_DATA: ServiceData = {
   heroCTA: {
     inquiryText: "無料相談を予約する",
     documentText: "研修資料をダウンロード",
-    inquiryHref: "/contact?source=ai_coding_hero_inquiry",
-    documentHref: "/documents/request/ai-coding-overview"
+    inquiryHref: "/contact",
+    documentHref: "/documents"
   },
   
   serviceOverview: {
@@ -46,8 +46,8 @@ export const AI_CODING_TRAINING_DATA: ServiceData = {
   midCTA: {
     title: "開発プロセスを革新しませんか？",
     description: "AI支援でプログラミング効率を劇的に向上させる技術をお教えします",
-    inquiryHref: "/contact?source=ai_coding_mid_inquiry",
-    documentHref: "/documents/request/ai-coding-overview"
+    inquiryHref: "/contact",
+    documentHref: "/documents"
   },
   
   targetAudience: {
@@ -185,8 +185,8 @@ export const AI_CODING_TRAINING_DATA: ServiceData = {
   additionalCTA: {
     title: "AIコーディング研修で開発効率向上",
     description: "開発生産性を飛躍的に向上させます",
-    inquiryHref: "/contact?source=ai_coding_training_additional_inquiry",
-    documentHref: "/documents/request/ai-coding-training-overview"
+    inquiryHref: "/contact",
+    documentHref: "/documents"
   },
   
   overviewTable: {
@@ -231,7 +231,7 @@ export const AI_CODING_TRAINING_DATA: ServiceData = {
   finalCTA: {
     title: "開発効率革新の第一歩を踏み出しませんか？",
     description: "貴社の開発プロセスを劇的に効率化するAI支援プログラミング研修をご提案いたします",
-    inquiryHref: "/contact?source=ai_coding_final_inquiry",
-    documentHref: "/documents/request/ai-coding-overview"
+    inquiryHref: "/contact",
+    documentHref: "/documents"
   }
 }

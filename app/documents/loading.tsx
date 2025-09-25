@@ -3,7 +3,7 @@ import DocumentCardSkeleton from '@/app/components/skeletons/DocumentCardSkeleto
 
 export default function DocumentsLoading() {
   return (
-    <MainLayout hideRightSidebar={true}>
+    <MainLayout hideRightSidebar={true} isLoading={true}>
       <div className="w-full">
         <div className="mb-8">
           <div className="h-8 bg-gray-200 rounded w-48 animate-pulse" />

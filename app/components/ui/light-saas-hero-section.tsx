@@ -28,7 +28,7 @@ const HeroSection = () => {
                 {/* CTA Buttons */}
                 <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                     <a 
-                        href="/contact?source=hero_inquiry"
+                        href="/contact"
                         className="group relative overflow-hidden px-8 py-4 bg-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:bg-blue-700 transform hover:-translate-y-1 flex items-center"
                     >
                         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out"></div>
@@ -36,10 +36,10 @@ const HeroSection = () => {
                             <rect width="20" height="16" x="2" y="4" rx="2"/>
                             <path d="m22 7-10 5L2 7"/>
                         </svg>
-                        <span className="relative z-10">無料相談予約</span>
+                        <span className="relative z-10">無料相談を予約する</span>
                     </a>
                     <a 
-                        href="/services"
+                        href="/documents"
                         className="group px-8 py-4 bg-white/90 backdrop-blur-sm text-gray-900 font-semibold rounded-xl border-2 border-blue-200 shadow-sm hover:shadow-lg hover:border-blue-300 hover:bg-blue-50 transition-all duration-300 flex items-center"
                     >
                         <svg className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
@@ -47,7 +47,7 @@ const HeroSection = () => {
                             <polyline points="7,10 12,15 17,10"/>
                             <line x1="12" y1="15" x2="12" y2="3"/>
                         </svg>
-                        <span className="group-hover:text-blue-700 transition-colors duration-200">サービス詳細</span>
+                        <span className="group-hover:text-blue-700 transition-colors duration-200">資料ダウンロード</span>
                     </a>
                 </div>
             </div>

@@ -384,8 +384,8 @@ const AIServicesCarousel = ({
             ))}
           </div>
           
-          {/* Navigation arrows - 全ての範囲で表示 */}
-          <div className="absolute top-1/2 -translate-y-1/2 right-0 flex gap-5">
+          {/* Navigation arrows - 539px以下(1枚表示)では非表示 */}
+          <div className="absolute top-1/2 -translate-y-1/2 right-0 flex gap-5 hidden xs:flex">
               <button
                 onClick={scrollPrev}
                 disabled={!canScrollPrev}
