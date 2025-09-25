@@ -3,7 +3,7 @@ import NeuralShaderBackground from './neural-shader-background';
 
 const HeroSection = () => {
     return (
-        <div className="min-h-[100vh] sm:min-h-[90vh] md:min-h-[80vh] lg:min-h-[70vh] relative overflow-hidden w-full">
+        <div className="relative overflow-hidden w-full">
             {/* Background */}
             <div className="absolute inset-0 z-0">
                 <NeuralShaderBackground />
@@ -11,7 +11,7 @@ const HeroSection = () => {
             </div>
 
             {/* Content */}
-            <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24 text-center flex flex-col justify-center min-h-[100vh] sm:min-h-[90vh] md:min-h-[80vh] lg:min-h-[70vh]">
+            <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24 text-center flex flex-col justify-center">
                 {/* Main headline */}
                 <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight pb-4">
                     時代を生き抜くAI人材を
