@@ -3,7 +3,7 @@ import NeuralShaderBackground from './neural-shader-background';
 
 const HeroSection = () => {
     return (
-        <div className="h-[60vh] relative overflow-hidden w-full">
+        <div className="min-h-[100vh] sm:min-h-[90vh] md:min-h-[80vh] lg:min-h-[70vh] relative overflow-hidden w-full">
             {/* Background */}
             <div className="absolute inset-0 z-0">
                 <NeuralShaderBackground />
@@ -11,9 +11,9 @@ const HeroSection = () => {
             </div>
 
             {/* Content */}
-            <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-12 text-center flex flex-col justify-center h-full">
+            <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24 text-center flex flex-col justify-center min-h-[100vh] sm:min-h-[90vh] md:min-h-[80vh] lg:min-h-[70vh]">
                 {/* Main headline */}
-                <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight pb-4">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight pb-4">
                     時代を生き抜くAI人材を
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 block mt-1 pb-2">
                         ゼロから育成する
@@ -21,8 +21,8 @@ const HeroSection = () => {
                 </h1>
 
                 {/* Subheadline */}
-                <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
-                    AIを使いこなせる人材こそが、変化の激しい時代の競争優位を創造します。<br />実践重視の研修プログラムで、未来を切り開く真のAI人材を育成します。
+                <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto mb-8 leading-relaxed">
+                    AIを使いこなせる人材こそが、変化の激しい時代の競争優位を創造します。<br className="hidden sm:block" />実践重視の研修プログラムで、未来を切り開く真のAI人材を育成します。
                 </p>
 
                 {/* CTA Buttons */}
