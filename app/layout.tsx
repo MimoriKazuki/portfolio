@@ -15,8 +15,8 @@ export const viewport = {
 
 export const metadata: Metadata = {
   title: 'LandBridge Media',
-  description: 'LandBridge株式会社の開発実績をご紹介。企業サイト、LP、Webアプリ、モバイルアプリなど幅広い制作実績。最新技術で課題解決をサポートします。無料相談受付中。',
-  keywords: ['LandBridge', 'ランドブリッジ', 'Web制作', 'アプリ開発', 'ホームページ制作', 'システム開発', 'ポートフォリオ', '開発実績', '東京'],
+  description: 'LandBridge株式会社のAI人材育成サービス。生成AI総合研修、AIライティング、AI動画生成、AIコーディング研修など企業・個人向けプログラム。ChatGPT・Claude等の実践的活用法を習得。無料相談受付中。',
+  keywords: ['LandBridge', 'ランドブリッジ', 'AI研修', '生成AI', 'ChatGPT研修', 'AI人材育成', 'AIライティング', 'AIコーディング', 'DX推進', '企業研修', '東京'],
   authors: [{ name: 'LandBridge株式会社' }],
   creator: 'LandBridge株式会社',
   publisher: 'LandBridge株式会社',
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: 'LandBridge Media',
-    description: 'LandBridge株式会社の開発実績をご紹介。企業サイト、LP、Webアプリ、モバイルアプリなど幅広い制作実績。最新技術で課題解決をサポートします。無料相談受付中。',
+    description: 'LandBridge株式会社のAI人材育成サービス。生成AI総合研修、AIライティング、AI動画生成、AIコーディング研修など企業・個人向けプログラム。ChatGPT・Claude等の実践的活用法を習得。無料相談受付中。',
     type: 'website',
     locale: 'ja_JP',
     url: 'https://www.landbridge.ai',
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'LandBridge Media',
-    description: 'LandBridge株式会社の開発実績をご紹介。企業サイト、LP、Webアプリ、モバイルアプリなど幅広い制作実績。最新技術で課題解決をサポートします。無料相談受付中。',
+    description: 'LandBridge株式会社のAI人材育成サービス。生成AI総合研修、AIライティング、AI動画生成、AIコーディング研修など企業・個人向けプログラム。ChatGPT・Claude等の実践的活用法を習得。無料相談受付中。',
     creator: '@landbridge_jp',
     images: ['https://www.landbridge.ai/LandBridge%20Media.png'],
   },
