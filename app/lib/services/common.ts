@@ -43,11 +43,19 @@ export async function getLatestColumns() {
  */
 export function generateServiceMetadata(meta: ServicePageMetadata): Metadata {
   const baseUrl = 'https://www.landbridge.ai'
-  const timestamp = Date.now()
   
-  // サービス専用OG画像のURL生成（タイムスタンプ追加でキャッシュ対策）
+  // サービス詳細ページで使用するOG画像をサービス一覧の画像に設定
+  const serviceImageMapping: Record<string, string> = {
+    'comprehensive-ai-training': 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=1200&h=630&fit=crop&crop=center',
+    'ai-writing-training': 'https://images.unsplash.com/photo-1455390582262-044cdead277a?w=1200&h=630&fit=crop&crop=center',
+    'ai-video-training': 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=1200&h=630&fit=crop&crop=center',
+    'ai-coding-training': 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1200&h=630&fit=crop&crop=center',
+    'practical-ai-training': 'https://images.unsplash.com/photo-1556761175-b413da4baf72?w=1200&h=630&fit=crop&crop=center',
+    'ai-talent-development': 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200&h=630&fit=crop&crop=center'
+  }
+  
   const serviceSlug = meta.url.split('/services/')[1] || 'default'
-  const ogImageUrl = `${baseUrl}/services/${serviceSlug}/opengraph-image?t=${timestamp}`
+  const ogImageUrl = serviceImageMapping[serviceSlug] || `${baseUrl}/LandBridge%20Media.png`
   
   return {
     title: meta.title,
