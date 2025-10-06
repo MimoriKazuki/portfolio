@@ -4,8 +4,8 @@ import ColumnsClient from './ColumnsClient'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'コラム - LandBridge Media',
-  description: '生成AIツール、業界別、トピック・ニュースなど、最新の情報をお届けするコラム。',
+  title: 'コラム - LandBridge AI coaching',
+  description: 'LandBridge AI coachingがお届けする生成AI活用の最新情報。ビジネス実例、最新ツール紹介、AIコーチングのノイなどをコラムで紹介。',
 }
 
 export const revalidate = 60

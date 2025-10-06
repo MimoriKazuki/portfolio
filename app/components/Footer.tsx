@@ -16,8 +16,8 @@ const Footer = () => {
           <div className="lg:flex-1 lg:max-w-md">
             <div className="mb-4">
               <Image
-                src="/logo_media_dark.png"
-                alt="LandBridge Media - AIコーディングによるシステム開発"
+                src="/AIcoaching_logo_dark.png"
+                alt="LandBridge AI coaching - 生成AIコーチングサービス"
                 width={140}
                 height={40}
                 className="h-auto"

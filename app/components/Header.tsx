@@ -23,8 +23,8 @@ const Header = () => {
         <div className="flex items-center">
           <Link href="/" className="flex items-center space-x-2 group">
             <Image 
-              src="/logo_media_light.png" 
-              alt="LandBridge Media" 
+              src="/AIcoaching_logo_light.png" 
+              alt="LandBridge AI coaching" 
               width={150} 
               height={48} 
               className="h-12 w-auto object-contain transition-opacity duration-200 group-hover:opacity-80"

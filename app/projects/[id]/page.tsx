@@ -67,7 +67,7 @@ export async function generateMetadata({
   
   if (!project) {
     return {
-      title: 'LandBridge Media',
+      title: 'LandBridge AI coaching',
       description: 'LandBridge株式会社の開発実績をご紹介。',
     }
   }
@@ -92,7 +92,7 @@ export async function generateMetadata({
     }
   
   const metadata: Metadata = {
-      title: `${project.title} - LandBridge Media`,
+      title: `${project.title} - LandBridge AI coaching`,
       description: project.description,
       metadataBase: new URL(baseUrl),
       alternates: {
@@ -111,7 +111,7 @@ export async function generateMetadata({
           }
         ],
         type: 'article',
-        siteName: 'LandBridge Media',
+        siteName: 'LandBridge AI coaching',
         url: `${baseUrl}/projects/${project.id}`,
         locale: 'ja_JP',
       },

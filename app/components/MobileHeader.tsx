@@ -30,8 +30,8 @@ export default function MobileHeader() {
           {/* Logo */}
           <Link href="/" className="flex items-center">
             <Image
-              src="/logo_media_light.png"
-              alt="LandBridge Media"
+              src="/AIcoaching_logo_light.png"
+              alt="LandBridge AI coaching"
               width={120}
               height={34}
               className="h-8 w-auto"

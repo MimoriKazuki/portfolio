@@ -55,7 +55,7 @@ export function generateServiceMetadata(meta: ServicePageMetadata): Metadata {
   }
   
   const serviceSlug = meta.url.split('/services/')[1] || 'default'
-  const ogImageUrl = serviceImageMapping[serviceSlug] || `${baseUrl}/LandBridge%20Media.png`
+  const ogImageUrl = serviceImageMapping[serviceSlug] || `${baseUrl}/LandBridge%20AI%20coaching.JPG`
   
   return {
     title: meta.title,
@@ -71,7 +71,7 @@ export function generateServiceMetadata(meta: ServicePageMetadata): Metadata {
       type: 'website',
       locale: 'ja_JP',
       url: meta.url,
-      siteName: 'LandBridge Media',
+      siteName: 'LandBridge AI coaching',
       images: [
         {
           url: ogImageUrl,

@@ -26,8 +26,8 @@ const Sidebar = () => {
       <div className="mb-6 flex justify-center">
         <Link href="/" className="block group">
           <Image 
-            src="/logo_media_light.png" 
-            alt="LandBridge Media" 
+            src="/AIcoaching_logo_light.png" 
+            alt="LandBridge AI coaching" 
             width={150} 
             height={48} 
             style={{ height: 'auto', width: 'auto' }}

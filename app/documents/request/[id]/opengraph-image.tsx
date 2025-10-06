@@ -133,7 +133,7 @@ export default async function Image({ params }: Props) {
                 </p>
               )}
               
-              {/* LandBridge Media ロゴ */}
+              {/* LandBridge AI coaching ロゴ */}
               <div
                 style={{
                   position: 'absolute',
@@ -145,7 +145,7 @@ export default async function Image({ params }: Props) {
                   fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
                 }}
               >
-                LandBridge Media
+                LandBridge AI coaching
               </div>
             </div>
           </div>

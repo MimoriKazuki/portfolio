@@ -5,8 +5,8 @@ import type { Notice } from '@/app/types'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'お知らせ - LandBridge Media',
-  description: 'LandBridge Media からの最新のお知らせ、ニュース、アップデート情報をご覧ください。',
+  title: 'お知らせ - LandBridge AI coaching',
+  description: 'LandBridge AI coaching からの最新のお知らせ、ニュース、サービス更新情報をご覧ください。',
 }
 
 export default async function NoticesPage() {

@@ -14,8 +14,8 @@ export const viewport = {
 }
 
 export const metadata: Metadata = {
-  title: 'LandBridge Media',
-  description: 'LandBridge株式会社のAI人材育成サービス。生成AI総合研修、AIライティング、AI動画生成、AIコーディング研修など企業・個人向けプログラム。ChatGPT・Claude等の実践的活用法を習得。無料相談受付中。',
+  title: 'LandBridge AI coaching',
+  description: 'LandBridge AI coachingは、生成AIを活用したビジネス変革を支援する専門コーチングサービス。ChatGPT、Claude等の最新AI技術を使った実践的研修・コンサルティングで企業のDX推進をサポート。無料相談受付中。',
   keywords: ['LandBridge', 'ランドブリッジ', 'AI研修', '生成AI', 'ChatGPT研修', 'AI人材育成', 'AIライティング', 'AIコーディング', 'DX推進', '企業研修', '東京'],
   authors: [{ name: 'LandBridge株式会社' }],
   creator: 'LandBridge株式会社',
@@ -44,31 +44,31 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   openGraph: {
-    title: 'LandBridge Media',
-    description: 'LandBridge株式会社のAI人材育成サービス。生成AI総合研修、AIライティング、AI動画生成、AIコーディング研修など企業・個人向けプログラム。ChatGPT・Claude等の実践的活用法を習得。無料相談受付中。',
+    title: 'LandBridge AI coaching',
+    description: 'LandBridge AI coachingは、生成AIを活用したビジネス変革を支援する専門コーチングサービス。ChatGPT、Claude等の最新AI技術を使った実践的研修・コンサルティングで企業のDX推進をサポート。無料相談受付中。',
     type: 'website',
     locale: 'ja_JP',
     url: 'https://www.landbridge.ai',
-    siteName: 'LandBridge Media',
+    siteName: 'LandBridge AI coaching',
     images: [
       {
-        url: 'https://www.landbridge.ai/LandBridge%20Media.png',
+        url: 'https://www.landbridge.ai/LandBridge%20AI%20coaching.JPG',
         width: 1200,
         height: 630,
-        alt: 'LandBridge Media',
-        type: 'image/png',
+        alt: 'LandBridge AI coaching',
+        type: 'image/jpeg',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'LandBridge Media',
-    description: 'LandBridge株式会社のAI人材育成サービス。生成AI総合研修、AIライティング、AI動画生成、AIコーディング研修など企業・個人向けプログラム。ChatGPT・Claude等の実践的活用法を習得。無料相談受付中。',
+    title: 'LandBridge AI coaching',
+    description: 'LandBridge AI coachingは、生成AIを活用したビジネス変革を支援する専門コーチングサービス。ChatGPT、Claude等の最新AI技術を使った実践的研修・コンサルティングで企業のDX推進をサポート。無料相談受付中。',
     creator: '@landbridge_jp',
-    images: ['https://www.landbridge.ai/LandBridge%20Media.png'],
+    images: ['https://www.landbridge.ai/LandBridge%20AI%20coaching.JPG'],
   },
   other: {
-    'msapplication-TileImage': 'https://www.landbridge.ai/LandBridge%20Media.png',
+    'msapplication-TileImage': 'https://www.landbridge.ai/LandBridge%20AI%20coaching.JPG',
   },
 }
 
