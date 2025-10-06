@@ -26,10 +26,12 @@ import {
   Undo,
   Redo,
   ChevronDown,
-  Loader2
+  Loader2,
+  Square
 } from 'lucide-react'
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { createClient } from '@/app/lib/supabase/client'
+import Button from './extensions/Button'
 
 interface RichTextEditorProps {
   content: string
@@ -44,6 +46,12 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
   const [linkText, setLinkText] = useState('')
   const [linkUrl, setLinkUrl] = useState('')
   const [isEditingLink, setIsEditingLink] = useState(false)
+  const [showButtonModal, setShowButtonModal] = useState(false)
+  const [buttonText, setButtonText] = useState('')
+  const [buttonUrl, setButtonUrl] = useState('')
+  const [buttonStyle, setButtonStyle] = useState('primary')
+  const [editingButtonNode, setEditingButtonNode] = useState<any>(null)
+  const [editingButtonPos, setEditingButtonPos] = useState<number | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const supabase = createClient()
 
@@ -52,7 +60,9 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
       StarterKit.configure({
         heading: {
           levels: [1, 2, 3, 4, 5, 6]
-        }
+        },
+        // StarterKitから除外して個別に設定する
+        link: false
       }),
       Link.configure({
         openOnClick: true,
@@ -74,7 +84,8 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
       }),
       Placeholder.configure({
         placeholder: 'ここに内容を入力してください...'
-      })
+      }),
+      Button
     ],
     content: content || '',
     editorProps: {
@@ -87,6 +98,24 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
     },
     immediatelyRender: false
   })
+
+  // Handle button editing
+  useEffect(() => {
+    const handleEditButton = (event: any) => {
+      const { node, pos } = event.detail
+      setButtonText(node.attrs.text)
+      setButtonUrl(node.attrs.url)
+      setButtonStyle(node.attrs.style)
+      setEditingButtonNode(node)
+      setEditingButtonPos(pos)
+      setShowButtonModal(true)
+    }
+
+    document.addEventListener('editButton', handleEditButton)
+    return () => {
+      document.removeEventListener('editButton', handleEditButton)
+    }
+  }, [])
 
   if (!editor) {
     return null
@@ -197,6 +226,74 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
 
   const addImage = () => {
     fileInputRef.current?.click()
+  }
+
+  const addButton = () => {
+    setButtonText('')
+    setButtonUrl('')
+    setButtonStyle('primary')
+    setEditingButtonNode(null)
+    setEditingButtonPos(null)
+    setShowButtonModal(true)
+  }
+
+  const handleButtonSubmit = () => {
+    if (!buttonText.trim() || !buttonUrl.trim()) {
+      alert('ボタンテキストとURLの両方を入力してください。')
+      return
+    }
+
+    if (editingButtonNode && editingButtonPos !== null) {
+      // Update existing button
+      try {
+        editor.chain().focus().command(({ tr }) => {
+          const buttonType = tr.doc.type.schema.nodes.button
+          tr.setNodeMarkup(editingButtonPos, buttonType, {
+            text: buttonText.trim(),
+            url: buttonUrl.trim(),
+            style: buttonStyle
+          })
+          return true
+        }).run()
+      } catch (error) {
+        console.error('Error updating button:', error)
+        alert('ボタンの更新に失敗しました。')
+        return
+      }
+    } else {
+      // Insert new button
+      editor.chain().focus().insertButton({
+        text: buttonText.trim(),
+        url: buttonUrl.trim(),
+        style: buttonStyle
+      }).run()
+    }
+
+    handleButtonCancel()
+  }
+
+  const handleButtonCancel = () => {
+    setShowButtonModal(false)
+    setButtonText('')
+    setButtonUrl('')
+    setButtonStyle('primary')
+    setEditingButtonNode(null)
+    setEditingButtonPos(null)
+  }
+
+  const handleButtonDelete = () => {
+    if (editingButtonNode && editingButtonPos !== null) {
+      try {
+        editor.chain().focus().command(({ tr }) => {
+          tr.delete(editingButtonPos, editingButtonPos + 1)
+          return true
+        }).run()
+      } catch (error) {
+        console.error('Error deleting button:', error)
+        alert('ボタンの削除に失敗しました。')
+      }
+    }
+    handleButtonCancel()
   }
 
   const currentHeadingLevel = () => {
@@ -393,7 +490,7 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
 
           <div className="w-px h-5 bg-gray-300" />
 
-          {/* Link & Image */}
+          {/* Link, Image & Button */}
           <button
             type="button"
             onClick={addLink}
@@ -414,6 +511,14 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
             ) : (
               <ImageIcon className="w-3.5 h-3.5" />
             )}
+          </button>
+          <button
+            type="button"
+            onClick={addButton}
+            className="p-1 rounded hover:bg-gray-200"
+            title="ボタン"
+          >
+            <Square className="w-3.5 h-3.5" />
           </button>
           <input
             ref={fileInputRef}
@@ -541,6 +646,114 @@ export default function RichTextEditor({ content, onChange }: RichTextEditorProp
                 className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
               >
                 {isEditingLink ? '更新' : '追加'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Button Modal */}
+      {showButtonModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <h3 className="text-lg font-semibold mb-4 text-gray-900">
+              {editingButtonNode ? 'ボタンを編集' : 'ボタンを追加'}
+            </h3>
+            
+            <div className="space-y-4">
+              {/* Button Text Input */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  ボタンテキスト <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={buttonText}
+                  onChange={(e) => setButtonText(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="ボタンに表示するテキスト"
+                  required
+                />
+              </div>
+
+              {/* URL Input */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  リンクURL <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="url"
+                  value={buttonUrl}
+                  onChange={(e) => setButtonUrl(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  placeholder="https://example.com"
+                  required
+                />
+              </div>
+
+              {/* Button Style */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  ボタンスタイル
+                </label>
+                <select
+                  value={buttonStyle}
+                  onChange={(e) => setButtonStyle(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  <option value="primary">プライマリ (青色)</option>
+                  <option value="secondary">セカンダリ (グレー)</option>
+                  <option value="outline">アウトライン (白枠)</option>
+                </select>
+              </div>
+
+              {/* Preview */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  プレビュー
+                </label>
+                <div className="p-3 bg-gray-50 rounded-lg">
+                  <button
+                    className={`inline-flex items-center justify-center px-6 py-3 rounded-lg font-medium text-sm transition-all duration-200 ${
+                      buttonStyle === 'secondary' 
+                        ? 'bg-gray-100 text-gray-700 border border-gray-300' 
+                        : buttonStyle === 'outline'
+                        ? 'bg-transparent text-blue-600 border border-blue-600'
+                        : 'bg-blue-600 text-white'
+                    }`}
+                    disabled
+                  >
+                    {buttonText || 'ボタンテキスト'}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Buttons */}
+            <div className="flex justify-end gap-3 mt-6">
+              <button
+                type="button"
+                onClick={handleButtonCancel}
+                className="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+              >
+                キャンセル
+              </button>
+              {editingButtonNode && (
+                <button
+                  type="button"
+                  onClick={handleButtonDelete}
+                  className="px-4 py-2 text-red-700 bg-red-100 hover:bg-red-200 rounded-lg transition-colors"
+                >
+                  削除
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={handleButtonSubmit}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                disabled={!buttonText.trim() || !buttonUrl.trim()}
+              >
+                {editingButtonNode ? '更新' : '追加'}
               </button>
             </div>
           </div>

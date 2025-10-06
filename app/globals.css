@@ -394,4 +394,31 @@ input[type="range"].audio-slider::-moz-range-track {
   .column-content hr {
     @apply my-8 border-none border-t-2 border-gray-300;
   }
+
+  /* Button component styles */
+  .column-content .button-component {
+    @apply my-6 text-center;
+  }
+
+  .column-content .button-component a {
+    @apply inline-flex items-center justify-center px-6 py-3 rounded-lg font-medium text-sm transition-all duration-200 no-underline hover:transform hover:scale-105 hover:shadow-lg;
+    text-decoration: none !important;
+  }
+
+  .column-content .button-component a:hover {
+    text-decoration: none !important;
+  }
+
+  /* Button style variants */
+  .column-content .button-component a.btn-primary {
+    @apply bg-blue-600 text-white hover:bg-blue-700;
+  }
+
+  .column-content .button-component a.btn-secondary {
+    @apply bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200;
+  }
+
+  .column-content .button-component a.btn-outline {
+    @apply bg-transparent text-blue-600 border border-blue-600 hover:bg-blue-50;
+  }
 }
