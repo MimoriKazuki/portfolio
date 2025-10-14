@@ -4,39 +4,39 @@ import { createStaticClient } from '@/app/lib/supabase/static'
 import type { Metadata } from 'next'
 
 const baseUrl = 'https://www.landbridge.ai'
-const ogImageUrl = `${baseUrl}/LandBridge%20AI%20coaching.JPG`
+const ogImageUrl = `${baseUrl}/AI_driven_ogpImageimage.png`
 
 export const metadata: Metadata = {
-  title: 'サービス - LandBridge AI coaching',
-  description: 'LandBridge株式会社のAI研修・教育サービス一覧。企業向けAIコーチングから個人向けAI人材育成まで、幅広いプログラムを提供しています。',
-  keywords: ['LandBridge', 'サービス', 'AI研修', 'AIコーチング', 'AI人材育成', '企業研修', '個人向け研修'],
+  title: 'サービス - AI駆動研究所',
+  description: 'AI駆動研究所のAI研修・開発サービス一覧。生成AI技術の研修プログラム、プロダクト開発支援、技術コンサルティングなど、企業と個人のAI活用を総合的にサポートします。',
+  keywords: ['AI駆動研究所', 'サービス', 'AI研修', '生成AI開発', 'AIコンサルティング', 'プロンプトエンジニアリング', '企業研修', '個人向け研修'],
   metadataBase: new URL(baseUrl),
   alternates: {
     canonical: '/services',
   },
   openGraph: {
-    title: 'サービス - LandBridge AI coaching',
-    description: 'LandBridge株式会社のAI研修・教育サービス一覧。企業向けAIコーチングから個人向けAI人材育成まで、幅広いプログラムを提供しています。',
+    title: 'サービス - AI駆動研究所',
+    description: 'AI駆動研究所のAI研修・開発サービス一覧。生成AI技術の研修プログラム、プロダクト開発支援、技術コンサルティングなど、企業と個人のAI活用を総合的にサポートします。',
     type: 'website',
     locale: 'ja_JP',
     url: `${baseUrl}/services`,
-    siteName: 'LandBridge AI coaching',
+    siteName: 'AI駆動研究所',
     images: [
       {
         url: ogImageUrl,
         width: 1200,
         height: 630,
-        alt: 'LandBridge AI coaching - 生成AIコーチングサービス',
-        type: 'image/jpeg',
+        alt: 'AI駆動研究所 - 生成AI研修・開発サービス',
+        type: 'image/png',
       }
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'サービス - LandBridge AI coaching',
-    description: 'LandBridge株式会社のAI研修・教育サービス一覧。企業向けAIコーチングから個人向けAI人材育成まで、幅広いプログラムを提供しています。',
+    title: 'サービス - AI駆動研究所',
+    description: 'AI駆動研究所のAI研修・開発サービス一覧。生成AI技術の研修プログラム、プロダクト開発支援、技術コンサルティングを提供。',
     images: [ogImageUrl],
-    creator: '@landbridge_jp',
+    creator: '@ai_driven_lab',
   },
   other: {
     'msapplication-TileImage': ogImageUrl,

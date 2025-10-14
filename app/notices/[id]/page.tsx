@@ -24,27 +24,27 @@ export async function generateMetadata({
   
   if (!notice) {
     return {
-      title: 'LandBridge AI coaching',
-      description: 'LandBridge株式会社からのお知らせ',
+      title: 'AI駆動研究所',
+      description: 'AI駆動研究所からのお知らせ',
     }
   }
     
   const baseUrl = 'https://www.landbridge.ai'
   const timestamp = Date.now()
-  const imageUrl = notice.thumbnail 
+  const imageUrl = notice.thumbnail
     ? `${notice.thumbnail}?t=${timestamp}`
-    : `${baseUrl}/LandBridge%20AI%20coaching.JPG?t=${timestamp}`
+    : `${baseUrl}/AI_driven_ogpImageimage.png?t=${timestamp}`
   
   return {
-    title: `${notice.title} - LandBridge AI coaching`,
-    description: notice.description || 'LandBridge AI coaching からのお知らせ',
+    title: `${notice.title} - AI駆動研究所`,
+    description: notice.description || 'AI駆動研究所からのお知らせ',
     metadataBase: new URL(baseUrl),
     alternates: {
       canonical: `/notices/${notice.id}`,
     },
     openGraph: {
       title: notice.title,
-      description: notice.description || 'LandBridge AI coaching からのお知らせ',
+      description: notice.description || 'AI駆動研究所からのお知らせ',
       images: [
         {
           url: imageUrl,
@@ -55,16 +55,16 @@ export async function generateMetadata({
         }
       ],
       type: 'article',
-      siteName: 'LandBridge AI coaching',
+      siteName: 'AI駆動研究所',
       url: `${baseUrl}/notices/${notice.id}`,
       locale: 'ja_JP',
     },
     twitter: {
       card: 'summary_large_image',
       title: notice.title,
-      description: notice.description || 'LandBridge AI coaching からのお知らせ',
+      description: notice.description || 'AI駆動研究所からのお知らせ',
       images: [imageUrl],
-      creator: '@landbridge_jp',
+      creator: '@ai_driven_lab',
     },
   }
 }

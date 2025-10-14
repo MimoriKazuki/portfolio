@@ -25,11 +25,11 @@ const Sidebar = () => {
       {/* Logo */}
       <div className="mb-6 flex justify-center">
         <Link href="/" className="block group">
-          <Image 
-            src="/AIcoaching_logo_light.png" 
-            alt="LandBridge AI coaching" 
-            width={150} 
-            height={48} 
+          <Image
+            src="/AI_driven_logo_light.png"
+            alt="AI駆動研究所"
+            width={150}
+            height={48}
             style={{ height: 'auto', width: 'auto' }}
             className="h-12 w-auto object-contain transition-opacity duration-200 group-hover:opacity-80"
             priority

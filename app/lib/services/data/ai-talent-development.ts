@@ -2,8 +2,8 @@ import type { ServiceData, ServicePageMetadata } from '@/app/lib/types/service'
 import { generateOtherTrainingProgramsData } from '../training-programs'
 
 export const AI_TALENT_DEVELOPMENT_METADATA: ServicePageMetadata = {
-  title: 'AI人材育成所 - LandBridge株式会社',
-  description: 'LandBridge株式会社のAI人材育成所。個人向けAIスキル向上プログラム。自分のペースでAIを学び、キャリアアップを目指せます。',
+  title: 'AI人材育成所 - AI駆動研究所',
+  description: 'AI駆動研究所のAI人材育成所。個人向けAIスキル向上プログラム。自分のペースでAIを学び、キャリアアップを目指せます。',
   keywords: ['LandBridge', 'AI人材育成所', '個人向けAI研修', 'キャリアアップ', 'AIスキル', '個人学習', 'AI転職', 'スキルアップ', 'AI人材'],
   url: 'https://www.landbridge.ai/services/ai-talent-development'
 }
@@ -12,7 +12,7 @@ export const AI_TALENT_DEVELOPMENT_DATA: ServiceData = {
   pageTitle: "AI人材育成所",
   heroTitle: "AI人材育成所",
   heroImage: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1920&h=1080&fit=crop&crop=center",
-  seoTitle: "個人でAIスキルを身につけてキャリアアップ - AI人材育成所 | LandBridge株式会社",
+  seoTitle: "個人でAIスキルを身につけてキャリアアップ - AI人材育成所 | AI駆動研究所",
   
   heroCTA: {
     inquiryText: "無料相談を予約する",

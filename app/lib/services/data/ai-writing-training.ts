@@ -2,8 +2,8 @@ import type { ServiceData, ServicePageMetadata } from '@/app/lib/types/service'
 import { generateOtherTrainingProgramsData } from '../training-programs'
 
 export const AI_WRITING_TRAINING_METADATA: ServicePageMetadata = {
-  title: 'AIライティング研修 - LandBridge株式会社',
-  description: 'LandBridge株式会社のAIライティング研修。ChatGPT、Claude等を活用した効果的な文章作成技術を習得し、業務文書の品質向上と作業効率化を実現します。',
+  title: 'AIライティング研修 - AI駆動研究所',
+  description: 'AI駆動研究所のAIライティング研修。ChatGPT、Claude等を活用した効果的な文章作成技術を習得し、業務文書の品質向上と作業効率化を実現します。',
   keywords: ['LandBridge', 'AIライティング研修', 'ChatGPT', 'Claude', '文章作成', 'ライティング', 'AI文章生成', '業務文書', '効率化', '企業研修', 'AI活用'],
   url: 'https://www.landbridge.ai/services/ai-writing-training'
 }
@@ -12,7 +12,7 @@ export const AI_WRITING_TRAINING_DATA: ServiceData = {
   pageTitle: "AIライティング研修",
   heroTitle: "AIライティング研修",
   heroImage: "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=1920&h=1080&fit=crop&crop=center",
-  seoTitle: "ビジネス文書作成の効率化を実現するAIライティング研修 - LandBridge株式会社",
+  seoTitle: "ビジネス文書作成の効率化を実現するAIライティング研修 - AI駆動研究所",
   
   heroCTA: {
     inquiryText: "無料相談を予約する",

@@ -1,7 +1,7 @@
 {
-  "name": "LandBridge Portfolio",
-  "short_name": "LandBridge",
-  "description": "LandBridge株式会社のポートフォリオサイト",
+  "name": "AI駆動研究所",
+  "short_name": "AI駆動研究所",
+  "description": "生成AI技術の研究・開発・実装を専門とする研究機関",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0f0f0f",
@@ -9,19 +9,19 @@
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/favicon.svg",
+      "src": "/AI_driven_favicon.png",
       "sizes": "any",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icon-192.png",
+      "src": "/AI_driven_favicon.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icon-512.png",
+      "src": "/AI_driven_favicon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

@@ -49,8 +49,8 @@ export async function generateMetadata({
   
   if (!document) {
     return {
-      title: 'LandBridge AI coaching',
-      description: 'LandBridge株式会社の開発実績をご紹介。',
+      title: 'AI駆動研究所',
+      description: 'AI駆動研究所の資料をご紹介。',
     }
   }
 
@@ -74,7 +74,7 @@ export async function generateMetadata({
   }
     
   const metadata: Metadata = {
-    title: `${document.title} - LandBridge AI coaching`,
+    title: `${document.title} - AI駆動研究所`,
     description: document.description || document.title,
     metadataBase: new URL(baseUrl),
     alternates: {
@@ -93,7 +93,7 @@ export async function generateMetadata({
         }
       ],
       type: 'article',
-      siteName: 'LandBridge AI coaching',
+      siteName: 'AI駆動研究所',
       url: `${baseUrl}/documents/request/${document.id}`,
       locale: 'ja_JP',
     },
@@ -102,7 +102,7 @@ export async function generateMetadata({
       title: document.title,
       description: document.description || document.title,
       images: [imageUrl],
-      creator: '@landbridge_jp',
+      creator: '@ai_driven_lab',
     },
     other: {
       'msapplication-TileImage': imageUrl,

@@ -22,11 +22,11 @@ const Header = () => {
       <header className="flex items-center justify-between px-6 py-4 bg-white border-b border-border sticky top-0 z-50 shadow-sm">
         <div className="flex items-center">
           <Link href="/" className="flex items-center space-x-2 group">
-            <Image 
-              src="/AIcoaching_logo_light.png" 
-              alt="LandBridge AI coaching" 
-              width={150} 
-              height={48} 
+            <Image
+              src="/AI_driven_logo_light.png"
+              alt="AI駆動研究所"
+              width={150}
+              height={48}
               className="h-12 w-auto object-contain transition-opacity duration-200 group-hover:opacity-80"
               priority
             />

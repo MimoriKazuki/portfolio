@@ -2,8 +2,8 @@ import type { ServiceData, ServicePageMetadata } from '@/app/lib/types/service'
 import { generateOtherTrainingProgramsData } from '../training-programs'
 
 export const AI_VIDEO_TRAINING_METADATA: ServicePageMetadata = {
-  title: 'AI動画生成研修 - LandBridge株式会社',
-  description: 'LandBridge株式会社のAI動画生成研修。最新のAI動画生成ツールを活用して、マーケティング動画やプレゼンテーション動画を効率的に制作する技術を学びます。',
+  title: 'AI動画生成研修 - AI駆動研究所',
+  description: 'AI駆動研究所のAI動画生成研修。最新のAI動画生成ツールを活用して、マーケティング動画やプレゼンテーション動画を効率的に制作する技術を学びます。',
   keywords: ['LandBridge', 'AI動画生成研修', 'AI動画', '動画制作', 'マーケティング動画', 'プレゼン動画', 'Sora', 'Runway', '企業研修', 'AI活用'],
   url: 'https://www.landbridge.ai/services/ai-video-training'
 }
@@ -12,7 +12,7 @@ export const AI_VIDEO_TRAINING_DATA: ServiceData = {
   pageTitle: "AI動画生成研修",
   heroTitle: "AI動画生成研修",
   heroImage: "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=1920&h=1080&fit=crop&crop=center",
-  seoTitle: "プロレベルの動画を誰でも作れるAI動画生成研修 - LandBridge株式会社",
+  seoTitle: "プロレベルの動画を誰でも作れるAI動画生成研修 - AI駆動研究所",
   
   heroCTA: {
     inquiryText: "無料相談を予約する",

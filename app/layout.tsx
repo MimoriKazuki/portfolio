@@ -14,27 +14,27 @@ export const viewport = {
 }
 
 export const metadata: Metadata = {
-  title: 'LandBridge AI coaching',
-  description: 'LandBridge AI coachingは、生成AIを活用したビジネス変革を支援する専門コーチングサービス。ChatGPT、Claude等の最新AI技術を使った実践的研修・コンサルティングで企業のDX推進をサポート。無料相談受付中。',
-  keywords: ['LandBridge', 'ランドブリッジ', 'AI研修', '生成AI', 'ChatGPT研修', 'AI人材育成', 'AIライティング', 'AIコーディング', 'DX推進', '企業研修', '東京'],
-  authors: [{ name: 'LandBridge株式会社' }],
-  creator: 'LandBridge株式会社',
-  publisher: 'LandBridge株式会社',
+  title: 'AI駆動研究所 - 生成AIで未来を創る',
+  description: 'AI駆動研究所は、生成AI技術の研究・開発・実装を専門とする研究機関です。ChatGPT、Claude、Geminiなどの最新AI技術を活用したプロダクト開発、AI研修サービス、技術コンサルティングを提供。AI時代の未来を一緒に創造します。',
+  keywords: ['AI駆動研究所', '生成AI', 'AI研究', 'ChatGPT', 'Claude', 'Gemini', 'AI開発', 'AI研修', 'プロンプトエンジニアリング', 'AIコンサルティング', '東京'],
+  authors: [{ name: 'AI駆動研究所' }],
+  creator: 'AI駆動研究所',
+  publisher: 'AI駆動研究所',
   icons: {
     icon: [
-      { url: '/favicon.png', type: 'image/png' },
+      { url: '/AI_driven_favicon.png', type: 'image/png' },
       { url: '/favicon.ico', type: 'image/x-icon' },
     ],
     shortcut: [
-      { url: '/favicon.png' },
+      { url: '/AI_driven_favicon.png' },
     ],
     apple: [
-      { url: '/favicon.png' },
+      { url: '/AI_driven_favicon.png' },
     ],
     other: [
       {
         rel: 'apple-touch-icon-precomposed',
-        url: '/favicon.png',
+        url: '/AI_driven_favicon.png',
       },
     ],
   },
@@ -44,31 +44,31 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   openGraph: {
-    title: 'LandBridge AI coaching',
-    description: 'LandBridge AI coachingは、生成AIを活用したビジネス変革を支援する専門コーチングサービス。ChatGPT、Claude等の最新AI技術を使った実践的研修・コンサルティングで企業のDX推進をサポート。無料相談受付中。',
+    title: 'AI駆動研究所 - 生成AIで未来を創る',
+    description: 'AI駆動研究所は、生成AI技術の研究・開発・実装を専門とする研究機関です。最新AI技術を活用したプロダクト開発、AI研修サービス、技術コンサルティングを提供。AI時代の未来を一緒に創造します。',
     type: 'website',
     locale: 'ja_JP',
     url: 'https://www.landbridge.ai',
-    siteName: 'LandBridge AI coaching',
+    siteName: 'AI駆動研究所',
     images: [
       {
-        url: 'https://www.landbridge.ai/LandBridge%20AI%20coaching.JPG',
+        url: 'https://www.landbridge.ai/AI_driven_ogpImageimage.png',
         width: 1200,
         height: 630,
-        alt: 'LandBridge AI coaching',
-        type: 'image/jpeg',
+        alt: 'AI駆動研究所 - 生成AIで未来を創る',
+        type: 'image/png',
       },
     ],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'LandBridge AI coaching',
-    description: 'LandBridge AI coachingは、生成AIを活用したビジネス変革を支援する専門コーチングサービス。ChatGPT、Claude等の最新AI技術を使った実践的研修・コンサルティングで企業のDX推進をサポート。無料相談受付中。',
-    creator: '@landbridge_jp',
-    images: ['https://www.landbridge.ai/LandBridge%20AI%20coaching.JPG'],
+    title: 'AI駆動研究所 - 生成AIで未来を創る',
+    description: 'AI駆動研究所は、生成AI技術の研究・開発・実装を専門とする研究機関です。最新AI技術を活用したプロダクト開発、AI研修サービス、技術コンサルティングを提供。',
+    creator: '@ai_driven_lab',
+    images: ['https://www.landbridge.ai/AI_driven_ogpImageimage.png'],
   },
   other: {
-    'msapplication-TileImage': 'https://www.landbridge.ai/LandBridge%20AI%20coaching.JPG',
+    'msapplication-TileImage': 'https://www.landbridge.ai/AI_driven_ogpImageimage.png',
   },
 }
 

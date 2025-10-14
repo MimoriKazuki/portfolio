@@ -55,7 +55,7 @@ export function generateServiceMetadata(meta: ServicePageMetadata): Metadata {
   }
   
   const serviceSlug = meta.url.split('/services/')[1] || 'default'
-  const ogImageUrl = serviceImageMapping[serviceSlug] || `${baseUrl}/LandBridge%20AI%20coaching.JPG`
+  const ogImageUrl = serviceImageMapping[serviceSlug] || `${baseUrl}/AI_driven_ogpImageimage.png`
   
   return {
     title: meta.title,
@@ -71,7 +71,7 @@ export function generateServiceMetadata(meta: ServicePageMetadata): Metadata {
       type: 'website',
       locale: 'ja_JP',
       url: meta.url,
-      siteName: 'LandBridge AI coaching',
+      siteName: 'AI駆動研究所',
       images: [
         {
           url: ogImageUrl,
@@ -87,7 +87,7 @@ export function generateServiceMetadata(meta: ServicePageMetadata): Metadata {
       title: meta.title,
       description: meta.description,
       images: [ogImageUrl],
-      creator: '@landbridge_jp',
+      creator: '@ai_driven_lab',
     },
     other: {
       'msapplication-TileImage': ogImageUrl,

@@ -2,8 +2,8 @@ import type { ServiceData, ServicePageMetadata } from '@/app/lib/types/service'
 import { generateOtherTrainingProgramsData } from '../training-programs'
 
 export const PRACTICAL_AI_TRAINING_METADATA: ServicePageMetadata = {
-  title: '生成AI実務活用研修 - LandBridge株式会社',
-  description: 'LandBridge株式会社の生成AI実務活用研修。日常業務における生成AIの具体的な活用シーンを学び、業務プロセス全体の効率化と品質向上を実現します。',
+  title: '生成AI実務活用研修 - AI駆動研究所',
+  description: 'AI駆動研究所の生成AI実務活用研修。日常業務における生成AIの具体的な活用シーンを学び、業務プロセス全体の効率化と品質向上を実現します。',
   keywords: ['LandBridge', '生成AI実務活用研修', '業務効率化', 'AI活用', '実務応用', 'プロセス改善', '生産性向上', '企業研修', 'DX推進'],
   url: 'https://www.landbridge.ai/services/practical-ai-training'
 }
@@ -12,7 +12,7 @@ export const PRACTICAL_AI_TRAINING_DATA: ServiceData = {
   pageTitle: "生成AI実務活用研修",
   heroTitle: "生成AI実務活用研修",
   heroImage: "https://images.unsplash.com/photo-1556761175-b413da4baf72?w=1920&h=1080&fit=crop&crop=center",
-  seoTitle: "日常業務を革新する生成AI実務活用研修 - LandBridge株式会社",
+  seoTitle: "日常業務を革新する生成AI実務活用研修 - AI駆動研究所",
   
   heroCTA: {
     inquiryText: "無料相談を予約する",

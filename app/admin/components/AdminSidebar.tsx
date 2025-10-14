@@ -39,10 +39,10 @@ const AdminSidebar = memo(function AdminSidebar({ user }: AdminSidebarProps) {
       {/* Logo */}
       <div className="p-6 border-b border-gray-200 flex justify-center">
         <Link href="/admin" className="block">
-          <Image 
-            src="/AIcoaching_logo_light.png" 
-            alt="LandBridge AI coaching Admin" 
-            width={140} 
+          <Image
+            src="/AI_driven_logo_light.png"
+            alt="AI駆動研究所 Admin"
+            width={140}
             height={40}
             className="object-contain"
             style={{ width: 'auto', height: 'auto' }}

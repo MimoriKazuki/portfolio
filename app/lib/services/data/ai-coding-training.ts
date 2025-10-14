@@ -2,8 +2,8 @@ import type { ServiceData, ServicePageMetadata } from '@/app/lib/types/service'
 import { generateOtherTrainingProgramsData } from '../training-programs'
 
 export const AI_CODING_TRAINING_METADATA: ServicePageMetadata = {
-  title: 'AIコーディング研修 - LandBridge株式会社',
-  description: 'LandBridge株式会社のAIコーディング研修。GitHub Copilot、Claude Code等を活用したAI支援プログラミング技術を習得し、開発効率を飛躍的に向上させます。',
+  title: 'AIコーディング研修 - AI駆動研究所',
+  description: 'AI駆動研究所のAIコーディング研修。GitHub Copilot、Claude Code等を活用したAI支援プログラミング技術を習得し、開発効率を飛躍的に向上させます。',
   keywords: ['LandBridge', 'AIコーディング研修', 'GitHub Copilot', 'Claude Code', 'AI支援プログラミング', 'コード生成', '開発効率化', 'プログラミング研修', 'AI開発'],
   url: 'https://www.landbridge.ai/services/ai-coding-training'
 }
@@ -12,7 +12,7 @@ export const AI_CODING_TRAINING_DATA: ServiceData = {
   pageTitle: "AIコーディング研修",
   heroTitle: "AIコーディング研修",
   heroImage: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1920&h=1080&fit=crop&crop=center",
-  seoTitle: "開発効率を革新するAI支援プログラミング研修 - LandBridge株式会社",
+  seoTitle: "開発効率を革新するAI支援プログラミング研修 - AI駆動研究所",
   
   heroCTA: {
     inquiryText: "無料相談を予約する",

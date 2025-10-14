@@ -30,13 +30,13 @@ export async function generateMetadata({
   
   if (!project) {
     return {
-      title: 'LandBridge AI coaching',
-      description: 'LandBridge株式会社の開発実績をご紹介。',
+      title: 'AI駆動研究所',
+      description: 'AI駆動研究所の開発実績をご紹介。',
     }
   }
     
   const metadata: Metadata = {
-    title: `${project.title}のプロンプト - LandBridge AI coaching`,
+    title: `${project.title}のプロンプト - AI駆動研究所`,
     description: `${project.title}の開発で使用したプロンプトをダウンロードできます。`,
     robots: {
       index: false,

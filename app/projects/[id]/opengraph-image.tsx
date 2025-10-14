@@ -134,7 +134,7 @@ export default async function Image({ params }: Props) {
                   fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
                 }}
               >
-                LandBridge AI coaching
+                AI駆動研究所
               </div>
             </div>
           </div>

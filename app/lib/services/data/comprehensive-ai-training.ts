@@ -2,8 +2,8 @@ import type { ServiceData, ServicePageMetadata } from '@/app/lib/types/service'
 import { generateOtherTrainingProgramsData } from '../training-programs'
 
 export const COMPREHENSIVE_AI_TRAINING_METADATA: ServicePageMetadata = {
-  title: '生成AI総合研修 - LandBridge株式会社',
-  description: 'LandBridge株式会社の生成AI総合研修。ChatGPT、Claude等の生成AIツールを活用し、未経験者から実務レベルまで体系的に学習。企業の現場で即戦力として活躍できる人材を育成します。',
+  title: '生成AI総合研修 - AI駆動研究所',
+  description: 'AI駆動研究所の生成AI総合研修。ChatGPT、Claude等の生成AIツールを活用し、未経験者から実務レベルまで体系的に学習。企業の現場で即戦力として活躍できる人材を育成します。',
   keywords: ['LandBridge', '生成AI総合研修', 'AI研修', '企業研修', 'ChatGPT', 'Claude', '生成AI', 'DX推進', 'AI人材育成', 'ビジネスAI', '社員研修', 'AI活用'],
   url: 'https://www.landbridge.ai/services/comprehensive-ai-training'
 }
@@ -12,7 +12,7 @@ export const COMPREHENSIVE_AI_TRAINING_DATA: ServiceData = {
   pageTitle: "生成AI総合研修",
   heroTitle: "生成AI総合研修",
   heroImage: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=1920&h=1080&fit=crop&crop=center",
-  seoTitle: "AI人材を社内で育てる企業向けAI研修 - LandBridge株式会社",
+  seoTitle: "AI人材を社内で育てる企業向けAI研修 - AI駆動研究所",
   
   heroCTA: {
     inquiryText: "お問い合わせ",
