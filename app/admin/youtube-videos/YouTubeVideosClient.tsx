@@ -45,7 +45,7 @@ export default function YouTubeVideosClient({ videos }: YouTubeVideosClientProps
           <p className="text-gray-600 mb-8">最初のYouTube動画を追加しましょう</p>
           <Link
             href="/admin/youtube-videos/new"
-            className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors text-lg"
+            className="inline-flex items-center gap-2 bg-portfolio-blue hover:bg-portfolio-blue-dark text-white px-6 py-3 rounded-lg transition-colors text-lg"
           >
             <Plus className="h-6 w-6" />
             YouTube動画を追加
@@ -56,7 +56,7 @@ export default function YouTubeVideosClient({ videos }: YouTubeVideosClientProps
           {/* Stats Cards */}
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
-              <div className="text-3xl font-bold text-blue-600">{videos.length}</div>
+              <div className="text-3xl font-bold text-portfolio-blue">{videos.length}</div>
               <div className="text-sm text-gray-600">総動画数</div>
             </div>
             <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
@@ -77,7 +77,7 @@ export default function YouTubeVideosClient({ videos }: YouTubeVideosClientProps
           <div className="flex items-center justify-between gap-4">
             <Link
               href="/admin/youtube-videos/new"
-              className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+              className="flex items-center gap-2 bg-portfolio-blue hover:bg-portfolio-blue-dark text-white px-4 py-2 rounded-lg transition-colors"
             >
               <Plus className="h-5 w-5" />
               新規追加
