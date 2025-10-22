@@ -1,4 +1,3 @@
-import { Suspense } from 'react'
 import { createStaticClient } from '@/app/lib/supabase/static'
 import MainLayout from '@/app/components/MainLayout'
 import YouTubeVideosClient from './YouTubeVideosClient'
@@ -50,9 +49,7 @@ export default async function YouTubeVideosPage() {
 
   return (
     <MainLayout>
-      <Suspense fallback={<div>Loading...</div>}>
-        <YouTubeVideosClient videos={videos} />
-      </Suspense>
+      <YouTubeVideosClient videos={videos} />
     </MainLayout>
   )
 }
