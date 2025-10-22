@@ -80,13 +80,32 @@ export default function YouTubeVideosClient({ videos }: YouTubeVideosClientProps
           <FolderOpen className="h-20 w-20 mx-auto mb-6 text-gray-400" />
           <h2 className="text-2xl font-bold mb-4 text-gray-900">YouTubeがありません</h2>
           <p className="text-gray-600 mb-8">最初のYouTubeを追加しましょう</p>
-          <Link
-            href="/admin/youtube-videos/new"
-            className="inline-flex items-center gap-2 bg-portfolio-blue hover:bg-portfolio-blue-dark text-white px-6 py-3 rounded-lg transition-colors text-lg"
-          >
-            <Plus className="h-6 w-6" />
-            YouTubeを追加
-          </Link>
+          <div className="flex items-center justify-center gap-4">
+            <Link
+              href="/admin/youtube-videos/new"
+              className="inline-flex items-center gap-2 bg-portfolio-blue hover:bg-portfolio-blue-dark text-white px-6 py-3 rounded-lg transition-colors text-lg"
+            >
+              <Plus className="h-6 w-6" />
+              YouTubeを追加
+            </Link>
+            <button
+              onClick={handleImportFromChannel}
+              disabled={importing}
+              className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg transition-colors text-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {importing ? (
+                <>
+                  <Loader2 className="h-6 w-6 animate-spin" />
+                  取得中...
+                </>
+              ) : (
+                <>
+                  <Download className="h-6 w-6" />
+                  チャンネルから自動取得
+                </>
+              )}
+            </button>
+          </div>
         </div>
       ) : (
         <div className="space-y-6">
