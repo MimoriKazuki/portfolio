@@ -1,13 +1,23 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import dynamic from 'next/dynamic'
 import Sidebar from './Sidebar'
-import RightSidebar from './RightSidebar'
-import DynamicRightSidebar from './DynamicRightSidebar'
 import RightSidebarSkeleton from './skeletons/RightSidebarSkeleton'
 import FloatingButtons from './FloatingButtons'
 import Footer from './Footer'
 import MobileHeader from './MobileHeader'
+
+// RightSidebarをクライアントサイドのみでレンダリング（ハイドレーションエラー防止）
+const RightSidebar = dynamic(() => import('./RightSidebar'), {
+  ssr: false,
+  loading: () => <RightSidebarSkeleton />
+})
+
+const DynamicRightSidebar = dynamic(() => import('./DynamicRightSidebar'), {
+  ssr: false,
+  loading: () => <RightSidebarSkeleton />
+})
 
 interface MainLayoutProps {
   children: React.ReactNode
