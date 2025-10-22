@@ -101,3 +101,19 @@ export interface Notice {
   created_at: string
   updated_at: string
 }
+
+export interface YouTubeVideo {
+  id: string
+  title: string
+  description: string
+  youtube_url: string
+  youtube_video_id: string
+  thumbnail_url: string
+  featured: boolean
+  display_order: number
+  view_count: number
+  enterprise_service: string
+  individual_service: string
+  created_at: string
+  updated_at: string
+}

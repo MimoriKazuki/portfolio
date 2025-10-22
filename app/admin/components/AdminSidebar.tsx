@@ -3,7 +3,7 @@
 import { memo } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { Home, FolderOpen, FileText, Download, User, Mail, LogOut, Bell, BarChart2 } from 'lucide-react'
+import { Home, FolderOpen, FileText, Download, User, Mail, LogOut, Bell, BarChart2, Youtube } from 'lucide-react'
 import { cn } from '@/app/lib/utils'
 import { createClient } from '@/app/lib/supabase/client'
 import type { User as SupabaseUser } from '@supabase/supabase-js'
@@ -23,10 +23,11 @@ const AdminSidebar = memo(function AdminSidebar({ user }: AdminSidebarProps) {
     router.push('/login')
     router.refresh()
   }
-  
+
   const menuItems = [
     { icon: Home, label: 'ダッシュボード', href: '/admin' },
     { icon: FolderOpen, label: 'AI制作物', href: '/admin/projects' },
+    { icon: Youtube, label: 'YouTube動画', href: '/admin/youtube-videos' },
     { icon: FileText, label: 'コラム', href: '/admin/columns' },
     { icon: BarChart2, label: 'コラム分析', href: '/admin/analytics/column-goals' },
     { icon: Bell, label: 'お知らせ', href: '/admin/notices' },

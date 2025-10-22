@@ -5,24 +5,27 @@ import ProjectCard from './ProjectCard'
 import { ArrowRight, FolderOpen, FileText, Calendar, ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Project, Column, Notice } from '@/app/types'
+import { Project, Column, Notice, YouTubeVideo } from '@/app/types'
 import ProjectCardSkeleton from './skeletons/ProjectCardSkeleton'
 import ColumnCardSkeleton from './skeletons/ColumnCardSkeleton'
+import YouTubeVideoCard from '../youtube-videos/YouTubeVideoCard'
 
 export default function DynamicHomeContent() {
   const [isLoading, setIsLoading] = useState(true)
   const [featuredProjects, setFeaturedProjects] = useState<Project[]>([])
   const [latestColumns, setLatestColumns] = useState<Column[]>([])
   const [latestNotices, setLatestNotices] = useState<Notice[]>([])
+  const [displayVideos, setDisplayVideos] = useState<YouTubeVideo[]>([])
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         // 並列でデータを取得
-        const [projectsRes, columnsRes, noticesRes] = await Promise.all([
+        const [projectsRes, columnsRes, noticesRes, videosRes] = await Promise.all([
           fetch('/api/projects'),
           fetch('/api/columns'),
-          fetch('/api/notices')
+          fetch('/api/notices'),
+          fetch('/api/youtube-videos')
         ])
 
         if (projectsRes.ok) {
@@ -47,6 +50,21 @@ export default function DynamicHomeContent() {
           const notices = await noticesRes.json()
           if (Array.isArray(notices)) {
             setLatestNotices(notices.slice(0, 3))
+          }
+        }
+
+        if (videosRes.ok) {
+          const data = await videosRes.json()
+          if (data.youtubeVideos && Array.isArray(data.youtubeVideos)) {
+            const videos = data.youtubeVideos
+            // 注目動画を優先、不足分は最新動画で埋める（最大3つ）
+            const featuredVideos = videos.filter((v: YouTubeVideo) => v.featured === true)
+            const nonFeaturedVideos = videos.filter((v: YouTubeVideo) => v.featured !== true)
+            const displayList = [
+              ...featuredVideos,
+              ...nonFeaturedVideos.slice(0, Math.max(0, 3 - featuredVideos.length))
+            ].slice(0, 3)
+            setDisplayVideos(displayList)
           }
         }
       } catch (error) {
@@ -186,7 +204,7 @@ export default function DynamicHomeContent() {
             すべて見る <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
-        
+
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-1 mid:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
             {[...Array(3)].map((_, index) => (
@@ -201,8 +219,8 @@ export default function DynamicHomeContent() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-1 mid:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
             {latestColumns.map((column, index) => (
-              <Link 
-                key={column.id} 
+              <Link
+                key={column.id}
                 href={`/columns/${column.id}`}
                 className="group"
               >
@@ -219,18 +237,18 @@ export default function DynamicHomeContent() {
                       />
                     </div>
                   )}
-                  
+
                   <div className="p-4 flex-1 flex flex-col">
                     <h3 className="font-semibold text-gray-900 mb-2 line-clamp-1 group-hover:text-portfolio-blue transition-colors">
                       {column.title}
                     </h3>
-                    
+
                     <div className="flex-1">
                       <p className="text-gray-600 text-sm line-clamp-3 mb-4">
                         {column.excerpt || ''}
                       </p>
                     </div>
-                    
+
                     <div className="flex items-center gap-1 text-xs text-gray-500">
                       <Calendar className="w-3 h-3" />
                       <span>
@@ -244,7 +262,40 @@ export default function DynamicHomeContent() {
           </div>
         )}
       </section>
-      
+
+      {/* YouTube Videos Section */}
+      {(isLoading || displayVideos.length > 0) && (
+        <section className="mb-12">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold">YouTube動画</h2>
+            <Link
+              href="/youtube-videos"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-portfolio-blue-dark text-white rounded-full hover:opacity-90 transition-opacity text-sm font-medium"
+            >
+              すべて見る <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          {isLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-1 mid:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
+              {[...Array(3)].map((_, index) => (
+                <div key={index} className="animate-pulse">
+                  <div className="bg-gray-200 rounded-lg aspect-video mb-3"></div>
+                  <div className="h-6 bg-gray-200 rounded mb-2"></div>
+                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-1 mid:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
+              {displayVideos.map((video) => (
+                <YouTubeVideoCard key={video.id} video={video} />
+              ))}
+            </div>
+          )}
+        </section>
+      )}
+
       {/* 問い合わせボタンとの重なりを防ぐためのスペース */}
       <div className="h-24" />
     </div>

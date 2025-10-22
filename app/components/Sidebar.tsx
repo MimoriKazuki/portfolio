@@ -1,6 +1,6 @@
 'use client'
 
-import { Home, FolderOpen, Mail, FileText, Download, Bell, Briefcase } from 'lucide-react'
+import { Home, FolderOpen, Mail, FileText, Download, Bell, Briefcase, Youtube } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
@@ -8,11 +8,12 @@ import { cn } from '@/app/lib/utils'
 
 const Sidebar = () => {
   const pathname = usePathname()
-  
+
   const menuItems = [
     { icon: Home, label: 'トップ', href: '/' },
     { icon: Briefcase, label: 'サービス', href: '/services' },
     { icon: FolderOpen, label: 'AI制作物', href: '/projects' },
+    { icon: Youtube, label: 'YouTube動画', href: '/youtube-videos' },
     { icon: FileText, label: 'コラム', href: '/columns' },
     { icon: Bell, label: 'お知らせ', href: '/notices' },
     { icon: Download, label: '資料請求', href: '/documents' },
