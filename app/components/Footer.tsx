@@ -196,7 +196,7 @@ const Footer = () => {
                 </li>
               </ul>
             </nav>
-            <p className="text-center" suppressHydrationWarning>&copy; {currentYear} LandBridge株式会社. All rights reserved.</p>
+            <p className="text-center">&copy; <span suppressHydrationWarning>{currentYear}</span> LandBridge株式会社. All rights reserved.</p>
           </div>
           {/* Spacing to avoid contact button overlap on mobile */}
           <div className="h-20 md:h-0"></div>

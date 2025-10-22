@@ -48,7 +48,7 @@ export default async function YouTubeVideosPage() {
   const videos = await getYouTubeVideos()
 
   return (
-    <MainLayout>
+    <MainLayout hideRightSidebar={true}>
       <YouTubeVideosClient videos={videos} />
     </MainLayout>
   )
