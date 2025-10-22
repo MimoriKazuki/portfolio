@@ -162,6 +162,14 @@ export interface Database {
           view_count: number
           enterprise_service: string
           individual_service: string
+          published_at: string | null
+          channel_title: string | null
+          channel_id: string | null
+          like_count: number | null
+          comment_count: number | null
+          duration: string | null
+          import_source: string | null
+          last_synced_at: string | null
         }
         Insert: {
           id?: string
@@ -177,6 +185,14 @@ export interface Database {
           view_count?: number
           enterprise_service?: string
           individual_service?: string
+          published_at?: string
+          channel_title?: string
+          channel_id?: string
+          like_count?: number
+          comment_count?: number
+          duration?: string
+          import_source?: string
+          last_synced_at?: string
         }
         Update: {
           id?: string
@@ -192,6 +208,14 @@ export interface Database {
           view_count?: number
           enterprise_service?: string
           individual_service?: string
+          published_at?: string
+          channel_title?: string
+          channel_id?: string
+          like_count?: number
+          comment_count?: number
+          duration?: string
+          import_source?: string
+          last_synced_at?: string
         }
       }
     }

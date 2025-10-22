@@ -116,4 +116,13 @@ export interface YouTubeVideo {
   individual_service: string
   created_at: string
   updated_at: string
+  // YouTube Data API v3 fields
+  published_at?: string
+  channel_title?: string
+  channel_id?: string
+  like_count?: number
+  comment_count?: number
+  duration?: string
+  import_source?: 'manual' | 'api'
+  last_synced_at?: string
 }

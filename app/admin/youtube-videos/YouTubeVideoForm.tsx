@@ -20,6 +20,15 @@ interface YouTubeVideoFormData {
   view_count: number
   enterprise_service: string
   individual_service: string
+  // YouTube Data API v3 fields
+  published_at?: string
+  channel_title?: string
+  channel_id?: string
+  like_count?: number
+  comment_count?: number
+  duration?: string
+  import_source?: 'manual' | 'api'
+  last_synced_at?: string
 }
 
 interface YouTubeVideoFormProps {
@@ -31,6 +40,7 @@ export default function YouTubeVideoForm({ initialData, videoId }: YouTubeVideoF
   const router = useRouter()
   const supabase = createClient()
   const [loading, setLoading] = useState(false)
+  const [fetching, setFetching] = useState(false)
   const [featuredCount, setFeaturedCount] = useState(0)
   const [urlError, setUrlError] = useState('')
 
@@ -102,6 +112,48 @@ export default function YouTubeVideoForm({ initialData, videoId }: YouTubeVideoF
     }
   }
 
+  // YouTube APIから動画情報を自動取得
+  const handleFetchVideoInfo = async () => {
+    if (!formData.youtube_video_id) {
+      alert('有効なYouTube URLを入力してください')
+      return
+    }
+
+    setFetching(true)
+    try {
+      const response = await fetch(`/api/youtube-videos/fetch?videoId=${formData.youtube_video_id}`)
+
+      if (!response.ok) {
+        throw new Error('動画情報の取得に失敗しました')
+      }
+
+      const videoData = await response.json()
+
+      setFormData(prev => ({
+        ...prev,
+        title: videoData.title,
+        description: videoData.description,
+        view_count: videoData.viewCount,
+        // 新しいYouTube Data API v3フィールド
+        published_at: videoData.publishedAt,
+        channel_title: videoData.channelTitle,
+        channel_id: videoData.channelId,
+        like_count: videoData.likeCount,
+        comment_count: videoData.commentCount,
+        duration: videoData.duration,
+        import_source: 'api',
+        last_synced_at: new Date().toISOString(),
+      } as any))
+
+      alert('YouTube動画情報を自動取得しました')
+    } catch (error) {
+      console.error('Error fetching video info:', error)
+      alert('動画情報の取得に失敗しました。URLを確認してください。')
+    } finally {
+      setFetching(false)
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -123,6 +175,15 @@ export default function YouTubeVideoForm({ initialData, videoId }: YouTubeVideoF
         enterprise_service: formData.enterprise_service,
         individual_service: formData.individual_service,
         updated_at: new Date().toISOString(),
+        // YouTube Data API v3 fields
+        published_at: formData.published_at || null,
+        channel_title: formData.channel_title || null,
+        channel_id: formData.channel_id || null,
+        like_count: formData.like_count || 0,
+        comment_count: formData.comment_count || 0,
+        duration: formData.duration || null,
+        import_source: formData.import_source || 'manual',
+        last_synced_at: formData.last_synced_at || null,
       }
 
       if (videoId) {
@@ -175,9 +236,29 @@ export default function YouTubeVideoForm({ initialData, videoId }: YouTubeVideoF
           {urlError && (
             <p className="mt-1 text-sm text-red-600">{urlError}</p>
           )}
-          <p className="mt-1 text-sm text-gray-500">
-            YouTubeのURLを入力してください（例: https://www.youtube.com/watch?v=VIDEO_ID）
-          </p>
+          <div className="flex items-center justify-between mt-2">
+            <p className="text-sm text-gray-500">
+              YouTubeのURLを入力してください（例: https://www.youtube.com/watch?v=VIDEO_ID）
+            </p>
+            <button
+              type="button"
+              onClick={handleFetchVideoInfo}
+              disabled={fetching || !formData.youtube_video_id}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {fetching ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  取得中...
+                </>
+              ) : (
+                <>
+                  <ExternalLink className="h-4 w-4" />
+                  YouTube APIから自動取得
+                </>
+              )}
+            </button>
+          </div>
         </div>
 
         {/* サムネイルプレビュー */}
