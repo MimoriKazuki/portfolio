@@ -5,6 +5,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Play } from 'lucide-react'
 import { formatDuration } from '@/app/lib/youtube-api'
+import { formatDate } from '@/app/lib/date-utils'
 
 interface YouTubeVideoCardProps {
   video: YouTubeVideo
@@ -60,19 +61,11 @@ export default function YouTubeVideoCard({ video }: YouTubeVideoCardProps) {
               {/* 外部チャンネルはシステム登録日、自社チャンネルはYouTube公開日 */}
               {!video.is_own_channel ? (
                 <p className="text-xs text-gray-500">
-                  {new Date(video.created_at).toLocaleDateString('ja-JP', {
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit'
-                  })}
+                  {formatDate(video.created_at)}
                 </p>
               ) : video.published_at ? (
                 <p className="text-xs text-gray-500">
-                  {new Date(video.published_at).toLocaleDateString('ja-JP', {
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit'
-                  })}
+                  {formatDate(video.published_at)}
                 </p>
               ) : null}
               <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-semibold whitespace-nowrap ml-auto ${

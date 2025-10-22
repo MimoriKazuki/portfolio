@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation'
 import DeleteYouTubeVideoButton from './DeleteYouTubeVideoButton'
 import { YouTubeVideo } from '@/app/types'
 import { formatDuration } from '@/app/lib/youtube-api'
+import { formatDate } from '@/app/lib/date-utils'
 
 interface YouTubeVideosClientProps {
   videos: YouTubeVideo[]
@@ -233,19 +234,11 @@ export default function YouTubeVideosClient({ videos }: YouTubeVideosClientProps
                       {/* 公開日 */}
                       <td className="px-4 py-3 text-center text-xs text-gray-600">
                         {/* 外部チャンネルはシステム登録日、自社チャンネルはYouTube公開日 */}
-                        {!video.is_own_channel ? (
-                          new Date(video.created_at).toLocaleDateString('ja-JP', {
-                            year: 'numeric',
-                            month: '2-digit',
-                            day: '2-digit'
-                          })
-                        ) : video.published_at ? (
-                          new Date(video.published_at).toLocaleDateString('ja-JP', {
-                            year: 'numeric',
-                            month: '2-digit',
-                            day: '2-digit'
-                          })
-                        ) : '-'}
+                        {!video.is_own_channel
+                          ? formatDate(video.created_at)
+                          : video.published_at
+                          ? formatDate(video.published_at)
+                          : '-'}
                       </td>
                       {/* チャンネル名 */}
                       <td className="px-4 py-3 text-center text-xs text-gray-600">

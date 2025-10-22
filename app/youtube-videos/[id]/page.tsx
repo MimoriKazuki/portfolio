@@ -6,6 +6,7 @@ import MainLayout from '@/app/components/MainLayout'
 import { createStaticClient } from '@/app/lib/supabase/static'
 import { createClient } from '@/app/lib/supabase/server'
 import { getYouTubeEmbedUrl } from '@/app/lib/youtube-utils'
+import { formatDate } from '@/app/lib/date-utils'
 import type { Metadata } from 'next'
 import type { YouTubeVideo } from '@/app/types'
 
@@ -219,19 +220,7 @@ export default async function YouTubeVideoDetailPage({
               </div>
               {/* 2行目: 公開日 */}
               <div className="text-sm text-gray-600">
-                {video.published_at ? (
-                  new Date(video.published_at).toLocaleDateString('ja-JP', {
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit'
-                  }).replace(/\//g, '/')
-                ) : (
-                  new Date(video.created_at).toLocaleDateString('ja-JP', {
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit'
-                  }).replace(/\//g, '/')
-                )}に公開
+                {video.published_at ? formatDate(video.published_at) : formatDate(video.created_at)}に公開
               </div>
             </div>
 
