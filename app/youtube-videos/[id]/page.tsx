@@ -97,8 +97,7 @@ export async function generateMetadata({
   }
 
   const baseUrl = 'https://www.landbridge.ai'
-  const timestamp = Date.now()
-  const imageUrl = `${video.thumbnail_url}?t=${timestamp}`
+  const imageUrl = video.thumbnail_url
 
   const metadata: Metadata = {
     title: `${video.title} - AI駆動研究所`,
@@ -295,7 +294,7 @@ export default async function YouTubeVideoDetailPage({
 
                       <div className="flex items-center gap-1 text-xs text-gray-500">
                         <Calendar className="w-3 h-3" />
-                        <span>{new Date(relatedVideo.created_at).toLocaleDateString('ja-JP')}</span>
+                        <span>{formatDate(relatedVideo.created_at)}</span>
                       </div>
                     </div>
                   </article>
