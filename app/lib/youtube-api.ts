@@ -78,8 +78,15 @@ export async function fetchYouTubeVideoData(videoId: string): Promise<YouTubeVid
 
 /**
  * チャンネルIDから最新動画を取得
+ * @param channelId チャンネルID
+ * @param maxResults 取得する最大動画数（fetchAll=falseの場合のみ有効）
+ * @param fetchAll trueの場合、チャンネルの全動画を取得
  */
-export async function fetchChannelVideos(channelId: string, maxResults: number = 10): Promise<YouTubeVideoData[]> {
+export async function fetchChannelVideos(
+  channelId: string,
+  maxResults: number = 10,
+  fetchAll: boolean = false
+): Promise<YouTubeVideoData[]> {
   const apiKey = process.env.YOUTUBE_API_KEY
 
   if (!apiKey) {
@@ -87,66 +94,99 @@ export async function fetchChannelVideos(channelId: string, maxResults: number =
   }
 
   try {
-    // まず、チャンネルの最新動画IDリストを取得
-    const searchUrl = new URL(`${YOUTUBE_API_BASE_URL}/search`)
-    searchUrl.searchParams.set('part', 'id')
-    searchUrl.searchParams.set('channelId', channelId)
-    searchUrl.searchParams.set('order', 'date')
-    searchUrl.searchParams.set('type', 'video')
-    searchUrl.searchParams.set('maxResults', maxResults.toString())
-    searchUrl.searchParams.set('key', apiKey)
+    const allVideoIds: string[] = []
+    let nextPageToken: string | undefined = undefined
+    const pageSize = 50 // YouTube APIの最大ページサイズ
 
-    const searchResponse = await fetch(searchUrl.toString())
+    // ページネーションで全動画IDを取得
+    do {
+      const searchUrl = new URL(`${YOUTUBE_API_BASE_URL}/search`)
+      searchUrl.searchParams.set('part', 'id')
+      searchUrl.searchParams.set('channelId', channelId)
+      searchUrl.searchParams.set('order', 'date')
+      searchUrl.searchParams.set('type', 'video')
+      searchUrl.searchParams.set('maxResults', fetchAll ? pageSize.toString() : maxResults.toString())
+      searchUrl.searchParams.set('key', apiKey)
 
-    if (!searchResponse.ok) {
-      throw new Error(`YouTube API error: ${searchResponse.status} ${searchResponse.statusText}`)
-    }
+      if (nextPageToken) {
+        searchUrl.searchParams.set('pageToken', nextPageToken)
+      }
 
-    const searchData = await searchResponse.json()
+      const searchResponse = await fetch(searchUrl.toString())
 
-    if (!searchData.items || searchData.items.length === 0) {
+      if (!searchResponse.ok) {
+        throw new Error(`YouTube API error: ${searchResponse.status} ${searchResponse.statusText}`)
+      }
+
+      const searchData = await searchResponse.json()
+
+      if (!searchData.items || searchData.items.length === 0) {
+        break
+      }
+
+      // 動画IDを収集
+      const videoIds = searchData.items.map((item: any) => item.id.videoId)
+      allVideoIds.push(...videoIds)
+
+      // fetchAllがfalseの場合、または次のページがない場合は終了
+      nextPageToken = searchData.nextPageToken
+      if (!fetchAll || !nextPageToken) {
+        break
+      }
+    } while (fetchAll && nextPageToken)
+
+    if (allVideoIds.length === 0) {
       return []
     }
 
-    // 動画IDのリストを取得
-    const videoIds = searchData.items.map((item: any) => item.id.videoId).join(',')
+    // 動画の詳細情報を50件ずつ取得（YouTube APIの制限）
+    const allVideos: YouTubeVideoData[] = []
+    const chunkSize = 50
 
-    // 各動画の詳細情報を取得
-    const videosUrl = new URL(`${YOUTUBE_API_BASE_URL}/videos`)
-    videosUrl.searchParams.set('part', 'snippet,statistics,contentDetails')
-    videosUrl.searchParams.set('id', videoIds)
-    videosUrl.searchParams.set('key', apiKey)
+    for (let i = 0; i < allVideoIds.length; i += chunkSize) {
+      const chunk = allVideoIds.slice(i, i + chunkSize)
+      const videoIds = chunk.join(',')
 
-    const videosResponse = await fetch(videosUrl.toString())
+      const videosUrl = new URL(`${YOUTUBE_API_BASE_URL}/videos`)
+      videosUrl.searchParams.set('part', 'snippet,statistics,contentDetails')
+      videosUrl.searchParams.set('id', videoIds)
+      videosUrl.searchParams.set('key', apiKey)
 
-    if (!videosResponse.ok) {
-      throw new Error(`YouTube API error: ${videosResponse.status} ${videosResponse.statusText}`)
+      const videosResponse = await fetch(videosUrl.toString())
+
+      if (!videosResponse.ok) {
+        throw new Error(`YouTube API error: ${videosResponse.status} ${videosResponse.statusText}`)
+      }
+
+      const videosData = await videosResponse.json()
+
+      const videos = videosData.items.map((video: any) => {
+        const snippet = video.snippet
+        const statistics = video.statistics
+        const contentDetails = video.contentDetails
+
+        return {
+          videoId: video.id,
+          title: snippet.title,
+          description: snippet.description,
+          publishedAt: snippet.publishedAt,
+          channelTitle: snippet.channelTitle,
+          channelId: snippet.channelId,
+          thumbnailUrl: snippet.thumbnails?.maxres?.url ||
+                        snippet.thumbnails?.high?.url ||
+                        snippet.thumbnails?.medium?.url ||
+                        snippet.thumbnails?.default?.url,
+          viewCount: parseInt(statistics.viewCount || '0', 10),
+          likeCount: parseInt(statistics.likeCount || '0', 10),
+          commentCount: parseInt(statistics.commentCount || '0', 10),
+          duration: contentDetails.duration
+        }
+      })
+
+      allVideos.push(...videos)
     }
 
-    const videosData = await videosResponse.json()
-
-    return videosData.items.map((video: any) => {
-      const snippet = video.snippet
-      const statistics = video.statistics
-      const contentDetails = video.contentDetails
-
-      return {
-        videoId: video.id,
-        title: snippet.title,
-        description: snippet.description,
-        publishedAt: snippet.publishedAt,
-        channelTitle: snippet.channelTitle,
-        channelId: snippet.channelId,
-        thumbnailUrl: snippet.thumbnails?.maxres?.url ||
-                      snippet.thumbnails?.high?.url ||
-                      snippet.thumbnails?.medium?.url ||
-                      snippet.thumbnails?.default?.url,
-        viewCount: parseInt(statistics.viewCount || '0', 10),
-        likeCount: parseInt(statistics.likeCount || '0', 10),
-        commentCount: parseInt(statistics.commentCount || '0', 10),
-        duration: contentDetails.duration
-      }
-    })
+    return allVideos
   } catch (error) {
     console.error('Error fetching channel videos:', error)
     throw error

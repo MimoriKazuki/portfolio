@@ -41,7 +41,12 @@ export default function YouTubeVideosClient({ videos }: YouTubeVideosClientProps
   const handleImportFromChannel = async () => {
     if (importing) return
 
-    const confirmed = confirm('チャンネルから最新動画を自動取得しますか？\n（既存の動画はスキップされます）')
+    const isInitialImport = !videos || videos.length === 0
+    const confirmMessage = isInitialImport
+      ? 'チャンネルから全ての動画を取得しますか？\n（既存の動画はスキップされます）'
+      : 'チャンネルから最新10件の動画を取得しますか？\n（既存の動画はスキップされます）'
+
+    const confirmed = confirm(confirmMessage)
     if (!confirmed) return
 
     setImporting(true)
@@ -51,7 +56,10 @@ export default function YouTubeVideosClient({ videos }: YouTubeVideosClientProps
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ maxResults: 10 }),
+        body: JSON.stringify({
+          maxResults: 10,
+          fetchAll: isInitialImport
+        }),
       })
 
       if (!response.ok) {

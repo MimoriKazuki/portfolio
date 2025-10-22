@@ -6,12 +6,12 @@ import { DEFAULT_ENTERPRISE_SERVICE, DEFAULT_INDIVIDUAL_SERVICE } from '@/app/li
 /**
  * チャンネルから最新動画を取得してデータベースにインポートするAPIエンドポイント
  * POST /api/youtube-videos/import
- * Body: { maxResults?: number } (optional, default: 10)
+ * Body: { maxResults?: number, fetchAll?: boolean } (optional)
  */
 export async function POST(request: Request) {
   try {
     const body = await request.json()
-    const { maxResults = 10 } = body
+    const { maxResults = 10, fetchAll = false } = body
 
     const channelId = process.env.YOUTUBE_CHANNEL_ID
 
@@ -25,7 +25,7 @@ export async function POST(request: Request) {
     const supabase = await createClient()
 
     // チャンネルから最新動画を取得
-    const videos = await fetchChannelVideos(channelId, maxResults)
+    const videos = await fetchChannelVideos(channelId, maxResults, fetchAll)
 
     if (!videos || videos.length === 0) {
       return NextResponse.json({
