@@ -28,7 +28,8 @@ function linkifyText(text: string) {
         </a>
       )
     }
-    return part
+    // プレーンテキストもspanでラップしてkeyを付与
+    return <span key={index}>{part}</span>
   })
 }
 
