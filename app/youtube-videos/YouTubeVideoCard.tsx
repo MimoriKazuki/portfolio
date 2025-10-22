@@ -15,7 +15,7 @@ export default function YouTubeVideoCard({ video }: YouTubeVideoCardProps) {
       href={`/youtube-videos/${video.id}`}
       className="group block h-full"
     >
-      <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300 h-full flex flex-col">
+      <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 h-full flex flex-col">
         {/* サムネイル */}
         <div className="relative aspect-video w-full bg-gray-200 overflow-hidden">
           <Image

@@ -105,7 +105,6 @@ export default function YouTubeVideosClient({ videos }: YouTubeVideosClientProps
                 <tr>
                   <th className="w-40 text-center px-6 py-3 text-sm font-medium text-gray-700">画像</th>
                   <th className="text-center px-6 py-3 text-sm font-medium text-gray-700">内容</th>
-                  <th className="w-[150px] text-center px-6 py-3 text-sm font-medium text-gray-700">再生数</th>
                   <th className="w-[120px] text-center px-6 py-3 text-sm font-medium text-gray-700">注目</th>
                   <th className="w-[120px] text-center px-6 py-3 text-sm font-medium text-gray-700">アクション</th>
                 </tr>
@@ -113,7 +112,7 @@ export default function YouTubeVideosClient({ videos }: YouTubeVideosClientProps
               <tbody className="divide-y divide-gray-200">
                 {filteredVideos.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
+                    <td colSpan={4} className="px-6 py-12 text-center text-gray-500">
                       検索結果が見つかりませんでした
                     </td>
                   </tr>
@@ -149,11 +148,6 @@ export default function YouTubeVideosClient({ videos }: YouTubeVideosClientProps
                             {video.description}
                           </p>
                         </div>
-                      </td>
-                      <td className="w-[150px] px-6 py-4 text-center">
-                        <span className="text-sm text-gray-700">
-                          {formatViewCount(video.view_count || 0)}
-                        </span>
                       </td>
                       <td className="w-[120px] px-6 py-4 text-center text-sm">
                         <span className={video.featured ? 'text-green-600 font-medium' : 'text-gray-600'}>
