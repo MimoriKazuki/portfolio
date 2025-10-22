@@ -7,6 +7,7 @@ import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import DeleteYouTubeVideoButton from './DeleteYouTubeVideoButton'
 import { YouTubeVideo } from '@/app/types'
+import { formatDuration } from '@/app/lib/youtube-api'
 
 interface YouTubeVideosClientProps {
   videos: YouTubeVideo[]
@@ -26,16 +27,6 @@ export default function YouTubeVideosClient({ videos }: YouTubeVideosClientProps
       return matchesSearch
     })
   }, [videos, searchQuery])
-
-  // フォーマット関数：再生回数を見やすく表示
-  const formatViewCount = (count: number): string => {
-    if (count >= 10000) {
-      return `${(count / 10000).toFixed(1)}万回`
-    } else if (count >= 1000) {
-      return `${(count / 1000).toFixed(1)}千回`
-    }
-    return `${count}回`
-  }
 
   // チャンネルから動画を自動取得
   const handleImportFromChannel = async () => {
@@ -183,73 +174,113 @@ export default function YouTubeVideosClient({ videos }: YouTubeVideosClientProps
 
           {/* Videos Table */}
           <div className="bg-white rounded-lg border border-gray-200 overflow-x-auto">
-            <table className="w-full table-fixed">
+            <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th className="w-40 text-center px-6 py-3 text-sm font-medium text-gray-700">画像</th>
-                  <th className="text-center px-6 py-3 text-sm font-medium text-gray-700">内容</th>
-                  <th className="w-[120px] text-center px-6 py-3 text-sm font-medium text-gray-700">注目</th>
-                  <th className="w-[120px] text-center px-6 py-3 text-sm font-medium text-gray-700">アクション</th>
+                  <th className="w-32 text-center px-4 py-3 text-xs font-medium text-gray-700">画像</th>
+                  <th className="text-center px-4 py-3 text-xs font-medium text-gray-700 min-w-[200px]">タイトル</th>
+                  <th className="w-20 text-center px-4 py-3 text-xs font-medium text-gray-700">長さ</th>
+                  <th className="w-32 text-center px-4 py-3 text-xs font-medium text-gray-700">公開日</th>
+                  <th className="w-36 text-center px-4 py-3 text-xs font-medium text-gray-700">チャンネル</th>
+                  <th className="w-28 text-center px-4 py-3 text-xs font-medium text-gray-700">種別</th>
+                  <th className="w-20 text-center px-4 py-3 text-xs font-medium text-gray-700">注目</th>
+                  <th className="w-28 text-center px-4 py-3 text-xs font-medium text-gray-700">アクション</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {filteredVideos.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="px-6 py-12 text-center text-gray-500">
+                    <td colSpan={8} className="px-6 py-12 text-center text-gray-500">
                       検索結果が見つかりませんでした
                     </td>
                   </tr>
                 ) : (
                   filteredVideos.map((video) => (
                     <tr key={video.id} className="hover:bg-gray-50 transition-colors">
-                      <td className="w-40 px-6 py-4">
+                      {/* サムネイル */}
+                      <td className="px-4 py-3">
                         <div className="flex justify-center">
                           {video.thumbnail_url ? (
-                            <div className="relative w-20 h-12 flex-shrink-0">
+                            <div className="relative w-16 h-10 flex-shrink-0">
                               <Image
                                 src={video.thumbnail_url}
                                 alt={video.title}
                                 fill
                                 className="object-cover rounded"
-                                sizes="80px"
+                                sizes="64px"
                                 unoptimized
                               />
                             </div>
                           ) : (
-                            <div className="w-20 h-12 bg-gray-100 rounded flex items-center justify-center">
-                              <FolderOpen className="w-6 h-6 text-gray-400" />
+                            <div className="w-16 h-10 bg-gray-100 rounded flex items-center justify-center">
+                              <FolderOpen className="w-4 h-4 text-gray-400" />
                             </div>
                           )}
                         </div>
                       </td>
-                      <td className="px-6 py-4">
-                        <div className="text-left min-w-0">
-                          <h3 className="font-medium text-gray-900 truncate">
+                      {/* タイトル */}
+                      <td className="px-4 py-3">
+                        <div className="text-left">
+                          <h3 className="font-medium text-sm text-gray-900 line-clamp-2">
                             {video.title}
                           </h3>
-                          <p className="text-sm text-gray-600 truncate">
-                            {video.description}
-                          </p>
                         </div>
                       </td>
-                      <td className="w-[120px] px-6 py-4 text-center text-sm">
+                      {/* 動画の長さ */}
+                      <td className="px-4 py-3 text-center text-sm text-gray-700">
+                        {video.duration ? formatDuration(video.duration) : '-'}
+                      </td>
+                      {/* 公開日 */}
+                      <td className="px-4 py-3 text-center text-xs text-gray-600">
+                        {/* 外部チャンネルはシステム登録日、自社チャンネルはYouTube公開日 */}
+                        {!video.is_own_channel ? (
+                          new Date(video.created_at).toLocaleDateString('ja-JP', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit'
+                          })
+                        ) : video.published_at ? (
+                          new Date(video.published_at).toLocaleDateString('ja-JP', {
+                            year: 'numeric',
+                            month: '2-digit',
+                            day: '2-digit'
+                          })
+                        ) : '-'}
+                      </td>
+                      {/* チャンネル名 */}
+                      <td className="px-4 py-3 text-center text-xs text-gray-600">
+                        <span className="truncate">{video.channel_title || '-'}</span>
+                      </td>
+                      {/* 種別 */}
+                      <td className="px-4 py-3 text-center">
+                        <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold whitespace-nowrap ${
+                          video.is_own_channel
+                            ? 'bg-blue-100 text-blue-800'
+                            : 'bg-green-100 text-green-800'
+                        }`}>
+                          {video.is_own_channel ? '自社' : '外部'}
+                        </span>
+                      </td>
+                      {/* 注目 */}
+                      <td className="px-4 py-3 text-center text-sm">
                         <span className={video.featured ? 'text-green-600 font-medium' : 'text-gray-600'}>
                           {video.featured ? 'ON' : 'OFF'}
                         </span>
                       </td>
-                      <td className="w-[120px] px-6 py-4">
-                        <div className="flex items-center justify-center gap-2">
+                      {/* アクション */}
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-center gap-1">
                           <Link
                             href={`/youtube-videos/${video.id}`}
                             target="_blank"
-                            className="p-2 hover:bg-gray-100 rounded-lg transition-colors text-gray-600"
+                            className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors text-gray-600"
                             title="詳細"
                           >
                             <Eye className="h-4 w-4" />
                           </Link>
                           <Link
                             href={`/admin/youtube-videos/${video.id}/edit`}
-                            className="p-2 hover:bg-blue-100 rounded-lg transition-colors text-blue-600"
+                            className="p-1.5 hover:bg-blue-100 rounded-lg transition-colors text-blue-600"
                             title="編集"
                           >
                             <Edit className="h-4 w-4" />

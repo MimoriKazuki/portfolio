@@ -9,6 +9,29 @@ import { getYouTubeEmbedUrl } from '@/app/lib/youtube-utils'
 import type { Metadata } from 'next'
 import type { YouTubeVideo } from '@/app/types'
 
+// URLをリンクに変換するヘルパー関数
+function linkifyText(text: string) {
+  const urlRegex = /(https?:\/\/[^\s]+)/g
+  const parts = text.split(urlRegex)
+
+  return parts.map((part, index) => {
+    if (part.match(urlRegex)) {
+      return (
+        <a
+          key={index}
+          href={part}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-600 hover:text-blue-800 underline break-all"
+        >
+          {part}
+        </a>
+      )
+    }
+    return part
+  })
+}
+
 export const revalidate = 60 // ISR: 60秒ごとに再生成
 export const dynamicParams = true // 動的パラメータを許可
 export const fetchCache = 'force-no-store' // キャッシュを無効化
@@ -152,57 +175,86 @@ export default async function YouTubeVideoDetailPage({
           YouTube一覧に戻る
         </Link>
 
-        <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-gray-900">{video.title}</h1>
+        {/* YouTube Player */}
+        <div className="relative aspect-video rounded-lg overflow-hidden bg-black mb-4">
+          <iframe
+            src={getYouTubeEmbedUrl(video.youtube_video_id)}
+            title={video.title}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            className="absolute inset-0 w-full h-full"
+          />
+        </div>
 
-        <div className="flex flex-col lg:flex-row gap-6 sm:gap-8">
-          {/* Left column - YouTube Player */}
-          <div className="lg:w-1/2">
-            <div className="relative aspect-video rounded-lg overflow-hidden bg-black">
-              <iframe
-                src={getYouTubeEmbedUrl(video.youtube_video_id)}
-                title={video.title}
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                className="absolute inset-0 w-full h-full"
-              />
+        {/* Video Info */}
+        <div className="space-y-4">
+          {/* Title */}
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{video.title}</h1>
+
+          {/* Channel info and action buttons row */}
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 pb-4 border-b border-gray-200">
+            {/* Left side - Channel info and metadata (2 lines) */}
+            <div className="flex flex-col gap-2">
+              {/* 1行目: チャンネル名、バッジ */}
+              <div className="flex flex-wrap items-center gap-4">
+                {/* チャンネル名 */}
+                {video.channel_title && (
+                  <span className="text-sm font-medium text-gray-900">{video.channel_title}</span>
+                )}
+                {/* バッジ（自社チャンネル・外部チャンネル） */}
+                <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-semibold whitespace-nowrap ${
+                  video.is_own_channel
+                    ? 'bg-blue-100 text-blue-800'
+                    : 'bg-green-100 text-green-800'
+                }`}>
+                  {video.is_own_channel ? '自社チャンネル' : '外部チャンネル'}
+                </span>
+                {/* 注目バッジ */}
+                {video.featured && (
+                  <span className="inline-flex items-center px-2 py-1 rounded text-xs font-semibold bg-yellow-100 text-yellow-800">
+                    ⭐ 注目
+                  </span>
+                )}
+              </div>
+              {/* 2行目: 公開日 */}
+              <div className="text-sm text-gray-600">
+                {video.published_at ? (
+                  new Date(video.published_at).toLocaleDateString('ja-JP', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit'
+                  }).replace(/\//g, '/')
+                ) : (
+                  new Date(video.created_at).toLocaleDateString('ja-JP', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit'
+                  }).replace(/\//g, '/')
+                )}に公開
+              </div>
             </div>
 
-            {/* Action buttons below player */}
-            <div className="mt-8 flex flex-col gap-3">
+            {/* Right side - YouTube button */}
+            <div className="flex items-center gap-2">
               <a
                 href={video.youtube_url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-all font-medium w-full"
+                className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-full transition-all font-medium text-sm whitespace-nowrap"
               >
-                YouTubeで視聴する
                 <ExternalLink className="w-4 h-4" />
+                YouTubeで視聴
               </a>
             </div>
           </div>
 
-          {/* Right column - Video details */}
-          <div className="lg:w-1/2 space-y-4 sm:space-y-6">
-            <div>
-              <h2 className="text-lg font-semibold mb-2 text-gray-900">動画の説明</h2>
-              <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{video.description}</p>
+          {/* Description box - scrollable */}
+          <div className="bg-gray-50 rounded-xl p-4">
+            <div className="max-h-80 overflow-y-auto">
+              <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
+                {linkifyText(video.description)}
+              </p>
             </div>
-
-            <div>
-              <h3 className="text-base font-medium text-gray-600 mb-2">投稿日</h3>
-              <div className="flex items-center gap-2 text-gray-700">
-                <Calendar className="w-4 h-4" />
-                <span>{new Date(video.created_at).toLocaleDateString('ja-JP')}</span>
-              </div>
-            </div>
-
-            {video.featured && (
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                <div className="flex items-center gap-2">
-                  <span className="text-yellow-600 font-semibold">⭐ 注目動画</span>
-                </div>
-              </div>
-            )}
           </div>
         </div>
 
@@ -227,8 +279,14 @@ export default async function YouTubeVideoDetailPage({
                         sizes="(max-width: 768px) 100vw, 33vw"
                         unoptimized
                       />
+                      {/* バッジを右上に統一 */}
+                      {relatedVideo.is_own_channel && (
+                        <div className="absolute top-3 right-3 bg-blue-600 text-white text-xs px-3 py-1.5 rounded font-semibold shadow-lg">
+                          自社チャンネル
+                        </div>
+                      )}
                       {relatedVideo.featured && (
-                        <div className="absolute top-4 right-4 bg-yellow-500 text-white text-xs px-3 py-1 rounded font-semibold">
+                        <div className={`absolute ${relatedVideo.is_own_channel ? 'top-12' : 'top-3'} right-3 bg-yellow-500 text-white text-xs px-3 py-1 rounded font-semibold`}>
                           注目
                         </div>
                       )}

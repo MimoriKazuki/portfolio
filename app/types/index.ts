@@ -125,4 +125,5 @@ export interface YouTubeVideo {
   duration?: string
   import_source?: 'manual' | 'api'
   last_synced_at?: string
+  is_own_channel: boolean // 自社チャンネルかどうか（手動で切り替え可能）
 }

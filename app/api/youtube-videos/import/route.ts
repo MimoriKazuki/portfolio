@@ -58,7 +58,9 @@ export async function POST(request: Request) {
       })
     }
 
-    // 新しい動画をデータベースに追加
+    // 新しい動画をデータベースに追加（静的データのみ）
+    const ownChannelId = process.env.YOUTUBE_CHANNEL_ID || 'UCKNiT_HYgBWMcFjaxZBpduQ'
+
     const videosToInsert = newVideos.map(video => ({
       title: video.title,
       description: video.description,
@@ -67,18 +69,14 @@ export async function POST(request: Request) {
       thumbnail_url: video.thumbnailUrl,
       featured: false,
       display_order: 0,
-      view_count: video.viewCount,
       enterprise_service: DEFAULT_ENTERPRISE_SERVICE,
       individual_service: DEFAULT_INDIVIDUAL_SERVICE,
-      // YouTube Data API v3 fields
+      is_own_channel: video.channelId === ownChannelId,
+      // YouTube Data API v3 fields（静的データのみ）
       published_at: video.publishedAt,
       channel_title: video.channelTitle,
       channel_id: video.channelId,
-      like_count: video.likeCount,
-      comment_count: video.commentCount,
       duration: video.duration,
-      import_source: 'api',
-      last_synced_at: new Date().toISOString(),
     }))
 
     const { error: insertError } = await supabase
