@@ -59,15 +59,11 @@ export default function YouTubeVideoCard({ video }: YouTubeVideoCardProps) {
             {/* 公開日と自社チャンネルバッジ */}
             <div className="flex items-center justify-between gap-2">
               {/* 外部チャンネルはシステム登録日、自社チャンネルはYouTube公開日 */}
-              {!video.is_own_channel ? (
-                <p className="text-xs text-gray-500">
-                  {formatDate(video.created_at)}
-                </p>
-              ) : video.published_at ? (
-                <p className="text-xs text-gray-500">
-                  {formatDate(video.published_at)}
-                </p>
-              ) : null}
+              <p className="text-xs text-gray-500">
+                {!video.is_own_channel
+                  ? formatDate(video.created_at)
+                  : formatDate(video.published_at || video.created_at)}
+              </p>
               <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-semibold whitespace-nowrap ml-auto ${
                 video.is_own_channel
                   ? 'bg-blue-100 text-blue-800'
