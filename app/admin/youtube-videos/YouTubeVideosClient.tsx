@@ -2,8 +2,9 @@
 
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
-import { Plus, Edit, Trash2, FolderOpen, Search, Eye } from 'lucide-react'
+import { Plus, Edit, Trash2, FolderOpen, Search, Eye, Download, Loader2 } from 'lucide-react'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import DeleteYouTubeVideoButton from './DeleteYouTubeVideoButton'
 import { YouTubeVideo } from '@/app/types'
 
@@ -12,7 +13,9 @@ interface YouTubeVideosClientProps {
 }
 
 export default function YouTubeVideosClient({ videos }: YouTubeVideosClientProps) {
+  const router = useRouter()
   const [searchQuery, setSearchQuery] = useState('')
+  const [importing, setImporting] = useState(false)
 
   const filteredVideos = useMemo(() => {
     return videos.filter(video => {
@@ -32,6 +35,40 @@ export default function YouTubeVideosClient({ videos }: YouTubeVideosClientProps
       return `${(count / 1000).toFixed(1)}千回`
     }
     return `${count}回`
+  }
+
+  // チャンネルから動画を自動取得
+  const handleImportFromChannel = async () => {
+    if (importing) return
+
+    const confirmed = confirm('チャンネルから最新動画を自動取得しますか？\n（既存の動画はスキップされます）')
+    if (!confirmed) return
+
+    setImporting(true)
+    try {
+      const response = await fetch('/api/youtube-videos/import', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ maxResults: 10 }),
+      })
+
+      if (!response.ok) {
+        throw new Error('インポートに失敗しました')
+      }
+
+      const result = await response.json()
+      alert(result.message)
+
+      // ページをリフレッシュして新しい動画を表示
+      router.refresh()
+    } catch (error) {
+      console.error('Error importing videos:', error)
+      alert('動画のインポートに失敗しました')
+    } finally {
+      setImporting(false)
+    }
   }
 
   return (
@@ -75,13 +112,32 @@ export default function YouTubeVideosClient({ videos }: YouTubeVideosClientProps
 
           {/* Action bar */}
           <div className="flex items-center justify-between gap-4">
-            <Link
-              href="/admin/youtube-videos/new"
-              className="flex items-center gap-2 bg-portfolio-blue hover:bg-portfolio-blue-dark text-white px-4 py-2 rounded-lg transition-colors"
-            >
-              <Plus className="h-5 w-5" />
-              新規追加
-            </Link>
+            <div className="flex items-center gap-2">
+              <Link
+                href="/admin/youtube-videos/new"
+                className="flex items-center gap-2 bg-portfolio-blue hover:bg-portfolio-blue-dark text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                <Plus className="h-5 w-5" />
+                新規追加
+              </Link>
+              <button
+                onClick={handleImportFromChannel}
+                disabled={importing}
+                className="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {importing ? (
+                  <>
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    取得中...
+                  </>
+                ) : (
+                  <>
+                    <Download className="h-5 w-5" />
+                    チャンネルから自動取得
+                  </>
+                )}
+              </button>
+            </div>
 
             <div className="flex items-center gap-4 flex-1 justify-end">
               {/* Search box */}
