@@ -242,7 +242,7 @@ export default function YouTubeVideoForm({ initialData, videoId }: YouTubeVideoF
               value={formData.youtube_url}
               onChange={(e) => handleYouTubeUrlChange(e.target.value)}
               placeholder="https://www.youtube.com/watch?v=..."
-              className={`flex-1 px-4 py-3 border ${urlError ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent`}
+              className={`flex-1 px-4 py-3 border ${urlError ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:ring-2 focus:ring-portfolio-blue focus:border-transparent`}
               required
             />
             {formData.youtube_video_id && !videoId && (
@@ -313,7 +313,7 @@ export default function YouTubeVideoForm({ initialData, videoId }: YouTubeVideoF
             value={formData.title}
             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
             placeholder="動画のタイトルを入力"
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-portfolio-blue focus:border-transparent"
             required
           />
         </div>
@@ -328,7 +328,7 @@ export default function YouTubeVideoForm({ initialData, videoId }: YouTubeVideoF
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             placeholder="動画の説明を入力"
             rows={5}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-portfolio-blue focus:border-transparent"
             required
           />
         </div>
@@ -453,7 +453,7 @@ export default function YouTubeVideoForm({ initialData, videoId }: YouTubeVideoF
                 <select
                   value={formData.enterprise_service}
                   onChange={(e) => setFormData({ ...formData, enterprise_service: e.target.value })}
-                  className="w-full appearance-none px-3 py-2 pr-10 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                  className="w-full appearance-none px-3 py-2 pr-10 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-portfolio-blue text-gray-900"
                 >
                   {ENTERPRISE_SERVICE_OPTIONS.map(option => (
                     <option key={option.value} value={option.value}>
@@ -478,7 +478,7 @@ export default function YouTubeVideoForm({ initialData, videoId }: YouTubeVideoF
                 <select
                   value={formData.individual_service}
                   onChange={(e) => setFormData({ ...formData, individual_service: e.target.value })}
-                  className="w-full appearance-none px-3 py-2 pr-10 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
+                  className="w-full appearance-none px-3 py-2 pr-10 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-portfolio-blue text-gray-900"
                 >
                   {INDIVIDUAL_SERVICE_OPTIONS.map(option => (
                     <option key={option.value} value={option.value}>

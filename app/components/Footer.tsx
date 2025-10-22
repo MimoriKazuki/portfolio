@@ -64,6 +64,11 @@ const Footer = () => {
                     </Link>
                   </li>
                   <li>
+                    <Link href="/youtube-videos" className="hover:text-white transition-colors">
+                      YouTube - AI活用の動画コンテンツ
+                    </Link>
+                  </li>
+                  <li>
                     <Link href="/columns" className="hover:text-white transition-colors">
                       コラム - AI活用の最新情報
                     </Link>

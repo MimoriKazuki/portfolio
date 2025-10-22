@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
-import { Plus, Edit, Trash2, FolderOpen, Search, Eye, Download, Loader2 } from 'lucide-react'
+import { Plus, Edit, Trash2, FolderOpen, Search, Eye, Download, Loader2, Filter } from 'lucide-react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import DeleteYouTubeVideoButton from './DeleteYouTubeVideoButton'
@@ -17,6 +17,7 @@ interface YouTubeVideosClientProps {
 export default function YouTubeVideosClient({ videos }: YouTubeVideosClientProps) {
   const router = useRouter()
   const [searchQuery, setSearchQuery] = useState('')
+  const [channelTypeFilter, setChannelTypeFilter] = useState('')
   const [importing, setImporting] = useState(false)
 
   const filteredVideos = useMemo(() => {
@@ -25,9 +26,13 @@ export default function YouTubeVideosClient({ videos }: YouTubeVideosClientProps
         video.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         video.description.toLowerCase().includes(searchQuery.toLowerCase())
 
-      return matchesSearch
+      const matchesChannelType = channelTypeFilter === '' ||
+        (channelTypeFilter === 'own' && video.is_own_channel) ||
+        (channelTypeFilter === 'external' && !video.is_own_channel)
+
+      return matchesSearch && matchesChannelType
     })
-  }, [videos, searchQuery])
+  }, [videos, searchQuery, channelTypeFilter])
 
   // チャンネルから動画を自動取得
   const handleImportFromChannel = async () => {
@@ -159,6 +164,20 @@ export default function YouTubeVideosClient({ videos }: YouTubeVideosClientProps
             </div>
 
             <div className="flex items-center gap-4 flex-1 justify-end">
+              {/* Channel Type Filter */}
+              <div className="relative">
+                <select
+                  value={channelTypeFilter}
+                  onChange={(e) => setChannelTypeFilter(e.target.value)}
+                  className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-10 text-gray-700 focus:outline-none focus:ring-2 focus:ring-portfolio-blue"
+                >
+                  <option value="">すべて</option>
+                  <option value="own">自社チャンネル</option>
+                  <option value="external">外部チャンネル</option>
+                </select>
+                <Filter className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+              </div>
+
               {/* Search box */}
               <div className="relative">
                 <input
@@ -166,7 +185,7 @@ export default function YouTubeVideosClient({ videos }: YouTubeVideosClientProps
                   placeholder="検索..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 pr-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 text-gray-900 w-64"
+                  className="pl-10 pr-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-portfolio-blue text-gray-900 w-64"
                 />
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
               </div>
