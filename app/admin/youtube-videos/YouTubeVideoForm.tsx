@@ -133,7 +133,7 @@ export default function YouTubeVideoForm({ initialData, videoId }: YouTubeVideoF
           .eq('id', videoId)
 
         if (error) throw error
-        alert('YouTube動画を更新しました')
+        alert('YouTubeを更新しました')
       } else {
         // Create new video
         const { error } = await supabase
@@ -141,7 +141,7 @@ export default function YouTubeVideoForm({ initialData, videoId }: YouTubeVideoF
           .insert(dataToSave)
 
         if (error) throw error
-        alert('YouTube動画を作成しました')
+        alert('YouTubeを作成しました')
       }
 
       router.push('/admin/youtube-videos')
@@ -176,7 +176,7 @@ export default function YouTubeVideoForm({ initialData, videoId }: YouTubeVideoF
             <p className="mt-1 text-sm text-red-600">{urlError}</p>
           )}
           <p className="mt-1 text-sm text-gray-500">
-            YouTube動画のURLを入力してください（例: https://www.youtube.com/watch?v=VIDEO_ID）
+            YouTubeのURLを入力してください（例: https://www.youtube.com/watch?v=VIDEO_ID）
           </p>
         </div>
 
@@ -258,7 +258,7 @@ export default function YouTubeVideoForm({ initialData, videoId }: YouTubeVideoF
         <div className="bg-gray-50 p-4 rounded-lg mt-6">
           <h3 className="text-lg font-medium mb-4 text-gray-800">右サイドバー表示サービス設定</h3>
           <p className="text-sm text-gray-600 mb-4">
-            このYouTube動画詳細ページの右サイドバーに表示するサービスを選択してください。
+            このYouTube詳細ページの右サイドバーに表示するサービスを選択してください。
           </p>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">

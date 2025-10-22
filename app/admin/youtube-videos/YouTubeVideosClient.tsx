@@ -36,19 +36,19 @@ export default function YouTubeVideosClient({ videos }: YouTubeVideosClientProps
 
   return (
     <div className="w-full">
-      <h1 className="text-3xl font-bold mb-8 text-gray-900">YouTube動画管理</h1>
+      <h1 className="text-3xl font-bold mb-8 text-gray-900">YouTube管理</h1>
 
       {!videos || videos.length === 0 ? (
         <div className="bg-white rounded-lg p-16 text-center border border-gray-200">
           <FolderOpen className="h-20 w-20 mx-auto mb-6 text-gray-400" />
-          <h2 className="text-2xl font-bold mb-4 text-gray-900">YouTube動画がありません</h2>
-          <p className="text-gray-600 mb-8">最初のYouTube動画を追加しましょう</p>
+          <h2 className="text-2xl font-bold mb-4 text-gray-900">YouTubeがありません</h2>
+          <p className="text-gray-600 mb-8">最初のYouTubeを追加しましょう</p>
           <Link
             href="/admin/youtube-videos/new"
             className="inline-flex items-center gap-2 bg-portfolio-blue hover:bg-portfolio-blue-dark text-white px-6 py-3 rounded-lg transition-colors text-lg"
           >
             <Plus className="h-6 w-6" />
-            YouTube動画を追加
+            YouTubeを追加
           </Link>
         </div>
       ) : (

@@ -192,7 +192,40 @@ export default function DynamicHomeContent() {
           </div>
         )}
       </section>
-      
+
+      {/* YouTube Videos Section */}
+      {(isLoading || displayVideos.length > 0) && (
+        <section className="mb-12">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold">YouTube</h2>
+            <Link
+              href="/youtube-videos"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-portfolio-blue-dark text-white rounded-full hover:opacity-90 transition-opacity text-sm font-medium"
+            >
+              すべて見る <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          {isLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-1 mid:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
+              {[...Array(3)].map((_, index) => (
+                <div key={index} className="animate-pulse">
+                  <div className="bg-gray-200 rounded-lg aspect-video mb-3"></div>
+                  <div className="h-6 bg-gray-200 rounded mb-2"></div>
+                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-1 mid:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
+              {displayVideos.map((video) => (
+                <YouTubeVideoCard key={video.id} video={video} />
+              ))}
+            </div>
+          )}
+        </section>
+      )}
+
       {/* Columns Section */}
       <section className="mb-12">
         <div className="flex items-center justify-between mb-6">
@@ -262,39 +295,6 @@ export default function DynamicHomeContent() {
           </div>
         )}
       </section>
-
-      {/* YouTube Videos Section */}
-      {(isLoading || displayVideos.length > 0) && (
-        <section className="mb-12">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold">YouTube動画</h2>
-            <Link
-              href="/youtube-videos"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-portfolio-blue-dark text-white rounded-full hover:opacity-90 transition-opacity text-sm font-medium"
-            >
-              すべて見る <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
-
-          {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-1 mid:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
-              {[...Array(3)].map((_, index) => (
-                <div key={index} className="animate-pulse">
-                  <div className="bg-gray-200 rounded-lg aspect-video mb-3"></div>
-                  <div className="h-6 bg-gray-200 rounded mb-2"></div>
-                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-1 mid:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
-              {displayVideos.map((video) => (
-                <YouTubeVideoCard key={video.id} video={video} />
-              ))}
-            </div>
-          )}
-        </section>
-      )}
 
       {/* 問い合わせボタンとの重なりを防ぐためのスペース */}
       <div className="h-24" />

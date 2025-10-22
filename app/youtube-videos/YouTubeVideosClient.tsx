@@ -12,7 +12,7 @@ export default function YouTubeVideosClient({ videos }: YouTubeVideosClientProps
   return (
     <div className="w-full">
       <div className="mb-8">
-        <h1 className="text-[28px] font-bold text-gray-900">YouTube動画</h1>
+        <h1 className="text-[28px] font-bold text-gray-900">YouTube</h1>
       </div>
 
       {/* カードコンテナ */}

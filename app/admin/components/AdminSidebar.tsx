@@ -27,7 +27,7 @@ const AdminSidebar = memo(function AdminSidebar({ user }: AdminSidebarProps) {
   const menuItems = [
     { icon: Home, label: 'ダッシュボード', href: '/admin' },
     { icon: FolderOpen, label: 'AI制作物', href: '/admin/projects' },
-    { icon: Youtube, label: 'YouTube動画', href: '/admin/youtube-videos' },
+    { icon: Youtube, label: 'YouTube', href: '/admin/youtube-videos' },
     { icon: FileText, label: 'コラム', href: '/admin/columns' },
     { icon: BarChart2, label: 'コラム分析', href: '/admin/analytics/column-goals' },
     { icon: Bell, label: 'お知らせ', href: '/admin/notices' },

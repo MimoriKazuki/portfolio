@@ -22,7 +22,7 @@ export default async function EditYouTubeVideoPage({ params }: PageProps) {
 
   return (
     <div className="w-full">
-      <h1 className="text-3xl font-bold mb-8 text-gray-900">YouTube動画を編集</h1>
+      <h1 className="text-3xl font-bold mb-8 text-gray-900">YouTubeを編集</h1>
       <YouTubeVideoForm initialData={video} videoId={id} />
     </div>
   )

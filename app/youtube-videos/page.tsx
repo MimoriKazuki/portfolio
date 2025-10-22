@@ -6,11 +6,11 @@ import { YouTubeVideo } from '@/app/types'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'YouTube動画 - AI駆動研究所',
-  description: 'AI駆動研究所のYouTube動画コンテンツ一覧。生成AIの活用方法や最新技術の解説動画をご覧いただけます。',
+  title: 'YouTube - AI駆動研究所',
+  description: 'AI駆動研究所のYouTubeコンテンツ一覧。生成AIの活用方法や最新技術の解説動画をご覧いただけます。',
   openGraph: {
-    title: 'YouTube動画 - AI駆動研究所',
-    description: 'AI駆動研究所のYouTube動画コンテンツ一覧。生成AIの活用方法や最新技術の解説動画をご覧いただけます。',
+    title: 'YouTube - AI駆動研究所',
+    description: 'AI駆動研究所のYouTubeコンテンツ一覧。生成AIの活用方法や最新技術の解説動画をご覧いただけます。',
   },
 }
 

@@ -13,7 +13,7 @@ const Sidebar = () => {
     { icon: Home, label: 'トップ', href: '/' },
     { icon: Briefcase, label: 'サービス', href: '/services' },
     { icon: FolderOpen, label: 'AI制作物', href: '/projects' },
-    { icon: Youtube, label: 'YouTube動画', href: '/youtube-videos' },
+    { icon: Youtube, label: 'YouTube', href: '/youtube-videos' },
     { icon: FileText, label: 'コラム', href: '/columns' },
     { icon: Bell, label: 'お知らせ', href: '/notices' },
     { icon: Download, label: '資料請求', href: '/documents' },

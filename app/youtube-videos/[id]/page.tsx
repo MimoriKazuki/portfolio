@@ -67,7 +67,7 @@ export async function generateMetadata({
   if (!video) {
     return {
       title: 'AI駆動研究所',
-      description: 'AI駆動研究所のYouTube動画コンテンツ。',
+      description: 'AI駆動研究所のYouTubeコンテンツ。',
     }
   }
 
@@ -149,7 +149,7 @@ export default async function YouTubeVideoDetailPage({
           className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          YouTube動画一覧に戻る
+          YouTube一覧に戻る
         </Link>
 
         <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-gray-900">{video.title}</h1>
