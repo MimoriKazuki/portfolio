@@ -1,0 +1,49 @@
+{
+    "mcpServers": {
+      "chrome-devtools": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "chrome-devtools-mcp@latest"
+        ]
+      },
+      "supabase": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "@supabase/mcp-server-supabase@latest",
+          "--access-token",
+          "sbp_88ebe8aae5a6f5e2afcb4f8b6b53b1251fbed424"
+        ]
+      },
+      "context7": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "@upstash/context7-mcp",
+          "--api-key",
+          "ctx7sk-60d6f7f6-f06c-41b2-a18c-4a0f6302258b"
+        ]
+      },
+      "playwright": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "@playwright/mcp@latest"
+        ]
+      },
+      "serena": {
+        "command": "/Users/kosuke/.local/bin/uvx",
+        "args": [
+          "--from",
+          "git+https://github.com/oraios/serena",
+          "serena",
+          "start-mcp-server",
+          "--context",
+          "ide-assistant",
+          "--project",
+          "/Users/kosuke/Desktop/AI_driven/portfolio"
+        ]
+      }
+    }
+  }

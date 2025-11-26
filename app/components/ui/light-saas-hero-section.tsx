@@ -1,53 +1,74 @@
 import React from "react";
-import NeuralShaderBackground from './neural-shader-background';
+import Image from "next/image";
 
 const HeroSection = () => {
     return (
-        <div className="relative overflow-hidden w-full">
-            {/* Background */}
-            <div className="absolute inset-0 z-0">
-                <NeuralShaderBackground />
-                <div className="absolute inset-0 bg-gradient-to-b from-white/10 to-white/30"></div>
-            </div>
+        <div className="relative overflow-hidden w-full bg-white">
+            {/* Content Container - Fluid Design */}
+            <div className="w-full py-16">
 
-            {/* Content */}
-            <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24 text-center flex flex-col justify-center">
-                {/* Main headline */}
-                <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight pb-4">
-                    時代を生き抜くAI人材を
-                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 block mt-1 pb-2">
-                        ゼロから育成する
-                    </span>
-                </h1>
+                {/* Text Content with responsive padding */}
+                <div className="px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 mb-8 relative">
+                    <div className="w-full lg:w-4/5 xl:w-3/4 2xl:w-[70%]">
+                        <h1 className="font-bold text-gray-900 tracking-tight leading-none mb-6" style={{fontSize: 'clamp(2rem, 5vw, 5rem)', lineHeight: '1.1'}}>
+                            Advance Your<br />
+                            Business with AI
+                        </h1>
+                        
+                        {/* Sub Phrase */}
+                        <p className="text-gray-600 leading-relaxed" style={{fontSize: 'clamp(1rem, 1.5vw, 1.5rem)'}}>
+                            実践的なAIの力を、一人でも多くの現場へ届ける。
+                        </p>
+                    </div>
 
-                {/* Subheadline */}
-                <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto mb-8 leading-relaxed">
-                    AIを使いこなせる人材こそが、変化の激しい時代の競争優位を創造します。<br className="hidden sm:block" />実践重視の研修プログラムで、未来を切り開く真のAI人材を育成します。
-                </p>
+                    {/* Scroll Down Indicator - Bottom Right */}
+                    <div className="absolute bottom-0 right-4 sm:right-6 lg:right-8 xl:right-12 2xl:right-16 flex flex-col items-center">
+                        <span className="text-sm text-gray-500 mb-2 tracking-wider">SCROLL DOWN</span>
+                        <svg className="w-6 h-6 text-gray-400 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                            <path d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+                        </svg>
+                    </div>
+                </div>
+
+                {/* Hero Image - Full width to right edge, left padding only */}
+                <div className="relative w-full mb-12 overflow-hidden pl-4 sm:pl-6 lg:pl-8 xl:pl-12 2xl:pl-16">
+                    <div className="relative w-full aspect-[21/9]">
+                        <Image 
+                            src="/hero.png"
+                            alt="AI人材育成の未来を表現する画像"
+                            fill
+                            priority
+                            className="object-cover"
+                            quality={95}
+                        />
+                    </div>
+                </div>
 
                 {/* CTA Buttons */}
-                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <div className="px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 flex flex-col sm:flex-row gap-6 justify-center items-center">
                     <a 
                         href="/contact"
-                        className="group relative overflow-hidden px-8 py-4 bg-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:bg-blue-700 transform hover:-translate-y-1 flex items-center"
+                        className="relative inline-flex items-center justify-center px-8 py-4 overflow-hidden font-medium transition-all bg-white text-gray-900 border border-blue-600 hover:text-white group"
                     >
-                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out"></div>
-                        <svg className="w-5 h-5 mr-2 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                        {/* 斜めの青いエリア - 回転した正方形が左下から広がる */}
+                        <span className="w-96 h-96 rotate-[-40deg] bg-blue-600 absolute bottom-0 left-0 -translate-x-full ease-out duration-500 transition-all translate-y-full mb-16 ml-16 group-hover:ml-0 group-hover:mb-48 group-hover:translate-x-0"></span>
+                        
+                        <svg className="w-5 h-5 mr-3 text-blue-600 group-hover:text-white transition-colors duration-300 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                             <rect width="20" height="16" x="2" y="4" rx="2"/>
                             <path d="m22 7-10 5L2 7"/>
                         </svg>
-                        <span className="relative z-10">無料相談を予約する</span>
+                        <span className="relative z-10 text-base">無料相談を予約する</span>
                     </a>
                     <a 
                         href="/documents"
-                        className="group px-8 py-4 bg-white/90 backdrop-blur-sm text-gray-900 font-semibold rounded-xl border-2 border-blue-200 shadow-sm hover:shadow-lg hover:border-blue-300 hover:bg-blue-50 transition-all duration-300 flex items-center"
+                        className="inline-flex items-center justify-center px-8 py-4 bg-white text-gray-900 font-medium border border-gray-300 hover:bg-gray-50 transition-colors duration-200 text-base"
                     >
-                        <svg className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                        <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                             <polyline points="7,10 12,15 17,10"/>
                             <line x1="12" y1="15" x2="12" y2="3"/>
                         </svg>
-                        <span className="group-hover:text-blue-700 transition-colors duration-200">資料ダウンロード</span>
+                        <span>資料ダウンロード</span>
                     </a>
                 </div>
             </div>

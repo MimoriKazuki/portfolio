@@ -7,6 +7,11 @@ import { usePathname } from 'next/navigation'
 export default function FloatingButtons() {
   const pathname = usePathname()
   
+  // トップページではフローティングボタンを非表示
+  if (pathname === '/') {
+    return null
+  }
+  
   // 問い合わせページでは問い合わせボタンを非表示
   const hideContactButton = pathname === '/contact'
   // 資料請求ページでは資料請求ボタンを非表示
