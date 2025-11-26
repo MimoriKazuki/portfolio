@@ -22,7 +22,7 @@ export default function YouTubeVideosClient({ videos }: YouTubeVideosClientProps
           <p className="text-lg sm:text-xl text-gray-500">動画はまだ投稿されていません</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {videos.map((video) => (
             <div key={video.id}>
               <YouTubeVideoCard video={video} />

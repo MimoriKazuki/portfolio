@@ -238,7 +238,7 @@ export default function DynamicHomeContent() {
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-1 mid:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-1 mid:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-3">
               {displayVideos.map((video) => (
                 <YouTubeVideoCard key={video.id} video={video} />
               ))}
@@ -274,29 +274,29 @@ export default function DynamicHomeContent() {
             <p className="text-xl text-gray-500">まだコラムがありません</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-1 mid:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-1 mid:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-3">
             {latestColumns.map((column, index) => (
               <Link
                 key={column.id}
                 href={`/columns/${column.id}`}
                 className="group"
               >
-                <article className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 h-full flex flex-col">
+                <article className="overflow-hidden border-2 border-transparent hover:border-gray-200 transition-colors duration-300 h-full flex flex-col p-4 rounded">
                   {column.thumbnail && (
-                    <div className="relative aspect-video">
+                    <div className="relative aspect-video overflow-hidden rounded">
                       <Image
                         src={column.thumbnail}
                         alt={column.title}
                         fill
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                        className="object-cover group-hover:scale-105 transition-transform duration-300"
-                        priority={index === 0} // 最初のコラム画像にpriorityを追加
+                        className="object-cover"
+                        priority={index === 0}
                       />
                     </div>
                   )}
 
-                  <div className="p-4 flex-1 flex flex-col">
-                    <h3 className="font-semibold text-gray-900 mb-2 line-clamp-1 group-hover:text-portfolio-blue transition-colors">
+                  <div className="pt-4 flex-1 flex flex-col">
+                    <h3 className="font-semibold text-gray-900 mb-2 line-clamp-1 group-hover:text-blue-600 transition-colors">
                       {column.title}
                     </h3>
 

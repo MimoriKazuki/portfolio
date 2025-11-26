@@ -48,9 +48,9 @@ export default function ColumnsClient({ columns }: ColumnsClientProps) {
   }, [activeCategory, columns])
 
   const categoryColors = {
-    'ai-tools': 'bg-emerald-100 text-emerald-700',
-    'industry': 'bg-blue-100 text-blue-700',
-    'topics-news': 'bg-purple-100 text-purple-700'
+    'ai-tools': 'border-emerald-200 text-emerald-700',
+    'industry': 'border-blue-200 text-blue-700',
+    'topics-news': 'border-purple-200 text-purple-700'
   }
 
   const categoryLabels = {
@@ -100,43 +100,38 @@ export default function ColumnsClient({ columns }: ColumnsClientProps) {
           <p className="text-lg sm:text-xl text-gray-500">このカテゴリにコラムはありません</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {filteredColumns.map((column: Column) => (
             <Link 
               key={column.id} 
               href={`/columns/${column.id}`}
               className="group"
             >
-              <article className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 h-full flex flex-col">
-                <div className="relative">
-                  {column.thumbnail && (
-                    <div className="relative aspect-video">
-                      <Image
-                        src={column.thumbnail}
-                        alt={column.title}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-300"
-                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                        loading="lazy"
-                        placeholder="blur"
-                        blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAf/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWEREiMxUf/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
-                      />
-                    </div>
-                  )}
-                  {column.category && (
-                    <div className={`absolute top-1 sm:top-2 right-1 sm:right-2 ${categoryColors[column.category] || 'bg-gray-100 text-gray-700'} text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded font-medium`}>
-                      {categoryLabels[column.category] || column.category}
-                    </div>
-                  )}
-                  {column.is_featured && (
-                    <div className="absolute top-1 sm:top-2 left-1 sm:left-2 bg-portfolio-blue text-white text-[10px] sm:text-xs px-1.5 sm:px-2 py-0.5 sm:py-1 rounded font-medium">
-                      注目
-                    </div>
-                  )}
-                </div>
+              <article className="overflow-hidden border-2 border-transparent hover:border-gray-200 transition-colors duration-300 h-full flex flex-col p-4 rounded">
+                {/* 画像 */}
+                {column.thumbnail && (
+                  <div className="relative aspect-video overflow-hidden rounded">
+                    <Image
+                      src={column.thumbnail}
+                      alt={column.title}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      loading="lazy"
+                      placeholder="blur"
+                      blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAf/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWEREiMxUf/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+                    />
+                    {column.is_featured && (
+                      <div className="absolute top-2 left-2 bg-portfolio-blue text-white text-xs px-3 py-1 font-medium">
+                        注目
+                      </div>
+                    )}
+                  </div>
+                )}
                 
-                <div className="p-4 flex-1 flex flex-col">
-                  <h2 className="font-semibold text-gray-900 mb-2 line-clamp-1 group-hover:text-portfolio-blue transition-colors">
+                {/* テキスト群 */}
+                <div className="pt-4 flex-1 flex flex-col">
+                  <h2 className="font-semibold text-gray-900 mb-2 line-clamp-1 group-hover:text-blue-600 transition-colors">
                     {column.title}
                   </h2>
                   
@@ -146,11 +141,19 @@ export default function ColumnsClient({ columns }: ColumnsClientProps) {
                     </p>
                   </div>
                   
-                  <div className="flex items-center gap-1 text-xs text-gray-500">
-                    <Calendar className="w-3 h-3" />
-                    <span>
-                      {new Date(column.created_at).toLocaleDateString('ja-JP')}
-                    </span>
+                  {/* 日付とカテゴリバッジ */}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1 text-xs text-gray-500">
+                      <Calendar className="w-3 h-3" />
+                      <span>
+                        {new Date(column.created_at).toLocaleDateString('ja-JP')}
+                      </span>
+                    </div>
+                    {column.category && (
+                      <span className={`${categoryColors[column.category] || 'border-gray-200 text-gray-700'} bg-white text-xs px-3 py-1 border font-medium`}>
+                        {categoryLabels[column.category] || column.category}
+                      </span>
+                    )}
                   </div>
                 </div>
               </article>
