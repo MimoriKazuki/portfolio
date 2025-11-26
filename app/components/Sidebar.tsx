@@ -49,13 +49,25 @@ const Sidebar = () => {
               key={item.href}
               href={item.href}
               className={cn(
-                "block w-full px-4 py-3 rounded-lg transition-all duration-200 text-center",
-                "hover:bg-gray-100 text-gray-700 hover:text-portfolio-blue",
-                isActive && "bg-portfolio-blue/10 text-portfolio-blue font-bold"
+                "block w-full px-4 py-3 transition-all duration-200 text-center relative group",
+                isActive 
+                  ? "text-portfolio-blue hover:text-blue-700" 
+                  : "text-gray-600 hover:text-gray-900 font-medium"
               )}
+              style={isActive ? { fontWeight: 550 } : undefined}
               prefetch={true}
             >
-              <span className={isActive ? "font-bold" : "font-medium"}>{item.label}</span>
+              <span>{item.label}</span>
+              
+              {/* 選択済み: 青い下線（ホバーでも色は変わらない） */}
+              {isActive && (
+                <span className="absolute bottom-0 left-0 w-full h-px bg-portfolio-blue"></span>
+              )}
+              
+              {/* ホバー時: 左から右に伸びる下線（ホバー時のテキストと同じグレー） */}
+              {!isActive && (
+                <span className="absolute bottom-0 left-0 w-0 h-px bg-gray-900 transition-all duration-300 ease-out group-hover:w-full"></span>
+              )}
             </Link>
           )
         })}
