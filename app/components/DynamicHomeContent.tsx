@@ -86,9 +86,12 @@ export default function DynamicHomeContent() {
             <h2 className="text-2xl font-bold">お知らせ</h2>
             <Link
               href="/notices"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-portfolio-blue-dark text-white rounded-full hover:opacity-90 transition-opacity text-sm font-medium"
+              className="group inline-flex items-center gap-3 text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium"
             >
-              すべて見る <ArrowRight className="w-4 h-4" />
+              <span>すべて見る</span>
+              <div className="flex items-center justify-center w-8 h-8 rounded-full border border-blue-600 bg-white group-hover:bg-blue-600 transition-colors duration-300">
+                <ArrowRight className="w-4 h-4 text-blue-600 group-hover:text-white transition-colors duration-300" />
+              </div>
             </Link>
           </div>
           
@@ -175,9 +178,12 @@ export default function DynamicHomeContent() {
           <h2 className="text-2xl font-bold">AI制作物</h2>
           <Link
             href="/projects"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-portfolio-blue-dark text-white rounded-full hover:opacity-90 transition-opacity text-sm font-medium"
+            className="group inline-flex items-center gap-3 text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium"
           >
-            すべて見る <ArrowRight className="w-4 h-4" />
+            <span>すべて見る</span>
+            <div className="flex items-center justify-center w-8 h-8 rounded-full border border-blue-600 bg-white group-hover:bg-blue-600 transition-colors duration-300">
+              <ArrowRight className="w-4 h-4 text-blue-600 group-hover:text-white transition-colors duration-300" />
+            </div>
           </Link>
         </div>
         
@@ -212,9 +218,12 @@ export default function DynamicHomeContent() {
             <h2 className="text-2xl font-bold">YouTube</h2>
             <Link
               href="/youtube-videos"
-              className="inline-flex items-center gap-2 px-4 py-2 bg-portfolio-blue-dark text-white rounded-full hover:opacity-90 transition-opacity text-sm font-medium"
+              className="group inline-flex items-center gap-3 text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium"
             >
-              すべて見る <ArrowRight className="w-4 h-4" />
+              <span>すべて見る</span>
+              <div className="flex items-center justify-center w-8 h-8 rounded-full border border-blue-600 bg-white group-hover:bg-blue-600 transition-colors duration-300">
+                <ArrowRight className="w-4 h-4 text-blue-600 group-hover:text-white transition-colors duration-300" />
+              </div>
             </Link>
           </div>
 
@@ -244,9 +253,12 @@ export default function DynamicHomeContent() {
           <h2 className="text-2xl font-bold">最新のコラム</h2>
           <Link
             href="/columns"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-portfolio-blue-dark text-white rounded-full hover:opacity-90 transition-opacity text-sm font-medium"
+            className="group inline-flex items-center gap-3 text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium"
           >
-            すべて見る <ArrowRight className="w-4 h-4" />
+            <span>すべて見る</span>
+            <div className="flex items-center justify-center w-8 h-8 rounded-full border border-blue-600 bg-white group-hover:bg-blue-600 transition-colors duration-300">
+              <ArrowRight className="w-4 h-4 text-blue-600 group-hover:text-white transition-colors duration-300" />
+            </div>
           </Link>
         </div>
 
