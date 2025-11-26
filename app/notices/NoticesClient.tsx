@@ -74,28 +74,28 @@ export default function NoticesClient({ notices }: NoticesClientProps) {
       <div className="mb-6 relative">
         <div className="absolute inset-x-0 -mx-4 sm:-mx-6 lg:static lg:mx-0">
           <div className="overflow-x-auto scrollbar-hide">
-            <div className="flex gap-2 px-4 sm:px-6 lg:px-0 pb-2 lg:pb-0 lg:flex-wrap">
+            <div className="flex px-4 sm:px-6 lg:px-0 border-b border-gray-200">
               {visibleCategories.map((category) => (
                 <button
                   key={category.id}
                   onClick={() => setActiveCategory(category.id)}
-                  className={`px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-sm font-medium transition-colors whitespace-nowrap flex-shrink-0 ${
+                  className={`px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap relative ${
                     activeCategory === category.id
-                      ? 'bg-blue-600 text-white'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                      ? 'text-gray-900'
+                      : 'text-gray-500 hover:text-gray-700'
                   }`}
                 >
                   {category.label}
-                  <span className="ml-1.5 sm:ml-2 text-xs">
-                    ({categoryCounts[category.id]})
-                  </span>
+                  {activeCategory === category.id && (
+                    <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-900"></span>
+                  )}
                 </button>
               ))}
             </div>
           </div>
         </div>
         {/* スペーサー */}
-        <div className="h-10 lg:hidden" />
+        <div className="h-12 lg:hidden" />
       </div>
 
       {/* Notices List */}
