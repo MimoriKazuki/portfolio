@@ -2,8 +2,7 @@
 
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
-import Image from 'next/image'
-import { Bell, Calendar, ChevronRight } from 'lucide-react'
+import { Bell, ChevronRight } from 'lucide-react'
 import type { Notice } from '@/app/types'
 
 const categories = [
@@ -21,14 +20,6 @@ interface NoticesClientProps {
 
 export default function NoticesClient({ notices }: NoticesClientProps) {
   const [activeCategory, setActiveCategory] = useState('all')
-
-  const categoryColors = {
-    news: 'bg-blue-100 text-blue-700',
-    webinar: 'bg-purple-100 text-purple-700',
-    event: 'bg-pink-100 text-pink-700',
-    maintenance: 'bg-yellow-100 text-yellow-700',
-    other: 'bg-gray-100 text-gray-700'
-  }
 
   const categoryLabels = {
     news: 'ニュース',
@@ -118,64 +109,41 @@ export default function NoticesClient({ notices }: NoticesClientProps) {
           </p>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="divide-y divide-gray-200">
           {filteredNotices.map((notice) => (
             <Link
               key={notice.id}
               href={`/notices/${notice.id}`}
               className="block group"
             >
-              <div className="bg-white rounded-lg overflow-hidden border border-gray-200 hover:shadow-lg transition-all duration-300 hover:border-blue-300 md:h-[118px]">
-                <div className="flex h-full p-4 md:p-5">
-                  {/* Thumbnail - PC only */}
-                  <div className="hidden md:block relative w-[139px] h-[78px] flex-shrink-0 overflow-hidden rounded">
-                    {notice.thumbnail ? (
-                      <Image
-                        src={notice.thumbnail}
-                        alt={notice.title}
-                        fill
-                        className="object-cover"
-                      />
-                    ) : (
-                      <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
-                        <Bell className="h-10 w-10 text-gray-400" />
-                      </div>
-                    )}
+              <div className="py-6 hover:bg-gray-50 transition-colors duration-200">
+                <div className="flex items-center gap-4 px-2">
+                  {/* Date */}
+                  <div className="text-sm text-gray-600 font-medium w-24 flex-shrink-0">
+                    {formatDate(notice.created_at)}
                   </div>
-
-                  {/* Content */}
-                  <div className="flex-1 md:ml-5 flex flex-col justify-center">
-                    {/* Mobile layout - title first */}
-                    <h3 className="md:hidden font-semibold text-gray-900 group-hover:text-portfolio-blue transition-colors line-clamp-1 mb-2">
-                      {notice.title}
-                    </h3>
-                    
-                    {/* PC layout - category and date first */}
-                    <div className="flex items-center gap-2 md:mb-2">
-                      <div className="flex items-center gap-1 text-gray-500 text-xs md:hidden">
-                        <Calendar className="h-3 w-3" />
-                        <span>{formatDate(notice.created_at)}</span>
-                      </div>
-                      <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                        categoryColors[notice.category]
-                      }`}>
-                        {categoryLabels[notice.category]}
-                      </span>
-                      <div className="hidden md:flex items-center gap-1 text-gray-500 text-xs">
-                        <Calendar className="h-3 w-3" />
-                        {formatDate(notice.created_at)}
-                      </div>
-                    </div>
-                    
-                    {/* PC - title after category/date */}
-                    <h3 className="hidden md:block font-bold text-lg text-gray-900 group-hover:text-portfolio-blue transition-colors line-clamp-1">
-                      {notice.title}
-                    </h3>
+                  
+                  {/* Category */}
+                  <div className="w-24 flex-shrink-0">
+                    <span className={`inline-flex px-3 py-1 text-xs font-medium border ${
+                      notice.category === 'news' ? 'border-blue-200 text-blue-700' :
+                      notice.category === 'webinar' ? 'border-purple-200 text-purple-700' :
+                      notice.category === 'event' ? 'border-pink-200 text-pink-700' :
+                      notice.category === 'maintenance' ? 'border-yellow-200 text-yellow-700' :
+                      'border-gray-200 text-gray-700'
+                    }`}>
+                      {categoryLabels[notice.category]}
+                    </span>
                   </div>
+                  
+                  {/* Title */}
+                  <h3 className="flex-1 font-medium text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-1">
+                    {notice.title}
+                  </h3>
 
-                  {/* Arrow */}
-                  <div className="flex items-center justify-center ml-4">
-                    <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-portfolio-blue transition-colors" />
+                  {/* Arrow Icon */}
+                  <div className="w-5 flex-shrink-0">
+                    <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-blue-600 transition-colors" />
                   </div>
                 </div>
               </div>

@@ -110,48 +110,60 @@ export default function DynamicHomeContent() {
               ))}
             </div>
           ) : (
-            <div className="bg-white rounded-lg border border-gray-200 divide-y divide-gray-100">
-              {latestNotices.map((notice) => (
-                <Link
-                  key={notice.id}
-                  href={`/notices/${notice.id}`}
-                  className="block px-6 py-4 hover:bg-gray-50 transition-colors group"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-gray-900 line-clamp-1 group-hover:text-portfolio-blue transition-colors mb-2 text-base">
-                        {notice.title}
-                      </h3>
-                      <div className="flex items-center gap-3">
-                        <div className="flex items-center gap-1 text-sm text-gray-500">
-                          <Calendar className="h-4 w-4" />
-                          <span>
-                            {new Date(notice.created_at).toLocaleDateString('ja-JP', {
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric'
-                            })}
+            <div className="divide-y divide-gray-200">
+              {latestNotices.map((notice) => {
+                const formatDate = (dateString: string) => {
+                  const date = new Date(dateString)
+                  const year = date.getFullYear()
+                  const month = (date.getMonth() + 1).toString().padStart(2, '0')
+                  const day = date.getDate().toString().padStart(2, '0')
+                  return `${year}.${month}.${day}`
+                }
+
+                return (
+                  <Link
+                    key={notice.id}
+                    href={`/notices/${notice.id}`}
+                    className="block group"
+                  >
+                    <div className="py-6 hover:bg-gray-50 transition-colors duration-200">
+                      <div className="flex items-center gap-4 px-2">
+                        {/* Date */}
+                        <div className="text-sm text-gray-600 font-medium w-24 flex-shrink-0">
+                          {formatDate(notice.created_at)}
+                        </div>
+                        
+                        {/* Category */}
+                        <div className="w-24 flex-shrink-0">
+                          <span className={`inline-flex px-3 py-1 text-xs font-medium border ${
+                            notice.category === 'news' ? 'border-blue-200 text-blue-700' :
+                            notice.category === 'webinar' ? 'border-purple-200 text-purple-700' :
+                            notice.category === 'event' ? 'border-pink-200 text-pink-700' :
+                            notice.category === 'maintenance' ? 'border-yellow-200 text-yellow-700' :
+                            'border-gray-200 text-gray-700'
+                          }`}>
+                            {notice.category === 'news' ? 'ニュース' :
+                             notice.category === 'webinar' ? 'ウェビナー' :
+                             notice.category === 'event' ? 'イベント' :
+                             notice.category === 'maintenance' ? 'メンテナンス' :
+                             'その他'}
                           </span>
                         </div>
-                        <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${
-                          notice.category === 'news' ? 'bg-blue-100 text-blue-700' :
-                          notice.category === 'webinar' ? 'bg-purple-100 text-purple-700' :
-                          notice.category === 'event' ? 'bg-pink-100 text-pink-700' :
-                          notice.category === 'maintenance' ? 'bg-yellow-100 text-yellow-700' :
-                          'bg-gray-100 text-gray-700'
-                        }`}>
-                          {notice.category === 'news' ? 'ニュース' :
-                           notice.category === 'webinar' ? 'ウェビナー' :
-                           notice.category === 'event' ? 'イベント' :
-                           notice.category === 'maintenance' ? 'メンテナンス' :
-                           'その他'}
-                        </span>
+                        
+                        {/* Title */}
+                        <h3 className="flex-1 font-medium text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-1">
+                          {notice.title}
+                        </h3>
+
+                        {/* Arrow Icon */}
+                        <div className="w-5 flex-shrink-0">
+                          <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-blue-600 transition-colors" />
+                        </div>
                       </div>
                     </div>
-                    <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-portfolio-blue transition-colors ml-4 flex-shrink-0" />
-                  </div>
-                </Link>
-              ))}
+                  </Link>
+                )
+              })}
             </div>
           )}
         </section>
