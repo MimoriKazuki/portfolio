@@ -85,7 +85,7 @@ export default function ServicesContent() {
         '座学だけでなく、実際の業務を想定したワークショップを通じて、現場で使えるスキルを習得。チーム全体のAI活用文化を定着させ、組織の生産性向上を実現します。'
       ],
       href: '/services/comprehensive-ai-training',
-      image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=600&fit=crop&crop=center',
+      image: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1470&auto=format&fit=crop',
       logoText: '生成AI総合研修',
       logoSubtext: 'エンゲージメントプラットフォーム'
     },
@@ -222,7 +222,8 @@ export default function ServicesContent() {
       </div>
 
       {/* Main Content Area - with right margin for navigation */}
-      <div className="xl:mr-48">
+      {/* right-48px(nav position) + w-40(nav width 160px) + 32px(gap) = 240px = mr-60 */}
+      <div className="xl:mr-60">
 
       {/* Hero Section */}
       <section className="mb-12">
@@ -299,22 +300,14 @@ export default function ServicesContent() {
             id={service.id}
             className="scroll-mt-24"
           >
-            {/* Image Area - Full Width */}
-            <div className={`relative rounded-3xl overflow-hidden mb-8 ${
-              activeTab === 'corporate' ? 'bg-blue-50' : 'bg-emerald-50'
-            }`}>
-              <div className="relative aspect-[16/9] md:aspect-[2/1] flex items-center justify-center p-8 md:p-12">
-                {/* Logo/Text Display */}
-                <div className="text-center z-10">
-                  <p className="text-3xl md:text-5xl font-bold text-gray-900 mb-2">{service.logoText}</p>
-                  <p className="text-sm md:text-base text-gray-500">{service.logoSubtext}</p>
-                </div>
-                {/* Optional: Background Image with low opacity */}
+            {/* Image Area - Full Width, 21:9 aspect ratio */}
+            <div className="relative overflow-hidden mb-8">
+              <div className="relative aspect-[21/9]">
                 <Image
                   src={service.image}
                   alt={service.label}
                   fill
-                  className="object-cover opacity-20"
+                  className="object-cover"
                   sizes="100vw"
                 />
               </div>

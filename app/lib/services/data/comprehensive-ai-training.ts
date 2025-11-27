@@ -11,7 +11,7 @@ export const COMPREHENSIVE_AI_TRAINING_METADATA: ServicePageMetadata = {
 export const COMPREHENSIVE_AI_TRAINING_DATA: ServiceData = {
   pageTitle: "生成AI総合研修",
   heroTitle: "生成AI総合研修",
-  heroImage: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=1920&h=1080&fit=crop&crop=center",
+  heroImage: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1920&h=1080&fit=crop",
   seoTitle: "AI人材を社内で育てる企業向けAI研修 - AI駆動研究所",
   
   heroCTA: {
