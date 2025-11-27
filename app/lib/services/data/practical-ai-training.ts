@@ -11,6 +11,7 @@ export const PRACTICAL_AI_TRAINING_METADATA: ServicePageMetadata = {
 export const PRACTICAL_AI_TRAINING_DATA: ServiceData = {
   pageTitle: "生成AI実務活用研修",
   heroTitle: "生成AI実務活用研修",
+  heroSubtitle: "明日から使える実践的なAI活用スキルで、業務効率を劇的に向上",
   heroImage: "https://images.unsplash.com/photo-1556761175-b413da4baf72?w=1920&h=1080&fit=crop&crop=center",
   seoTitle: "日常業務を革新する生成AI実務活用研修 - AI駆動研究所",
   
@@ -55,32 +56,20 @@ export const PRACTICAL_AI_TRAINING_DATA: ServiceData = {
     subtitle: "全ての職種・部門の方が対象です。業務効率化を求める全ての方に価値をお届けします",
     audiences: [
       {
-        name: "営業・マーケティング",
-        subtitle: "顧客対応・販促活動担当",
-        description: "提案書作成、顧客分析、キャンペーン企画等でのAI活用で成果を最大化",
-        rating: 5,
-        iconName: "Target"
+        image: "https://images.unsplash.com/photo-1556761175-b413da4baf72?w=300&h=300&fit=crop&crop=center",
+        text: "{顧客対応・販促活動}をAIで効率化したい{営業・マーケティング}の方"
       },
       {
-        name: "人事・総務",
-        subtitle: "人材管理・社内業務担当",
-        description: "採用活動、人事評価、規定作成等の業務をAIで効率化",
-        rating: 4,
-        iconName: "Users"
+        image: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=300&h=300&fit=crop&crop=center",
+        text: "{採用・人事評価}等の業務を効率化したい{人事・総務}担当の方"
       },
       {
-        name: "経理・財務",
-        subtitle: "数値分析・レポート作成担当",
-        description: "データ分析、レポート作成、予算策定等でのAI活用を習得",
-        rating: 4,
-        iconName: "TrendingUp"
+        image: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=300&h=300&fit=crop&crop=center",
+        text: "{データ分析・レポート作成}を効率化したい{経理・財務}担当の方"
       },
       {
-        name: "一般事務・アシスタント",
-        subtitle: "日常業務・サポート業務担当",
-        description: "スケジュール管理、資料作成、情報整理等をAIで劇的に効率化",
-        rating: 5,
-        iconName: "CheckCircle"
+        image: "https://images.unsplash.com/photo-1521737604893-d14cc237f11d?w=300&h=300&fit=crop&crop=center",
+        text: "{日常業務}をAIで劇的に効率化したい{一般事務・アシスタント}の方"
       }
     ]
   },

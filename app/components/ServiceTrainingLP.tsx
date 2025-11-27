@@ -44,11 +44,8 @@ interface ServiceOverviewItem {
 
 // Target Audience Interface
 interface TargetAudience {
-  name: string
-  subtitle: string
-  description: string
-  rating: number
-  iconName: string
+  image: string
+  text: string
 }
 
 // FAQ Interface
@@ -73,6 +70,7 @@ interface ServiceTrainingLPProps {
   // Page metadata
   pageTitle: string
   heroTitle: string
+  heroSubtitle?: string
   heroImage: string
   seoTitle: string
   
@@ -185,6 +183,7 @@ interface ServiceTrainingLPProps {
 export default function ServiceTrainingLP({
   pageTitle,
   heroTitle,
+  heroSubtitle,
   heroImage,
   seoTitle,
   heroCTA,
@@ -327,16 +326,6 @@ export default function ServiceTrainingLP({
 
           <div className="relative z-10 flex items-center h-full max-w-[1023px] mx-auto px-4 sm:px-6 lg:px-8">
             <div>
-              <p
-                className={`${colors.textLight} text-sm font-medium mb-2 tracking-wide`}
-                style={{
-                  opacity: heroLoaded ? 1 : 0,
-                  transform: heroLoaded ? 'translateX(0)' : 'translateX(-20px)',
-                  transition: 'opacity 0.8s ease-out 0.2s, transform 0.8s ease-out 0.2s',
-                }}
-              >
-                TRAINING PROGRAM
-              </p>
               <h2
                 className="text-3xl md:text-4xl lg:text-5xl text-white font-bold tracking-tight"
                 style={{
@@ -347,48 +336,37 @@ export default function ServiceTrainingLP({
               >
                 {heroTitle}
               </h2>
+              {heroSubtitle && (
+                <p
+                  className="mt-4 text-lg md:text-xl text-white/90 font-medium max-w-2xl"
+                  style={{
+                    opacity: heroLoaded ? 1 : 0,
+                    transform: heroLoaded ? 'translateX(0)' : 'translateX(-20px)',
+                    transition: 'opacity 0.8s ease-out 0.4s, transform 0.8s ease-out 0.4s',
+                  }}
+                >
+                  {heroSubtitle}
+                </p>
+              )}
+              <Link
+                href={heroCTA.inquiryHref}
+                className={`mt-8 px-8 py-3 ${colors.primary} text-white font-medium ${colors.primaryHover} transition-colors duration-200 inline-flex items-center gap-2`}
+                style={{
+                  opacity: heroLoaded ? 1 : 0,
+                  transform: heroLoaded ? 'translateX(0)' : 'translateX(-20px)',
+                  transition: 'opacity 0.8s ease-out 0.5s, transform 0.8s ease-out 0.5s',
+                }}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                  <rect width="20" height="16" x="2" y="4" rx="2"/>
+                  <path d="m22 7-10 5L2 7"/>
+                </svg>
+                無料相談を予約する
+              </Link>
             </div>
           </div>
         </div>
       </div>
-
-      {/* Hero CTA Buttons */}
-      <section className="py-10">
-        <div className="max-w-[1023px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center"
-            style={{
-              opacity: heroLoaded ? 1 : 0,
-              transform: heroLoaded ? 'translateY(0)' : 'translateY(20px)',
-              transition: 'opacity 0.8s ease-out 0.5s, transform 0.8s ease-out 0.5s',
-            }}
-          >
-            <Link
-              href={heroCTA.documentHref}
-              className="px-10 py-4 bg-white text-gray-900 font-medium border border-gray-300 hover:bg-gray-50 transition-colors duration-200 flex items-center gap-2"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                <polyline points="7,10 12,15 17,10"/>
-                <line x1="12" y1="15" x2="12" y2="3"/>
-              </svg>
-              資料をダウンロード
-            </Link>
-            <Link
-              href={heroCTA.inquiryHref}
-              className={`group relative inline-flex items-center justify-center px-10 py-4 overflow-hidden font-medium transition-all bg-white text-gray-900 border ${colors.border} hover:text-white`}
-            >
-              {/* 斜めの青いエリア - ホバー時に展開 */}
-              <span className={`w-96 h-96 rotate-[-40deg] ${colors.primary} absolute bottom-0 left-0 -translate-x-full ease-out duration-500 transition-all translate-y-full mb-16 ml-16 group-hover:ml-0 group-hover:mb-48 group-hover:translate-x-0`}></span>
-              <svg className={`w-5 h-5 mr-2 ${colors.text} group-hover:text-white transition-colors duration-300 relative z-10`} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                <rect width="20" height="16" x="2" y="4" rx="2"/>
-                <path d="m22 7-10 5L2 7"/>
-              </svg>
-              <span className="relative z-10">無料相談を予約する</span>
-            </Link>
-          </div>
-        </div>
-      </section>
 
       <div className="max-w-[1023px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* Service Overview Section */}
@@ -404,7 +382,7 @@ export default function ServiceTrainingLP({
               transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
             }}
           >
-            <p className={`${colors.text} text-sm font-medium mb-2 tracking-wide`}>FEATURES</p>
+            <p className={`${colors.text} text-2xl font-medium mb-2 tracking-tight`}>Features</p>
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">{serviceOverview.title}</h2>
             {serviceOverview.subtitle && (
               <p className="text-gray-600 leading-relaxed max-w-3xl">
@@ -448,9 +426,9 @@ export default function ServiceTrainingLP({
               transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
             }}
           >
-            <p className={`${colors.text} text-sm font-medium mb-2 tracking-wide`}>TARGET</p>
+            <p className={`${colors.text} text-2xl font-medium mb-2 tracking-tight`}>Target</p>
             <h3 className="text-2xl font-bold text-gray-900 mb-8">{targetAudience.title}</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {targetAudience.audiences.map((audience, index) => (
                 <div
                   key={index}
@@ -461,11 +439,8 @@ export default function ServiceTrainingLP({
                   }}
                 >
                   <TargetAudienceCard
-                    name={audience.name}
-                    subtitle={audience.subtitle}
-                    description={audience.description}
-                    rating={audience.rating}
-                    icon={getIconComponent(audience.iconName)}
+                    image={audience.image}
+                    text={audience.text}
                     theme={theme}
                   />
                 </div>
@@ -487,7 +462,7 @@ export default function ServiceTrainingLP({
               transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
             }}
           >
-            <p className={`${colors.text} text-sm font-medium mb-2 tracking-wide`}>TRANSFORMATION</p>
+            <p className={`${colors.text} text-2xl font-medium mb-2 tracking-tight`}>Transformation</p>
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">{expectedChanges.title}</h2>
             <p className="text-gray-600 leading-relaxed max-w-2xl">
               {expectedChanges.subtitle}
@@ -577,14 +552,13 @@ export default function ServiceTrainingLP({
                 </Link>
                 <Link
                   href={midCTA.inquiryHref}
-                  className={`group relative inline-flex items-center justify-center px-10 py-4 overflow-hidden font-medium transition-all bg-white text-gray-900 border ${colors.border} hover:text-white`}
+                  className={`px-10 py-4 ${colors.primary} text-white font-medium ${colors.primaryHover} transition-colors duration-200 flex items-center gap-2`}
                 >
-                  <span className={`w-96 h-96 rotate-[-40deg] ${colors.primary} absolute bottom-0 left-0 -translate-x-full ease-out duration-500 transition-all translate-y-full mb-16 ml-16 group-hover:ml-0 group-hover:mb-48 group-hover:translate-x-0`}></span>
-                  <svg className={`w-5 h-5 mr-2 ${colors.text} group-hover:text-white transition-colors duration-300 relative z-10`} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                     <rect width="20" height="16" x="2" y="4" rx="2"/>
                     <path d="m22 7-10 5L2 7"/>
                   </svg>
-                  <span className="relative z-10">無料相談を予約する</span>
+                  無料相談を予約する
                 </Link>
               </div>
             </div>
@@ -604,7 +578,7 @@ export default function ServiceTrainingLP({
               transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
             }}
           >
-            <p className={`${colors.text} text-sm font-medium mb-2 tracking-wide`}>CURRICULUM</p>
+            <p className={`${colors.text} text-2xl font-medium mb-2 tracking-tight`}>Curriculum</p>
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900">{curriculum.title}</h2>
           </div>
           <div className="space-y-4">
@@ -675,7 +649,7 @@ export default function ServiceTrainingLP({
               transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
             }}
           >
-            <p className={`${colors.text} text-sm font-medium mb-2 tracking-wide`}>FLOW</p>
+            <p className={`${colors.text} text-2xl font-medium mb-2 tracking-tight`}>Flow</p>
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">{flow.title}</h2>
             <p className="text-gray-600 leading-relaxed max-w-2xl">
               {flow.subtitle}
@@ -729,7 +703,7 @@ export default function ServiceTrainingLP({
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link
                 href={additionalCTA.documentHref}
-                className={`px-10 py-4 bg-white ${colors.text} font-medium border ${colors.border} ${colors.bgLightHover} transition-colors duration-200 flex items-center gap-2`}
+                className="px-10 py-4 bg-white text-gray-900 font-medium border border-gray-300 hover:bg-gray-50 transition-colors duration-200 flex items-center gap-2"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
@@ -765,7 +739,7 @@ export default function ServiceTrainingLP({
               transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
             }}
           >
-            <p className={`${colors.text} text-sm font-medium mb-2 tracking-wide`}>OVERVIEW</p>
+            <p className={`${colors.text} text-2xl font-medium mb-2 tracking-tight`}>Overview</p>
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900">{overviewTable.title}</h2>
           </div>
           <div
@@ -806,7 +780,7 @@ export default function ServiceTrainingLP({
               transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
             }}
           >
-            <p className={`${colors.text} text-sm font-medium mb-2 tracking-wide`}>FAQ</p>
+            <p className={`${colors.text} text-2xl font-medium mb-2 tracking-tight`}>Faq</p>
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900">{faq.title}</h2>
           </div>
           <div className="space-y-3">
@@ -874,14 +848,13 @@ export default function ServiceTrainingLP({
               </Link>
               <Link
                 href={finalCTA.inquiryHref}
-                className={`group relative inline-flex items-center justify-center px-10 py-4 overflow-hidden font-medium transition-all bg-white text-gray-900 border ${colors.border} hover:text-white`}
+                className={`px-10 py-4 ${colors.primary} text-white font-medium ${colors.primaryHover} transition-colors duration-200 flex items-center gap-2`}
               >
-                <span className={`w-96 h-96 rotate-[-40deg] ${colors.primary} absolute bottom-0 left-0 -translate-x-full ease-out duration-500 transition-all translate-y-full mb-16 ml-16 group-hover:ml-0 group-hover:mb-48 group-hover:translate-x-0`}></span>
-                <svg className={`w-5 h-5 mr-2 ${colors.text} group-hover:text-white transition-colors duration-300 relative z-10`} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                   <rect width="20" height="16" x="2" y="4" rx="2"/>
                   <path d="m22 7-10 5L2 7"/>
                 </svg>
-                <span className="relative z-10">無料相談を予約する</span>
+                無料相談を予約する
               </Link>
             </div>
           </div>
@@ -900,7 +873,7 @@ export default function ServiceTrainingLP({
               transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
             }}
           >
-            <p className={`${colors.text} text-sm font-medium mb-2 tracking-wide`}>OTHER PROGRAMS</p>
+            <p className={`${colors.text} text-2xl font-medium mb-2 tracking-tight`}>Other programs</p>
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900">{otherTrainingPrograms.title}</h2>
           </div>
           <div

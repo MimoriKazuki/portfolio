@@ -98,27 +98,24 @@ const HeroSection = () => {
                 >
                     <a
                         href="/documents"
-                        className="inline-flex items-center justify-center px-8 py-4 bg-white text-gray-900 font-medium border border-gray-300 hover:bg-gray-50 transition-colors duration-200 text-base"
+                        className="px-10 py-4 bg-white text-gray-900 font-medium border border-gray-300 hover:bg-gray-50 transition-colors duration-200 flex items-center gap-2"
                     >
-                        <svg className="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                             <polyline points="7,10 12,15 17,10"/>
                             <line x1="12" y1="15" x2="12" y2="3"/>
                         </svg>
-                        <span>資料ダウンロード</span>
+                        資料をダウンロード
                     </a>
                     <a
                         href="/contact"
-                        className="relative inline-flex items-center justify-center px-8 py-4 overflow-hidden font-medium transition-all bg-white text-gray-900 border border-blue-600 hover:text-white group"
+                        className="px-10 py-4 bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors duration-200 flex items-center gap-2"
                     >
-                        {/* 斜めの青いエリア - 回転した正方形が左下から広がる */}
-                        <span className="w-96 h-96 rotate-[-40deg] bg-blue-600 absolute bottom-0 left-0 -translate-x-full ease-out duration-500 transition-all translate-y-full mb-16 ml-16 group-hover:ml-0 group-hover:mb-48 group-hover:translate-x-0"></span>
-
-                        <svg className="w-5 h-5 mr-3 text-blue-600 group-hover:text-white transition-colors duration-300 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                             <rect width="20" height="16" x="2" y="4" rx="2"/>
                             <path d="m22 7-10 5L2 7"/>
                         </svg>
-                        <span className="relative z-10 text-base">無料相談を予約する</span>
+                        無料相談を予約する
                     </a>
                 </div>
             </div>

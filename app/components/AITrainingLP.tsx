@@ -44,26 +44,25 @@ export default function AITrainingLP({ latestColumns, featuredProjects }: AITrai
         <div className="max-w-[1023px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              href="/contact?source=ai_training_hero_inquiry"
-              className="group relative overflow-hidden px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:bg-blue-700 transform hover:-translate-y-1 flex items-center justify-center"
+              href="/documents"
+              className="px-10 py-4 bg-white text-gray-900 font-medium border border-gray-300 hover:bg-gray-50 transition-colors duration-200 flex items-center gap-2"
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out"></div>
-              <svg className="w-4 h-4 mr-2 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                <rect width="20" height="16" x="2" y="4" rx="2"/>
-                <path d="m22 7-10 5L2 7"/>
-              </svg>
-              <span className="relative z-10">無料相談を予約する</span>
-            </Link>
-            <Link
-              href="/contact?source=ai_training_hero_material"
-              className="group px-6 py-3 bg-white text-gray-900 font-semibold rounded-lg border-2 border-blue-200 shadow-sm hover:shadow-lg hover:border-blue-300 hover:bg-blue-50 transition-all duration-300 flex items-center justify-center"
-            >
-              <svg className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                 <polyline points="7,10 12,15 17,10"/>
                 <line x1="12" y1="15" x2="12" y2="3"/>
               </svg>
-              <span className="group-hover:text-blue-700 transition-colors duration-200">研修資料をダウンロード</span>
+              資料をダウンロード
+            </Link>
+            <Link
+              href="/contact?source=ai_training_hero_inquiry"
+              className="px-10 py-4 bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors duration-200 flex items-center gap-2"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                <rect width="20" height="16" x="2" y="4" rx="2"/>
+                <path d="m22 7-10 5L2 7"/>
+              </svg>
+              無料相談を予約する
             </Link>
           </div>
         </div>
@@ -135,42 +134,27 @@ export default function AITrainingLP({ latestColumns, featuredProjects }: AITrai
           <h3 className="text-2xl font-bold text-gray-900 mb-8 text-center">こんな方におすすめです</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {[
-            { 
-              name: "管理職・リーダー",
-              subtitle: "部門長・DX推進責任者",
-              description: "AI活用戦略を策定し組織のDX推進を主導。経営視点でAI導入の投資対効果を判断します。",
-              rating: 5,
-              icon: Crown
+            {
+              image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=300&h=300&fit=crop&crop=center",
+              text: "{AI活用戦略}を策定し組織の{DX推進}を主導したい{管理職・リーダー}の方"
             },
-            { 
-              name: "中堅社員",
-              subtitle: "チームリーダー・生産性向上担当",
-              description: "業務効率化を推進しチーム生産性向上をリード。現場で実践経験を積む方に最適です。",
-              rating: 4,
-              icon: UserCheck
+            {
+              image: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=300&h=300&fit=crop&crop=center",
+              text: "{業務効率化}を推進しチームの{生産性向上}をリードしたい{中堅社員}の方"
             },
-            { 
-              name: "若手社員",
-              subtitle: "キャリア1-3年目・スキルアップ志向",
-              description: "AIの基礎スキルを習得し効率的な業務遂行を実現。キャリアアップを目指す方向けです。",
-              rating: 4,
-              icon: Zap
+            {
+              image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=300&h=300&fit=crop&crop=center",
+              text: "AIの{基礎スキル}を習得し{キャリアアップ}を目指す{若手社員}の方"
             },
-            { 
-              name: "内定者・新入社員",
-              subtitle: "これから社会人・早期戦力化希望",
-              description: "入社前からAIリテラシーを身につけ即戦力で活躍。社会人への移行に最適です。",
-              rating: 3,
-              icon: GraduationCap
+            {
+              image: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=300&h=300&fit=crop&crop=center",
+              text: "入社前から{AIリテラシー}を身につけ{即戦力}で活躍したい{新入社員}の方"
             }
           ].map((item, index) => (
             <TargetAudienceCard
               key={index}
-              name={item.name}
-              subtitle={item.subtitle}
-              description={item.description}
-              rating={item.rating}
-              icon={item.icon}
+              image={item.image}
+              text={item.text}
             />
           ))}
           </div>
@@ -291,26 +275,25 @@ export default function AITrainingLP({ latestColumns, featuredProjects }: AITrai
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
-                href="/contact?source=ai_training_mid_inquiry"
-                className="group relative overflow-hidden px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:bg-blue-700 transform hover:-translate-y-1 flex items-center justify-center"
+                href="/documents"
+                className="px-10 py-4 bg-white text-gray-900 font-medium border border-gray-300 hover:bg-gray-50 transition-colors duration-200 flex items-center gap-2"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out"></div>
-                <svg className="w-4 h-4 mr-2 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                  <rect width="20" height="16" x="2" y="4" rx="2"/>
-                  <path d="m22 7-10 5L2 7"/>
-                </svg>
-                <span className="relative z-10">無料相談を予約する</span>
-              </Link>
-              <Link
-                href="/contact?source=ai_training_mid_material"
-                className="group px-6 py-3 bg-white text-gray-900 font-semibold rounded-lg border-2 border-blue-200 shadow-sm hover:shadow-lg hover:border-blue-300 hover:bg-blue-50 transition-all duration-300 flex items-center justify-center"
-              >
-                <svg className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                   <polyline points="7,10 12,15 17,10"/>
                   <line x1="12" y1="15" x2="12" y2="3"/>
                 </svg>
-                <span className="group-hover:text-blue-700 transition-colors duration-200">研修資料をダウンロード</span>
+                資料をダウンロード
+              </Link>
+              <Link
+                href="/contact?source=ai_training_mid_inquiry"
+                className="px-10 py-4 bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors duration-200 flex items-center gap-2"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                  <rect width="20" height="16" x="2" y="4" rx="2"/>
+                  <path d="m22 7-10 5L2 7"/>
+                </svg>
+                無料相談を予約する
               </Link>
             </div>
           </div>
@@ -536,26 +519,25 @@ export default function AITrainingLP({ latestColumns, featuredProjects }: AITrai
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link
-              href="/contact?source=ai_lp_inquiry"
-              className="group relative overflow-hidden px-8 py-4 bg-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:bg-blue-700 transform hover:-translate-y-1 flex items-center"
+              href="/documents"
+              className="px-10 py-4 bg-white text-gray-900 font-medium border border-gray-300 hover:bg-gray-50 transition-colors duration-200 flex items-center gap-2"
             >
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out"></div>
-              <svg className="w-5 h-5 mr-2 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                <rect width="20" height="16" x="2" y="4" rx="2"/>
-                <path d="m22 7-10 5L2 7"/>
-              </svg>
-              <span className="relative z-10">無料相談予約</span>
-            </Link>
-            <Link
-              href="/contact?source=ai_lp_material"
-              className="group px-8 py-4 bg-white/90 backdrop-blur-sm text-gray-900 font-semibold rounded-xl border-2 border-blue-200 shadow-sm hover:shadow-lg hover:border-blue-300 hover:bg-blue-50 transition-all duration-300 flex items-center"
-            >
-              <svg className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                 <polyline points="7,10 12,15 17,10"/>
                 <line x1="12" y1="15" x2="12" y2="3"/>
               </svg>
-              <span className="group-hover:text-blue-700 transition-colors duration-200">資料ダウンロード</span>
+              資料をダウンロード
+            </Link>
+            <Link
+              href="/contact?source=ai_lp_inquiry"
+              className="px-10 py-4 bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors duration-200 flex items-center gap-2"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                <rect width="20" height="16" x="2" y="4" rx="2"/>
+                <path d="m22 7-10 5L2 7"/>
+              </svg>
+              無料相談を予約する
             </Link>
           </div>
         </div>

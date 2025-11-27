@@ -11,6 +11,7 @@ export const COMPREHENSIVE_AI_TRAINING_METADATA: ServicePageMetadata = {
 export const COMPREHENSIVE_AI_TRAINING_DATA: ServiceData = {
   pageTitle: "生成AI総合研修",
   heroTitle: "生成AI総合研修",
+  heroSubtitle: "全社員のAIリテラシーを底上げし、組織全体のDX推進を加速する",
   heroImage: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1920&h=1080&fit=crop",
   seoTitle: "AI人材を社内で育てる企業向けAI研修 - AI駆動研究所",
   
@@ -55,32 +56,20 @@ export const COMPREHENSIVE_AI_TRAINING_DATA: ServiceData = {
     subtitle: "職種・スキルレベルに関わらず、すべての社員が効果的に学習できる包括的な研修プログラムです",
     audiences: [
       {
-        name: "経営陣・管理職",
-        subtitle: "組織のAI戦略立案・推進責任者",
-        description: "AI活用による事業戦略とROI最大化を学習",
-        rating: 5,
-        iconName: "Crown"
+        image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=300&h=300&fit=crop&crop=center",
+        text: "{AI戦略}の立案・推進を担う{経営陣・管理職}の方"
       },
       {
-        name: "マネージャー層",
-        subtitle: "部署・チームのDX推進リーダー",
-        description: "チーム全体のAI活用促進とマネジメント手法",
-        rating: 5,
-        iconName: "UserCheck"
+        image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=300&h=300&fit=crop&crop=center",
+        text: "チームの{DX推進}をリードする{マネージャー層}の方"
       },
       {
-        name: "一般社員",
-        subtitle: "日常業務での生産性向上を目指す方",
-        description: "実務に直結するAI活用テクニックを習得",
-        rating: 4,
-        iconName: "TrendingUp"
+        image: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=300&h=300&fit=crop&crop=center",
+        text: "日常業務で{生産性向上}を目指す{一般社員}の方"
       },
       {
-        name: "新入社員・若手",
-        subtitle: "AI時代のビジネススキルを身につけたい方",
-        description: "基礎から応用まで段階的にスキルアップ",
-        rating: 5,
-        iconName: "GraduationCap"
+        image: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=300&h=300&fit=crop&crop=center",
+        text: "{AI時代}のビジネススキルを身につけたい{新入社員・若手}の方"
       }
     ]
   },

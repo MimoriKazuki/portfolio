@@ -11,6 +11,7 @@ export const AI_CODING_TRAINING_METADATA: ServicePageMetadata = {
 export const AI_CODING_TRAINING_DATA: ServiceData = {
   pageTitle: "AIコーディング研修",
   heroTitle: "AIコーディング研修",
+  heroSubtitle: "GitHub CopilotやClaude Codeを活用し、開発効率を3〜5倍に向上",
   heroImage: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1920&h=1080&fit=crop&crop=center",
   seoTitle: "開発効率を革新するAI支援プログラミング研修 - AI駆動研究所",
   
@@ -55,32 +56,20 @@ export const AI_CODING_TRAINING_DATA: ServiceData = {
     subtitle: "開発に関わる全てのエンジニアとマネージャーに価値をお届けします",
     audiences: [
       {
-        name: "フロントエンドエンジニア",
-        subtitle: "Web・モバイルアプリ開発担当",
-        description: "React、Vue.js等の開発効率を AIの力で飛躍的に向上",
-        rating: 5,
-        iconName: "Zap"
+        image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=300&h=300&fit=crop&crop=center",
+        text: "{Web・モバイル開発}の効率を上げたい{フロントエンドエンジニア}の方"
       },
       {
-        name: "バックエンドエンジニア",
-        subtitle: "サーバーサイド・API開発担当",
-        description: "複雑なロジック実装やAPI設計をAI支援で効率化",
-        rating: 5,
-        iconName: "Settings"
+        image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=300&h=300&fit=crop&crop=center",
+        text: "{API設計・実装}を効率化したい{バックエンドエンジニア}の方"
       },
       {
-        name: "開発マネージャー",
-        subtitle: "チームリード・技術責任者",
-        description: "チーム全体の開発生産性向上とコード品質管理を実現",
-        rating: 4,
-        iconName: "Crown"
+        image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=300&h=300&fit=crop&crop=center",
+        text: "チームの{開発生産性}を向上させたい{開発マネージャー}の方"
       },
       {
-        name: "新人エンジニア",
-        subtitle: "プログラミング学習中・スキルアップ希望",
-        description: "AI支援で実践的なコーディングスキルを短期間で習得",
-        rating: 4,
-        iconName: "GraduationCap"
+        image: "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=300&h=300&fit=crop&crop=center",
+        text: "AI支援で{コーディングスキル}を短期間で習得したい{新人エンジニア}の方"
       }
     ]
   },

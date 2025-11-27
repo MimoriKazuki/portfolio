@@ -11,6 +11,7 @@ export const AI_WRITING_TRAINING_METADATA: ServicePageMetadata = {
 export const AI_WRITING_TRAINING_DATA: ServiceData = {
   pageTitle: "AIライティング研修",
   heroTitle: "AIライティング研修",
+  heroSubtitle: "AIの力で文書作成を効率化し、質の高いビジネス文書を素早く作成",
   heroImage: "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=1920&h=1080&fit=crop&crop=center",
   seoTitle: "ビジネス文書作成の効率化を実現するAIライティング研修 - AI駆動研究所",
   
@@ -55,32 +56,20 @@ export const AI_WRITING_TRAINING_DATA: ServiceData = {
     subtitle: "文書作成業務に関わる全ての方に価値をお届けします",
     audiences: [
       {
-        name: "営業・マーケティング",
-        subtitle: "提案書・企画書作成担当",
-        description: "説得力のある提案書や魅力的なマーケティング文書を効率的に作成",
-        rating: 5,
-        iconName: "Target"
+        image: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=300&h=300&fit=crop&crop=center",
+        text: "{提案書・企画書}を効率的に作成したい{営業・マーケティング}の方"
       },
       {
-        name: "人事・総務",
-        subtitle: "社内文書・規定作成担当",
-        description: "明確で分かりやすい社内文書や規定を迅速に作成",
-        rating: 4,
-        iconName: "Users"
+        image: "https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=300&h=300&fit=crop&crop=center",
+        text: "{社内文書・規定}を明確に作成したい{人事・総務}担当の方"
       },
       {
-        name: "経営企画",
-        subtitle: "戦略文書・報告書作成担当",
-        description: "経営層向けの戦略的文書を論理的かつ簡潔に作成",
-        rating: 5,
-        iconName: "Crown"
+        image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=300&h=300&fit=crop&crop=center",
+        text: "{戦略文書・報告書}を論理的に作成したい{経営企画}の方"
       },
       {
-        name: "技術者・エンジニア",
-        subtitle: "技術文書・仕様書作成担当",
-        description: "技術的内容を分かりやすく文書化し、チーム内での情報共有を効率化",
-        rating: 4,
-        iconName: "Settings"
+        image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=300&h=300&fit=crop&crop=center",
+        text: "{技術文書・仕様書}を分かりやすく作成したい{エンジニア}の方"
       }
     ]
   },

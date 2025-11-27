@@ -11,6 +11,7 @@ export const AI_VIDEO_TRAINING_METADATA: ServicePageMetadata = {
 export const AI_VIDEO_TRAINING_DATA: ServiceData = {
   pageTitle: "AI動画生成研修",
   heroTitle: "AI動画生成研修",
+  heroSubtitle: "最新のAI技術で、プロレベルの動画を誰でも短時間で制作",
   heroImage: "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=1920&h=1080&fit=crop&crop=center",
   seoTitle: "プロレベルの動画を誰でも作れるAI動画生成研修 - AI駆動研究所",
   
@@ -55,32 +56,20 @@ export const AI_VIDEO_TRAINING_DATA: ServiceData = {
     subtitle: "動画制作に関わる全ての部署・職種の方に価値をお届けします",
     audiences: [
       {
-        name: "マーケティング・広報",
-        subtitle: "プロモーション動画制作担当",
-        description: "魅力的なマーケティング動画や広報コンテンツを効率的に制作",
-        rating: 5,
-        iconName: "Target"
+        image: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=300&h=300&fit=crop&crop=center",
+        text: "{プロモーション動画}を効率的に制作したい{マーケティング・広報}の方"
       },
       {
-        name: "営業・セールス",
-        subtitle: "提案動画・デモ制作担当",
-        description: "説得力のある営業動画や商品デモンストレーションを素早く作成",
-        rating: 4,
-        iconName: "TrendingUp"
+        image: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=300&h=300&fit=crop&crop=center",
+        text: "{提案動画・デモ}を素早く作成したい{営業・セールス}担当の方"
       },
       {
-        name: "人事・研修担当",
-        subtitle: "教育コンテンツ制作担当",
-        description: "社員研修や新人教育用の動画コンテンツを効率的に制作",
-        rating: 4,
-        iconName: "Users"
+        image: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=300&h=300&fit=crop&crop=center",
+        text: "{教育コンテンツ}を効率的に制作したい{人事・研修}担当の方"
       },
       {
-        name: "クリエイティブ職",
-        subtitle: "デザイナー・プランナー",
-        description: "AI技術を駆使してクリエイティブワークの可能性を大幅に拡張",
-        rating: 5,
-        iconName: "Lightbulb"
+        image: "https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=300&h=300&fit=crop&crop=center",
+        text: "AI技術で{クリエイティブワーク}の可能性を拡張したい{デザイナー}の方"
       }
     ]
   },

@@ -7,11 +7,8 @@ export interface ServiceOverviewItem {
 }
 
 export interface TargetAudience {
-  name: string
-  subtitle: string
-  description: string
-  rating: number
-  iconName: string
+  image: string
+  text: string
 }
 
 export interface ExpectedChangeBefore {
@@ -49,6 +46,7 @@ export interface ServiceData {
   // Page metadata
   pageTitle: string
   heroTitle: string
+  heroSubtitle?: string
   heroImage: string
   seoTitle: string
   

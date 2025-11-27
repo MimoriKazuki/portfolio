@@ -11,6 +11,7 @@ export const AI_TALENT_DEVELOPMENT_METADATA: ServicePageMetadata = {
 export const AI_TALENT_DEVELOPMENT_DATA: ServiceData = {
   pageTitle: "AI人材育成所",
   heroTitle: "AI人材育成所",
+  heroSubtitle: "あなたのペースで学び、AIスキルでキャリアを次のステージへ",
   heroImage: "https://images.unsplash.com/photo-1500989145603-8e7ef71d639e?w=1920&h=1080&fit=crop&crop=center",
   seoTitle: "個人でAIスキルを身につけてキャリアアップ - AI人材育成所 | AI駆動研究所",
   
@@ -55,32 +56,20 @@ export const AI_TALENT_DEVELOPMENT_DATA: ServiceData = {
     subtitle: "AIスキルでキャリアアップを目指す全ての個人の方が対象です",
     audiences: [
       {
-        name: "転職を考えている方",
-        subtitle: "AIスキルで市場価値を向上したい",
-        description: "AI人材として転職市場での競争力を高め、理想のキャリアを実現",
-        rating: 5,
-        iconName: "TrendingUp"
+        image: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=300&h=300&fit=crop&crop=center",
+        text: "AIを{本格的に}学んで{転職・キャリアアップ}を実現したい方"
       },
       {
-        name: "現職でのスキルアップ希望",
-        subtitle: "社内での評価・昇進を目指したい",
-        description: "AIスキルで現在の職場での価値を高め、昇進・昇格を実現",
-        rating: 4,
-        iconName: "Crown"
+        image: "https://images.unsplash.com/photo-1553028826-f4804a6dba3b?w=300&h=300&fit=crop&crop=center",
+        text: "現職で{AIスキル}を活かして{昇進・評価向上}を目指したい方"
       },
       {
-        name: "フリーランス・副業志向",
-        subtitle: "AIスキルで収入源を増やしたい",
-        description: "AI関連の案件受注や副業展開で、収入の多様化を実現",
-        rating: 4,
-        iconName: "Zap"
+        image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=300&h=300&fit=crop&crop=center",
+        text: "{フリーランス・副業}でAI関連の{収入源}を増やしたい方"
       },
       {
-        name: "学生・新卒",
-        subtitle: "就職活動で差別化を図りたい",
-        description: "AIスキルで就職活動を有利に進め、希望する企業への内定を獲得",
-        rating: 5,
-        iconName: "GraduationCap"
+        image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=300&h=300&fit=crop&crop=center",
+        text: "{就職活動}でAIスキルを武器に{差別化}を図りたい学生の方"
       }
     ]
   },
