@@ -32,7 +32,7 @@ export const COMPREHENSIVE_AI_TRAINING_DATA: ServiceData = {
       { name: "Gemini", logo: "gemini" }
     ],
     descriptionBottom: "プロンプト設計、業務改善、セキュリティ対策まで、生成AI活用に必要なスキルを総合的に習得。文書作成、データ分析、企画立案、カスタマーサポートなど、あらゆる業務シーンでのAI活用方法を実践的に学びます。研修終了後は、即座に現場で活用できる実践力が身につきます。",
-    featureImage: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=600&fit=crop&crop=center",
+    featureImage: "https://images.unsplash.com/photo-1653299832314-5d3dc1e5a83c?w=400&h=600&fit=crop&crop=center",
     items: [
       {
         title: "包括的なAI学習",

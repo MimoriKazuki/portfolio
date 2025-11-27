@@ -32,7 +32,7 @@ export const AI_CODING_TRAINING_DATA: ServiceData = {
       { name: "Gemini", logo: "gemini" }
     ],
     descriptionBottom: "AI支援開発環境の構築から、効果的なプロンプト設計、チーム開発への適用方法まで、実践的なスキルを体系的に学習。フロントエンド、バックエンド、データベース操作など、あらゆる開発領域でAIを活用できるようになります。研修後は開発効率が3〜5倍向上し、コード品質も大幅に改善されます。",
-    featureImage: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=600&fit=crop&crop=center",
+    featureImage: "https://images.unsplash.com/photo-1641824142582-e5b723d28806?w=400&h=600&fit=crop&crop=center",
     items: [
       {
         title: "開発効率向上",
