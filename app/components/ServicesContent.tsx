@@ -203,13 +203,15 @@ export default function ServicesContent() {
                 }}
                 className={`group flex items-center gap-3 text-base transition-colors duration-200 ${
                   isActive
-                    ? 'text-blue-600 font-medium'
+                    ? activeTab === 'corporate' ? 'text-blue-600 font-medium' : 'text-emerald-600 font-medium'
                     : 'text-gray-600 hover:text-gray-900'
                 }`}
               >
                 <span
                   className={`w-2 h-2 rounded-full flex-shrink-0 transition-colors duration-200 ${
-                    isActive ? 'bg-blue-600' : 'bg-transparent'
+                    isActive
+                      ? activeTab === 'corporate' ? 'bg-blue-600' : 'bg-emerald-600'
+                      : 'bg-transparent'
                   }`}
                 />
                 <span>{service.label}</span>
