@@ -601,36 +601,34 @@ export default function ServiceTrainingLP({
             transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
           }}
         >
-          <div className="bg-gray-50 p-8 lg:p-12 border border-gray-200">
-            <div className="max-w-2xl mx-auto text-center">
-              <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-4">
-                {midCTA.title}
-              </h2>
-              <p className="text-gray-600 mb-8 leading-relaxed">
-                {midCTA.description}
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                <Link
-                  href={midCTA.documentHref}
-                  className="px-10 py-4 bg-white text-gray-900 font-medium border border-gray-300 hover:bg-gray-50 transition-colors duration-200 flex items-center gap-2"
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                    <polyline points="7,10 12,15 17,10"/>
-                    <line x1="12" y1="15" x2="12" y2="3"/>
-                  </svg>
-                  資料をダウンロード
-                </Link>
-                <Link
-                  href={midCTA.inquiryHref}
-                  className={`px-10 py-4 ${colors.primary} text-white font-medium ${colors.primaryHover} transition-colors duration-200 flex items-center gap-2`}
-                >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                    <rect width="20" height="16" x="2" y="4" rx="2"/>
-                    <path d="m22 7-10 5L2 7"/>
-                  </svg>
-                  無料相談を予約する
-                </Link>
+          <div className="pt-16 relative">
+            <span className="absolute bottom-0 left-0 text-7xl md:text-8xl font-bold text-gray-100 select-none pointer-events-none tracking-tight leading-none">Contact</span>
+            <div className="relative z-10">
+              <div className="bg-white shadow-sm border border-gray-100 p-8 lg:p-12">
+                <div className="max-w-2xl mx-auto text-center">
+                  <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-4">
+                    {midCTA.title}
+                  </h2>
+                  <p className="text-gray-600 mb-8 leading-relaxed">
+                    {midCTA.description}
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                    <Link
+                      href={midCTA.documentHref}
+                      className={`px-10 py-4 bg-white font-medium border ${colors.border} ${colors.text} hover:bg-gray-50 transition-colors duration-200 flex items-center gap-2`}
+                    >
+                      <Download className="w-5 h-5" />
+                      資料をダウンロード
+                    </Link>
+                    <Link
+                      href={midCTA.inquiryHref}
+                      className={`px-10 py-4 ${colors.primary} text-white font-medium ${colors.primaryHover} transition-colors duration-200 flex items-center gap-2`}
+                    >
+                      <MessageCircle className="w-5 h-5" />
+                      無料相談を予約する
+                    </Link>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -903,40 +901,40 @@ export default function ServiceTrainingLP({
         {/* Final CTA Section */}
         <section
           ref={finalCtaSection.ref as React.RefObject<HTMLElement>}
-          className="bg-gray-50 py-16 lg:py-20 text-center border border-gray-200 mb-16"
+          className="mb-16"
           style={{
             opacity: finalCtaSection.isVisible ? 1 : 0,
             transform: finalCtaSection.isVisible ? 'translateY(0)' : 'translateY(40px)',
             transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
           }}
         >
-          <div className="max-w-2xl mx-auto px-6">
-            <h2 className="text-2xl md:text-3xl font-bold mb-4 text-gray-900">{finalCTA.title}</h2>
-            <p className="text-gray-600 mb-8 leading-relaxed">
-              {finalCTA.description}
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link
-                href={finalCTA.documentHref}
-                className="px-10 py-4 bg-white text-gray-900 font-medium border border-gray-300 hover:bg-gray-50 transition-colors duration-200 flex items-center gap-2"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                  <polyline points="7,10 12,15 17,10"/>
-                  <line x1="12" y1="15" x2="12" y2="3"/>
-                </svg>
-                資料をダウンロード
-              </Link>
-              <Link
-                href={finalCTA.inquiryHref}
-                className={`px-10 py-4 ${colors.primary} text-white font-medium ${colors.primaryHover} transition-colors duration-200 flex items-center gap-2`}
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                  <rect width="20" height="16" x="2" y="4" rx="2"/>
-                  <path d="m22 7-10 5L2 7"/>
-                </svg>
-                無料相談を予約する
-              </Link>
+          <div className="pt-16 relative">
+            <span className="absolute bottom-0 left-0 text-7xl md:text-8xl font-bold text-gray-100 select-none pointer-events-none tracking-tight leading-none">Contact</span>
+            <div className="relative z-10">
+              <div className="bg-white shadow-sm border border-gray-100 p-8 lg:p-12">
+                <div className="max-w-2xl mx-auto text-center">
+                  <h2 className="text-2xl md:text-3xl font-bold mb-4 text-gray-900">{finalCTA.title}</h2>
+                  <p className="text-gray-600 mb-8 leading-relaxed">
+                    {finalCTA.description}
+                  </p>
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                    <Link
+                      href={finalCTA.documentHref}
+                      className={`px-10 py-4 bg-white font-medium border ${colors.border} ${colors.text} hover:bg-gray-50 transition-colors duration-200 flex items-center gap-2`}
+                    >
+                      <Download className="w-5 h-5" />
+                      資料をダウンロード
+                    </Link>
+                    <Link
+                      href={finalCTA.inquiryHref}
+                      className={`px-10 py-4 ${colors.primary} text-white font-medium ${colors.primaryHover} transition-colors duration-200 flex items-center gap-2`}
+                    >
+                      <MessageCircle className="w-5 h-5" />
+                      無料相談を予約する
+                    </Link>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
