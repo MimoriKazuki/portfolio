@@ -97,7 +97,7 @@ const ProjectCard = ({ project, onOpenDetail, priority = false }: ProjectCardPro
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1.5 text-xs text-gray-500">
             <Clock className="w-3.5 h-3.5" />
-            <span>{project.duration}</span>
+          <span>{project.duration}</span>
           </div>
           <span className={`${categoryColors[project.category]} bg-white text-xs px-3 py-1 border font-medium`}>
             {categoryLabels[project.category]}

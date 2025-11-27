@@ -9,6 +9,7 @@ import { Project, Column, Notice, YouTubeVideo } from '@/app/types'
 import ProjectCardSkeleton from './skeletons/ProjectCardSkeleton'
 import ColumnCardSkeleton from './skeletons/ColumnCardSkeleton'
 import YouTubeVideoCard from '../youtube-videos/YouTubeVideoCard'
+import { ScrollAnimation, StaggerContainer } from './ui/scroll-animation'
 
 export default function DynamicHomeContent() {
   const [isLoading, setIsLoading] = useState(true)
@@ -78,14 +79,124 @@ export default function DynamicHomeContent() {
   }, [])
 
   return (
-    <div className="max-w-[1023px] mx-auto">
-      {/* Latest Notices */}
+    <div>
+      {/* Latest Notices - フルワイド背景 */}
       {(isLoading || latestNotices.length > 0) && (
-        <section className="mb-12">
+        <section className="mb-12 -mx-4 sm:-mx-6 lg:-mx-8 bg-white py-12 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-[1023px] mx-auto">
+            <ScrollAnimation animation="fadeUp">
+              {/* セクションラベル */}
+              <div className="mb-2">
+                <span className="text-2xl font-medium text-blue-600 tracking-tight">News</span>
+              </div>
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold md:text-3xl tracking-tight">お知らせ</h2>
+              <Link
+                href="/notices"
+                className="group inline-flex items-center gap-3 text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium"
+              >
+                <span>すべて見る</span>
+                <div className="flex items-center justify-center w-8 h-8 rounded-full border border-blue-600 bg-white group-hover:bg-blue-600 transition-colors duration-300">
+                  <ArrowRight className="w-4 h-4 text-blue-600 group-hover:text-white transition-colors duration-300" />
+                </div>
+              </Link>
+            </div>
+            </ScrollAnimation>
+            
+            {isLoading ? (
+              <div className="bg-white rounded-lg border border-gray-200 divide-y divide-gray-100">
+                {[...Array(3)].map((_, index) => (
+                  <div key={index} className="px-6 py-4 animate-pulse">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1">
+                        <div className="h-5 bg-gray-200 rounded w-3/4 mb-2"></div>
+                        <div className="flex items-center gap-3">
+                          <div className="h-4 bg-gray-200 rounded w-24"></div>
+                          <div className="h-5 bg-gray-200 rounded w-16"></div>
+                        </div>
+                      </div>
+                      <div className="h-5 w-5 bg-gray-200 rounded ml-4"></div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <ScrollAnimation animation="fadeUp" delay={0.2}>
+                <div className="divide-y divide-gray-200">
+                  {latestNotices.map((notice) => {
+                    const formatDate = (dateString: string) => {
+                      const date = new Date(dateString)
+                      const year = date.getFullYear()
+                      const month = (date.getMonth() + 1).toString().padStart(2, '0')
+                      const day = date.getDate().toString().padStart(2, '0')
+                      return `${year}.${month}.${day}`
+                    }
+
+                    return (
+                      <Link
+                        key={notice.id}
+                        href={`/notices/${notice.id}`}
+                        className="block group"
+                      >
+                        <div className="py-6 hover:bg-gray-50 transition-colors duration-200">
+                          <div className="flex items-center gap-4 px-2">
+                            {/* Date */}
+                            <div className="text-sm text-gray-600 font-medium w-24 flex-shrink-0">
+                              {formatDate(notice.created_at)}
+                            </div>
+                            
+                            {/* Category */}
+                            <div className="w-24 flex-shrink-0">
+                              <span className={`inline-flex px-3 py-1 text-xs font-medium border ${
+                                notice.category === 'news' ? 'border-blue-200 text-blue-700' :
+                                notice.category === 'webinar' ? 'border-purple-200 text-purple-700' :
+                                notice.category === 'event' ? 'border-pink-200 text-pink-700' :
+                                notice.category === 'maintenance' ? 'border-yellow-200 text-yellow-700' :
+                                'border-gray-200 text-gray-700'
+                              }`}>
+                                {notice.category === 'news' ? 'ニュース' :
+                                 notice.category === 'webinar' ? 'ウェビナー' :
+                                 notice.category === 'event' ? 'イベント' :
+                                 notice.category === 'maintenance' ? 'メンテナンス' :
+                                 'その他'}
+                              </span>
+                            </div>
+                            
+                            {/* Title */}
+                            <h3 className="flex-1 font-medium text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-1">
+                              {notice.title}
+                            </h3>
+
+                            {/* Arrow Icon */}
+                            <div className="w-5 flex-shrink-0">
+                              <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-blue-600 transition-colors" />
+                            </div>
+                          </div>
+                        </div>
+                      </Link>
+                    )
+                  })}
+                </div>
+              </ScrollAnimation>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* メインコンテンツエリア */}
+      <div className="max-w-[1023px] mx-auto">
+
+      {/* Featured Projects */}
+      <section className="mb-12">
+        <ScrollAnimation animation="fadeUp">
+          {/* セクションラベル */}
+          <div className="mb-2">
+            <span className="text-2xl font-medium text-blue-600 tracking-tight">Contents</span>
+          </div>
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold">お知らせ</h2>
+            <h2 className="text-2xl font-bold md:text-3xl tracking-tight">AI制作物</h2>
             <Link
-              href="/notices"
+              href="/projects"
               className="group inline-flex items-center gap-3 text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium"
             >
               <span>すべて見る</span>
@@ -94,98 +205,7 @@ export default function DynamicHomeContent() {
               </div>
             </Link>
           </div>
-          
-          {isLoading ? (
-            <div className="bg-white rounded-lg border border-gray-200 divide-y divide-gray-100">
-              {[...Array(3)].map((_, index) => (
-                <div key={index} className="px-6 py-4 animate-pulse">
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <div className="h-5 bg-gray-200 rounded w-3/4 mb-2"></div>
-                      <div className="flex items-center gap-3">
-                        <div className="h-4 bg-gray-200 rounded w-24"></div>
-                        <div className="h-5 bg-gray-200 rounded w-16"></div>
-                      </div>
-                    </div>
-                    <div className="h-5 w-5 bg-gray-200 rounded ml-4"></div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className="divide-y divide-gray-200">
-              {latestNotices.map((notice) => {
-                const formatDate = (dateString: string) => {
-                  const date = new Date(dateString)
-                  const year = date.getFullYear()
-                  const month = (date.getMonth() + 1).toString().padStart(2, '0')
-                  const day = date.getDate().toString().padStart(2, '0')
-                  return `${year}.${month}.${day}`
-                }
-
-                return (
-                  <Link
-                    key={notice.id}
-                    href={`/notices/${notice.id}`}
-                    className="block group"
-                  >
-                    <div className="py-6 hover:bg-gray-50 transition-colors duration-200">
-                      <div className="flex items-center gap-4 px-2">
-                        {/* Date */}
-                        <div className="text-sm text-gray-600 font-medium w-24 flex-shrink-0">
-                          {formatDate(notice.created_at)}
-                        </div>
-                        
-                        {/* Category */}
-                        <div className="w-24 flex-shrink-0">
-                          <span className={`inline-flex px-3 py-1 text-xs font-medium border ${
-                            notice.category === 'news' ? 'border-blue-200 text-blue-700' :
-                            notice.category === 'webinar' ? 'border-purple-200 text-purple-700' :
-                            notice.category === 'event' ? 'border-pink-200 text-pink-700' :
-                            notice.category === 'maintenance' ? 'border-yellow-200 text-yellow-700' :
-                            'border-gray-200 text-gray-700'
-                          }`}>
-                            {notice.category === 'news' ? 'ニュース' :
-                             notice.category === 'webinar' ? 'ウェビナー' :
-                             notice.category === 'event' ? 'イベント' :
-                             notice.category === 'maintenance' ? 'メンテナンス' :
-                             'その他'}
-                          </span>
-                        </div>
-                        
-                        {/* Title */}
-                        <h3 className="flex-1 font-medium text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-1">
-                          {notice.title}
-                        </h3>
-
-                        {/* Arrow Icon */}
-                        <div className="w-5 flex-shrink-0">
-                          <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-blue-600 transition-colors" />
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                )
-              })}
-            </div>
-          )}
-        </section>
-      )}
-
-      {/* Featured Projects */}
-      <section className="mb-12">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold">AI制作物</h2>
-          <Link
-            href="/projects"
-            className="group inline-flex items-center gap-3 text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium"
-          >
-            <span>すべて見る</span>
-            <div className="flex items-center justify-center w-8 h-8 rounded-full border border-blue-600 bg-white group-hover:bg-blue-600 transition-colors duration-300">
-              <ArrowRight className="w-4 h-4 text-blue-600 group-hover:text-white transition-colors duration-300" />
-            </div>
-          </Link>
-        </div>
+        </ScrollAnimation>
         
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-1 mid:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
@@ -199,7 +219,7 @@ export default function DynamicHomeContent() {
             <p className="text-xl text-muted-foreground">No featured projects yet</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-1 mid:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-1 mid:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
             {featuredProjects.map((project, index) => (
               <ProjectCard 
                 key={project.id} 
@@ -207,25 +227,27 @@ export default function DynamicHomeContent() {
                 priority={index < 3}
               />
             ))}
-          </div>
+          </StaggerContainer>
         )}
       </section>
 
       {/* YouTube Videos Section */}
       {(isLoading || displayVideos.length > 0) && (
         <section className="mb-12">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold">YouTube</h2>
-            <Link
-              href="/youtube-videos"
-              className="group inline-flex items-center gap-3 text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium"
-            >
-              <span>すべて見る</span>
-              <div className="flex items-center justify-center w-8 h-8 rounded-full border border-blue-600 bg-white group-hover:bg-blue-600 transition-colors duration-300">
-                <ArrowRight className="w-4 h-4 text-blue-600 group-hover:text-white transition-colors duration-300" />
-              </div>
-            </Link>
-          </div>
+          <ScrollAnimation animation="fadeUp">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold md:text-3xl tracking-tight">YouTube</h2>
+              <Link
+                href="/youtube-videos"
+                className="group inline-flex items-center gap-3 text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium"
+              >
+                <span>すべて見る</span>
+                <div className="flex items-center justify-center w-8 h-8 rounded-full border border-blue-600 bg-white group-hover:bg-blue-600 transition-colors duration-300">
+                  <ArrowRight className="w-4 h-4 text-blue-600 group-hover:text-white transition-colors duration-300" />
+                </div>
+              </Link>
+            </div>
+          </ScrollAnimation>
 
           {isLoading ? (
             <div className="grid grid-cols-1 md:grid-cols-1 mid:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
@@ -238,29 +260,31 @@ export default function DynamicHomeContent() {
               ))}
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-1 mid:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-3">
+            <StaggerContainer className="grid grid-cols-1 md:grid-cols-1 mid:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-3">
               {displayVideos.map((video) => (
                 <YouTubeVideoCard key={video.id} video={video} />
               ))}
-            </div>
+            </StaggerContainer>
           )}
         </section>
       )}
 
       {/* Columns Section */}
       <section className="mb-12">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold">最新のコラム</h2>
-          <Link
-            href="/columns"
-            className="group inline-flex items-center gap-3 text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium"
-          >
-            <span>すべて見る</span>
-            <div className="flex items-center justify-center w-8 h-8 rounded-full border border-blue-600 bg-white group-hover:bg-blue-600 transition-colors duration-300">
-              <ArrowRight className="w-4 h-4 text-blue-600 group-hover:text-white transition-colors duration-300" />
-            </div>
-          </Link>
-        </div>
+        <ScrollAnimation animation="fadeUp">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold md:text-3xl tracking-tight">最新のコラム</h2>
+            <Link
+              href="/columns"
+              className="group inline-flex items-center gap-3 text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium"
+            >
+              <span>すべて見る</span>
+              <div className="flex items-center justify-center w-8 h-8 rounded-full border border-blue-600 bg-white group-hover:bg-blue-600 transition-colors duration-300">
+                <ArrowRight className="w-4 h-4 text-blue-600 group-hover:text-white transition-colors duration-300" />
+              </div>
+            </Link>
+          </div>
+        </ScrollAnimation>
 
         {isLoading ? (
           <div className="grid grid-cols-1 md:grid-cols-1 mid:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
@@ -274,7 +298,7 @@ export default function DynamicHomeContent() {
             <p className="text-xl text-gray-500">まだコラムがありません</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-1 mid:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-3">
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-1 mid:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-3">
             {latestColumns.map((column, index) => (
               <Link
                 key={column.id}
@@ -316,12 +340,95 @@ export default function DynamicHomeContent() {
                 </article>
               </Link>
             ))}
-          </div>
+          </StaggerContainer>
         )}
       </section>
+      </div>
+      {/* メインコンテンツエリア終了 */}
 
-      {/* 問い合わせボタンとの重なりを防ぐためのスペース */}
-      <div className="h-24" />
+      {/* 最終CTA セクション - フルワイド */}
+      <section className="mt-16 -mx-4 sm:-mx-6 lg:-mx-8 -mb-8">
+        <ScrollAnimation animation="fadeUp">
+          <div className="grid grid-cols-1 md:grid-cols-2">
+            {/* 資料請求 */}
+            <Link
+              href="/documents"
+              className="group relative block overflow-hidden"
+            >
+              <div className="relative h-[320px] md:h-[400px]">
+                {/* 背景画像 */}
+                <Image
+                  src="https://images.unsplash.com/photo-1611079830811-865ff4428d17?w=800&h=600&fit=crop&crop=center"
+                  alt="資料請求"
+                  fill
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                {/* オーバーレイ */}
+                <div className="absolute inset-0 bg-black/60" />
+                
+                {/* コンテンツ */}
+                <div className="absolute inset-0 flex items-center justify-center text-white text-center px-6">
+                  <div>
+                    <h3 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">
+                      DOCUMENT
+                    </h3>
+                    <p className="text-lg font-medium mb-4">資料請求</p>
+                    <p className="text-sm text-gray-200 mb-8 max-w-xs leading-relaxed mx-auto">
+                      サービス詳細や料金プランなど、<br />
+                      詳しい資料をお送りいたします。
+                    </p>
+                    <div className="flex items-center justify-center gap-3">
+                      <span className="text-sm font-medium">see more</span>
+                      <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center group-hover:bg-blue-400 transition-colors duration-300">
+                        <ArrowRight className="w-5 h-5 text-white" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Link>
+
+            {/* お問い合わせ */}
+            <Link
+              href="/contact"
+              className="group relative block overflow-hidden"
+            >
+              <div className="relative h-[320px] md:h-[400px]">
+                {/* 背景画像 */}
+                <Image
+                  src="https://images.unsplash.com/photo-1423666639041-f56000c27a9a?w=800&h=600&fit=crop&crop=center"
+                  alt="お問い合わせ"
+                  fill
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                {/* オーバーレイ */}
+                <div className="absolute inset-0 bg-black/60" />
+                
+                {/* コンテンツ */}
+                <div className="absolute inset-0 flex items-center justify-center text-white text-center px-6">
+                  <div>
+                    <h3 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">
+                      CONTACT
+                    </h3>
+                    <p className="text-lg font-medium mb-4">お問い合わせ</p>
+                    <p className="text-sm text-gray-200 mb-8 max-w-xs leading-relaxed mx-auto">
+                      ご質問・ご相談について、<br />
+                      まずはお気軽にお問合せください。
+                    </p>
+                    <div className="flex items-center justify-center gap-3">
+                      <span className="text-sm font-medium">see more</span>
+                      <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center group-hover:bg-blue-400 transition-colors duration-300">
+                        <ArrowRight className="w-5 h-5 text-white" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </Link>
+          </div>
+        </ScrollAnimation>
+      </section>
+
     </div>
   )
 }

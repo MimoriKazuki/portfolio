@@ -109,24 +109,24 @@ export default function ColumnsClient({ columns }: ColumnsClientProps) {
             >
               <article className="overflow-hidden border-2 border-transparent hover:border-gray-200 transition-colors duration-300 h-full flex flex-col p-4 rounded">
                 {/* 画像 */}
-                {column.thumbnail && (
+                  {column.thumbnail && (
                   <div className="relative aspect-video overflow-hidden rounded">
-                    <Image
-                      src={column.thumbnail}
-                      alt={column.title}
-                      fill
+                      <Image
+                        src={column.thumbnail}
+                        alt={column.title}
+                        fill
                       className="object-cover"
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      loading="lazy"
-                      placeholder="blur"
-                      blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAf/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWEREiMxUf/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
-                    />
-                    {column.is_featured && (
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        loading="lazy"
+                        placeholder="blur"
+                        blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAf/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWEREiMxUf/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+                      />
+                  {column.is_featured && (
                       <div className="absolute top-2 left-2 bg-portfolio-blue text-white text-xs px-3 py-1 font-medium">
-                        注目
-                      </div>
-                    )}
-                  </div>
+                      注目
+                    </div>
+                  )}
+                </div>
                 )}
                 
                 {/* テキスト群 */}
@@ -143,11 +143,11 @@ export default function ColumnsClient({ columns }: ColumnsClientProps) {
                   
                   {/* 日付とカテゴリバッジ */}
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-1 text-xs text-gray-500">
-                      <Calendar className="w-3 h-3" />
-                      <span>
-                        {new Date(column.created_at).toLocaleDateString('ja-JP')}
-                      </span>
+                  <div className="flex items-center gap-1 text-xs text-gray-500">
+                    <Calendar className="w-3 h-3" />
+                    <span>
+                      {new Date(column.created_at).toLocaleDateString('ja-JP')}
+                    </span>
                     </div>
                     {column.category && (
                       <span className={`${categoryColors[column.category] || 'border-gray-200 text-gray-700'} bg-white text-xs px-3 py-1 border font-medium`}>

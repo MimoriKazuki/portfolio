@@ -1,7 +1,19 @@
-import React from "react";
+'use client'
+
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 
 const HeroSection = () => {
+    const [isLoaded, setIsLoaded] = useState(false);
+
+    useEffect(() => {
+        // マウント後にアニメーションを開始
+        const timer = setTimeout(() => {
+            setIsLoaded(true);
+        }, 100);
+        return () => clearTimeout(timer);
+    }, []);
+
     return (
         <div className="relative overflow-hidden w-full bg-white">
             {/* Content Container - Fluid Design */}
@@ -10,19 +22,44 @@ const HeroSection = () => {
                 {/* Text Content with responsive padding */}
                 <div className="px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 mb-8 relative">
                     <div className="w-full lg:w-4/5 xl:w-3/4 2xl:w-[70%]">
-                        <h1 className="font-bold text-gray-900 tracking-tight leading-none mb-6" style={{fontSize: 'clamp(2rem, 5vw, 5rem)', lineHeight: '1.1'}}>
+                        {/* タイトル - 左からフェードイン */}
+                        <h1 
+                            className="font-bold text-gray-900 tracking-tight leading-none mb-6"
+                            style={{
+                                fontSize: 'clamp(2rem, 5vw, 5rem)',
+                                lineHeight: '1.1',
+                                opacity: isLoaded ? 1 : 0,
+                                transform: isLoaded ? 'translateX(0)' : 'translateX(-30px)',
+                                transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+                            }}
+                        >
                             Advance Your<br />
                             Business with AI
                         </h1>
-                        
-                        {/* Sub Phrase */}
-                        <p className="text-gray-600 leading-relaxed" style={{fontSize: 'clamp(1rem, 1.5vw, 1.5rem)'}}>
+
+                        {/* Sub Phrase - 左からフェードイン（遅延あり） */}
+                        <p 
+                            className="text-gray-600 leading-relaxed"
+                            style={{
+                                fontSize: 'clamp(1rem, 1.5vw, 1.5rem)',
+                                opacity: isLoaded ? 1 : 0,
+                                transform: isLoaded ? 'translateX(0)' : 'translateX(-30px)',
+                                transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s',
+                            }}
+                        >
                             実践的なAIの力を、一人でも多くの現場へ届ける。
                         </p>
                     </div>
 
                     {/* Scroll Down Indicator - Bottom Right */}
-                    <div className="absolute bottom-0 right-4 sm:right-6 lg:right-8 xl:right-12 2xl:right-16 flex flex-col items-center">
+                    <div 
+                        className="absolute bottom-0 right-4 sm:right-6 lg:right-8 xl:right-12 2xl:right-16 flex flex-col items-center"
+                        style={{
+                            opacity: isLoaded ? 1 : 0,
+                            transform: isLoaded ? 'translateY(0)' : 'translateY(20px)',
+                            transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.6s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.6s',
+                        }}
+                    >
                         <span className="text-sm text-gray-500 mb-2 tracking-wider">SCROLL DOWN</span>
                         <svg className="w-6 h-6 text-gray-400 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                             <path d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
@@ -31,7 +68,14 @@ const HeroSection = () => {
                 </div>
 
                 {/* Hero Image - Full width to right edge, left padding only */}
-                <div className="relative w-full mb-12 overflow-hidden pl-4 sm:pl-6 lg:pl-8 xl:pl-12 2xl:pl-16">
+                <div 
+                    className="relative w-full mb-12 overflow-hidden pl-4 sm:pl-6 lg:pl-8 xl:pl-12 2xl:pl-16"
+                    style={{
+                        opacity: isLoaded ? 1 : 0,
+                        transform: isLoaded ? 'scale(1)' : 'scale(1.02)',
+                        transition: 'opacity 1s cubic-bezier(0.16, 1, 0.3, 1) 0.3s, transform 1s cubic-bezier(0.16, 1, 0.3, 1) 0.3s',
+                    }}
+                >
                     <div className="relative w-full aspect-[21/9]">
                         <Image 
                             src="/hero.png"
@@ -39,13 +83,19 @@ const HeroSection = () => {
                             fill
                             priority
                             className="object-cover"
-                            quality={95}
                         />
                     </div>
                 </div>
 
-                {/* CTA Buttons */}
-                <div className="px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 flex flex-col sm:flex-row gap-6 justify-center items-center">
+                {/* CTA Buttons - 下からフェードイン */}
+                <div 
+                    className="px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 flex flex-col sm:flex-row gap-6 justify-center items-center"
+                    style={{
+                        opacity: isLoaded ? 1 : 0,
+                        transform: isLoaded ? 'translateY(0)' : 'translateY(30px)',
+                        transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.5s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.5s',
+                    }}
+                >
                     <a 
                         href="/contact"
                         className="relative inline-flex items-center justify-center px-8 py-4 overflow-hidden font-medium transition-all bg-white text-gray-900 border border-blue-600 hover:text-white group"

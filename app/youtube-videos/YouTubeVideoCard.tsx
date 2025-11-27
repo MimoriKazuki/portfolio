@@ -48,28 +48,28 @@ export default function YouTubeVideoCard({ video }: YouTubeVideoCardProps) {
             {video.title}
           </h3>
 
-          {/* チャンネル名 */}
-          {video.channel_title && (
+            {/* チャンネル名 */}
+            {video.channel_title && (
             <p className="text-sm text-gray-600 truncate mb-auto">
-              {video.channel_title}
-            </p>
-          )}
+                {video.channel_title}
+              </p>
+            )}
 
           {/* 下部の情報（公開日・バッジ） */}
           <div className="flex items-center justify-between gap-2 mt-3">
-            {/* 外部チャンネルはシステム登録日、自社チャンネルはYouTube公開日 */}
-            <p className="text-xs text-gray-500">
-              {!video.is_own_channel
-                ? formatDate(video.created_at)
-                : formatDate(video.published_at || video.created_at)}
-            </p>
+              {/* 外部チャンネルはシステム登録日、自社チャンネルはYouTube公開日 */}
+              <p className="text-xs text-gray-500">
+                {!video.is_own_channel
+                  ? formatDate(video.created_at)
+                  : formatDate(video.published_at || video.created_at)}
+              </p>
             <span className={`inline-flex items-center px-3 py-1 text-xs font-medium whitespace-nowrap border ${
-              video.is_own_channel
+                video.is_own_channel
                 ? 'border-blue-200 text-blue-700 bg-white'
                 : 'border-green-200 text-green-700 bg-white'
-            }`}>
-              {video.is_own_channel ? '自社チャンネル' : '外部チャンネル'}
-            </span>
+              }`}>
+                {video.is_own_channel ? '自社チャンネル' : '外部チャンネル'}
+              </span>
           </div>
         </div>
       </div>

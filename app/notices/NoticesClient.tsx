@@ -122,7 +122,7 @@ export default function NoticesClient({ notices }: NoticesClientProps) {
                   <div className="text-sm text-gray-600 font-medium w-24 flex-shrink-0">
                     {formatDate(notice.created_at)}
                   </div>
-                  
+
                   {/* Category */}
                   <div className="w-24 flex-shrink-0">
                     <span className={`inline-flex px-3 py-1 text-xs font-medium border ${
@@ -131,11 +131,11 @@ export default function NoticesClient({ notices }: NoticesClientProps) {
                       notice.category === 'event' ? 'border-pink-200 text-pink-700' :
                       notice.category === 'maintenance' ? 'border-yellow-200 text-yellow-700' :
                       'border-gray-200 text-gray-700'
-                    }`}>
-                      {categoryLabels[notice.category]}
-                    </span>
+                      }`}>
+                        {categoryLabels[notice.category]}
+                      </span>
                   </div>
-                  
+
                   {/* Title */}
                   <h3 className="flex-1 font-medium text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-1">
                     {notice.title}

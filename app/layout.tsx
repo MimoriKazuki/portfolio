@@ -1,11 +1,15 @@
 import type { Metadata } from 'next'
-import { Inter } from 'next/font/google'
+import { Inter, Caveat } from 'next/font/google'
 import './globals.css'
 import StructuredData from './components/StructuredData'
 import GoogleAnalytics from './components/GoogleAnalytics'
 import MicrosoftClarity from './components/MicrosoftClarity'
 
 const inter = Inter({ subsets: ['latin'] })
+const caveat = Caveat({ 
+  subsets: ['latin'],
+  variable: '--font-caveat',
+})
 
 export const viewport = {
   themeColor: '#1d4ed8',
@@ -78,7 +82,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="ja" className="bg-youtube-dark" style={{ backgroundColor: '#0f0f0f' }}>
+    <html lang="ja" className={`bg-youtube-dark ${caveat.variable}`} style={{ backgroundColor: '#0f0f0f' }}>
       <head>
         <StructuredData />
         <meta name="theme-color" content="#0f0f0f" />

@@ -36,6 +36,7 @@ export default {
 			},
 			fontFamily: {
 				sans: ['Inter', 'system-ui', 'sans-serif'],
+				handwriting: ['var(--font-caveat)', 'cursive'],
 			},
 			colors: {
 				border: 'hsl(var(--border))',
