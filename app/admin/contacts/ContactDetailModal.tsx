@@ -11,9 +11,20 @@ interface Contact {
   email: string
   message: string
   inquiry_type: 'service' | 'partnership' | 'recruit' | 'other'
-  status: 'new' | 'in_progress' | 'completed'
+  service_type?: string
   created_at: string
   updated_at: string
+}
+
+// 研修タイプのラベルマッピング
+const serviceTypeLabels: Record<string, string> = {
+  'comprehensive-ai-training': '生成AI総合研修',
+  'ai-writing-training': 'AIライティング研修',
+  'ai-video-training': 'AI動画生成研修',
+  'ai-coding-training': 'AIコーディング研修',
+  'practical-ai-training': '生成AI実務活用研修',
+  'ai-talent-development': 'AI人材育成所（個人向け）',
+  'other-service': 'その他・未定',
 }
 
 interface DocumentRequest {
@@ -59,18 +70,6 @@ interface ContactDetailModalProps {
 }
 
 export default function ContactDetailModal({ contact, documentRequest, promptRequest, onClose }: ContactDetailModalProps) {
-  const statusColors = {
-    'new': 'bg-red-100 text-red-700',
-    'in_progress': 'bg-yellow-100 text-yellow-700',
-    'completed': 'bg-green-100 text-green-700'
-  }
-
-  const statusLabels = {
-    'new': '新規',
-    'in_progress': '対応中',
-    'completed': '完了'
-  }
-
   const typeColors = {
     'service': 'bg-purple-100 text-purple-700',
     'partnership': 'bg-blue-100 text-blue-700',
@@ -142,27 +141,17 @@ export default function ContactDetailModal({ contact, documentRequest, promptReq
                     )}
                   </div>
                 </div>
-                
-                {/* ステータス */}
-                <div className="space-y-2">
-                  <div className="text-sm text-gray-600">ステータス</div>
-                  <div className="font-medium">
-                    {contact ? (
-                      <span className={`inline-flex px-3 py-1 rounded-full text-sm ${statusColors[contact.status]}`}>
-                        {statusLabels[contact.status]}
-                      </span>
-                    ) : promptRequest && promptRequest.status ? (
-                      <span className={`inline-flex px-3 py-1 rounded-full text-sm ${statusColors[promptRequest.status as keyof typeof statusColors] || 'bg-red-100 text-red-700'}`}>
-                        {statusLabels[promptRequest.status as keyof typeof statusLabels] || '新規'}
-                      </span>
-                    ) : (
-                      <span className="inline-flex px-3 py-1 rounded-full text-sm bg-red-100 text-red-700">
-                        新規
-                      </span>
-                    )}
+
+                {/* ご興味のある研修（サービスについての場合のみ） */}
+                {contact && contact.inquiry_type === 'service' && contact.service_type && (
+                  <div className="space-y-2">
+                    <div className="text-sm text-gray-600">ご興味のある研修</div>
+                    <div className="font-medium text-gray-900">
+                      {serviceTypeLabels[contact.service_type] || contact.service_type}
+                    </div>
                   </div>
-                </div>
-                
+                )}
+
                 {/* 資料名/プロジェクト名 */}
                 {(isDocumentRequest || isPromptRequest) && (
                   <div className="space-y-2">

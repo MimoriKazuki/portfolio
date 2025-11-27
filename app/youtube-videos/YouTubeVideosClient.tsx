@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { YouTubeVideo } from '@/app/types'
 import { FolderOpen } from 'lucide-react'
 import YouTubeVideoCard from './YouTubeVideoCard'
@@ -9,10 +10,24 @@ interface YouTubeVideosClientProps {
 }
 
 export default function YouTubeVideosClient({ videos }: YouTubeVideosClientProps) {
+  const [isVisible, setIsVisible] = useState(false)
+
+  useEffect(() => {
+    setIsVisible(true)
+  }, [])
+
   return (
-    <div className="w-full">
-      <div className="mb-8">
-        <h1 className="text-[28px] font-bold text-gray-900">YouTube</h1>
+    <div className="w-full pt-8">
+      <div
+        className="mb-12"
+        style={{
+          opacity: isVisible ? 1 : 0,
+          transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
+          transition: 'opacity 0.6s ease-out, transform 0.6s ease-out',
+        }}
+      >
+        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 tracking-tight">YOUTUBE</h1>
+        <p className="text-lg text-gray-500">動画</p>
       </div>
 
       {/* カードコンテナ */}

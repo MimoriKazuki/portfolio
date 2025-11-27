@@ -1,10 +1,11 @@
 import MainLayout from '@/app/components/MainLayout'
+import PageHeader from '@/app/components/ui/PageHeader'
 
 export default function TermsPage() {
   return (
     <MainLayout hideRightSidebar={true}>
       <div className="w-full max-w-4xl mx-auto">
-        <h1 className="text-3xl font-bold text-gray-900 mb-8">利用規約</h1>
+        <PageHeader title="TERMS" subtitle="利用規約" />
         
         <div className="prose prose-gray max-w-none">
           <p className="text-gray-600 mb-6">

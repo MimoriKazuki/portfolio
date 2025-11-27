@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import ProjectCard from '@/app/components/ProjectCard'
 import { FolderOpen } from 'lucide-react'
 import { Project } from '@/app/types'
@@ -20,6 +20,11 @@ interface ProjectsClientProps {
 
 export default function ProjectsClient({ projects }: ProjectsClientProps) {
   const [activeCategory, setActiveCategory] = useState('all')
+  const [isVisible, setIsVisible] = useState(false)
+
+  useEffect(() => {
+    setIsVisible(true)
+  }, [])
   
   // カテゴリごとのプロジェクト数を計算
   const categoryCounts = useMemo(() => {
@@ -49,9 +54,17 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
   }, [activeCategory, projects])
     
   return (
-    <div className="w-full">
-      <div className="mb-8">
-        <h1 className="text-[28px] font-bold text-gray-900">AI制作物</h1>
+    <div className="w-full pt-8">
+      <div
+        className="mb-12"
+        style={{
+          opacity: isVisible ? 1 : 0,
+          transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
+          transition: 'opacity 0.6s ease-out, transform 0.6s ease-out',
+        }}
+      >
+        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 tracking-tight">WORKS</h1>
+        <p className="text-lg text-gray-500">AI制作物</p>
       </div>
       
       {/* Category Tabs */}

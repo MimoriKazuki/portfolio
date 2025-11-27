@@ -4,6 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { FileText } from 'lucide-react'
 import MainLayout from '@/app/components/MainLayout'
+import PageHeader from '@/app/components/ui/PageHeader'
 
 export const revalidate = 60
 
@@ -24,9 +25,7 @@ export default async function DocumentsPage() {
   return (
     <MainLayout hideRightSidebar={true}>
       <div className="w-full">
-        <div className="mb-8">
-          <h1 className="text-[28px] font-bold text-gray-900">資料ダウンロード</h1>
-        </div>
+        <PageHeader title="DOCUMENT" subtitle="資料ダウンロード" />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {documents?.map((document: Document) => (

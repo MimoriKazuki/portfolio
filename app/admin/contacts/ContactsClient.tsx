@@ -1,12 +1,11 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { Mail, MessageSquare, Search, Filter, Eye, CheckCircle, Trash2, Calendar, User, Building } from 'lucide-react'
+import { Mail, Search, Filter, Eye, Calendar, User, Building } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 import { ja } from 'date-fns/locale'
 import DeleteContactButton from './DeleteContactButton'
 import ContactDetailModal from './ContactDetailModal'
-import UpdateContactStatusButton from './UpdateContactStatusButton'
 
 interface Contact {
   id: string
@@ -15,9 +14,20 @@ interface Contact {
   email: string
   message: string
   inquiry_type: 'service' | 'partnership' | 'recruit' | 'other'
-  status: 'new' | 'in_progress' | 'completed'
+  service_type?: string
   created_at: string
   updated_at: string
+}
+
+// 研修タイプのラベルマッピング
+const serviceTypeLabels: Record<string, string> = {
+  'comprehensive-ai-training': '生成AI総合研修',
+  'ai-writing-training': 'AIライティング研修',
+  'ai-video-training': 'AI動画生成研修',
+  'ai-coding-training': 'AIコーディング研修',
+  'practical-ai-training': '生成AI実務活用研修',
+  'ai-talent-development': 'AI人材育成所（個人向け）',
+  'other-service': 'その他・未定',
 }
 
 interface DocumentRequest {
@@ -63,25 +73,12 @@ interface ContactsClientProps {
 
 export default function ContactsClient({ contacts, documentRequests, promptRequests = [] }: ContactsClientProps) {
   const [searchQuery, setSearchQuery] = useState('')
-  const [statusFilter, setStatusFilter] = useState<string>('all')
   const [typeFilter, setTypeFilter] = useState<string>('all')
   const [sourceFilter, setSourceFilter] = useState<string>('all') // フォーム/資料請求のフィルター
   const [selectedContact, setSelectedContact] = useState<Contact | null>(null)
   const [selectedDocRequest, setSelectedDocRequest] = useState<DocumentRequest | null>(null)
   const [selectedPromptRequest, setSelectedPromptRequest] = useState<PromptRequest | null>(null)
   const [showDetailModal, setShowDetailModal] = useState(false)
-
-  const statusColors = {
-    'new': 'bg-red-100 text-red-700',
-    'in_progress': 'bg-yellow-100 text-yellow-700',
-    'completed': 'bg-green-100 text-green-700'
-  }
-
-  const statusLabels = {
-    'new': '新規',
-    'in_progress': '対応中',
-    'completed': '完了'
-  }
 
   const typeColors = {
     'service': 'bg-purple-100 text-purple-700',
@@ -106,7 +103,7 @@ export default function ContactsClient({ contacts, documentRequests, promptReque
     message: string
     type: 'contact' | 'document_request' | 'prompt_request'
     inquiry_type?: string
-    status: 'new' | 'in_progress' | 'completed'
+    service_type?: string
     created_at: string
     document_title?: string
     project_title?: string
@@ -125,7 +122,7 @@ export default function ContactsClient({ contacts, documentRequests, promptReque
       message: contact.message,
       type: 'contact' as const,
       inquiry_type: contact.inquiry_type,
-      status: contact.status,
+      service_type: contact.service_type,
       created_at: contact.created_at
     }))
 
@@ -137,7 +134,6 @@ export default function ContactsClient({ contacts, documentRequests, promptReque
       message: req.message || '',
       type: 'document_request' as const,
       inquiry_type: 'document',
-      status: 'new' as const, // 資料請求は常に新規として扱う
       created_at: req.created_at,
       document_title: req.document?.title,
       phone: req.phone,
@@ -153,7 +149,6 @@ export default function ContactsClient({ contacts, documentRequests, promptReque
       message: req.message || '',
       type: 'prompt_request' as const,
       inquiry_type: 'prompt',
-      status: (req.status || 'new') as 'new' | 'in_progress' | 'completed',
       created_at: req.created_at,
       project_title: req.metadata?.project_title,
       phone: req.phone,
@@ -168,26 +163,25 @@ export default function ContactsClient({ contacts, documentRequests, promptReque
 
   const filteredInquiries = useMemo(() => {
     return unifiedInquiries.filter(inquiry => {
-      const matchesSearch = searchQuery === '' || 
+      const matchesSearch = searchQuery === '' ||
         inquiry.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         inquiry.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
         inquiry.message.toLowerCase().includes(searchQuery.toLowerCase()) ||
         inquiry.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (inquiry.document_title && inquiry.document_title.toLowerCase().includes(searchQuery.toLowerCase()))
-      
-      const matchesStatus = statusFilter === 'all' || inquiry.status === statusFilter
-      const matchesType = typeFilter === 'all' || 
+
+      const matchesType = typeFilter === 'all' ||
         (typeFilter === 'document' && inquiry.type === 'document_request') ||
         (typeFilter === 'prompt' && inquiry.type === 'prompt_request') ||
         (typeFilter !== 'document' && typeFilter !== 'prompt' && inquiry.inquiry_type === typeFilter)
-      const matchesSource = sourceFilter === 'all' || 
+      const matchesSource = sourceFilter === 'all' ||
         (sourceFilter === 'form' && inquiry.type === 'contact') ||
         (sourceFilter === 'document' && inquiry.type === 'document_request') ||
         (sourceFilter === 'prompt' && inquiry.type === 'prompt_request')
 
-      return matchesSearch && matchesStatus && matchesType && matchesSource
+      return matchesSearch && matchesType && matchesSource
     })
-  }, [unifiedInquiries, searchQuery, statusFilter, typeFilter, sourceFilter])
+  }, [unifiedInquiries, searchQuery, typeFilter, sourceFilter])
 
   const handleViewDetail = (inquiry: UnifiedInquiry) => {
     if (inquiry.type === 'contact') {
@@ -228,16 +222,10 @@ export default function ContactsClient({ contacts, documentRequests, promptReque
       ) : (
         <div className="space-y-6">
           {/* Stats Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
             <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
               <div className="text-3xl font-bold text-portfolio-blue">{unifiedInquiries.length}</div>
               <div className="text-sm text-gray-600">総お問い合わせ数</div>
-            </div>
-            <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
-              <div className="text-3xl font-bold text-red-600">
-                {unifiedInquiries.filter(i => i.status === 'new').length}
-              </div>
-              <div className="text-sm text-gray-600">未対応</div>
             </div>
             <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
               <div className="text-3xl font-bold text-purple-600">
@@ -256,21 +244,6 @@ export default function ContactsClient({ contacts, documentRequests, promptReque
           {/* Action bar */}
           <div className="flex items-center justify-between gap-4">
             <div className="flex items-center gap-4 flex-1">
-              {/* Status filter */}
-              <div className="relative">
-                <select
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                  className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-10 text-gray-700 focus:outline-none focus:ring-2 focus:ring-portfolio-blue"
-                >
-                  <option value="all">すべてのステータス</option>
-                  <option value="new">新規</option>
-                  <option value="in_progress">対応中</option>
-                  <option value="completed">完了</option>
-                </select>
-                <Filter className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
-              </div>
-
               {/* Type filter */}
               <div className="relative">
                 <select
@@ -328,14 +301,13 @@ export default function ContactsClient({ contacts, documentRequests, promptReque
                   <th className="text-center px-6 py-3 text-sm font-medium text-gray-700">送信元</th>
                   <th className="text-center px-6 py-3 text-sm font-medium text-gray-700">問い合わせ種別</th>
                   <th className="text-left px-6 py-3 text-sm font-medium text-gray-700">メッセージ</th>
-                  <th className="text-center px-6 py-3 text-sm font-medium text-gray-700">ステータス</th>
                   <th className="text-center px-6 py-3 text-sm font-medium text-gray-700">操作</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {filteredInquiries.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="px-6 py-12 text-center text-gray-500">
+                    <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
                       検索結果が見つかりませんでした
                     </td>
                   </tr>
@@ -403,14 +375,14 @@ export default function ContactsClient({ contacts, documentRequests, promptReque
                         </div>
                       </td>
                       <td className="px-6 py-4 text-center">
-                        <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${
-                          inquiry.type === 'document_request' 
-                            ? 'bg-purple-100 text-purple-700' 
+                        <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ${
+                          inquiry.type === 'document_request'
+                            ? 'bg-purple-100 text-purple-700'
                             : inquiry.type === 'prompt_request'
                             ? 'bg-emerald-100 text-emerald-700'
                             : 'bg-blue-100 text-blue-700'
                         }`}>
-                          {inquiry.type === 'document_request' ? '資料請求' : 
+                          {inquiry.type === 'document_request' ? '資料請求' :
                            inquiry.type === 'prompt_request' ? 'プロンプト' : 'フォーム'}
                         </span>
                       </td>
@@ -418,22 +390,24 @@ export default function ContactsClient({ contacts, documentRequests, promptReque
                         {inquiry.type === 'document_request' || inquiry.type === 'prompt_request' ? (
                           <span className="text-gray-400">-</span>
                         ) : (
-                          <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${
-                            typeColors[inquiry.inquiry_type as keyof typeof typeColors] || 'bg-gray-100 text-gray-700'
-                          }`}>
-                            {typeLabels[inquiry.inquiry_type as keyof typeof typeLabels] || inquiry.inquiry_type}
-                          </span>
+                          <div className="flex flex-col items-center gap-2">
+                            <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap ${
+                              typeColors[inquiry.inquiry_type as keyof typeof typeColors] || 'bg-gray-100 text-gray-700'
+                            }`}>
+                              {typeLabels[inquiry.inquiry_type as keyof typeof typeLabels] || inquiry.inquiry_type}
+                            </span>
+                            {inquiry.inquiry_type === 'service' && inquiry.service_type && (
+                              <span className="text-xs text-gray-500 whitespace-nowrap">
+                                {serviceTypeLabels[inquiry.service_type] || inquiry.service_type}
+                              </span>
+                            )}
+                          </div>
                         )}
                       </td>
                       <td className="px-6 py-4">
                         <p className="text-sm text-gray-600 line-clamp-2 max-w-xs">
                           {inquiry.message || '-'}
                         </p>
-                      </td>
-                      <td className="px-6 py-4 text-center">
-                        <span className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${statusColors[inquiry.status]}`}>
-                          {statusLabels[inquiry.status]}
-                        </span>
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-center gap-2">
@@ -444,15 +418,9 @@ export default function ContactsClient({ contacts, documentRequests, promptReque
                           >
                             <Eye className="h-4 w-4" />
                           </button>
-                          {inquiry.type === 'contact' && inquiry.status !== 'completed' && (
-                            <UpdateContactStatusButton 
-                              contactId={inquiry.id}
-                              currentStatus={inquiry.status}
-                            />
-                          )}
                           {inquiry.type === 'contact' && (
-                            <DeleteContactButton 
-                              contactId={inquiry.id} 
+                            <DeleteContactButton
+                              contactId={inquiry.id}
                               contactName={inquiry.name}
                             />
                           )}

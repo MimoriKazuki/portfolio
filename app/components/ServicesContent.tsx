@@ -173,7 +173,7 @@ export default function ServicesContent() {
   const currentServices = activeTab === 'corporate' ? corporateServices : individualServices
 
   return (
-    <div className="w-full">
+    <div className="w-full pt-8">
       {/* SEO用のh1 */}
       <h1 className="sr-only">LandBridge サービス - AI研修・教育プログラム</h1>
 
@@ -364,7 +364,7 @@ export default function ServicesContent() {
       {/* End Main Content Area */}
 
       {/* CTA Section - Full Width */}
-      <section ref={ctaSectionRef} className="mt-32 -mx-4 sm:-mx-6 lg:-mx-8">
+      <section ref={ctaSectionRef} className="mt-32 -mx-4 sm:-mx-6 lg:-mx-8 -mb-8">
         <div className="grid grid-cols-1 md:grid-cols-2">
           {/* 資料請求 */}
           <Link

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import Link from 'next/link'
 import { Bell, ChevronRight } from 'lucide-react'
 import type { Notice } from '@/app/types'
@@ -20,6 +20,11 @@ interface NoticesClientProps {
 
 export default function NoticesClient({ notices }: NoticesClientProps) {
   const [activeCategory, setActiveCategory] = useState('all')
+  const [isVisible, setIsVisible] = useState(false)
+
+  useEffect(() => {
+    setIsVisible(true)
+  }, [])
 
   const categoryLabels = {
     news: 'ニュース',
@@ -65,9 +70,17 @@ export default function NoticesClient({ notices }: NoticesClientProps) {
   }
 
   return (
-    <div className="w-full">
-      <div className="mb-8">
-        <h1 className="text-[28px] font-bold text-gray-900">お知らせ</h1>
+    <div className="w-full pt-8">
+      <div
+        className="mb-12"
+        style={{
+          opacity: isVisible ? 1 : 0,
+          transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
+          transition: 'opacity 0.6s ease-out, transform 0.6s ease-out',
+        }}
+      >
+        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 tracking-tight">NEWS</h1>
+        <p className="text-lg text-gray-500">お知らせ</p>
       </div>
 
       {/* Category Tabs */}

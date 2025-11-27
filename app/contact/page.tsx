@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import Link from 'next/link'
 import MainLayout from '@/app/components/MainLayout'
 import ContactCompletionModal from '@/app/components/ContactCompletionModal'
@@ -8,14 +8,32 @@ import { trackContactFormSubmit } from '@/app/components/GoogleAnalyticsEvent'
 import { useRouter } from 'next/navigation'
 
 export default function ContactPage() {
+  const [isVisible, setIsVisible] = useState(false)
+
+  useEffect(() => {
+    setIsVisible(true)
+  }, [])
   const router = useRouter()
   const [formData, setFormData] = useState({
     name: '',
     company: '',
     email: '',
     message: '',
-    inquiry_type: 'service' as 'service' | 'partnership' | 'recruit' | 'other'
+    inquiry_type: 'service' as 'service' | 'partnership' | 'recruit' | 'other',
+    service_type: '' as string
   })
+
+  // 研修サービスの選択肢
+  const serviceOptions = [
+    { value: '', label: '選択してください' },
+    { value: 'comprehensive-ai-training', label: '生成AI総合研修' },
+    { value: 'ai-writing-training', label: 'AIライティング研修' },
+    { value: 'ai-video-training', label: 'AI動画生成研修' },
+    { value: 'ai-coding-training', label: 'AIコーディング研修' },
+    { value: 'practical-ai-training', label: '生成AI実務活用研修' },
+    { value: 'ai-talent-development', label: 'AI人材育成所（個人向け）' },
+    { value: 'other-service', label: 'その他・未定' },
+  ]
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitMessage, setSubmitMessage] = useState('')
   const [emailError, setEmailError] = useState('')
@@ -55,7 +73,7 @@ export default function ContactPage() {
         
         // モーダルを表示
         setShowCompletionModal(true)
-        setFormData({ name: '', company: '', email: '', message: '', inquiry_type: 'service' })
+        setFormData({ name: '', company: '', email: '', message: '', inquiry_type: 'service', service_type: '' })
       } else {
         setSubmitMessage(result.error || 'エラーが発生しました。もう一度お試しください。')
       }
@@ -74,24 +92,46 @@ export default function ContactPage() {
 
   return (
     <MainLayout hideRightSidebar={true}>
-      <div className="w-full max-w-4xl mx-auto">
-        <div className="text-center mb-10">
-          <h1 className="text-2xl sm:text-3xl font-bold mb-4 text-gray-900">お問い合わせ</h1>
-          <p className="text-base text-gray-600 max-w-2xl mx-auto">
-            システム開発のご相談・お見積りなど、お気軽にお問い合わせください。
-            プロジェクトの規模やスケジュールに関わらず、まずはお話をお聞かせください。
-          </p>
+      <div className="w-full pt-8">
+        {/* Header */}
+        <div
+          className="mb-12"
+          style={{
+            opacity: isVisible ? 1 : 0,
+            transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
+            transition: 'opacity 0.6s ease-out, transform 0.6s ease-out',
+          }}
+        >
+          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 tracking-tight">CONTACT</h1>
+          <p className="text-lg text-gray-500">お問い合わせ</p>
         </div>
-        
-        <div className="grid lg:grid-cols-1 gap-8 max-w-2xl mx-auto">
-          <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-6">お問い合わせフォーム</h3>
-            
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+        {/* Two Column Layout */}
+        <div
+          className="grid grid-cols-1 lg:grid-cols-10 gap-12 lg:gap-16"
+          style={{
+            opacity: isVisible ? 1 : 0,
+            transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
+            transition: 'opacity 0.6s ease-out 0.1s, transform 0.6s ease-out 0.1s',
+          }}
+        >
+          {/* Left Column - Description */}
+          <div className="lg:col-span-4">
+            <p className="text-gray-600 leading-loose mb-8">
+              AI研修・コンサルティングに関するご質問やご相談など、お気軽にお問い合わせください。
+            </p>
+            <p className="text-gray-600 leading-loose">
+              担当者より2営業日以内にご連絡いたします。
+            </p>
+          </div>
+
+          {/* Right Column - Form */}
+          <div className="lg:col-span-6">
+            <form onSubmit={handleSubmit} className="space-y-8">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                    お名前 <span className="text-red-500">*</span>
+                  <label htmlFor="name" className="block text-sm font-medium text-gray-900 mb-2">
+                    お名前 <span className="text-blue-600">*</span>
                   </label>
                   <input
                     type="text"
@@ -99,14 +139,14 @@ export default function ContactPage() {
                     name="name"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:border-portfolio-blue transition-colors"
+                    className="w-full px-0 py-3 bg-transparent border-0 border-b border-gray-300 text-gray-900 focus:outline-none focus:border-blue-600 transition-colors placeholder:text-gray-400"
                     placeholder="山田 太郎"
                     required
                   />
                 </div>
-                
+
                 <div>
-                  <label htmlFor="company" className="block text-sm font-medium text-gray-700 mb-1">
+                  <label htmlFor="company" className="block text-sm font-medium text-gray-900 mb-2">
                     会社名
                   </label>
                   <input
@@ -115,15 +155,15 @@ export default function ContactPage() {
                     name="company"
                     value={formData.company}
                     onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                    className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:border-portfolio-blue transition-colors"
+                    className="w-full px-0 py-3 bg-transparent border-0 border-b border-gray-300 text-gray-900 focus:outline-none focus:border-blue-600 transition-colors placeholder:text-gray-400"
                     placeholder="株式会社〇〇"
                   />
                 </div>
               </div>
-            
+
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
-                  メールアドレス <span className="text-red-500">*</span>
+                <label htmlFor="email" className="block text-sm font-medium text-gray-900 mb-2">
+                  メールアドレス <span className="text-blue-600">*</span>
                 </label>
                 <input
                   type="email"
@@ -139,27 +179,27 @@ export default function ContactPage() {
                       setEmailError('')
                     }
                   }}
-                  className={`w-full px-4 py-2 bg-white border rounded-lg text-gray-900 focus:outline-none transition-colors ${
-                    emailError ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-portfolio-blue'
+                  className={`w-full px-0 py-3 bg-transparent border-0 border-b text-gray-900 focus:outline-none transition-colors placeholder:text-gray-400 ${
+                    emailError ? 'border-red-500 focus:border-red-500' : 'border-gray-300 focus:border-blue-600'
                   }`}
                   placeholder="example@company.com"
                   required
                 />
                 {emailError && (
-                  <p className="mt-1 text-sm text-red-600">{emailError}</p>
+                  <p className="mt-2 text-sm text-red-600">{emailError}</p>
                 )}
               </div>
-            
-              <div className="col-span-full">
-                <label htmlFor="inquiry_type" className="block text-sm font-medium text-gray-700 mb-1">
-                  お問い合わせ種別 <span className="text-red-500">*</span>
+
+              <div>
+                <label htmlFor="inquiry_type" className="block text-sm font-medium text-gray-900 mb-2">
+                  お問い合わせ種別 <span className="text-blue-600">*</span>
                 </label>
                 <select
                   id="inquiry_type"
                   name="inquiry_type"
                   value={formData.inquiry_type}
-                  onChange={(e) => setFormData({ ...formData, inquiry_type: e.target.value as any })}
-                  className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:border-portfolio-blue transition-colors"
+                  onChange={(e) => setFormData({ ...formData, inquiry_type: e.target.value as any, service_type: '' })}
+                  className="w-full px-0 py-3 bg-transparent border-0 border-b border-gray-300 text-gray-900 focus:outline-none focus:border-blue-600 transition-colors cursor-pointer"
                   required
                 >
                   <option value="service">サービスについて</option>
@@ -168,56 +208,85 @@ export default function ContactPage() {
                   <option value="other">その他</option>
                 </select>
               </div>
-            
+
+              {/* サービス選択時の研修タイプ選択 */}
+              {formData.inquiry_type === 'service' && (
+                <div
+                  className="overflow-hidden transition-all duration-300"
+                  style={{
+                    maxHeight: formData.inquiry_type === 'service' ? '200px' : '0',
+                    opacity: formData.inquiry_type === 'service' ? 1 : 0,
+                  }}
+                >
+                  <label htmlFor="service_type" className="block text-sm font-medium text-gray-900 mb-2">
+                    ご興味のある研修
+                  </label>
+                  <select
+                    id="service_type"
+                    name="service_type"
+                    value={formData.service_type}
+                    onChange={(e) => setFormData({ ...formData, service_type: e.target.value })}
+                    className="w-full px-0 py-3 bg-transparent border-0 border-b border-gray-300 text-gray-900 focus:outline-none focus:border-blue-600 transition-colors cursor-pointer"
+                  >
+                    {serviceOptions.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+
               <div>
-                <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
-                  お問い合わせ内容 <span className="text-red-500">*</span>
+                <label htmlFor="message" className="block text-sm font-medium text-gray-900 mb-2">
+                  お問い合わせ内容 <span className="text-blue-600">*</span>
                 </label>
                 <textarea
                   id="message"
                   name="message"
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:border-portfolio-blue transition-colors resize-none"
+                  className="w-full px-0 py-3 bg-transparent border-0 border-b border-gray-300 text-gray-900 focus:outline-none focus:border-blue-600 transition-colors resize-none placeholder:text-gray-400"
                   placeholder="プロジェクトの詳細、ご要望などをお聞かせください。"
-                  rows={6}
+                  rows={4}
                   required
                 />
               </div>
-            
+
               {submitMessage && (
                 <div className={`${
-                  submitMessage.includes('エラー') 
-                    ? 'bg-red-50 border-red-200 text-red-700' 
+                  submitMessage.includes('エラー')
+                    ? 'bg-red-50 border-red-200 text-red-700'
                     : 'bg-green-50 border-green-200 text-green-700'
-                } border rounded-lg p-4 text-center`}>
+                } border p-4 text-center text-sm`}>
                   {submitMessage}
                 </div>
               )}
-            
-              <button
-                type="submit"
-                disabled={isSubmitting || !isFormValid}
-                className="w-full text-white font-medium py-3 px-6 rounded-lg transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                style={{ backgroundColor: 'rgb(37, 99, 235)' }}
-              >
-                {isSubmitting ? (
-                  <>
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    送信中...
-                  </>
-                ) : (
-                  '送信する'
-                )}
-              </button>
 
-              <p className="text-xs text-gray-600 text-center">
-                送信することで、
-                <Link href="/privacy" className="text-portfolio-blue hover:underline">
-                  プライバシーポリシー
-                </Link>
-                に同意したものとします。
-              </p>
+              <div className="pt-4">
+                <button
+                  type="submit"
+                  disabled={isSubmitting || !isFormValid}
+                  className="inline-flex items-center justify-center gap-2 px-12 py-4 bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      送信中...
+                    </>
+                  ) : (
+                    '送信する'
+                  )}
+                </button>
+
+                <p className="text-sm text-gray-500 mt-6">
+                  送信することで、
+                  <Link href="/privacy" className="text-blue-600 hover:underline">
+                    プライバシーポリシー
+                  </Link>
+                  に同意したものとします。
+                </p>
+              </div>
             </form>
           </div>
         </div>

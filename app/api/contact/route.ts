@@ -10,6 +10,18 @@ interface ContactFormData {
   email: string
   message: string
   inquiry_type?: 'service' | 'partnership' | 'recruit' | 'other'
+  service_type?: string
+}
+
+// 研修タイプのラベルマッピング
+const serviceTypeLabels: Record<string, string> = {
+  'comprehensive-ai-training': '生成AI総合研修',
+  'ai-writing-training': 'AIライティング研修',
+  'ai-video-training': 'AI動画生成研修',
+  'ai-coding-training': 'AIコーディング研修',
+  'practical-ai-training': '生成AI実務活用研修',
+  'ai-talent-development': 'AI人材育成所（個人向け）',
+  'other-service': 'その他・未定',
 }
 
 export async function POST(request: NextRequest) {
@@ -47,7 +59,7 @@ export async function POST(request: NextRequest) {
         email: data.email,
         message: data.message,
         inquiry_type: data.inquiry_type || 'other',
-        status: 'new'
+        service_type: data.inquiry_type === 'service' ? (data.service_type || null) : null
       })
       .select()
       .single()
@@ -65,6 +77,20 @@ export async function POST(request: NextRequest) {
     console.log('Slack webhook URL length:', SLACK_WEBHOOK_URL.length)
     
     if (SLACK_WEBHOOK_URL) {
+      // お問い合わせ種別のラベル
+      const inquiryTypeLabels: Record<string, string> = {
+        'service': 'サービスについて',
+        'partnership': '提携・協業',
+        'recruit': '採用関連',
+        'other': 'その他',
+      }
+      const inquiryTypeLabel = inquiryTypeLabels[data.inquiry_type || 'other'] || 'その他'
+
+      // 研修タイプの表示用テキスト
+      const serviceTypeText = data.inquiry_type === 'service' && data.service_type
+        ? `\n*ご興味のある研修:*\n${serviceTypeLabels[data.service_type] || data.service_type}`
+        : ''
+
       const slackMessage = {
         text: '新しいお問い合わせがありました',
         blocks: [
@@ -90,9 +116,20 @@ export async function POST(request: NextRequest) {
               {
                 type: 'mrkdwn',
                 text: `*メール:*\n${data.email}`
+              },
+              {
+                type: 'mrkdwn',
+                text: `*お問い合わせ種別:*\n${inquiryTypeLabel}`
               }
             ]
           },
+          ...(serviceTypeText ? [{
+            type: 'section',
+            text: {
+              type: 'mrkdwn',
+              text: `*ご興味のある研修:*\n${serviceTypeLabels[data.service_type!] || data.service_type}`
+            }
+          }] : []),
           {
             type: 'section',
             text: {

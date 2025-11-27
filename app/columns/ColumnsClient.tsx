@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Calendar, FolderOpen } from 'lucide-react'
@@ -19,6 +19,11 @@ interface ColumnsClientProps {
 
 export default function ColumnsClient({ columns }: ColumnsClientProps) {
   const [activeCategory, setActiveCategory] = useState('all')
+  const [isVisible, setIsVisible] = useState(false)
+
+  useEffect(() => {
+    setIsVisible(true)
+  }, [])
   
   // カテゴリごとのコラム数を計算
   const categoryCounts = useMemo(() => {
@@ -60,9 +65,17 @@ export default function ColumnsClient({ columns }: ColumnsClientProps) {
   }
     
   return (
-    <div className="w-full">
-      <div className="mb-8">
-        <h1 className="text-[28px] font-bold text-gray-900">コラム</h1>
+    <div className="w-full pt-8">
+      <div
+        className="mb-12"
+        style={{
+          opacity: isVisible ? 1 : 0,
+          transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
+          transition: 'opacity 0.6s ease-out, transform 0.6s ease-out',
+        }}
+      >
+        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 tracking-tight">COLUMN</h1>
+        <p className="text-lg text-gray-500">コラム</p>
       </div>
       
       {/* Category Tabs */}
