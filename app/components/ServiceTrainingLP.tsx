@@ -419,10 +419,10 @@ export default function ServiceTrainingLP({
         {/* Service Overview Section */}
         <section
           ref={featuresSection.ref as React.RefObject<HTMLElement>}
-          className="mt-20 mb-20"
+          className="mt-16 mb-16"
         >
           <div
-            className="mb-8 relative"
+            className="mb-8 pt-16 relative"
             style={{
               opacity: featuresSection.isVisible ? 1 : 0,
               transform: featuresSection.isVisible ? 'translateY(0)' : 'translateY(30px)',
@@ -497,7 +497,7 @@ export default function ServiceTrainingLP({
               transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
             }}
           >
-            <div className="mb-8 relative">
+            <div className="mb-8 pt-16 relative">
               <span className="absolute bottom-0 left-0 text-7xl md:text-8xl font-bold text-gray-100 select-none pointer-events-none tracking-tight leading-none">Target</span>
               <div className="relative z-10">
                 <h3 className="text-2xl font-bold text-gray-900">{targetAudience.title}</h3>
@@ -527,7 +527,7 @@ export default function ServiceTrainingLP({
         {/* Before/After Section */}
         <section
           ref={transformSection.ref as React.RefObject<HTMLElement>}
-          className="mb-20"
+          className="mb-16"
         >
           <div
             className="mb-12"
@@ -537,7 +537,7 @@ export default function ServiceTrainingLP({
               transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
             }}
           >
-            <div className="mb-4 relative">
+            <div className="mb-4 pt-16 relative">
               <span className="absolute bottom-0 left-0 text-7xl md:text-8xl font-bold text-gray-100 select-none pointer-events-none tracking-tight leading-none">Transformation</span>
               <div className="relative z-10">
                 <h2 className="text-2xl md:text-3xl font-bold text-gray-900">{expectedChanges.title}</h2>
@@ -602,7 +602,7 @@ export default function ServiceTrainingLP({
         {/* Mid CTA Section */}
         <section
           ref={midCtaSection.ref as React.RefObject<HTMLElement>}
-          className="mb-20"
+          className="mb-16"
           style={{
             opacity: midCtaSection.isVisible ? 1 : 0,
             transform: midCtaSection.isVisible ? 'translateY(0)' : 'translateY(40px)',
@@ -647,10 +647,10 @@ export default function ServiceTrainingLP({
         {/* Curriculum Section */}
         <section
           ref={curriculumSection.ref as React.RefObject<HTMLElement>}
-          className="mb-20"
+          className="mb-16"
         >
           <div
-            className="mb-12 relative"
+            className="mb-12 pt-16 relative"
             style={{
               opacity: curriculumSection.isVisible ? 1 : 0,
               transform: curriculumSection.isVisible ? 'translateY(0)' : 'translateY(30px)',
@@ -720,7 +720,7 @@ export default function ServiceTrainingLP({
         {/* Flow Section */}
         <section
           ref={flowSection.ref as React.RefObject<HTMLElement>}
-          className="mb-0"
+          className="mb-16"
         >
           <div
             className="mb-12"
@@ -730,7 +730,7 @@ export default function ServiceTrainingLP({
               transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
             }}
           >
-            <div className="mb-4 relative">
+            <div className="mb-4 pt-16 relative">
               <span className="absolute bottom-0 left-0 text-7xl md:text-8xl font-bold text-gray-100 select-none pointer-events-none tracking-tight leading-none">Flow</span>
               <div className="relative z-10">
                 <h2 className="text-2xl md:text-3xl font-bold text-gray-900">{flow.title}</h2>
@@ -784,7 +784,7 @@ export default function ServiceTrainingLP({
 
         {/* Additional CTA Section (if provided) */}
         {additionalCTA && (
-          <section className="mt-16 mb-20">
+          <section className="mb-16">
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link
                 href={additionalCTA.documentHref}
@@ -814,10 +814,10 @@ export default function ServiceTrainingLP({
         {/* Overview Table */}
         <section
           ref={overviewSection.ref as React.RefObject<HTMLElement>}
-          className="mb-20"
+          className="mb-16"
         >
           <div
-            className="mb-12 relative"
+            className="mb-12 pt-16 relative"
             style={{
               opacity: overviewSection.isVisible ? 1 : 0,
               transform: overviewSection.isVisible ? 'translateY(0)' : 'translateY(30px)',
@@ -857,10 +857,10 @@ export default function ServiceTrainingLP({
         {/* FAQ Section */}
         <section
           ref={faqSection.ref as React.RefObject<HTMLElement>}
-          className="mb-20"
+          className="mb-16"
         >
           <div
-            className="mb-12 relative"
+            className="mb-12 pt-16 relative"
             style={{
               opacity: faqSection.isVisible ? 1 : 0,
               transform: faqSection.isVisible ? 'translateY(0)' : 'translateY(30px)',
@@ -911,7 +911,7 @@ export default function ServiceTrainingLP({
         {/* Final CTA Section */}
         <section
           ref={finalCtaSection.ref as React.RefObject<HTMLElement>}
-          className="bg-gray-50 py-16 lg:py-20 text-center border border-gray-200 mb-20"
+          className="bg-gray-50 py-16 lg:py-20 text-center border border-gray-200 mb-16"
           style={{
             opacity: finalCtaSection.isVisible ? 1 : 0,
             transform: finalCtaSection.isVisible ? 'translateY(0)' : 'translateY(40px)',
@@ -955,7 +955,7 @@ export default function ServiceTrainingLP({
           className="mb-16"
         >
           <div
-            className="mb-12 relative"
+            className="mb-12 pt-16 relative"
             style={{
               opacity: otherProgramsSection.isVisible ? 1 : 0,
               transform: otherProgramsSection.isVisible ? 'translateY(0)' : 'translateY(30px)',
