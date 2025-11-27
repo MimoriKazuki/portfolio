@@ -11,7 +11,7 @@ export const AI_TALENT_DEVELOPMENT_METADATA: ServicePageMetadata = {
 export const AI_TALENT_DEVELOPMENT_DATA: ServiceData = {
   pageTitle: "AI人材育成所",
   heroTitle: "AI人材育成所",
-  heroImage: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1920&h=1080&fit=crop&crop=center",
+  heroImage: "https://images.unsplash.com/photo-1500989145603-8e7ef71d639e?w=1920&h=1080&fit=crop&crop=center",
   seoTitle: "個人でAIスキルを身につけてキャリアアップ - AI人材育成所 | AI駆動研究所",
   
   heroCTA: {

@@ -51,7 +51,7 @@ export function generateServiceMetadata(meta: ServicePageMetadata): Metadata {
     'ai-video-training': 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=1200&h=630&fit=crop&crop=center',
     'ai-coding-training': 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1200&h=630&fit=crop&crop=center',
     'practical-ai-training': 'https://images.unsplash.com/photo-1556761175-b413da4baf72?w=1200&h=630&fit=crop&crop=center',
-    'ai-talent-development': 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200&h=630&fit=crop&crop=center'
+    'ai-talent-development': 'https://images.unsplash.com/photo-1500989145603-8e7ef71d639e?w=1200&h=630&fit=crop&crop=center'
   }
   
   const serviceSlug = meta.url.split('/services/')[1] || 'default'

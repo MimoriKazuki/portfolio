@@ -6,17 +6,33 @@ interface TargetAudienceCardProps {
   description: string
   rating: number
   icon: LucideIcon
+  theme?: 'blue' | 'green'
 }
 
-export default function TargetAudienceCard({ 
-  name, 
-  subtitle, 
-  description, 
-  rating, 
-  icon: Icon 
+export default function TargetAudienceCard({
+  name,
+  subtitle,
+  description,
+  rating,
+  icon: Icon,
+  theme = 'blue'
 }: TargetAudienceCardProps) {
+  const themeColors = {
+    blue: {
+      starActive: 'text-blue-500',
+      bgLight: 'bg-blue-50',
+      iconText: 'text-blue-600',
+    },
+    green: {
+      starActive: 'text-emerald-500',
+      bgLight: 'bg-emerald-50',
+      iconText: 'text-emerald-600',
+    }
+  }
+  const colors = themeColors[theme]
+
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 border border-gray-200 relative">
+    <div className="bg-white p-6 hover:bg-gray-50 transition-colors duration-200 border border-gray-200 relative">
       {/* Rating in top-right */}
       <div className="absolute top-6 right-6 text-center">
         <p className="text-xs text-gray-500 mb-1">おすすめ度</p>
@@ -25,7 +41,7 @@ export default function TargetAudienceCard({
             <svg
               key={i}
               className={`h-3 w-3 ${
-                i < rating ? 'text-yellow-400' : 'text-gray-300'
+                i < rating ? colors.starActive : 'text-gray-200'
               }`}
               fill="currentColor"
               viewBox="0 0 20 20"
@@ -37,13 +53,13 @@ export default function TargetAudienceCard({
       </div>
 
       <div className="flex items-start gap-4 pr-16">
-        <div className="h-12 w-12 flex-shrink-0 bg-portfolio-blue/10 rounded-full flex items-center justify-center">
-          <Icon className="h-6 w-6 text-portfolio-blue" />
+        <div className={`h-10 w-10 flex-shrink-0 ${colors.bgLight} flex items-center justify-center`}>
+          <Icon className={`h-5 w-5 ${colors.iconText}`} />
         </div>
         <div className="flex-1">
-          <h4 className="text-lg font-semibold text-gray-900 mb-1">{name}</h4>
-          <p className="text-sm text-gray-600 mb-3">{subtitle}</p>
-          <p className="text-gray-700 text-sm leading-relaxed">{description}</p>
+          <h4 className="text-base font-semibold text-gray-900 mb-1">{name}</h4>
+          <p className="text-sm text-gray-500 mb-2">{subtitle}</p>
+          <p className="text-gray-600 text-sm leading-relaxed">{description}</p>
         </div>
       </div>
     </div>

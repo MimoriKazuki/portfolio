@@ -4,10 +4,36 @@ import { ArrowRight, Users, Target, Lightbulb, CheckCircle, ChevronRight, Calend
 import Link from 'next/link'
 import Image from 'next/image'
 import { Column, Project } from '@/app/types'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import TargetAudienceCard from './TargetAudienceCard'
 import { AITrainingHeroSection } from './ui/ai-training-hero-section'
 import { AIServicesCarousel } from './ui/ai-services-carousel'
+
+// Animation hook for scroll-triggered animations
+function useScrollAnimation(threshold = 0.1) {
+  const ref = useRef<HTMLElement>(null)
+  const [isVisible, setIsVisible] = useState(false)
+
+  useEffect(() => {
+    const element = ref.current
+    if (!element) return
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setIsVisible(true)
+          observer.unobserve(element)
+        }
+      },
+      { threshold, rootMargin: '0px 0px -50px 0px' }
+    )
+
+    observer.observe(element)
+    return () => observer.disconnect()
+  }, [threshold])
+
+  return { ref, isVisible }
+}
 
 // Service Overview Item Interface
 interface ServiceOverviewItem {
@@ -151,6 +177,9 @@ interface ServiceTrainingLPProps {
   // Optional props for backwards compatibility
   latestColumns?: Column[]
   featuredProjects?: Project[]
+
+  // Theme: blue for enterprise, green for individual
+  theme?: 'blue' | 'green'
 }
 
 export default function ServiceTrainingLP({
@@ -171,9 +200,65 @@ export default function ServiceTrainingLP({
   otherTrainingPrograms,
   finalCTA,
   latestColumns = [],
-  featuredProjects = []
+  featuredProjects = [],
+  theme = 'blue'
 }: ServiceTrainingLPProps) {
   const [openFaqs, setOpenFaqs] = useState<Set<number>>(new Set())
+  const [heroLoaded, setHeroLoaded] = useState(false)
+
+  // Theme colors
+  const themeColors = {
+    blue: {
+      primary: 'bg-blue-600',
+      primaryHover: 'hover:bg-blue-700',
+      text: 'text-blue-600',
+      textDark: 'text-blue-700',
+      textLight: 'text-blue-400',
+      textHover: 'group-hover:text-blue-600',
+      border: 'border-blue-600',
+      bgLight: 'bg-blue-50',
+      bgLightHover: 'hover:bg-blue-50',
+      borderLight: 'border-blue-200',
+      checkIcon: 'text-blue-500',
+      shadowHover: 'hover:shadow-blue-100',
+      hoverBg: 'group-hover:bg-blue-500',
+      hoverText: 'group-hover:text-blue-300',
+    },
+    green: {
+      primary: 'bg-emerald-600',
+      primaryHover: 'hover:bg-emerald-700',
+      text: 'text-emerald-600',
+      textDark: 'text-emerald-700',
+      textLight: 'text-emerald-400',
+      textHover: 'group-hover:text-emerald-600',
+      border: 'border-emerald-600',
+      bgLight: 'bg-emerald-50',
+      bgLightHover: 'hover:bg-emerald-50',
+      borderLight: 'border-emerald-200',
+      checkIcon: 'text-emerald-500',
+      shadowHover: 'hover:shadow-emerald-100',
+      hoverBg: 'group-hover:bg-emerald-500',
+      hoverText: 'group-hover:text-emerald-300',
+    }
+  }
+  const colors = themeColors[theme]
+
+  // Scroll animation refs for each section
+  const featuresSection = useScrollAnimation()
+  const targetSection = useScrollAnimation()
+  const transformSection = useScrollAnimation()
+  const midCtaSection = useScrollAnimation()
+  const curriculumSection = useScrollAnimation()
+  const flowSection = useScrollAnimation()
+  const overviewSection = useScrollAnimation()
+  const faqSection = useScrollAnimation()
+  const finalCtaSection = useScrollAnimation()
+  const otherProgramsSection = useScrollAnimation()
+
+  useEffect(() => {
+    const timer = setTimeout(() => setHeroLoaded(true), 100)
+    return () => clearTimeout(timer)
+  }, [])
 
   const toggleFaq = (index: number) => {
     setOpenFaqs(prev => {
@@ -208,52 +293,83 @@ export default function ServiceTrainingLP({
     <>
       {/* SEO用のh1 */}
       <h1 className="sr-only">{seoTitle}</h1>
-      
+
       {/* Hero Section - 画面いっぱい */}
       <div className="-mx-4 sm:-mx-6 lg:-mx-8 -mt-8">
-        <div className="h-[360px] relative overflow-hidden w-full">
+        <div className="h-[320px] md:h-[400px] relative overflow-hidden w-full">
           <Image
             src={heroImage}
             alt={heroTitle}
             fill
             sizes="100vw"
             className="object-cover object-center"
+            style={{
+              transform: heroLoaded ? 'scale(1)' : 'scale(1.05)',
+              transition: 'transform 1.2s cubic-bezier(0.16, 1, 0.3, 1)',
+            }}
             priority
           />
-          <div className="absolute inset-0 bg-black/60" />
-          <div className="relative z-10 flex items-center justify-center h-full">
-            <h1 className="text-4xl md:text-5xl text-white tracking-tight">
-              {heroTitle}
-            </h1>
+          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent" />
+          <div className="relative z-10 flex items-center h-full max-w-[1023px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div>
+              <p
+                className={`${colors.textLight} text-sm font-medium mb-2 tracking-wide`}
+                style={{
+                  opacity: heroLoaded ? 1 : 0,
+                  transform: heroLoaded ? 'translateX(0)' : 'translateX(-20px)',
+                  transition: 'opacity 0.8s ease-out 0.2s, transform 0.8s ease-out 0.2s',
+                }}
+              >
+                TRAINING PROGRAM
+              </p>
+              <h2
+                className="text-3xl md:text-4xl lg:text-5xl text-white font-bold tracking-tight"
+                style={{
+                  opacity: heroLoaded ? 1 : 0,
+                  transform: heroLoaded ? 'translateX(0)' : 'translateX(-30px)',
+                  transition: 'opacity 0.8s ease-out 0.3s, transform 0.8s ease-out 0.3s',
+                }}
+              >
+                {heroTitle}
+              </h2>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Hero CTA Buttons */}
-      <section className="py-8">
+      <section className="py-10">
         <div className="max-w-[1023px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link
-              href={heroCTA.inquiryHref}
-              className="group relative overflow-hidden px-8 py-4 bg-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:bg-blue-700 transform hover:-translate-y-1 flex items-center"
-            >
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out"></div>
-              <svg className="w-5 h-5 mr-2 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                <rect width="20" height="16" x="2" y="4" rx="2"/>
-                <path d="m22 7-10 5L2 7"/>
-              </svg>
-              <span className="relative z-10">無料相談を予約する</span>
-            </Link>
+          <div
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+            style={{
+              opacity: heroLoaded ? 1 : 0,
+              transform: heroLoaded ? 'translateY(0)' : 'translateY(20px)',
+              transition: 'opacity 0.8s ease-out 0.5s, transform 0.8s ease-out 0.5s',
+            }}
+          >
             <Link
               href={heroCTA.documentHref}
-              className="group px-8 py-4 bg-white text-gray-900 font-semibold rounded-xl border-2 border-blue-200 shadow-sm hover:shadow-lg hover:border-blue-300 hover:bg-blue-50 transition-all duration-300 flex items-center"
+              className="px-10 py-4 bg-white text-gray-900 font-medium border border-gray-300 hover:bg-gray-50 transition-colors duration-200 flex items-center gap-2"
             >
-              <svg className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                 <polyline points="7,10 12,15 17,10"/>
                 <line x1="12" y1="15" x2="12" y2="3"/>
               </svg>
-              <span className="group-hover:text-blue-700 transition-colors duration-200">資料をダウンロード</span>
+              資料をダウンロード
+            </Link>
+            <Link
+              href={heroCTA.inquiryHref}
+              className={`group relative inline-flex items-center justify-center px-10 py-4 overflow-hidden font-medium transition-all bg-white text-gray-900 border ${colors.border} hover:text-white`}
+            >
+              {/* 斜めの青いエリア - ホバー時に展開 */}
+              <span className={`w-96 h-96 rotate-[-40deg] ${colors.primary} absolute bottom-0 left-0 -translate-x-full ease-out duration-500 transition-all translate-y-full mb-16 ml-16 group-hover:ml-0 group-hover:mb-48 group-hover:translate-x-0`}></span>
+              <svg className={`w-5 h-5 mr-2 ${colors.text} group-hover:text-white transition-colors duration-300 relative z-10`} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                <rect width="20" height="16" x="2" y="4" rx="2"/>
+                <path d="m22 7-10 5L2 7"/>
+              </svg>
+              <span className="relative z-10">無料相談を予約する</span>
             </Link>
           </div>
         </div>
@@ -261,95 +377,151 @@ export default function ServiceTrainingLP({
 
       <div className="max-w-[1023px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* Service Overview Section */}
-        <section className="mb-16 mt-8">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">{serviceOverview.title}</h2>
+        <section
+          ref={featuresSection.ref as React.RefObject<HTMLElement>}
+          className="mb-20 mt-8"
+        >
+          <div
+            className="mb-12"
+            style={{
+              opacity: featuresSection.isVisible ? 1 : 0,
+              transform: featuresSection.isVisible ? 'translateY(0)' : 'translateY(30px)',
+              transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+            }}
+          >
+            <p className={`${colors.text} text-sm font-medium mb-2 tracking-wide`}>FEATURES</p>
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">{serviceOverview.title}</h2>
             {serviceOverview.subtitle && (
-              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+              <p className="text-gray-600 leading-relaxed max-w-3xl">
                 {serviceOverview.subtitle}
               </p>
             )}
           </div>
-          
-          <div className="bg-white p-8 mb-12 rounded">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {serviceOverview.items.map((item, index) => (
-                <div key={index} className="text-center flex-1">
-                  <div className="relative w-full aspect-video mb-4 rounded overflow-hidden">
-                    <Image
-                      src={item.image}
-                      alt={item.title}
-                      fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      className="object-cover"
-                    />
-                  </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mb-3 pb-2 border-b border-gray-300">{item.title}</h3>
-                  <p className="text-gray-600">{item.description}</p>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+            {serviceOverview.items.map((item, index) => (
+              <div
+                key={index}
+                className="group"
+                style={{
+                  opacity: featuresSection.isVisible ? 1 : 0,
+                  transform: featuresSection.isVisible ? 'translateY(0)' : 'translateY(40px)',
+                  transition: `opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${0.1 + index * 0.1}s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${0.1 + index * 0.1}s`,
+                }}
+              >
+                <div className="relative w-full aspect-video mb-4 overflow-hidden">
+                  <Image
+                    src={item.image}
+                    alt={item.title}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
+                <h3 className={`text-lg font-semibold text-gray-900 mb-2 ${colors.textHover} transition-colors duration-300`}>{item.title}</h3>
+                <p className="text-gray-600 text-sm leading-relaxed">{item.description}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Target Audience Subsection */}
+          <div
+            ref={targetSection.ref as React.RefObject<HTMLDivElement>}
+            style={{
+              opacity: targetSection.isVisible ? 1 : 0,
+              transform: targetSection.isVisible ? 'translateY(0)' : 'translateY(30px)',
+              transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+            }}
+          >
+            <p className={`${colors.text} text-sm font-medium mb-2 tracking-wide`}>TARGET</p>
+            <h3 className="text-2xl font-bold text-gray-900 mb-8">{targetAudience.title}</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {targetAudience.audiences.map((audience, index) => (
+                <div
+                  key={index}
+                  style={{
+                    opacity: targetSection.isVisible ? 1 : 0,
+                    transform: targetSection.isVisible ? 'translateY(0)' : 'translateY(30px)',
+                    transition: `opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${0.1 + index * 0.1}s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${0.1 + index * 0.1}s`,
+                  }}
+                >
+                  <TargetAudienceCard
+                    name={audience.name}
+                    subtitle={audience.subtitle}
+                    description={audience.description}
+                    rating={audience.rating}
+                    icon={getIconComponent(audience.iconName)}
+                    theme={theme}
+                  />
                 </div>
               ))}
             </div>
           </div>
-
-          {/* Target Audience Subsection */}
-          <div>
-            <h3 className="text-2xl font-bold text-gray-900 mb-8 text-center">{targetAudience.title}</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {targetAudience.audiences.map((audience, index) => (
-                <TargetAudienceCard
-                  key={index}
-                  name={audience.name}
-                  subtitle={audience.subtitle}
-                  description={audience.description}
-                  rating={audience.rating}
-                  icon={getIconComponent(audience.iconName)}
-                />
-              ))}
-            </div>
-          </div>
         </section>
 
-        {/* Divider */}
-        <div className="border-t border-gray-200 my-16"></div>
-
         {/* Before/After Section */}
-        <section className="mb-16">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">{expectedChanges.title}</h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+        <section
+          ref={transformSection.ref as React.RefObject<HTMLElement>}
+          className="mb-20"
+        >
+          <div
+            className="mb-12"
+            style={{
+              opacity: transformSection.isVisible ? 1 : 0,
+              transform: transformSection.isVisible ? 'translateY(0)' : 'translateY(30px)',
+              transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+            }}
+          >
+            <p className={`${colors.text} text-sm font-medium mb-2 tracking-wide`}>TRANSFORMATION</p>
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">{expectedChanges.title}</h2>
+            <p className="text-gray-600 leading-relaxed max-w-2xl">
               {expectedChanges.subtitle}
             </p>
           </div>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="bg-gray-100 p-8 rounded-lg border border-gray-300">
-              <h3 className="text-xl font-semibold text-gray-700 mb-6 text-center flex items-center justify-center gap-2">
-                <AlertCircle className="h-6 w-6" />
+            <div
+              className="group bg-gray-50 p-8 border border-gray-200 hover:shadow-lg transition-all duration-500"
+              style={{
+                opacity: transformSection.isVisible ? 1 : 0,
+                transform: transformSection.isVisible ? 'translateY(0)' : 'translateY(40px)',
+                transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s, box-shadow 0.5s ease',
+              }}
+            >
+              <h3 className="text-lg font-semibold text-gray-700 mb-6 flex items-center gap-2">
+                <AlertCircle className="h-5 w-5" />
                 導入前の課題
               </h3>
-              <div className="space-y-5">
+              <div className="space-y-4">
                 {expectedChanges.beforeItems.map((item, index) => (
                   <div key={index} className="flex items-start gap-3">
-                    <AlertCircle className="h-5 w-5 text-gray-500 mt-0.5 flex-shrink-0" />
+                    <AlertCircle className="h-4 w-4 text-gray-400 mt-1 flex-shrink-0" />
                     <div>
-                      <span className="text-sm font-medium text-gray-600 block">{item.category}</span>
-                      <span className="text-gray-700">{item.issue}</span>
+                      <span className="text-xs font-medium text-gray-500 block mb-1">{item.category}</span>
+                      <span className="text-gray-700 text-sm">{item.issue}</span>
                     </div>
                   </div>
                 ))}
               </div>
             </div>
-            <div className="bg-portfolio-blue-light/10 p-8 rounded-lg border border-portfolio-blue-light">
-              <h3 className="text-xl font-semibold text-portfolio-blue mb-6 text-center flex items-center justify-center gap-2">
-                <CheckCircle className="h-6 w-6" />
+            <div
+              className={`group ${colors.bgLight} p-8 border ${colors.borderLight} hover:shadow-lg ${colors.shadowHover} transition-all duration-500`}
+              style={{
+                opacity: transformSection.isVisible ? 1 : 0,
+                transform: transformSection.isVisible ? 'translateY(0)' : 'translateY(40px)',
+                transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s, box-shadow 0.5s ease',
+              }}
+            >
+              <h3 className={`text-lg font-semibold ${colors.textDark} mb-6 flex items-center gap-2`}>
+                <CheckCircle className="h-5 w-5" />
                 導入後の成果
               </h3>
-              <div className="space-y-5">
+              <div className="space-y-4">
                 {expectedChanges.afterItems.map((item, index) => (
                   <div key={index} className="flex items-start gap-3">
-                    <CheckCircle className="h-5 w-5 text-green-500 mt-0.5 flex-shrink-0" />
+                    <CheckCircle className={`h-4 w-4 ${colors.checkIcon} mt-1 flex-shrink-0`} />
                     <div>
-                      <span className="text-sm font-medium text-portfolio-blue block">{item.category}</span>
-                      <span className="text-gray-700">{item.achievement}</span>
+                      <span className={`text-xs font-medium ${colors.text} block mb-1`}>{item.category}</span>
+                      <span className="text-gray-700 text-sm">{item.achievement}</span>
                     </div>
                   </div>
                 ))}
@@ -358,60 +530,98 @@ export default function ServiceTrainingLP({
           </div>
         </section>
 
-        {/* Divider */}
-        <div className="border-t border-gray-200 my-16"></div>
-
         {/* Mid CTA Section */}
-        <section className="mb-16">
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 p-8 lg:p-12 rounded-xl border border-blue-100">
+        <section
+          ref={midCtaSection.ref as React.RefObject<HTMLElement>}
+          className="mb-20"
+          style={{
+            opacity: midCtaSection.isVisible ? 1 : 0,
+            transform: midCtaSection.isVisible ? 'translateY(0)' : 'translateY(40px)',
+            transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+          }}
+        >
+          <div className="bg-gray-50 p-8 lg:p-12 border border-gray-200">
             <div className="max-w-2xl mx-auto text-center">
               <h2 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-4">
                 {midCTA.title}
               </h2>
-              <p className="text-lg text-gray-600 mb-8">
+              <p className="text-gray-600 mb-8 leading-relaxed">
                 {midCTA.description}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
                 <Link
-                  href={midCTA.inquiryHref}
-                  className="group relative overflow-hidden px-8 py-4 bg-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:bg-blue-700 transform hover:-translate-y-1 flex items-center"
+                  href={midCTA.documentHref}
+                  className="px-10 py-4 bg-white text-gray-900 font-medium border border-gray-300 hover:bg-gray-50 transition-colors duration-200 flex items-center gap-2"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out"></div>
-                  <svg className="w-5 h-5 mr-2 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="7,10 12,15 17,10"/>
+                    <line x1="12" y1="15" x2="12" y2="3"/>
+                  </svg>
+                  資料をダウンロード
+                </Link>
+                <Link
+                  href={midCTA.inquiryHref}
+                  className={`group relative inline-flex items-center justify-center px-10 py-4 overflow-hidden font-medium transition-all bg-white text-gray-900 border ${colors.border} hover:text-white`}
+                >
+                  <span className={`w-96 h-96 rotate-[-40deg] ${colors.primary} absolute bottom-0 left-0 -translate-x-full ease-out duration-500 transition-all translate-y-full mb-16 ml-16 group-hover:ml-0 group-hover:mb-48 group-hover:translate-x-0`}></span>
+                  <svg className={`w-5 h-5 mr-2 ${colors.text} group-hover:text-white transition-colors duration-300 relative z-10`} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                     <rect width="20" height="16" x="2" y="4" rx="2"/>
                     <path d="m22 7-10 5L2 7"/>
                   </svg>
                   <span className="relative z-10">無料相談を予約する</span>
                 </Link>
-                <Link
-                  href={midCTA.documentHref}
-                  className="group px-8 py-4 bg-white text-gray-900 font-semibold rounded-xl border-2 border-blue-200 shadow-sm hover:shadow-lg hover:border-blue-300 hover:bg-blue-50 transition-all duration-300 flex items-center"
-                >
-                  <svg className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                    <polyline points="7,10 12,15 17,10"/>
-                    <line x1="12" y1="15" x2="12" y2="3"/>
-                  </svg>
-                  <span className="group-hover:text-blue-700 transition-colors duration-200">資料をダウンロード</span>
-                </Link>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Divider */}
-        <div className="border-t border-gray-200 my-16"></div>
-
         {/* Curriculum Section */}
-        <section className="mb-16">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">{curriculum.title}</h2>
+        <section
+          ref={curriculumSection.ref as React.RefObject<HTMLElement>}
+          className="mb-20"
+        >
+          <div
+            className="mb-12"
+            style={{
+              opacity: curriculumSection.isVisible ? 1 : 0,
+              transform: curriculumSection.isVisible ? 'translateY(0)' : 'translateY(30px)',
+              transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+            }}
+          >
+            <p className={`${colors.text} text-sm font-medium mb-2 tracking-wide`}>CURRICULUM</p>
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">{curriculum.title}</h2>
           </div>
-          <div className="space-y-6">
+          <div className="space-y-4">
             {curriculum.modules.map((module, index) => (
-              <div key={index} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-200">
-                <div className="flex flex-col md:flex-row">
-                  <div className="relative w-full md:w-48 md:flex-shrink-0 overflow-hidden">
+              <div
+                key={index}
+                className="group relative bg-white border border-gray-200 overflow-hidden transition-all duration-500 hover:shadow-xl hover:border-transparent"
+                style={{
+                  opacity: curriculumSection.isVisible ? 1 : 0,
+                  transform: curriculumSection.isVisible ? 'translateY(0)' : 'translateY(40px)',
+                  transition: `opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${0.1 + index * 0.1}s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${0.1 + index * 0.1}s, box-shadow 0.5s ease, border-color 0.5s ease`,
+                }}
+              >
+                {/* 背景画像（ホバー時に表示） */}
+                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                  <Image
+                    src={module.image}
+                    alt=""
+                    fill
+                    className="object-cover"
+                    sizes="100vw"
+                  />
+                  <div className="absolute inset-0 bg-slate-700/80" />
+                  <div
+                    className="absolute inset-0"
+                    style={{
+                      background: 'linear-gradient(to right, rgb(51 65 85) 0%, rgb(51 65 85) 50%, transparent 100%)'
+                    }}
+                  />
+                </div>
+                <div className="flex flex-col md:flex-row relative z-10">
+                  <div className="relative w-full md:w-48 md:flex-shrink-0 overflow-hidden group-hover:opacity-0 transition-opacity duration-500">
                     <Image
                       src={module.image}
                       alt={module.title}
@@ -421,8 +631,15 @@ export default function ServiceTrainingLP({
                     />
                   </div>
                   <div className="flex-1 p-6 flex flex-col justify-center">
-                    <h3 className="text-xl font-semibold text-gray-900 mb-3">{module.title}</h3>
-                    <p className="text-gray-700">{module.description}</p>
+                    <p className={`text-xs font-medium text-gray-400 ${colors.hoverText} transition-colors duration-500 mb-2`}>Module {String(index + 1).padStart(2, '0')}</p>
+                    <h3 className="text-lg font-semibold text-gray-900 group-hover:text-white transition-colors duration-500 mb-2">{module.title}</h3>
+                    <p className="text-gray-600 group-hover:text-gray-300 text-sm leading-relaxed transition-colors duration-500">{module.description}</p>
+                  </div>
+                </div>
+                {/* 矢印ボタン */}
+                <div className="absolute bottom-4 right-4 z-10">
+                  <div className={`w-8 h-8 group-hover:w-10 group-hover:h-10 bg-gray-100 ${colors.hoverBg} flex items-center justify-center transition-all duration-500`}>
+                    <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-white transition-all duration-500" />
                   </div>
                 </div>
               </div>
@@ -430,38 +647,61 @@ export default function ServiceTrainingLP({
           </div>
         </section>
 
-        {/* Divider */}
-        <div className="border-t border-gray-200 my-16"></div>
-
         {/* Flow Section */}
-        <section className="mb-0">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">{flow.title}</h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+        <section
+          ref={flowSection.ref as React.RefObject<HTMLElement>}
+          className="mb-0"
+        >
+          <div
+            className="mb-12"
+            style={{
+              opacity: flowSection.isVisible ? 1 : 0,
+              transform: flowSection.isVisible ? 'translateY(0)' : 'translateY(30px)',
+              transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+            }}
+          >
+            <p className={`${colors.text} text-sm font-medium mb-2 tracking-wide`}>FLOW</p>
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">{flow.title}</h2>
+            <p className="text-gray-600 leading-relaxed max-w-2xl">
               {flow.subtitle}
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 lg:gap-4 mb-12">
             {flow.steps.map((step, index) => (
-              <div key={index} className="text-center">
+              <div
+                key={index}
+                className="text-center group"
+                style={{
+                  opacity: flowSection.isVisible ? 1 : 0,
+                  transform: flowSection.isVisible ? 'translateY(0)' : 'translateY(30px)',
+                  transition: `opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${0.1 + index * 0.1}s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${0.1 + index * 0.1}s`,
+                }}
+              >
                 <div className="relative">
-                  <div className="h-16 w-16 mx-auto mb-4 bg-portfolio-blue rounded-full flex items-center justify-center text-white font-bold text-xl">
+                  <div className={`h-14 w-14 mx-auto mb-4 ${colors.primary} ${colors.primaryHover} group-hover:scale-110 flex items-center justify-center text-white font-bold text-lg transition-all duration-300`}>
                     {index + 1}
                   </div>
                   {index < flow.steps.length - 1 && (
-                    <ChevronRight className="hidden lg:block absolute top-6 -right-2 h-6 w-6 text-gray-400" />
+                    <ChevronRight className="hidden lg:block absolute top-5 -right-2 h-5 w-5 text-gray-400" />
                   )}
                 </div>
-                <p className="text-sm font-medium text-gray-700">STEP{index + 1}</p>
-                <p className="text-sm text-gray-600 mt-1">{step}</p>
+                <p className={`text-xs font-medium ${colors.text} tracking-wide`}>STEP {index + 1}</p>
+                <p className="text-sm text-gray-700 mt-1">{step}</p>
               </div>
             ))}
           </div>
-          
-          <div className="bg-gray-50 p-8 lg:p-12 rounded-lg">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">{flow.conclusionTitle}</h3>
+
+          <div
+            className="bg-gray-50 p-8 lg:p-12 border border-gray-200"
+            style={{
+              opacity: flowSection.isVisible ? 1 : 0,
+              transform: flowSection.isVisible ? 'translateY(0)' : 'translateY(30px)',
+              transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.5s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.5s',
+            }}
+          >
+            <h3 className="text-xl font-bold text-gray-900 mb-4 text-center">{flow.conclusionTitle}</h3>
             <div className="max-w-2xl mx-auto text-center">
-              <p className="text-lg text-gray-700 leading-relaxed">
+              <p className="text-gray-600 leading-relaxed">
                 {flow.conclusionText}
               </p>
             </div>
@@ -470,147 +710,193 @@ export default function ServiceTrainingLP({
 
         {/* Additional CTA Section (if provided) */}
         {additionalCTA && (
-          <section className="mt-16 mb-0">
+          <section className="mt-16 mb-20">
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link
-                href={additionalCTA.inquiryHref}
-                className="group relative overflow-hidden px-8 py-4 bg-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:bg-blue-700 transform hover:-translate-y-1 flex items-center"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out"></div>
-                <svg className="w-5 h-5 mr-2 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                  <rect width="20" height="16" x="2" y="4" rx="2"/>
-                  <path d="m22 7-10 5L2 7"/>
-                </svg>
-                <span className="relative z-10">無料相談を予約する</span>
-              </Link>
-              <Link
                 href={additionalCTA.documentHref}
-                className="group px-8 py-4 bg-white text-gray-900 font-semibold rounded-xl border-2 border-blue-200 shadow-sm hover:shadow-lg hover:border-blue-300 hover:bg-blue-50 transition-all duration-300 flex items-center"
+                className={`px-10 py-4 bg-white ${colors.text} font-medium border ${colors.border} ${colors.bgLightHover} transition-colors duration-200 flex items-center gap-2`}
               >
-                <svg className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                   <polyline points="7,10 12,15 17,10"/>
                   <line x1="12" y1="15" x2="12" y2="3"/>
                 </svg>
-                <span className="group-hover:text-blue-700 transition-colors duration-200">資料をダウンロード</span>
+                資料をダウンロード
+              </Link>
+              <Link
+                href={additionalCTA.inquiryHref}
+                className={`px-10 py-4 ${colors.primary} text-white font-medium ${colors.primaryHover} transition-colors duration-200 flex items-center gap-2`}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                  <rect width="20" height="16" x="2" y="4" rx="2"/>
+                  <path d="m22 7-10 5L2 7"/>
+                </svg>
+                無料相談を予約する
               </Link>
             </div>
           </section>
         )}
 
-        {/* Divider */}
-        <div className="border-t border-gray-200 my-16"></div>
-
         {/* Overview Table */}
-        <section className="mb-16">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">{overviewTable.title}</h2>
+        <section
+          ref={overviewSection.ref as React.RefObject<HTMLElement>}
+          className="mb-20"
+        >
+          <div
+            className="mb-12"
+            style={{
+              opacity: overviewSection.isVisible ? 1 : 0,
+              transform: overviewSection.isVisible ? 'translateY(0)' : 'translateY(30px)',
+              transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+            }}
+          >
+            <p className={`${colors.text} text-sm font-medium mb-2 tracking-wide`}>OVERVIEW</p>
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">{overviewTable.title}</h2>
           </div>
-          <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <tbody>
-                  {overviewTable.rows.map(([label, value], index) => (
-                    <tr key={index} className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
-                      <td className="px-4 sm:px-6 py-4 font-semibold text-gray-900 border-r border-gray-200 w-1/3">
-                        {label}
-                      </td>
-                      <td className="px-4 sm:px-6 py-4 text-gray-700">
-                        {value}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+          <div
+            className="border border-gray-200 overflow-hidden"
+            style={{
+              opacity: overviewSection.isVisible ? 1 : 0,
+              transform: overviewSection.isVisible ? 'translateY(0)' : 'translateY(30px)',
+              transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s',
+            }}
+          >
+            <table className="w-full">
+              <tbody>
+                {overviewTable.rows.map(([label, value], index) => (
+                  <tr key={index} className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"} ${colors.bgLightHover} transition-colors duration-200`}>
+                    <td className="px-4 sm:px-6 py-4 font-semibold text-gray-900 border-r border-gray-200 w-1/3 text-sm">
+                      {label}
+                    </td>
+                    <td className="px-4 sm:px-6 py-4 text-gray-600 text-sm">
+                      {value}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </section>
 
-        {/* Divider */}
-        <div className="border-t border-gray-200 my-16"></div>
-
         {/* FAQ Section */}
-        <section className="mb-16">
-          <div className="text-center mb-10">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">{faq.title}</h2>
+        <section
+          ref={faqSection.ref as React.RefObject<HTMLElement>}
+          className="mb-20"
+        >
+          <div
+            className="mb-12"
+            style={{
+              opacity: faqSection.isVisible ? 1 : 0,
+              transform: faqSection.isVisible ? 'translateY(0)' : 'translateY(30px)',
+              transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+            }}
+          >
+            <p className={`${colors.text} text-sm font-medium mb-2 tracking-wide`}>FAQ</p>
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">{faq.title}</h2>
           </div>
-          <div className="space-y-4">
+          <div className="space-y-3">
             {faq.items.map((item, index) => (
-              <div key={index} className="bg-white border border-gray-200 rounded-lg">
+              <div
+                key={index}
+                className={`border border-gray-200 hover:${colors.borderLight} transition-colors duration-300`}
+                style={{
+                  opacity: faqSection.isVisible ? 1 : 0,
+                  transform: faqSection.isVisible ? 'translateY(0)' : 'translateY(20px)',
+                  transition: `opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${0.05 + index * 0.05}s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${0.05 + index * 0.05}s, border-color 0.3s ease`,
+                }}
+              >
                 <button
                   onClick={() => toggleFaq(index)}
-                  className="w-full px-6 py-4 text-left flex items-center gap-3 justify-between hover:bg-gray-50 transition-colors"
+                  className="w-full px-6 py-5 text-left flex items-center gap-4 justify-between hover:bg-gray-50 transition-colors"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="h-5 w-5 bg-gray-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">
-                      Q
-                    </div>
-                    <span className="font-semibold text-gray-900">{item.question}</span>
+                  <div className="flex items-center gap-4">
+                    <span className={`w-8 h-8 ${colors.primary} text-white font-bold text-sm flex items-center justify-center flex-shrink-0`}>Q</span>
+                    <span className="font-medium text-gray-900 text-sm">{item.question}</span>
                   </div>
-                  <ChevronDown className={`h-5 w-5 text-gray-500 transition-transform ${openFaqs.has(index) ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`h-5 w-5 text-gray-400 transition-transform duration-300 flex-shrink-0 ${openFaqs.has(index) ? 'rotate-180' : ''}`} />
                 </button>
-                {openFaqs.has(index) && (
-                  <div className="px-6 pt-4 pb-4 text-gray-700">
-                    <div className="flex items-start gap-3">
-                      <div className="h-5 w-5 bg-portfolio-blue text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
-                        A
-                      </div>
-                      <span>{item.answer}</span>
+                <div
+                  className={`overflow-hidden transition-all duration-300 ${openFaqs.has(index) ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'}`}
+                >
+                  <div className="px-6 pb-5 text-gray-600">
+                    <div className="flex items-start gap-4 pt-4 border-t border-gray-100">
+                      <span className="w-8 h-8 bg-gray-200 text-gray-600 font-bold text-sm flex items-center justify-center flex-shrink-0">A</span>
+                      <p className="text-sm leading-relaxed pt-1">{item.answer}</p>
                     </div>
                   </div>
-                )}
+                </div>
               </div>
             ))}
           </div>
         </section>
 
-        {/* Divider */}
-        <div className="border-t border-gray-200 my-16"></div>
-
         {/* Final CTA Section */}
-        <section className="bg-gradient-to-r from-blue-50 to-indigo-50 text-gray-900 py-16 lg:py-20 rounded-xl text-center border border-blue-100">
+        <section
+          ref={finalCtaSection.ref as React.RefObject<HTMLElement>}
+          className="bg-gray-50 py-16 lg:py-20 text-center border border-gray-200 mb-20"
+          style={{
+            opacity: finalCtaSection.isVisible ? 1 : 0,
+            transform: finalCtaSection.isVisible ? 'translateY(0)' : 'translateY(40px)',
+            transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+          }}
+        >
           <div className="max-w-2xl mx-auto px-6">
-            <h2 className="text-3xl font-bold mb-6 text-gray-900">{finalCTA.title}</h2>
-            <p className="text-xl mb-8 text-gray-600">
+            <h2 className="text-2xl md:text-3xl font-bold mb-4 text-gray-900">{finalCTA.title}</h2>
+            <p className="text-gray-600 mb-8 leading-relaxed">
               {finalCTA.description}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link
-                href={finalCTA.inquiryHref}
-                className="group relative overflow-hidden px-8 py-4 bg-blue-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 hover:bg-blue-700 transform hover:-translate-y-1 flex items-center"
+                href={finalCTA.documentHref}
+                className="px-10 py-4 bg-white text-gray-900 font-medium border border-gray-300 hover:bg-gray-50 transition-colors duration-200 flex items-center gap-2"
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out"></div>
-                <svg className="w-5 h-5 mr-2 relative z-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7,10 12,15 17,10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                資料をダウンロード
+              </Link>
+              <Link
+                href={finalCTA.inquiryHref}
+                className={`group relative inline-flex items-center justify-center px-10 py-4 overflow-hidden font-medium transition-all bg-white text-gray-900 border ${colors.border} hover:text-white`}
+              >
+                <span className={`w-96 h-96 rotate-[-40deg] ${colors.primary} absolute bottom-0 left-0 -translate-x-full ease-out duration-500 transition-all translate-y-full mb-16 ml-16 group-hover:ml-0 group-hover:mb-48 group-hover:translate-x-0`}></span>
+                <svg className={`w-5 h-5 mr-2 ${colors.text} group-hover:text-white transition-colors duration-300 relative z-10`} fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                   <rect width="20" height="16" x="2" y="4" rx="2"/>
                   <path d="m22 7-10 5L2 7"/>
                 </svg>
                 <span className="relative z-10">無料相談を予約する</span>
               </Link>
-              <Link
-                href={finalCTA.documentHref}
-                className="group px-8 py-4 bg-white/90 backdrop-blur-sm text-gray-900 font-semibold rounded-xl border-2 border-blue-200 shadow-sm hover:shadow-lg hover:border-blue-300 hover:bg-blue-50 transition-all duration-300 flex items-center"
-              >
-                <svg className="w-5 h-5 mr-2 group-hover:scale-110 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                  <polyline points="7,10 12,15 17,10"/>
-                  <line x1="12" y1="15" x2="12" y2="3"/>
-                </svg>
-                <span className="group-hover:text-blue-700 transition-colors duration-200">資料をダウンロード</span>
-              </Link>
             </div>
           </div>
         </section>
 
-        {/* Divider */}
-        <div className="border-t border-gray-200 my-16"></div>
-
         {/* Other Training Programs Section */}
-        <section className="mb-16">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-8">{otherTrainingPrograms.title}</h2>
+        <section
+          ref={otherProgramsSection.ref as React.RefObject<HTMLElement>}
+          className="mb-16"
+        >
+          <div
+            className="mb-12"
+            style={{
+              opacity: otherProgramsSection.isVisible ? 1 : 0,
+              transform: otherProgramsSection.isVisible ? 'translateY(0)' : 'translateY(30px)',
+              transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
+            }}
+          >
+            <p className={`${colors.text} text-sm font-medium mb-2 tracking-wide`}>OTHER PROGRAMS</p>
+            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">{otherTrainingPrograms.title}</h2>
           </div>
-          <div className="-mx-4 sm:-mx-6 lg:-mx-8">
-            <AIServicesCarousel 
+          <div
+            className="-mx-4 sm:-mx-6 lg:-mx-8"
+            style={{
+              opacity: otherProgramsSection.isVisible ? 1 : 0,
+              transform: otherProgramsSection.isVisible ? 'translateY(0)' : 'translateY(30px)',
+              transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s',
+            }}
+          >
+            <AIServicesCarousel
               showHeader={false}
               sectionPadding=""
               items={otherTrainingPrograms.programs.filter(program => program.id !== otherTrainingPrograms.currentPageId)}

@@ -13,10 +13,11 @@ export default async function AITalentDevelopmentPage() {
   
   return (
     <MainLayout hideRightSidebar={true}>
-      <ServiceTrainingLP 
+      <ServiceTrainingLP
         {...AI_TALENT_DEVELOPMENT_DATA}
         latestColumns={columns}
         featuredProjects={featuredProjects}
+        theme="green"
       />
     </MainLayout>
   )

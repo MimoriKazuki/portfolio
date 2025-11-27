@@ -164,7 +164,7 @@ export default function ServicesContent() {
         'キャリアサポートやスキル認定制度も充実。学んだスキルを証明し、転職やキャリアアップに活かすことができます。AI時代に求められる人材への第一歩を踏み出しましょう。'
       ],
       href: '/services/ai-talent-development',
-      image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=600&fit=crop&crop=center',
+      image: 'https://images.unsplash.com/photo-1500989145603-8e7ef71d639e?w=800&h=600&fit=crop&crop=center',
       logoText: 'AI人材育成所',
       logoSubtext: 'パーソナルAIコーチング'
     }

@@ -54,7 +54,7 @@ export const ALL_TRAINING_PROGRAMS: OtherTrainingProgram[] = [
     title: "AI人材育成所",
     description: "個人向けAIスキル向上プログラム。自分のペースでAIを学び、キャリアアップを目指せます。",
     href: "/services/ai-talent-development",
-    image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=300&fit=crop&crop=center",
+    image: "https://images.unsplash.com/photo-1500989145603-8e7ef71d639e?w=400&h=300&fit=crop&crop=center",
     available: true,
     category: "individual"
   }
