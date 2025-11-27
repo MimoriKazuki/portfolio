@@ -32,7 +32,7 @@ export const AI_TALENT_DEVELOPMENT_DATA: ServiceData = {
       { name: "Gemini", logo: "gemini" }
     ],
     descriptionBottom: "プロンプト設計、データ分析、ライティング、プレゼンテーションなど、実務で活用できるAIスキルを体系的に学習。専任メンターによる個別指導とキャリアコンサルタントによる転職・昇進サポートで、あなたの理想のキャリアを実現します。修了後も6ヶ月間の継続サポート付きで安心です。",
-    featureImage: "https://images.unsplash.com/photo-1673007917698-90d0d9fc60af?w=400&h=600&fit=crop&crop=center",
+    featureImage: "https://images.unsplash.com/photo-1653299832314-5d3dc1e5a83c?w=400&h=600&fit=crop&crop=center",
     items: [
       {
         title: "個別最適化",
