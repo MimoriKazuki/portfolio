@@ -16,6 +16,20 @@ export interface AIServiceCardItem {
   theme: "blue" | "green";
 }
 
+// Generic item type for external use (backwards compatible)
+export interface GenericServiceItem {
+  id: string;
+  title: string;
+  description: string;
+  href: string;
+  image?: string;
+  backgroundImage?: string;
+  category?: string;
+  subtitle?: string;
+  theme?: "blue" | "green";
+  available?: boolean;
+}
+
 export interface AIServicesCarouselProps {
   title?: string;
   description?: string;
@@ -23,6 +37,7 @@ export interface AIServicesCarouselProps {
   showButton?: boolean;
   sectionPadding?: string;
   titleSize?: string;
+  items?: GenericServiceItem[];
 }
 
 const serviceCards: AIServiceCardItem[] = [
@@ -55,7 +70,10 @@ const AIServicesCarousel = ({
   showButton = true,
   sectionPadding = "py-16",
   titleSize = "text-2xl font-bold md:text-3xl tracking-tight",
+  items,
 }: AIServicesCarouselProps) => {
+  // Use provided items or default serviceCards
+  const displayCards = items || serviceCards;
   const sectionRef = useRef<HTMLElement>(null);
   const [isVisible, setIsVisible] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
@@ -155,9 +173,13 @@ const AIServicesCarousel = ({
         
         {/* 右側: カード群 (6/10) - 上下に並べる */}
         <div className={`${showHeader ? 'lg:w-[60%]' : 'w-full'} flex flex-col gap-6`}>
-          {serviceCards.map((card, index) => {
-            const themeStyles = getThemeStyles(card.theme);
-            
+          {displayCards.map((card, index) => {
+            const cardTheme = card.theme || (card.category === "individual" ? "green" : "blue");
+            const themeStyles = getThemeStyles(cardTheme);
+            const cardImage = card.backgroundImage || card.image || "";
+            const cardSubtitle = card.subtitle || "";
+            const cardCategory = card.category || "";
+
             return (
               <div
                 key={card.id}
@@ -171,13 +193,15 @@ const AIServicesCarousel = ({
                   <div className="relative bg-white rounded-3xl border border-gray-200 overflow-hidden transition-all duration-500 ease-out group-hover:scale-[1.02] group-hover:shadow-2xl group-hover:border-transparent min-h-[240px]">
                   {/* 背景画像（ホバー時に表示） */}
                   <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                    <Image
-                      src={card.backgroundImage}
-                      alt=""
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 768px) 100vw, 60vw"
-                    />
+                    {cardImage && (
+                      <Image
+                        src={cardImage}
+                        alt=""
+                        fill
+                        className="object-cover"
+                        sizes="(max-width: 768px) 100vw, 60vw"
+                      />
+                    )}
                     {/* オーバーレイ - 全体に薄くかける */}
                     <div className="absolute inset-0 bg-slate-700/70" />
                     {/* グラデーションマスク - 左から右へ透明に（左40%は完全マスク） */}
@@ -194,18 +218,22 @@ const AIServicesCarousel = ({
                       {/* 左側: テキスト群 (70%) */}
                       <div className="w-[70%] flex flex-col">
                         {/* カテゴリラベル */}
-                        <p className="text-sm font-medium text-gray-500 group-hover:text-gray-300 transition-colors duration-500 mb-3">
-                          {card.category}
-                        </p>
+                        {cardCategory && (
+                          <p className="text-sm font-medium text-gray-500 group-hover:text-gray-300 transition-colors duration-500 mb-3">
+                            {cardCategory}
+                          </p>
+                        )}
                         
                         {/* タイトル */}
                         <div className="mb-4">
                           <h3 className="text-xl md:text-2xl font-bold tracking-tight text-gray-900 group-hover:text-white transition-colors duration-500">
                             {card.title}
                           </h3>
-                          <p className={`text-sm font-medium transition-colors duration-500 mt-1 ${themeStyles.subtitle}`}>
-                            {card.subtitle}
-                          </p>
+                          {cardSubtitle && (
+                            <p className={`text-sm font-medium transition-colors duration-500 mt-1 ${themeStyles.subtitle}`}>
+                              {cardSubtitle}
+                            </p>
+                          )}
                         </div>
                         
                         {/* 説明文 */}

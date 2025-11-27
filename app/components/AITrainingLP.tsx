@@ -516,56 +516,9 @@ export default function AITrainingLP({ latestColumns, featuredProjects }: AITrai
           <h2 className="text-3xl font-bold text-gray-900 mb-8">その他の研修プログラム</h2>
         </div>
         <div className="-mx-4 sm:-mx-6 lg:-mx-8">
-          <AIServicesCarousel 
+          <AIServicesCarousel
             showHeader={false}
             sectionPadding=""
-            items={[
-              {
-                id: "ai-writing",
-                title: "AIライティング研修",
-                description: "ChatGPTやClaude等を活用した効果的な文章作成技術を習得し、業務文書の品質向上と作業効率化を実現します。",
-                href: "/services",
-                image: "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=400&h=300&fit=crop&crop=center",
-                available: false,
-                category: "enterprise"
-              },
-              {
-                id: "ai-video",
-                title: "AI動画生成研修",
-                description: "最新のAI動画生成ツールを活用して、マーケティング動画やプレゼンテーション動画を効率的に制作する技術を学びます。",
-                href: "/services",
-                image: "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=400&h=300&fit=crop&crop=center",
-                available: false,
-                category: "enterprise"
-              },
-              {
-                id: "ai-coding",
-                title: "AIコーディング研修",
-                description: "GitHub Copilot、Claude Code等を活用したAI支援プログラミング技術を習得し、開発効率を飛躍的に向上させます。",
-                href: "/services",
-                image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=300&fit=crop&crop=center",
-                available: false,
-                category: "enterprise"
-              },
-              {
-                id: "practical-ai",
-                title: "生成AI実務活用研修",
-                description: "日常業務における生成AIの具体的な活用シーンを学び、業務プロセス全体の効率化と品質向上を実現します。",
-                href: "/services",
-                image: "https://images.unsplash.com/photo-1556761175-b413da4baf72?w=400&h=300&fit=crop&crop=center",
-                available: false,
-                category: "enterprise"
-              },
-              {
-                id: "individual-coaching",
-                title: "AI人材育成所",
-                description: "個人向けAIスキル向上プログラム。自分のペースでAIを学び、キャリアアップを目指せます。",
-                href: "/services",
-                image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=300&fit=crop&crop=center",
-                available: false,
-                category: "individual"
-              }
-            ]}
           />
         </div>
       </section>
