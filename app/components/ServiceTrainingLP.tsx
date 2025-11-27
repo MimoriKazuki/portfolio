@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowRight, ArrowLeft, Users, Target, Lightbulb, CheckCircle, ChevronRight, Calendar, FileText, Download, MessageCircle, ChevronDown, LucideIcon, Crown, UserCheck, Zap, GraduationCap, TrendingUp, Settings, AlertCircle, HelpCircle, MessageSquare } from 'lucide-react'
+import { ArrowRight, ArrowLeft, Users, Target, Lightbulb, CheckCircle, Check, X, ChevronRight, Calendar, FileText, Download, MessageCircle, ChevronDown, LucideIcon, Crown, UserCheck, Zap, GraduationCap, TrendingUp, Settings, AlertCircle, HelpCircle, MessageSquare } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Column, Project } from '@/app/types'
@@ -232,6 +232,7 @@ export default function ServiceTrainingLP({
       shadowHover: 'hover:shadow-blue-100',
       hoverBg: 'group-hover:bg-blue-500',
       hoverText: 'group-hover:text-blue-300',
+      iconBg: 'bg-blue-500',
     },
     green: {
       primary: 'bg-emerald-600',
@@ -248,6 +249,7 @@ export default function ServiceTrainingLP({
       shadowHover: 'hover:shadow-emerald-100',
       hoverBg: 'group-hover:bg-emerald-500',
       hoverText: 'group-hover:text-emerald-300',
+      iconBg: 'bg-emerald-500',
     }
   }
   const colors = themeColors[theme]
@@ -529,7 +531,7 @@ export default function ServiceTrainingLP({
           className="mb-16"
         >
           <div
-            className="mb-12"
+            className="mb-8"
             style={{
               opacity: transformSection.isVisible ? 1 : 0,
               transform: transformSection.isVisible ? 'translateY(0)' : 'translateY(30px)',
@@ -542,55 +544,46 @@ export default function ServiceTrainingLP({
                 <h2 className="text-2xl md:text-3xl font-bold text-gray-900">{expectedChanges.title}</h2>
               </div>
             </div>
-            <p className="text-gray-600 leading-relaxed max-w-2xl">
-              {expectedChanges.subtitle}
-            </p>
           </div>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Before Card */}
             <div
-              className="group bg-gray-50 p-8 border border-gray-200 hover:shadow-lg transition-all duration-500"
+              className="bg-white shadow-sm border border-gray-100 p-8"
               style={{
                 opacity: transformSection.isVisible ? 1 : 0,
                 transform: transformSection.isVisible ? 'translateY(0)' : 'translateY(40px)',
-                transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s, box-shadow 0.5s ease',
+                transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s',
               }}
             >
-              <h3 className="text-lg font-semibold text-gray-700 mb-6 flex items-center gap-2">
-                <AlertCircle className="h-5 w-5" />
-                導入前の課題
-              </h3>
-              <div className="space-y-4">
-                {expectedChanges.beforeItems.map((item, index) => (
-                  <div key={index} className="flex items-start gap-3">
-                    <AlertCircle className="h-4 w-4 text-gray-400 mt-1 flex-shrink-0" />
-                    <div>
-                      <span className="text-xs font-medium text-gray-500 block mb-1">{item.category}</span>
-                      <span className="text-gray-700 text-sm">{item.issue}</span>
+              <h3 className="text-lg font-bold text-gray-400 mb-6">Before</h3>
+              <div className="space-y-5">
+                {expectedChanges.beforeItems.slice(0, 3).map((item, index) => (
+                  <div key={index} className="flex items-start gap-4">
+                    <div className="flex-shrink-0 w-6 h-6 rounded-full bg-gray-300 flex items-center justify-center mt-1">
+                      <X className="w-3.5 h-3.5 text-white" strokeWidth={3} />
                     </div>
+                    <p className="text-gray-600 leading-relaxed">{item.issue}</p>
                   </div>
                 ))}
               </div>
             </div>
+            {/* After Card */}
             <div
-              className={`group ${colors.bgLight} p-8 border ${colors.borderLight} hover:shadow-lg ${colors.shadowHover} transition-all duration-500`}
+              className="bg-white shadow-sm border border-gray-100 p-8"
               style={{
                 opacity: transformSection.isVisible ? 1 : 0,
                 transform: transformSection.isVisible ? 'translateY(0)' : 'translateY(40px)',
-                transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s, box-shadow 0.5s ease',
+                transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s',
               }}
             >
-              <h3 className={`text-lg font-semibold ${colors.textDark} mb-6 flex items-center gap-2`}>
-                <CheckCircle className="h-5 w-5" />
-                導入後の成果
-              </h3>
-              <div className="space-y-4">
-                {expectedChanges.afterItems.map((item, index) => (
-                  <div key={index} className="flex items-start gap-3">
-                    <CheckCircle className={`h-4 w-4 ${colors.checkIcon} mt-1 flex-shrink-0`} />
-                    <div>
-                      <span className={`text-xs font-medium ${colors.text} block mb-1`}>{item.category}</span>
-                      <span className="text-gray-700 text-sm">{item.achievement}</span>
+              <h3 className={`text-lg font-bold ${colors.text} mb-6`}>After</h3>
+              <div className="space-y-5">
+                {expectedChanges.afterItems.slice(0, 3).map((item, index) => (
+                  <div key={index} className="flex items-start gap-4">
+                    <div className={`flex-shrink-0 w-6 h-6 rounded-full ${colors.iconBg} flex items-center justify-center mt-1`}>
+                      <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
                     </div>
+                    <p className="text-gray-700 leading-relaxed">{item.achievement}</p>
                   </div>
                 ))}
               </div>
