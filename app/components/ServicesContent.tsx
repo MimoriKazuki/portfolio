@@ -180,7 +180,7 @@ export default function ServicesContent() {
       {/* Right Side Navigation */}
       <div
         ref={navRef}
-        className="hidden xl:block z-40 w-40"
+        className="hidden xl:block z-40 w-44"
         style={{
           position: navPosition,
           top: `${navTop}px`,
@@ -201,7 +201,7 @@ export default function ServicesContent() {
                     element.scrollIntoView({ behavior: 'smooth', block: 'start' })
                   }
                 }}
-                className={`group flex items-center gap-3 text-sm transition-colors duration-200 ${
+                className={`group flex items-center gap-3 text-base transition-colors duration-200 ${
                   isActive
                     ? 'text-blue-600 font-medium'
                     : 'text-gray-600 hover:text-gray-900'
@@ -209,9 +209,7 @@ export default function ServicesContent() {
               >
                 <span
                   className={`w-2 h-2 rounded-full flex-shrink-0 transition-colors duration-200 ${
-                    isActive
-                      ? 'bg-blue-600'
-                      : 'bg-gray-300 group-hover:bg-gray-500'
+                    isActive ? 'bg-blue-600' : 'bg-transparent'
                   }`}
                 />
                 <span>{service.label}</span>
@@ -222,8 +220,8 @@ export default function ServicesContent() {
       </div>
 
       {/* Main Content Area - with right margin for navigation */}
-      {/* right-48px(nav position) + w-40(nav width 160px) + 32px(gap) = 240px = mr-60 */}
-      <div className="xl:mr-60">
+      {/* right-48px(nav position) + w-44(nav width 176px) + 48px(gap) = 272px = mr-68 */}
+      <div className="xl:mr-[272px]">
 
       {/* Hero Section */}
       <section className="mb-12">
