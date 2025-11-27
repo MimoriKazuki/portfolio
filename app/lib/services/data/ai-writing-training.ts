@@ -32,7 +32,7 @@ export const AI_WRITING_TRAINING_DATA: ServiceData = {
       { name: "Gemini", logo: "gemini" }
     ],
     descriptionBottom: "プロンプト設計の基本から、文章の構成・校正・リライトまで、AIを活用した文書作成の全プロセスを学習。トーン調整、読者対応、多言語対応など、実務で即活用できる高度なテクニックも習得します。研修後は文書作成時間を半分以下に短縮しながら、品質向上を実現できます。",
-    featureImage: "https://images.unsplash.com/photo-1653299832314-5d3dc1e5a83c?w=400&h=600&fit=crop&crop=center",
+    featureImage: "https://images.unsplash.com/photo-1670956007904-ddf3ff0d1eec?w=400&h=600&fit=crop&crop=center",
     items: [
       {
         title: "効率重視",

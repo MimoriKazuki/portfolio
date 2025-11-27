@@ -31,7 +31,7 @@ export const AI_VIDEO_TRAINING_DATA: ServiceData = {
       { name: "Gemini", logo: "gemini" }
     ],
     descriptionBottom: "マーケティング動画、プレゼンテーション動画、研修コンテンツなど、様々な用途に対応した動画制作技術を学習。テキストから動画を生成する技術、既存映像の編集・加工、音声合成との連携まで、AI動画制作の全プロセスをカバーします。制作時間を90%短縮しながら、外注レベルの品質を実現します。",
-    featureImage: "https://images.unsplash.com/photo-1653299832314-5d3dc1e5a83c?w=400&h=600&fit=crop&crop=center",
+    featureImage: "https://images.unsplash.com/photo-1658660855429-228f066c8e61?w=400&h=600&fit=crop&crop=center",
     items: [
       {
         title: "制作時間短縮",

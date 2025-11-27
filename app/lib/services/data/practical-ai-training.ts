@@ -32,7 +32,7 @@ export const PRACTICAL_AI_TRAINING_DATA: ServiceData = {
       { name: "Gemini", logo: "gemini" }
     ],
     descriptionBottom: "営業、マーケティング、人事、経理など、各部門の実際の業務フローに沿った活用事例を学習。理論ではなく実践を重視したカリキュラムにより、研修翌日から業務効率化を実現できます。プロンプト設計のコツから業務フロー全体の最適化まで、段階的にスキルアップしていきます。",
-    featureImage: "https://images.unsplash.com/photo-1653299832314-5d3dc1e5a83c?w=400&h=600&fit=crop&crop=center",
+    featureImage: "https://images.unsplash.com/photo-1739405858683-4d392f2cab83?w=400&h=600&fit=crop&crop=center",
     items: [
       {
         title: "実務直結",

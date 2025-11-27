@@ -235,6 +235,7 @@ export default function ServicesContent() {
 
       {/* Main Content Area - with right margin for navigation */}
       {/* right-48px(nav position) + w-44(nav width 176px) + 48px(gap) = 272px = mr-68 */}
+      {/* Only apply margin on xl screens where navigation is visible */}
       <div className="xl:mr-[272px]">
 
       {/* Hero Section */}
@@ -326,9 +327,9 @@ export default function ServicesContent() {
             </div>
 
             {/* Content Area - Two Columns (4:6 ratio) */}
-            <div className="grid grid-cols-1 md:grid-cols-10 gap-8 md:gap-16">
+            <div className="grid grid-cols-1 md:grid-cols-[4fr_6fr] gap-8 md:gap-12 lg:gap-16 w-full">
               {/* Left Column - Label, Title, Link (4/10) */}
-              <div className="md:col-span-4">
+              <div>
                 {/* Service Number */}
                 <p className={`text-base font-medium mb-4 ${activeTab === 'corporate' ? 'text-blue-600' : 'text-emerald-600'}`}>
                   Service {service.number}
@@ -354,7 +355,7 @@ export default function ServicesContent() {
               </div>
 
               {/* Right Column - Description (6/10) */}
-              <div className="md:col-span-6">
+              <div>
                 {/* Subtitle */}
                 <p className="text-gray-900 font-medium mb-6 leading-loose">
                   {service.subtitle}
