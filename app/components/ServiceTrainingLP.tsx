@@ -503,7 +503,7 @@ export default function ServiceTrainingLP({
                 <h3 className="text-2xl font-bold text-gray-900">{targetAudience.title}</h3>
               </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="bg-white shadow-sm border border-gray-100 px-8 md:px-12 py-4 max-w-2xl mx-auto">
               {targetAudience.audiences.map((audience, index) => (
                 <div
                   key={index}
@@ -514,7 +514,6 @@ export default function ServiceTrainingLP({
                   }}
                 >
                   <TargetAudienceCard
-                    image={audience.image}
                     text={audience.text}
                     theme={theme}
                   />

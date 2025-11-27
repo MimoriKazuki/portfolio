@@ -1,7 +1,9 @@
 'use client'
 
+import { Check } from 'lucide-react'
+
 interface TargetAudienceCardProps {
-  image: string
+  image?: string // 後方互換性のため残す（使用しない）
   text: string
   theme?: 'blue' | 'green'
 }
@@ -23,33 +25,30 @@ function parseHighlightedText(text: string, highlightClass: string) {
 }
 
 export default function TargetAudienceCard({
-  image,
   text,
   theme = 'blue'
 }: TargetAudienceCardProps) {
   const themeColors = {
     blue: {
       highlight: 'text-blue-600 font-bold',
+      iconBg: 'bg-blue-500',
     },
     green: {
       highlight: 'text-emerald-600 font-bold',
+      iconBg: 'bg-emerald-500',
     }
   }
   const colors = themeColors[theme]
 
   return (
-    <div className="flex items-center gap-5 p-5 bg-white border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300">
-      {/* Image */}
-      <div className="w-28 h-28 flex-shrink-0 overflow-hidden bg-gray-100">
-        <img
-          src={image}
-          alt=""
-          className="w-full h-full object-cover"
-        />
+    <div className="flex items-start gap-4 py-6">
+      {/* Checkmark Icon - Filled circle with white check */}
+      <div className={`flex-shrink-0 w-7 h-7 rounded-full ${colors.iconBg} flex items-center justify-center`}>
+        <Check className="w-4 h-4 text-white" strokeWidth={3} />
       </div>
 
       {/* Text */}
-      <p className="text-sm md:text-base text-gray-800 leading-relaxed flex-1">
+      <p className="text-base md:text-lg text-gray-800 font-medium leading-relaxed flex-1 pt-0.5">
         {parseHighlightedText(text, colors.highlight)}
       </p>
     </div>
