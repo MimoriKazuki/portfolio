@@ -25,6 +25,14 @@ export const PRACTICAL_AI_TRAINING_DATA: ServiceData = {
   serviceOverview: {
     title: "生成AI実務活用研修の特徴",
     subtitle: "AI技術が急速に進歩する中、日常業務での具体的な活用方法を知ることが競争力の源泉となっています。当研修では、様々な業務シーンにおける生成AIの実践的な活用方法を学び、業務プロセス全体の効率化と品質向上を実現する技術を習得していただけます。",
+    descriptionTop: "日常業務における生成AIの具体的な活用方法を実践的に学ぶ研修プログラムです。メール作成、議事録整理、データ分析、レポート作成など、あらゆる業務シーンで即座に活用できるスキルを習得します。",
+    tools: [
+      { name: "ChatGPT", logo: "chatgpt" },
+      { name: "Claude", logo: "claude" },
+      { name: "Gemini", logo: "gemini" }
+    ],
+    descriptionBottom: "営業、マーケティング、人事、経理など、各部門の実際の業務フローに沿った活用事例を学習。理論ではなく実践を重視したカリキュラムにより、研修翌日から業務効率化を実現できます。プロンプト設計のコツから業務フロー全体の最適化まで、段階的にスキルアップしていきます。",
+    featureImage: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=600&fit=crop&crop=center",
     items: [
       {
         title: "実務直結",

@@ -25,6 +25,13 @@ export const AI_VIDEO_TRAINING_DATA: ServiceData = {
   serviceOverview: {
     title: "AI動画生成研修の特徴",
     subtitle: "動画コンテンツが求められる現代において、高品質な動画制作技術は強力なビジネス武器となります。当研修では、最新のAI動画生成ツールを活用して、従来の制作工程を大幅に効率化しながらプロレベルの動画を制作する技術を習得していただけます。",
+    descriptionTop: "最新のAI動画生成技術を活用して、プロレベルの動画を効率的に制作するスキルを習得する専門研修プログラムです。動画制作の経験がない方でも、短期間で実践的な動画制作技術を身につけることができます。",
+    tools: [
+      { name: "Sora", logo: "sora" },
+      { name: "Gemini", logo: "gemini" }
+    ],
+    descriptionBottom: "マーケティング動画、プレゼンテーション動画、研修コンテンツなど、様々な用途に対応した動画制作技術を学習。テキストから動画を生成する技術、既存映像の編集・加工、音声合成との連携まで、AI動画制作の全プロセスをカバーします。制作時間を90%短縮しながら、外注レベルの品質を実現します。",
+    featureImage: "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=400&h=600&fit=crop&crop=center",
     items: [
       {
         title: "制作時間短縮",

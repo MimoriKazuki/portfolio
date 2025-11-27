@@ -6,6 +6,11 @@ export interface ServiceOverviewItem {
   image: string
 }
 
+export interface AITool {
+  name: string
+  logo: string // Tool identifier for logo rendering
+}
+
 export interface TargetAudience {
   image: string
   text: string
@@ -62,7 +67,11 @@ export interface ServiceData {
   serviceOverview: {
     title: string
     subtitle?: string
-    items: ServiceOverviewItem[]
+    descriptionTop: string
+    tools: AITool[]
+    descriptionBottom: string
+    featureImage: string
+    items: ServiceOverviewItem[] // Keep for backwards compatibility
   }
   
   // Mid CTA section

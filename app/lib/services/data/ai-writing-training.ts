@@ -25,6 +25,14 @@ export const AI_WRITING_TRAINING_DATA: ServiceData = {
   serviceOverview: {
     title: "AIライティング研修の特徴",
     subtitle: "現代のビジネスにおいて、高品質な文書作成は競争力の源泉となっています。当研修では、ChatGPTやClaude等の生成AIツールを活用して、効果的で魅力的な文章を素早く作成する技術を習得していただけます。",
+    descriptionTop: "ビジネス文書作成におけるAI活用スキルを習得する専門研修プログラムです。企画書、報告書、メール、プレゼン資料など、あらゆるビジネス文書の作成効率と品質を飛躍的に向上させます。",
+    tools: [
+      { name: "ChatGPT", logo: "chatgpt" },
+      { name: "Claude", logo: "claude" },
+      { name: "Gemini", logo: "gemini" }
+    ],
+    descriptionBottom: "プロンプト設計の基本から、文章の構成・校正・リライトまで、AIを活用した文書作成の全プロセスを学習。トーン調整、読者対応、多言語対応など、実務で即活用できる高度なテクニックも習得します。研修後は文書作成時間を半分以下に短縮しながら、品質向上を実現できます。",
+    featureImage: "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=400&h=600&fit=crop&crop=center",
     items: [
       {
         title: "効率重視",

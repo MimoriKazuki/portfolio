@@ -42,6 +42,12 @@ interface ServiceOverviewItem {
   image: string
 }
 
+// AI Tool Interface
+interface AITool {
+  name: string
+  logo: string
+}
+
 // Target Audience Interface
 interface TargetAudience {
   image: string
@@ -86,6 +92,10 @@ interface ServiceTrainingLPProps {
   serviceOverview: {
     title: string
     subtitle?: string
+    descriptionTop: string
+    tools: AITool[]
+    descriptionBottom: string
+    featureImage: string
     items: ServiceOverviewItem[]
   }
   
@@ -288,6 +298,43 @@ export default function ServiceTrainingLP({
     return iconMap[iconName] || Users
   }
 
+  // AI Tool Logo Component
+  const renderToolLogo = (tool: AITool) => {
+    // Map tool logo identifiers to actual image paths
+    const logoImages: { [key: string]: string } = {
+      'chatgpt': '/logo_ChatGPT.svg?v=3',
+      'claude': '/logo_claude.svg',
+      'gemini': '/logo_Gemini.svg?v=3',
+      'sora': '/logo_ChatGPT.svg?v=3',      // Uses OpenAI logo
+      'cursor': '/logo_Cursor.svg',
+      'claudecode': '/logo_claude.svg', // Uses Claude logo
+      'codex': '/logo_ChatGPT.svg?v=3',     // Uses OpenAI logo
+    }
+
+    const logoSrc = logoImages[tool.logo]
+
+    return (
+      <div key={tool.logo} className="flex items-center gap-2">
+        <div className="w-10 h-10 relative flex items-center justify-center">
+          {logoSrc ? (
+            <Image
+              src={logoSrc}
+              alt={tool.name}
+              width={40}
+              height={40}
+              className="object-contain"
+            />
+          ) : (
+            <div className="w-10 h-10 bg-gray-200 flex items-center justify-center text-xs font-bold text-gray-600">
+              {tool.name.substring(0, 2)}
+            </div>
+          )}
+        </div>
+        <span className="text-sm text-gray-700 font-medium">{tool.name}</span>
+      </div>
+    )
+  }
+
   return (
     <>
       {/* SEO用のh1 */}
@@ -372,49 +419,68 @@ export default function ServiceTrainingLP({
         {/* Service Overview Section */}
         <section
           ref={featuresSection.ref as React.RefObject<HTMLElement>}
-          className="mb-20 mt-8"
+          className="mt-20 mb-20"
         >
           <div
-            className="mb-12"
+            className="mb-8 relative"
             style={{
               opacity: featuresSection.isVisible ? 1 : 0,
               transform: featuresSection.isVisible ? 'translateY(0)' : 'translateY(30px)',
               transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
             }}
           >
-            <p className={`${colors.text} text-2xl font-medium mb-2 tracking-tight`}>Features</p>
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">{serviceOverview.title}</h2>
-            {serviceOverview.subtitle && (
-              <p className="text-gray-600 leading-relaxed max-w-3xl">
-                {serviceOverview.subtitle}
-              </p>
-            )}
+            <span className="absolute bottom-0 left-0 text-7xl md:text-8xl font-bold text-gray-100 select-none pointer-events-none tracking-tight leading-none">Features</span>
+            <div className="relative z-10">
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900">{serviceOverview.title}</h2>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-            {serviceOverview.items.map((item, index) => (
-              <div
-                key={index}
-                className="group"
-                style={{
-                  opacity: featuresSection.isVisible ? 1 : 0,
-                  transform: featuresSection.isVisible ? 'translateY(0)' : 'translateY(40px)',
-                  transition: `opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${0.1 + index * 0.1}s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${0.1 + index * 0.1}s`,
-                }}
-              >
-                <div className="relative w-full aspect-video mb-4 overflow-hidden">
-                  <Image
-                    src={item.image}
-                    alt={item.title}
-                    fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                </div>
-                <h3 className={`text-lg font-semibold text-gray-900 mb-2 ${colors.textHover} transition-colors duration-300`}>{item.title}</h3>
-                <p className="text-gray-600 text-sm leading-relaxed">{item.description}</p>
+          {/* 2-column layout: Text left (3), Image right (1) - wrapped in white box */}
+          <div
+            className="bg-white border border-gray-200 mb-16 p-8"
+            style={{
+              opacity: featuresSection.isVisible ? 1 : 0,
+              transform: featuresSection.isVisible ? 'translateY(0)' : 'translateY(40px)',
+              transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s',
+            }}
+          >
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+              {/* Left: Text content (3/4) */}
+              <div className="lg:col-span-3 space-y-6">
+                {/* Top description */}
+                <p className="text-gray-600 leading-relaxed">
+                  {serviceOverview.descriptionTop}
+                </p>
+
+                {/* Tools section */}
+                {serviceOverview.tools && serviceOverview.tools.length > 0 && (
+                  <div className="bg-gray-50 p-6 -mx-2">
+                    <div className="flex items-center gap-2 mb-4">
+                      <span className={`w-2 h-2 ${colors.primary} rounded-full`}></span>
+                      <span className={`text-sm font-semibold ${colors.text}`}>学べるスキル</span>
+                    </div>
+                    <div className="flex flex-wrap gap-6">
+                      {serviceOverview.tools.map((tool) => renderToolLogo(tool))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Bottom description */}
+                <p className="text-gray-600 leading-relaxed">
+                  {serviceOverview.descriptionBottom}
+                </p>
               </div>
-            ))}
+              {/* Right: Image (1/4) */}
+              <div className="lg:col-span-1 relative min-h-[300px] overflow-hidden">
+                <Image
+                  src={serviceOverview.featureImage || serviceOverview.items[0]?.image || heroImage}
+                  alt={serviceOverview.title}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 25vw"
+                  className="object-cover"
+                />
+              </div>
+            </div>
           </div>
 
           {/* Target Audience Subsection */}
@@ -426,8 +492,12 @@ export default function ServiceTrainingLP({
               transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
             }}
           >
-            <p className={`${colors.text} text-2xl font-medium mb-2 tracking-tight`}>Target</p>
-            <h3 className="text-2xl font-bold text-gray-900 mb-8">{targetAudience.title}</h3>
+            <div className="mb-8 relative">
+              <span className="absolute bottom-0 left-0 text-7xl md:text-8xl font-bold text-gray-100 select-none pointer-events-none tracking-tight leading-none">Target</span>
+              <div className="relative z-10">
+                <h3 className="text-2xl font-bold text-gray-900">{targetAudience.title}</h3>
+              </div>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {targetAudience.audiences.map((audience, index) => (
                 <div
@@ -462,8 +532,12 @@ export default function ServiceTrainingLP({
               transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
             }}
           >
-            <p className={`${colors.text} text-2xl font-medium mb-2 tracking-tight`}>Transformation</p>
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">{expectedChanges.title}</h2>
+            <div className="mb-4 relative">
+              <span className="absolute bottom-0 left-0 text-7xl md:text-8xl font-bold text-gray-100 select-none pointer-events-none tracking-tight leading-none">Transformation</span>
+              <div className="relative z-10">
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-900">{expectedChanges.title}</h2>
+              </div>
+            </div>
             <p className="text-gray-600 leading-relaxed max-w-2xl">
               {expectedChanges.subtitle}
             </p>
@@ -571,15 +645,17 @@ export default function ServiceTrainingLP({
           className="mb-20"
         >
           <div
-            className="mb-12"
+            className="mb-12 relative"
             style={{
               opacity: curriculumSection.isVisible ? 1 : 0,
               transform: curriculumSection.isVisible ? 'translateY(0)' : 'translateY(30px)',
               transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
             }}
           >
-            <p className={`${colors.text} text-2xl font-medium mb-2 tracking-tight`}>Curriculum</p>
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">{curriculum.title}</h2>
+            <span className="absolute bottom-0 left-0 text-7xl md:text-8xl font-bold text-gray-100 select-none pointer-events-none tracking-tight leading-none">Curriculum</span>
+            <div className="relative z-10">
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900">{curriculum.title}</h2>
+            </div>
           </div>
           <div className="space-y-4">
             {curriculum.modules.map((module, index) => (
@@ -649,8 +725,12 @@ export default function ServiceTrainingLP({
               transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
             }}
           >
-            <p className={`${colors.text} text-2xl font-medium mb-2 tracking-tight`}>Flow</p>
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4">{flow.title}</h2>
+            <div className="mb-4 relative">
+              <span className="absolute bottom-0 left-0 text-7xl md:text-8xl font-bold text-gray-100 select-none pointer-events-none tracking-tight leading-none">Flow</span>
+              <div className="relative z-10">
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-900">{flow.title}</h2>
+              </div>
+            </div>
             <p className="text-gray-600 leading-relaxed max-w-2xl">
               {flow.subtitle}
             </p>
@@ -732,15 +812,17 @@ export default function ServiceTrainingLP({
           className="mb-20"
         >
           <div
-            className="mb-12"
+            className="mb-12 relative"
             style={{
               opacity: overviewSection.isVisible ? 1 : 0,
               transform: overviewSection.isVisible ? 'translateY(0)' : 'translateY(30px)',
               transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
             }}
           >
-            <p className={`${colors.text} text-2xl font-medium mb-2 tracking-tight`}>Overview</p>
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">{overviewTable.title}</h2>
+            <span className="absolute bottom-0 left-0 text-7xl md:text-8xl font-bold text-gray-100 select-none pointer-events-none tracking-tight leading-none">Overview</span>
+            <div className="relative z-10">
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900">{overviewTable.title}</h2>
+            </div>
           </div>
           <div
             className="border border-gray-200 overflow-hidden"
@@ -773,15 +855,17 @@ export default function ServiceTrainingLP({
           className="mb-20"
         >
           <div
-            className="mb-12"
+            className="mb-12 relative"
             style={{
               opacity: faqSection.isVisible ? 1 : 0,
               transform: faqSection.isVisible ? 'translateY(0)' : 'translateY(30px)',
               transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
             }}
           >
-            <p className={`${colors.text} text-2xl font-medium mb-2 tracking-tight`}>Faq</p>
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">{faq.title}</h2>
+            <span className="absolute bottom-0 left-0 text-7xl md:text-8xl font-bold text-gray-100 select-none pointer-events-none tracking-tight leading-none">Faq</span>
+            <div className="relative z-10">
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900">{faq.title}</h2>
+            </div>
           </div>
           <div className="space-y-3">
             {faq.items.map((item, index) => (
@@ -866,15 +950,17 @@ export default function ServiceTrainingLP({
           className="mb-16"
         >
           <div
-            className="mb-12"
+            className="mb-12 relative"
             style={{
               opacity: otherProgramsSection.isVisible ? 1 : 0,
               transform: otherProgramsSection.isVisible ? 'translateY(0)' : 'translateY(30px)',
               transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
             }}
           >
-            <p className={`${colors.text} text-2xl font-medium mb-2 tracking-tight`}>Other programs</p>
-            <h2 className="text-2xl md:text-3xl font-bold text-gray-900">{otherTrainingPrograms.title}</h2>
+            <span className="absolute bottom-0 left-0 text-7xl md:text-8xl font-bold text-gray-100 select-none pointer-events-none tracking-tight leading-none">Others</span>
+            <div className="relative z-10">
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900">{otherTrainingPrograms.title}</h2>
+            </div>
           </div>
           <div
             className="-mx-4 sm:-mx-6 lg:-mx-8"

@@ -25,6 +25,14 @@ export const COMPREHENSIVE_AI_TRAINING_DATA: ServiceData = {
   serviceOverview: {
     title: "生成AI総合研修の特徴",
     subtitle: "ChatGPT、Claude、Geminiなどの主要な生成AIツールを活用し、未経験者から上級者まで幅広いレベルに対応した包括的な企業研修です。理論学習と実践ワークを組み合わせ、即座に現場で活用できるスキルを身につけます。",
+    descriptionTop: "ChatGPT、Claude、Geminiなどの主要な生成AIツールを総合的に学習し、業務での活用スキルを身につける包括的な企業研修プログラムです。未経験者から上級者まで幅広いレベルに対応し、理論学習と実践ワークを組み合わせた効果的なカリキュラムを提供します。",
+    tools: [
+      { name: "ChatGPT", logo: "chatgpt" },
+      { name: "Claude", logo: "claude" },
+      { name: "Gemini", logo: "gemini" }
+    ],
+    descriptionBottom: "プロンプト設計、業務改善、セキュリティ対策まで、生成AI活用に必要なスキルを総合的に習得。文書作成、データ分析、企画立案、カスタマーサポートなど、あらゆる業務シーンでのAI活用方法を実践的に学びます。研修終了後は、即座に現場で活用できる実践力が身につきます。",
+    featureImage: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=600&fit=crop&crop=center",
     items: [
       {
         title: "包括的なAI学習",

@@ -25,6 +25,14 @@ export const AI_TALENT_DEVELOPMENT_DATA: ServiceData = {
   serviceOverview: {
     title: "AI人材育成所の特徴",
     subtitle: "AIが変革する未来に向けて、個人のキャリアアップと市場価値向上をサポートします。あなたのペースで学べる柔軟なプログラムにより、実践的なAIスキルを身につけ、次のキャリアステップを実現していただけます。",
+    descriptionTop: "AIスキルを身につけてキャリアアップを目指す個人の方向けのプログラムです。あなたの現在のスキルレベルとキャリア目標に合わせて、完全カスタマイズされた学習プランを提供します。",
+    tools: [
+      { name: "ChatGPT", logo: "chatgpt" },
+      { name: "Claude", logo: "claude" },
+      { name: "Gemini", logo: "gemini" }
+    ],
+    descriptionBottom: "プロンプト設計、データ分析、ライティング、プレゼンテーションなど、実務で活用できるAIスキルを体系的に学習。専任メンターによる個別指導とキャリアコンサルタントによる転職・昇進サポートで、あなたの理想のキャリアを実現します。修了後も6ヶ月間の継続サポート付きで安心です。",
+    featureImage: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=600&fit=crop&crop=center",
     items: [
       {
         title: "個別最適化",
