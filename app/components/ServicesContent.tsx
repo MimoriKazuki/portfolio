@@ -79,10 +79,10 @@ export default function ServicesContent() {
       number: '01',
       label: '生成AI総合研修',
       title: '組織に、より良い習慣を。',
-      subtitle: '生成AIの基礎から実践まで、企業の現場で即戦力として活躍できる人材を育成する包括的な研修プログラムです。',
+      subtitle: '生成AIの基礎から実践まで体系的に学べる包括的な研修プログラムです。ChatGPT、Claude、Geminiなど主要な生成AIツールの活用法を網羅的に習得できます。',
       description: [
-        '企業の課題に特化したカスタマイズ研修で、社員一人ひとりのAIリテラシーを向上させます。',
-        '座学だけでなく、実際の業務を想定したワークショップを通じて、現場で使えるスキルを習得。チーム全体のAI活用文化を定着させ、組織の生産性向上を実現します。'
+        '企業の業務課題に合わせたカスタマイズ研修で、社員一人ひとりのAIリテラシーを向上させます。未経験者から上級者まで、幅広いレベルに対応したカリキュラムを用意しています。',
+        '座学だけでなく実務を想定したワークショップを通じて、現場で即座に使えるスキルを習得。チーム全体のAI活用文化を定着させ、組織の生産性向上を実現します。'
       ],
       href: '/services/comprehensive-ai-training',
       image: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1470&auto=format&fit=crop',
@@ -94,10 +94,10 @@ export default function ServicesContent() {
       number: '02',
       label: 'AIライティング研修',
       title: 'AIで、文章力を武器に。',
-      subtitle: 'ChatGPTやClaude等を活用した効果的な文章作成技術を習得し、業務文書の品質向上と作業効率化を実現します。',
+      subtitle: 'ChatGPTやClaudeを活用した効果的な文章作成技術を習得する研修です。プロンプトエンジニアリングの基礎から応用まで、ビジネス文書に特化したノウハウを提供します。',
       description: [
-        'プロンプトエンジニアリングの基礎から応用まで、ビジネス文書作成に特化したノウハウを提供。',
-        'メール、報告書、企画書など、日常業務で必要な文書を効率的に作成する技術を学びます。校正・編集の自動化手法も習得し、文章品質の向上と時間短縮を両立します。'
+        'メール、報告書、企画書、プレゼン資料など、日常業務で必要なあらゆる文書を効率的に作成する技術を学びます。文章の構成から表現の磨き方まで、実践的なスキルが身につきます。',
+        '校正・編集の自動化手法も習得し、文章品質の向上と作業時間の短縮を両立。チーム全体のライティング力を底上げし、コミュニケーションの質を高めます。'
       ],
       href: '/services/ai-writing-training',
       image: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?w=800&h=600&fit=crop&crop=center',
@@ -109,10 +109,10 @@ export default function ServicesContent() {
       number: '03',
       label: 'AI動画生成研修',
       title: '動画制作を、誰でも簡単に。',
-      subtitle: '最新のAI動画生成ツールを活用して、マーケティング動画やプレゼンテーション動画を効率的に制作する技術を学びます。',
+      subtitle: '最新のAI動画生成ツールを活用した動画制作技術を学ぶ研修です。Sora、Runway、Pika等の主要ツールの特徴と使い分けを実践的に学習します。',
       description: [
-        'Sora、Runway、Pika等の最新AI動画生成ツールの活用法を実践的に学習。',
-        'ストーリーテリングの基礎から、マーケティング動画の企画・制作まで、動画コンテンツ制作の全工程をAIで効率化する手法を習得します。'
+        'ストーリーテリングの基礎から、マーケティング動画の企画・制作まで、動画コンテンツ制作の全工程をカバー。専門知識がなくても高品質な動画を短時間で制作できるようになります。',
+        'SNS向けショート動画からプレゼンテーション動画まで、目的に応じた動画制作ノウハウを習得。社内の動画制作コストを大幅に削減しながら、発信力を強化できます。'
       ],
       href: '/services/ai-video-training',
       image: 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=800&h=600&fit=crop&crop=center',
@@ -124,10 +124,10 @@ export default function ServicesContent() {
       number: '04',
       label: 'AIコーディング研修',
       title: '開発効率を、飛躍的に。',
-      subtitle: 'GitHub Copilot、Claude Codeなどを活用したAI支援プログラミング技術を習得し、開発効率を飛躍的に向上させます。',
+      subtitle: 'AI支援プログラミング技術を習得し、開発効率を飛躍的に向上させる研修です。GitHub Copilot、Claude Code、Cursorなど最新ツールの効果的な活用法を学びます。',
       description: [
-        'AI支援コーディングツールの効果的な活用法から、ペアプログラミング手法まで幅広く学習。',
-        'コード品質向上テクニックやデバッグの効率化など、実務に直結するスキルを習得し、開発チーム全体の生産性向上を実現します。'
+        'コード生成、リファクタリング、デバッグまで、開発の各フェーズでAIを最大限に活用する方法を習得。ペアプログラミングの新しい形として、AIとの協働開発スキルが身につきます。',
+        'コード品質の向上とレビュー効率化により、開発チーム全体の生産性を大幅に改善。技術的負債の削減にも貢献し、持続可能な開発体制を構築できます。'
       ],
       href: '/services/ai-coding-training',
       image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=600&fit=crop&crop=center',
@@ -139,10 +139,10 @@ export default function ServicesContent() {
       number: '05',
       label: '生成AI実務活用研修',
       title: '業務プロセスを、AI で最適化。',
-      subtitle: '日常業務における生成AIの具体的な活用シーンを学び、業務プロセス全体の効率化と品質向上を実現します。',
+      subtitle: '日常業務における生成AIの具体的な活用シーンを学ぶ研修です。業務フロー分析からAI導入計画の策定まで、組織に合わせた実践的なプログラムを提供します。',
       description: [
-        '業務フロー分析からAI導入計画の策定まで、組織に合わせた実践的なプログラムを提供。',
-        'チーム連携の強化やROI測定手法も学び、AI活用の効果を可視化しながら継続的な改善を推進します。'
+        '営業、マーケティング、人事、経理など、各部門の業務に特化したAI活用事例を豊富に紹介。自社の業務にすぐに適用できる具体的なノウハウが身につきます。',
+        'ROI測定手法やチーム連携の強化方法も学び、AI活用の効果を可視化しながら継続的な改善を推進。組織全体のDX推進を加速させます。'
       ],
       href: '/services/practical-ai-training',
       image: 'https://images.unsplash.com/photo-1556761175-b413da4baf72?w=800&h=600&fit=crop&crop=center',
@@ -158,10 +158,10 @@ export default function ServicesContent() {
       number: '01',
       label: 'AI人材育成所',
       title: '今の自分に合ったスキルを、\nともに見出そう。',
-      subtitle: '個人向けAIスキル向上プログラム。自分のペースでAIを学び、キャリアアップを目指せます。',
+      subtitle: '専属AIコーチが伴走する個人向けAIスキル向上プログラムです。目的やレベルに合わせてカリキュラムをカスタマイズし、あなたのペースで着実にスキルアップできます。',
       description: [
-        'AI人材育成所は、あなた専属のAIコーチが伴走する個別指導プログラムです。',
-        '目的やレベルに合わせてカリキュラムをカスタマイズ。日常業務で使えるAIスキルを最短で身につけられます。キャリアサポートやスキル認定制度も充実しています。'
+        'マンツーマン指導で、疑問点をその場で解消しながら学習を進められます。日常業務で使えるAIスキルを最短で身につけ、仕事の効率と質を大幅に向上させます。',
+        'キャリアサポートやスキル認定制度も充実。学んだスキルを証明し、転職やキャリアアップに活かすことができます。AI時代に求められる人材への第一歩を踏み出しましょう。'
       ],
       href: '/services/ai-talent-development',
       image: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=600&fit=crop&crop=center',
@@ -313,48 +313,43 @@ export default function ServicesContent() {
               </div>
             </div>
 
-            {/* Content Area - Two Columns */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16">
-              {/* Left Column - Label, Title, Link */}
-              <div>
-                {/* Service Number & Label */}
-                <div className="mb-4">
-                  <p className="text-sm text-gray-400 mb-1">Service {service.number}</p>
-                  <p className={`text-sm font-medium ${activeTab === 'corporate' ? 'text-blue-600' : 'text-emerald-600'}`}>
-                    {service.label}
-                  </p>
-                </div>
+            {/* Content Area - Two Columns (4:6 ratio) */}
+            <div className="grid grid-cols-1 md:grid-cols-10 gap-8 md:gap-16">
+              {/* Left Column - Label, Title, Link (4/10) */}
+              <div className="md:col-span-4">
+                {/* Service Number */}
+                <p className={`text-base font-medium mb-4 ${activeTab === 'corporate' ? 'text-blue-600' : 'text-emerald-600'}`}>
+                  Service {service.number}
+                </p>
 
-                {/* Title */}
-                <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 leading-tight whitespace-pre-line">
-                  {service.title}
+                {/* Title (Service Name) */}
+                <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-12 leading-tight">
+                  {service.label}
                 </h3>
 
                 {/* View Detail Link */}
                 <Link
                   href={service.href}
-                  className={`inline-flex items-center gap-2 text-sm font-medium group ${
-                    activeTab === 'corporate' ? 'text-blue-600 hover:text-blue-700' : 'text-emerald-600 hover:text-emerald-700'
-                  } transition-colors`}
+                  className={`inline-flex items-center justify-center gap-2 px-8 py-4 bg-white font-medium transition-colors duration-200 text-base border ${
+                    activeTab === 'corporate'
+                      ? 'text-blue-600 border-blue-600 hover:bg-blue-50'
+                      : 'text-emerald-600 border-emerald-600 hover:bg-emerald-50'
+                  }`}
                 >
-                  view detail
-                  <span className={`w-6 h-6 rounded-full flex items-center justify-center transition-transform group-hover:translate-x-1 ${
-                    activeTab === 'corporate' ? 'bg-blue-600' : 'bg-emerald-600'
-                  }`}>
-                    <ArrowRight className="w-3 h-3 text-white" />
-                  </span>
+                  カリキュラムを見る
+                  <ArrowRight className="w-4 h-4" />
                 </Link>
               </div>
 
-              {/* Right Column - Description */}
-              <div>
+              {/* Right Column - Description (6/10) */}
+              <div className="md:col-span-6">
                 {/* Subtitle */}
-                <p className="text-gray-900 font-medium mb-4 leading-relaxed">
+                <p className="text-gray-900 font-medium mb-6 leading-loose">
                   {service.subtitle}
                 </p>
 
                 {/* Description */}
-                <div className="space-y-4 text-gray-500 text-sm leading-relaxed">
+                <div className="space-y-5 text-gray-600 text-base leading-loose">
                   {service.description.map((paragraph, i) => (
                     <p key={i}>{paragraph}</p>
                   ))}
