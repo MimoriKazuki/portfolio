@@ -2,6 +2,7 @@ import MainLayout from '../components/MainLayout'
 import ServicesContent from '../components/ServicesContent'
 import { createStaticClient } from '@/app/lib/supabase/static'
 import type { Metadata } from 'next'
+import { Suspense } from 'react'
 
 const baseUrl = 'https://www.landbridge.ai'
 const ogImageUrl = `${baseUrl}/AI_driven_ogpImageimage.png`
@@ -54,7 +55,9 @@ export const revalidate = 60 // ISR: 60秒ごとに再生成
 export default async function ServicesPage() {
   return (
     <MainLayout hideRightSidebar={true}>
-      <ServicesContent />
+      <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Loading...</div>}>
+        <ServicesContent />
+      </Suspense>
     </MainLayout>
   )
 }

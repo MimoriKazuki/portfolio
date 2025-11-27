@@ -1,6 +1,6 @@
 'use client'
 
-import { ArrowRight, Users, Target, Lightbulb, CheckCircle, ChevronRight, Calendar, FileText, Download, MessageCircle, ChevronDown, LucideIcon, Crown, UserCheck, Zap, GraduationCap, TrendingUp, Settings, AlertCircle, HelpCircle, MessageSquare } from 'lucide-react'
+import { ArrowRight, ArrowLeft, Users, Target, Lightbulb, CheckCircle, ChevronRight, Calendar, FileText, Download, MessageCircle, ChevronDown, LucideIcon, Crown, UserCheck, Zap, GraduationCap, TrendingUp, Settings, AlertCircle, HelpCircle, MessageSquare } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Column, Project } from '@/app/types'
@@ -310,6 +310,21 @@ export default function ServiceTrainingLP({
             priority
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent" />
+
+          {/* Back Button */}
+          <Link
+            href={`/services?tab=${theme === 'green' ? 'individual' : 'corporate'}`}
+            className="absolute top-4 left-4 sm:top-6 sm:left-6 z-20 inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm text-white text-sm font-medium hover:bg-white/20 transition-colors duration-200 border border-white/20"
+            style={{
+              opacity: heroLoaded ? 1 : 0,
+              transform: heroLoaded ? 'translateX(0)' : 'translateX(-20px)',
+              transition: 'opacity 0.6s ease-out, transform 0.6s ease-out, background-color 0.2s',
+            }}
+          >
+            <ArrowLeft className="w-4 h-4" />
+            サービス一覧へ戻る
+          </Link>
+
           <div className="relative z-10 flex items-center h-full max-w-[1023px] mx-auto px-4 sm:px-6 lg:px-8">
             <div>
               <p

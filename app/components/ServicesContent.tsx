@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { ArrowRight, Building2, User } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -20,6 +21,7 @@ interface ServiceItem {
 }
 
 export default function ServicesContent() {
+  const searchParams = useSearchParams()
   const [activeTab, setActiveTab] = useState<'corporate' | 'individual'>('corporate')
   const [isVisible, setIsVisible] = useState(false)
   const [navPosition, setNavPosition] = useState<'fixed' | 'absolute'>('fixed')
@@ -28,6 +30,16 @@ export default function ServicesContent() {
   const sectionRef = useRef<HTMLDivElement>(null)
   const ctaSectionRef = useRef<HTMLDivElement>(null)
   const navRef = useRef<HTMLDivElement>(null)
+
+  // URLパラメータからタブを設定
+  useEffect(() => {
+    const tab = searchParams.get('tab')
+    if (tab === 'individual') {
+      setActiveTab('individual')
+    } else if (tab === 'corporate') {
+      setActiveTab('corporate')
+    }
+  }, [searchParams])
 
   useEffect(() => {
     setIsVisible(true)
