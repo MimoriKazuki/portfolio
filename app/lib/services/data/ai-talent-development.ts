@@ -19,7 +19,7 @@ export const AI_TALENT_DEVELOPMENT_DATA: ServiceData = {
     inquiryText: "無料相談を申し込む",
     documentText: "プログラム資料をダウンロード",
     inquiryHref: "/contact",
-    documentHref: "/documents"
+    documentHref: "/documents/request/57a09c9d-eb2e-48b5-9138-1cbfb9845c38"
   },
 
   serviceOverview: {
@@ -56,7 +56,7 @@ export const AI_TALENT_DEVELOPMENT_DATA: ServiceData = {
     title: "バイブコーディングで開発を革新しませんか？",
     description: "専任コーチによる個別指導で、AI駆動開発のスキルを確実に習得します",
     inquiryHref: "/contact",
-    documentHref: "/documents"
+    documentHref: "/documents/request/57a09c9d-eb2e-48b5-9138-1cbfb9845c38"
   },
 
   targetAudience: {
@@ -183,7 +183,7 @@ export const AI_TALENT_DEVELOPMENT_DATA: ServiceData = {
     title: "AI駆動開発スキルを習得",
     description: "専任コーチによるコーチングで確実にスキルアップ",
     inquiryHref: "/contact",
-    documentHref: "/documents"
+    documentHref: "/documents/request/57a09c9d-eb2e-48b5-9138-1cbfb9845c38"
   },
 
   overviewTable: {
@@ -230,6 +230,6 @@ export const AI_TALENT_DEVELOPMENT_DATA: ServiceData = {
     title: "AI駆動開発の扉を開きませんか？",
     description: "専任コーチによる個別指導で、バイブコーディングスキルを確実に習得いただけます",
     inquiryHref: "/contact",
-    documentHref: "/documents"
+    documentHref: "/documents/request/57a09c9d-eb2e-48b5-9138-1cbfb9845c38"
   }
 }
