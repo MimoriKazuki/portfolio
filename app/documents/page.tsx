@@ -62,10 +62,7 @@ export default async function DocumentsPage() {
                     </p>
                   </div>
 
-                  <div
-                    className="inline-flex items-center justify-center text-white px-6 py-3 rounded-lg font-medium w-full"
-                    style={{ backgroundColor: 'rgb(37, 99, 235)' }}
-                  >
+                  <div className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-blue-600 text-white group-hover:bg-blue-700 transition-colors duration-200 w-full">
                     資料をダウンロード
                   </div>
                 </div>
