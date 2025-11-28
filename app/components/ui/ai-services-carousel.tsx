@@ -161,7 +161,7 @@ const AIServicesCarousel = ({
               <div style={getAnimationStyle(0.3)}>
                 <a
                   href="/services"
-                  className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-blue-600 border border-blue-600 font-medium hover:bg-blue-50 transition-colors duration-200 text-base"
+                  className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-blue-600 border border-blue-600 font-light hover:bg-blue-50 transition-colors duration-200 text-base"
                 >
                   すべての研修を見る
                   <ArrowRight className="size-4" />

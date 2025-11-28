@@ -98,7 +98,7 @@ const HeroSection = () => {
                 >
                     <a
                         href="/documents"
-                        className="px-10 py-4 bg-white text-gray-900 font-medium border border-gray-300 hover:bg-gray-50 transition-colors duration-200 flex items-center gap-2"
+                        className="px-10 py-4 bg-white text-gray-900 font-light border border-gray-300 hover:bg-gray-50 transition-colors duration-200 flex items-center gap-2"
                     >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
@@ -109,7 +109,7 @@ const HeroSection = () => {
                     </a>
                     <a
                         href="/contact"
-                        className="px-10 py-4 bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors duration-200 flex items-center gap-2"
+                        className="px-10 py-4 bg-blue-600 text-white font-light hover:bg-blue-700 transition-colors duration-200 flex items-center gap-2"
                     >
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                             <rect width="20" height="16" x="2" y="4" rx="2"/>

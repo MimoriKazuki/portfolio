@@ -42,6 +42,56 @@
     --sidebar-accent-foreground: 222.2 47.4% 11.2%;
     --sidebar-border: 214.3 31.8% 91.4%;
     --sidebar-ring: 221.2 83.2% 53.3%;
+
+    /* Font family */
+    --font-primary: "acumin-pro", var(--font-noto-sans-jp), sans-serif;
+  }
+
+  /* ========================================
+   * Font Weight Rules (Acumin Pro + Noto Sans JP)
+   * ======================================== */
+
+  /* Base body text - Regular (400) */
+  body {
+    font-weight: 400;
+  }
+
+  /* Headings */
+  h1 {
+    font-weight: 700; /* Bold */
+  }
+
+  h2 {
+    font-weight: 600; /* Semibold */
+  }
+
+  h3, h4, h5, h6 {
+    font-weight: 500; /* Medium */
+  }
+
+  /* Buttons - Light (300) */
+  button,
+  [type="button"],
+  [type="submit"],
+  [type="reset"],
+  a[class*="btn"],
+  a[class*="px-"][class*="py-"] {
+    font-weight: 300;
+  }
+
+  /* Form labels - Regular (400) */
+  label {
+    font-weight: 400;
+  }
+
+  /* Strong/Bold text - Semibold (600) */
+  strong, b {
+    font-weight: 600;
+  }
+
+  /* Links - Regular (400) */
+  a {
+    font-weight: 400;
   }
 }
 
@@ -125,7 +175,7 @@ input[type="range"].audio-slider::-moz-range-track {
   }
   
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground;
     background-color: hsl(var(--background));
     min-height: 100vh;
     position: relative;

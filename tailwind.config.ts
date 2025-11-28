@@ -35,7 +35,7 @@ export default {
 				'span-7': 'span 7 / span 7',
 			},
 			fontFamily: {
-				sans: ['Inter', 'system-ui', 'sans-serif'],
+				sans: ['acumin-pro', 'var(--font-noto-sans-jp)', 'sans-serif'],
 				handwriting: ['var(--font-caveat)', 'cursive'],
 			},
 			colors: {

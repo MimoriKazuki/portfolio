@@ -378,7 +378,7 @@ export default function DynamicHomeContent() {
                       詳しい資料をお送りいたします。
                     </p>
                     <div className="flex items-center justify-center gap-3">
-                      <span className="text-sm font-medium">see more</span>
+                      <span className="text-sm font-light">see more</span>
                       <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center group-hover:bg-blue-400 transition-colors duration-300">
                         <ArrowRight className="w-5 h-5 text-white" />
                       </div>
@@ -416,7 +416,7 @@ export default function DynamicHomeContent() {
                       まずはお気軽にお問合せください。
                     </p>
                     <div className="flex items-center justify-center gap-3">
-                      <span className="text-sm font-medium">see more</span>
+                      <span className="text-sm font-light">see more</span>
                       <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center group-hover:bg-blue-400 transition-colors duration-300">
                         <ArrowRight className="w-5 h-5 text-white" />
                       </div>

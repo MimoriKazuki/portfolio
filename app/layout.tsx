@@ -1,14 +1,19 @@
 import type { Metadata } from 'next'
-import { Inter, Caveat } from 'next/font/google'
+import { Inter, Caveat, Noto_Sans_JP } from 'next/font/google'
 import './globals.css'
 import StructuredData from './components/StructuredData'
 import GoogleAnalytics from './components/GoogleAnalytics'
 import MicrosoftClarity from './components/MicrosoftClarity'
 
 const inter = Inter({ subsets: ['latin'] })
-const caveat = Caveat({ 
+const caveat = Caveat({
   subsets: ['latin'],
   variable: '--font-caveat',
+})
+const notoSansJP = Noto_Sans_JP({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-noto-sans-jp',
 })
 
 export const viewport = {
@@ -82,14 +87,16 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="ja" className={`bg-youtube-dark ${caveat.variable}`} style={{ backgroundColor: '#0f0f0f' }}>
+    <html lang="ja" className={`bg-youtube-dark ${caveat.variable} ${notoSansJP.variable}`} style={{ backgroundColor: '#0f0f0f' }}>
       <head>
         <StructuredData />
         <meta name="theme-color" content="#0f0f0f" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+        {/* Adobe Fonts (Acumin Pro) */}
+        <link rel="stylesheet" href="https://use.typekit.net/uoy2cka.css" />
       </head>
-      <body className={`${inter.className} bg-youtube-dark`} style={{ backgroundColor: '#0f0f0f' }}>
+      <body className="bg-youtube-dark" style={{ backgroundColor: '#0f0f0f', fontFamily: 'var(--font-primary)' }}>
         <div className="fixed inset-0 bg-youtube-dark" style={{ backgroundColor: '#0f0f0f', zIndex: -1 }} aria-hidden="true" />
         <GoogleAnalytics />
         <MicrosoftClarity />
