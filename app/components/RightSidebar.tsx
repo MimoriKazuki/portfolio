@@ -19,10 +19,10 @@ const corporateService = {
 
 const individualService = {
   id: "individual-coaching",
-  title: "AI人材育成所",
-  description: "個人向けAIスキル向上プログラム。自分のペースでAIを学び、キャリアアップを目指せます。",
+  title: "AI駆動開発育成所",
+  description: "完全審査制の個人向けバイブコーディング特化コーチング。Claude CodeやCursorを活用したAI駆動開発スキルを習得できます。",
   href: "/services/ai-talent-development",
-  image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=400&h=300&fit=crop&crop=center",
+  image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=300&fit=crop&crop=center",
   label: "個人向け"
 }
 

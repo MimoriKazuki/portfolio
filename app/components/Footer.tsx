@@ -149,12 +149,12 @@ const Footer = () => {
                     <h4 className="text-white text-base font-bold mb-2">個人向け</h4>
                     <ul className="space-y-2 text-sm">
                       <li>
-                        <Link 
-                          href="/services" 
+                        <Link
+                          href="/services"
                           className="hover:text-white transition-colors"
-                          title="AI人材育成所（個人向け）"
+                          title="AI駆動開発育成所（個人向け）"
                         >
-                          AI人材育成所
+                          AI駆動開発育成所
                         </Link>
                       </li>
                     </ul>

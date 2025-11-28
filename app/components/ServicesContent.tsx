@@ -168,17 +168,17 @@ export default function ServicesContent() {
     {
       id: 'ai-talent-development',
       number: '01',
-      label: 'AI人材育成所',
-      title: '今の自分に合ったスキルを、\nともに見出そう。',
-      subtitle: '専属AIコーチが伴走する個人向けAIスキル向上プログラムです。目的やレベルに合わせてカリキュラムをカスタマイズし、あなたのペースで着実にスキルアップできます。',
+      label: 'AI駆動開発育成所',
+      title: 'バイブコーディングで、\n開発の世界を変えよう。',
+      subtitle: '完全審査制の個人向けバイブコーディング特化コーチングです。Claude CodeやCursorを活用したAI駆動開発スキルを体系的に習得できます。',
       description: [
-        'マンツーマン指導で、疑問点をその場で解消しながら学習を進められます。日常業務で使えるAIスキルを最短で身につけ、仕事の効率と質を大幅に向上させます。',
-        'キャリアサポートやスキル認定制度も充実。学んだスキルを証明し、転職やキャリアアップに活かすことができます。AI時代に求められる人材への第一歩を踏み出しましょう。'
+        '自然言語でアプリケーションを構築する「バイブコーディング」の技術を、基礎から応用まで専任コーチがマンツーマンで指導。開発効率を3〜5倍向上させるスキルを身につけられます。',
+        '本気でスキル習得を目指す方のみを対象とした完全審査制。審査を通過された方には、質の高いコーチングと実践プロジェクトを通じて、即戦力となるAI駆動開発スキルを伝授します。'
       ],
       href: '/services/ai-talent-development',
-      image: 'https://images.unsplash.com/photo-1500989145603-8e7ef71d639e?w=800&h=600&fit=crop&crop=center',
-      logoText: 'AI人材育成所',
-      logoSubtext: 'パーソナルAIコーチング'
+      image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=600&fit=crop&crop=center',
+      logoText: 'AI駆動開発育成所',
+      logoSubtext: 'バイブコーディング特化'
     }
   ]
 

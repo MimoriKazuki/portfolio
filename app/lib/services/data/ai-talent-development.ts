@@ -2,104 +2,104 @@ import type { ServiceData, ServicePageMetadata } from '@/app/lib/types/service'
 import { generateOtherTrainingProgramsData } from '../training-programs'
 
 export const AI_TALENT_DEVELOPMENT_METADATA: ServicePageMetadata = {
-  title: 'AI人材育成所 - AI駆動研究所',
-  description: 'AI駆動研究所のAI人材育成所。個人向けAIスキル向上プログラム。自分のペースでAIを学び、キャリアアップを目指せます。',
-  keywords: ['LandBridge', 'AI人材育成所', '個人向けAI研修', 'キャリアアップ', 'AIスキル', '個人学習', 'AI転職', 'スキルアップ', 'AI人材'],
+  title: 'AI駆動開発育成所 - AI駆動研究所',
+  description: 'AI駆動研究所のAI駆動開発育成所。バイブコーディング特化の個人向けコーチング。Claude CodeやCursorを活用したAI駆動開発スキルを習得し、開発効率を飛躍的に向上させます。',
+  keywords: ['LandBridge', 'AI駆動開発育成所', 'バイブコーディング', 'Claude Code', 'Cursor', 'AI駆動開発', '個人向けコーチング', 'AIプログラミング'],
   url: 'https://www.landbridge.ai/services/ai-talent-development'
 }
 
 export const AI_TALENT_DEVELOPMENT_DATA: ServiceData = {
-  pageTitle: "AI人材育成所",
-  heroTitle: "AI人材育成所",
-  heroSubtitle: "あなたのペースで学び、AIスキルでキャリアを次のステージへ",
-  heroImage: "https://images.unsplash.com/photo-1500989145603-8e7ef71d639e?w=1920&h=1080&fit=crop&crop=center",
-  seoTitle: "個人でAIスキルを身につけてキャリアアップ - AI人材育成所 | AI駆動研究所",
-  
+  pageTitle: "AI駆動開発育成所",
+  heroTitle: "AI駆動開発育成所",
+  heroSubtitle: "バイブコーディング特化の個人向けコーチング",
+  heroImage: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1920&h=1080&fit=crop&crop=center",
+  seoTitle: "バイブコーディングで開発力を革新 - AI駆動開発育成所 | AI駆動研究所",
+
   heroCTA: {
-    inquiryText: "無料相談を予約する",
+    inquiryText: "無料相談を申し込む",
     documentText: "プログラム資料をダウンロード",
     inquiryHref: "/contact",
     documentHref: "/documents"
   },
-  
+
   serviceOverview: {
-    title: "AI人材育成所の特徴",
-    subtitle: "AIが変革する未来に向けて、個人のキャリアアップと市場価値向上をサポートします。あなたのペースで学べる柔軟なプログラムにより、実践的なAIスキルを身につけ、次のキャリアステップを実現していただけます。",
-    descriptionTop: "AIスキルを身につけてキャリアアップを目指す個人の方向けのプログラムです。あなたの現在のスキルレベルとキャリア目標に合わせて、完全カスタマイズされた学習プランを提供します。",
+    title: "AI駆動開発育成所の特徴",
+    subtitle: "AI駆動開発育成所は、バイブコーディングに特化した個人向けコーチングプログラムです。Claude CodeやCursorなどの最先端AIツールを活用し、自然言語でアプリケーションを構築する「バイブコーディング」のスキルを体系的に習得していただけます。",
+    descriptionTop: "本気でAI駆動開発スキルを身につけたい方を対象とした、少人数制のコーチングプログラムです。専任コーチによる個別指導で、バイブコーディングの実践的スキルを徹底的に伝授します。",
     tools: [
-      { name: "ChatGPT", logo: "chatgpt" },
-      { name: "Claude", logo: "claude" },
+      { name: "Claude Code", logo: "claudecode" },
+      { name: "Cursor", logo: "cursor" },
       { name: "Gemini", logo: "gemini" }
     ],
-    descriptionBottom: "プロンプト設計、データ分析、ライティング、プレゼンテーションなど、実務で活用できるAIスキルを体系的に学習。専任メンターによる個別指導とキャリアコンサルタントによる転職・昇進サポートで、あなたの理想のキャリアを実現します。修了後も6ヶ月間の継続サポート付きで安心です。",
-    featureImage: "https://images.unsplash.com/photo-1656066834927-5c1e3f5d6fe9?w=400&h=600&fit=crop&crop=center",
+    descriptionBottom: "プロンプト設計からアプリケーション構築、デバッグ、リファクタリングまで、バイブコーディングの全プロセスを実践的に学習。コードを書かずに高品質なアプリケーションを開発する技術を習得し、開発効率を飛躍的に向上させます。修了後も3ヶ月間の継続サポート付きで、実践での課題解決をサポートします。",
+    featureImage: "https://images.unsplash.com/photo-1696921881903-e87e5662d9b4?w=400&h=600&fit=crop&crop=center",
     items: [
       {
-        title: "個別最適化",
-        description: "あなたの現在のスキルレベルとキャリア目標に合わせて完全カスタマイズされたプログラムを提供",
+        title: "少人数制",
+        description: "質の高いコーチングを提供するため、少人数制で丁寧に指導します",
         image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=225&fit=crop&crop=center"
       },
       {
-        title: "実践重視",
-        description: "理論だけでなく、実際のプロジェクトを通じて即戦力となるスキルを習得できます",
-        image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=225&fit=crop&crop=center"
+        title: "バイブコーディング特化",
+        description: "自然言語でアプリを構築するバイブコーディングの技術を、基礎から応用まで体系的に習得",
+        image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=225&fit=crop&crop=center"
       },
       {
-        title: "キャリア支援",
-        description: "スキル習得から転職・昇進まで、総合的なキャリアサポートを提供します",
-        image: "https://images.unsplash.com/photo-1507925921958-8a62f3d1a50d?w=400&h=225&fit=crop&crop=center"
+        title: "実践プロジェクト",
+        description: "実際のアプリケーション開発を通じて、即戦力となるAI駆動開発スキルを身につけます",
+        image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=225&fit=crop&crop=center"
       }
     ]
   },
-  
+
   midCTA: {
-    title: "AIスキルでキャリアを変えませんか？",
-    description: "あなたの目標に合わせた個別プログラムで、確実にスキルアップを実現します",
+    title: "バイブコーディングで開発を革新しませんか？",
+    description: "専任コーチによる個別指導で、AI駆動開発のスキルを確実に習得します",
     inquiryHref: "/contact",
     documentHref: "/documents"
   },
-  
+
   targetAudience: {
     title: "こんな方におすすめです",
-    subtitle: "AIスキルでキャリアアップを目指す全ての個人の方が対象です",
+    subtitle: "AI駆動開発を本格的に習得したい方を対象としています",
     audiences: [
       {
-        image: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=300&h=300&fit=crop&crop=center",
-        text: "AIを{本格的に}学んで{転職・キャリアアップ}を実現したい方"
+        image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=300&h=300&fit=crop&crop=center",
+        text: "{バイブコーディング}で{開発効率}を上げたいエンジニアの方"
       },
       {
-        image: "https://images.unsplash.com/photo-1553028826-f4804a6dba3b?w=300&h=300&fit=crop&crop=center",
-        text: "現職で{AIスキル}を活かして{昇進・評価向上}を目指したい方"
+        image: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=300&h=300&fit=crop&crop=center",
+        text: "{非エンジニア}だが{自分でアプリ}を作れるようになりたい方"
       },
       {
         image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=300&h=300&fit=crop&crop=center",
-        text: "{フリーランス・副業}でAI関連の{収入源}を増やしたい方"
+        text: "{フリーランス・副業}で{AI開発案件}を獲得したい方"
       },
       {
-        image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=300&h=300&fit=crop&crop=center",
-        text: "{就職活動}でAIスキルを武器に{差別化}を図りたい学生の方"
+        image: "https://images.unsplash.com/photo-1507925921958-8a62f3d1a50d?w=300&h=300&fit=crop&crop=center",
+        text: "{起業・新規事業}で{プロトタイプ}を素早く作りたい方"
       }
     ]
   },
-  
+
   expectedChanges: {
     title: "プログラム受講で得られる変化",
-    subtitle: "AI人材育成所のプログラム受講前後で、あなたのキャリアにこのような変化が生まれます",
+    subtitle: "AI駆動開発育成所のコーチング受講前後で、あなたの開発力にこのような変化が生まれます",
     beforeItems: [
       {
-        category: "市場価値",
-        issue: "AIスキル不足により転職市場での競争力が限定的"
+        category: "開発速度",
+        issue: "コード作成に時間がかかり、アイデアを形にするまでに長い時間を要している"
       },
       {
-        category: "業務効率", 
-        issue: "従来の手法に依存し、効率的な業務遂行ができていない"
+        category: "技術的障壁",
+        issue: "プログラミングスキルの不足により、作りたいものが作れない"
       },
       {
-        category: "キャリア展望",
-        issue: "将来のキャリアパスが不明確で、成長の方向性が見えない"
+        category: "AIツール活用",
+        issue: "AIツールの存在は知っているが、効果的な活用方法がわからない"
       },
       {
-        category: "学習方法",
+        category: "学習効率",
         issue: "独学では限界があり、体系的なスキル習得ができていない"
       },
       {
@@ -107,128 +107,128 @@ export const AI_TALENT_DEVELOPMENT_DATA: ServiceData = {
         issue: "理論は知っているが、実際のプロジェクトでの経験が不足"
       },
       {
-        category: "ネットワーク",
-        issue: "AI分野の専門家やコミュニティとのつながりが限定的"
+        category: "品質管理",
+        issue: "AIが生成したコードの品質判断や改善ができない"
       }
     ],
     afterItems: [
       {
-        category: "市場競争力",
-        achievement: "AI人材として高い市場価値を持ち、理想の転職・昇進を実現"
+        category: "高速開発",
+        achievement: "バイブコーディングで開発効率が3-5倍向上し、アイデアを即座に形に"
       },
       {
-        category: "業務革新",
-        achievement: "AIスキルで業務を劇的に効率化し、生産性を大幅に向上"
+        category: "技術革新",
+        achievement: "コードを書かずに高品質なアプリケーションを開発できるスキルを習得"
       },
       {
-        category: "キャリア設計",
-        achievement: "明確なキャリアビジョンを持ち、戦略的な成長を実現"
+        category: "AIツール習熟",
+        achievement: "Claude Code、Cursor等を使いこなし、最大限の効果を引き出せる"
       },
       {
-        category: "継続学習",
-        achievement: "効果的な学習方法を習得し、継続的なスキルアップが可能"
+        category: "体系的知識",
+        achievement: "バイブコーディングの全プロセスを体系的に理解し実践できる"
       },
       {
         category: "実務能力",
-        achievement: "即戦力として現場で活躍できる実践的なスキルを保有"
+        achievement: "実際のプロジェクトで即戦力として活躍できる実践的スキルを保有"
       },
       {
-        category: "専門ネットワーク",
-        achievement: "AI分野の専門家・同業者との強固なネットワークを構築"
+        category: "品質制御",
+        achievement: "AIが生成したコードの品質評価と改善を適切に行える"
       }
     ]
   },
-  
+
   curriculum: {
     title: "プログラム内容（カリキュラム例）",
     modules: [
       {
-        title: "AI基礎とキャリア設計",
-        description: "AI技術の基礎知識から業界動向、キャリアパスの設計まで、AI人材として必要な土台知識を体系的に習得。あなただけのキャリア戦略を明確化します",
-        image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=300&h=200&fit=crop"
+        title: "AI駆動開発環境構築",
+        description: "Claude Code、Cursor等の主要AI開発ツールのセットアップから基本操作まで、バイブコーディングに必要な環境構築と基礎知識を体系的に習得します",
+        image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=300&h=200&fit=crop"
       },
       {
-        title: "実践的AIスキル習得",
-        description: "生成AI、機械学習、データ分析等、実際の業務で活用できるAI技術を実践的に学習。プロジェクトベースの学習で即戦力スキルを身につけます",
-        image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=300&h=200&fit=crop"
+        title: "プロンプトエンジニアリング",
+        description: "AIに的確な指示を出すためのプロンプト設計技術を習得。効率的なコード生成、デバッグ、リファクタリングを実現するプロンプトの書き方を学びます",
+        image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=300&h=200&fit=crop"
       },
       {
-        title: "ポートフォリオ作成",
-        description: "学習成果を形にして、転職・昇進活動で活用できるポートフォリオを作成。あなたのAIスキルを効果的にアピールできる資料を完成させます",
+        title: "実践アプリケーション開発",
+        description: "実際のWebアプリケーション開発を通じて、バイブコーディングの実践的スキルを習得。フロントエンド、バックエンド、データベース操作まで一貫して学びます",
         image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=300&h=200&fit=crop"
       },
       {
-        title: "キャリア実現サポート",
-        description: "転職活動の戦略策定から面接対策、昇進に向けた社内アピール方法まで、目標実現に向けた具体的なサポートを提供します",
-        image: "https://images.unsplash.com/photo-1507925921958-8a62f3d1a50d?w=300&h=200&fit=crop"
+        title: "品質管理とデバッグ",
+        description: "AIが生成したコードの品質評価、テスト作成、デバッグ技術を習得。保守性と拡張性に優れたアプリケーション開発の手法を身につけます",
+        image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=300&h=200&fit=crop"
       }
     ]
   },
-  
+
   flow: {
-    title: "プログラム受講の流れ",
-    subtitle: "お申込みから目標達成まで、あなたのペースに合わせて丁寧にサポートいたします",
+    title: "受講までの流れ",
+    subtitle: "本気でスキル習得を目指す方を対象としています",
     steps: [
-      "無料相談・目標設定",
-      "スキルレベル診断",
-      "個別プログラム策定",
-      "スキル習得・実践",
-      "キャリア実現サポート"
+      "お申し込み",
+      "ヒアリング・面談",
+      "プラン決定",
+      "個別コーチング開始",
+      "実践プロジェクト・修了"
     ],
-    conclusionTitle: "AIキャリアを目指す皆さまへ",
-    conclusionText: "AI人材は今後ますます求められる存在です。早期にスキルを身につけることで、理想のキャリアを実現できます。LandBridgeは、あなただけの成長ストーリーを全力でサポートし、AI人材としての成功を共に目指します。"
+    conclusionTitle: "AI駆動開発を本気で学びたい方へ",
+    conclusionText: "AI駆動開発育成所は、本気でスキル習得を目指す方に質の高いコーチングを提供します。事前面談では、学習目標や現在のスキルレベルをお聞きし、最適なプランをご提案します。バイブコーディングで開発の世界を変えたい方のご応募をお待ちしています。"
   },
-  
+
   additionalCTA: {
-    title: "AI人材へのキャリアアップ",
-    description: "あなたの理想のキャリアを実現します",
+    title: "AI駆動開発スキルを習得",
+    description: "専任コーチによるコーチングで確実にスキルアップ",
     inquiryHref: "/contact",
     documentHref: "/documents"
   },
-  
+
   overviewTable: {
     title: "プログラム概要",
     rows: [
-      ["対象者", "AIスキル習得を目指す個人"],
-      ["受講形式", "オンライン個別指導"],
-      ["プログラム内容", "個別カスタマイズ"],
-      ["期間", "3-6ヶ月（個人のペースに応じて調整可）"],
+      ["対象者", "AIスキル習得を目指す個人（審査制）"],
+      ["受講形式", "オンライン個別コーチング"],
+      ["プログラム内容", "バイブコーディング特化"],
+      ["期間", "3ヶ月（週1回のセッション）"],
       ["費用", "要相談（目標・内容により変動）"],
-      ["サポート", "専任メンター + キャリアコンサルタント"]
+      ["サポート", "専任コーチ + 修了後3ヶ月サポート"]
     ]
   },
-  
+
   faq: {
     title: "よくあるご質問",
     items: [
       {
-        question: "AIの知識が全くなくても受講できますか？",
-        answer: "はい。完全初心者の方でも基礎から丁寧に指導いたします。あなたのレベルに合わせて個別にプログラムをカスタマイズするため、安心して受講いただけます。"
+        question: "プログラミング経験がなくても受講できますか？",
+        answer: "はい。バイブコーディングは自然言語でアプリを構築する技術のため、プログラミング経験がない方でも受講可能です。事前面談で学習目標をお聞きし、最適なプランをご提案します。"
+      },
+      {
+        question: "事前面談ではどのようなことを聞かれますか？",
+        answer: "学習目標や現在のスキルレベル、確保できる学習時間などをお聞きします。お客様に最適なコーチングプランをご提案するためのヒアリングです。"
       },
       {
         question: "仕事をしながらでも受講可能ですか？",
-        answer: "可能です。オンライン個別指導により、あなたのスケジュールに合わせて柔軟に進めることができます。平日夜間や週末の受講も対応しています。"
+        answer: "可能です。週1回のオンラインセッション（90分程度）と、週5-10時間程度の自習時間を確保いただければ受講いただけます。セッション時間は柔軟に調整可能です。"
       },
       {
-        question: "どのようなキャリアサポートが受けられますか？",
-        answer: "転職希望の方には履歴書・職務経歴書の添削、面接対策、企業紹介等を提供。昇進希望の方には社内アピール戦略、スキル証明方法等をサポートします。"
+        question: "どのようなアプリケーションが作れるようになりますか？",
+        answer: "Webアプリケーション、業務効率化ツール、データ分析アプリ等、幅広いアプリケーションを開発できるようになります。受講者の目標に合わせてカリキュラムをカスタマイズします。"
       },
       {
-        question: "プログラム修了後のサポートはありますか？",
-        answer: "修了後も6ヶ月間の継続サポートを提供。転職活動や新しい職場での活動について、引き続き相談・アドバイスを受けることができます。"
-      },
-      {
-        question: "受講料の分割払いは可能ですか？",
-        answer: "ご相談に応じて分割払いのご案内も可能です。まずは無料相談でご希望をお聞かせください。あなたの状況に合わせた最適なプランをご提案いたします。"
+        question: "修了後のサポートはありますか？",
+        answer: "修了後も3ヶ月間の継続サポートを提供。実際のプロジェクトで直面する課題について、引き続き相談・アドバイスを受けることができます。"
       }
     ]
   },
-  
+
   otherTrainingPrograms: generateOtherTrainingProgramsData("individual-coaching"),
-  
+
   finalCTA: {
-    title: "AI人材への第一歩を踏み出しませんか？",
-    description: "あなたの理想のキャリアを実現するAI人材育成プログラムをご提案いたします",
+    title: "AI駆動開発の扉を開きませんか？",
+    description: "専任コーチによる個別指導で、バイブコーディングスキルを確実に習得いただけます",
     inquiryHref: "/contact",
     documentHref: "/documents"
   }
