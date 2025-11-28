@@ -327,9 +327,10 @@ export default function ServiceTrainingLP({
       'claude': '/logo_claude.svg',
       'gemini': '/logo_Gemini.svg?v=3',
       'sora': '/logo_ChatGPT.svg?v=3',      // Uses OpenAI logo
-      'cursor': '/logo_Cursor.svg',
+      'cursor': '/logo_Cursor.svg?v=2',
       'claudecode': '/logo_claude.svg', // Uses Claude logo
       'codex': '/logo_ChatGPT.svg?v=3',     // Uses OpenAI logo
+      'github': '/logo_GitHub.svg',
     }
 
     const logoSrc = logoImages[tool.logo]

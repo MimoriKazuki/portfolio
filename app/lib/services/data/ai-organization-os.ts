@@ -28,7 +28,7 @@ export const AI_ORGANIZATION_OS_DATA: ServiceData = {
     descriptionTop: "「組織の脳みそ」を作る革新的なナレッジ管理研修です。社員が日々の業務情報を更新することで、AIが組織全体の知識ベースとなり、誰でも必要な情報に瞬時にアクセスできる環境を実現します。",
     tools: [
       { name: "Cursor", logo: "cursor" },
-      { name: "GitHub", logo: "chatgpt" }
+      { name: "GitHub", logo: "github" }
     ],
     descriptionBottom: "管理者は社員に状況確認をせずともAIに質問するだけで現状を把握でき、社員も自分のタスクや部署の状況をAIに聞くことで漏れなく対応可能に。異動・退職時の引き継ぎも、更新さえしていればAIに質問して確認できるため、引き継ぎ業務からも解放されます。ディレクトリ設計から運用ノウハウまで、組織OS導入を成功させるすべてを伝授します。",
     featureImage: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400&h=600&fit=crop&crop=center",
