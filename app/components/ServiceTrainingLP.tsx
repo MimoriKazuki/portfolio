@@ -7,7 +7,6 @@ import { Column, Project } from '@/app/types'
 import { useState, useEffect, useRef } from 'react'
 import TargetAudienceCard from './TargetAudienceCard'
 import { AITrainingHeroSection } from './ui/ai-training-hero-section'
-import { AIServicesCarousel } from './ui/ai-services-carousel'
 
 // Animation hook for scroll-triggered animations
 function useScrollAnimation(threshold = 0.1) {
@@ -214,6 +213,15 @@ export default function ServiceTrainingLP({
 }: ServiceTrainingLPProps) {
   const [openFaqs, setOpenFaqs] = useState<Set<number>>(new Set())
   const [heroLoaded, setHeroLoaded] = useState(false)
+
+  // Other programs navigation state
+  const filteredPrograms = otherTrainingPrograms.programs.filter(
+    program => program.id !== otherTrainingPrograms.currentPageId
+  )
+  const [selectedProgramId, setSelectedProgramId] = useState<string>(
+    filteredPrograms[0]?.id || ''
+  )
+  const selectedProgram = filteredPrograms.find(p => p.id === selectedProgramId)
 
   // Theme colors
   const themeColors = {
@@ -938,19 +946,92 @@ export default function ServiceTrainingLP({
               <h2 className="text-2xl md:text-3xl font-bold text-gray-900">{otherTrainingPrograms.title}</h2>
             </div>
           </div>
+
+          {/* Navigation + Card Layout */}
           <div
-            className="-mx-4 sm:-mx-6 lg:-mx-8"
+            className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-8 lg:gap-12"
             style={{
               opacity: otherProgramsSection.isVisible ? 1 : 0,
               transform: otherProgramsSection.isVisible ? 'translateY(0)' : 'translateY(30px)',
               transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s',
             }}
           >
-            <AIServicesCarousel
-              showHeader={false}
-              sectionPadding=""
-              items={otherTrainingPrograms.programs.filter(program => program.id !== otherTrainingPrograms.currentPageId)}
-            />
+            {/* Left Navigation */}
+            <nav className="flex flex-row lg:flex-col gap-3 lg:gap-4 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0">
+              {filteredPrograms.map((program) => {
+                const isActive = selectedProgramId === program.id
+                const isIndividual = program.category === 'individual'
+                return (
+                  <button
+                    key={program.id}
+                    onClick={() => setSelectedProgramId(program.id)}
+                    className={`group flex items-center gap-3 text-sm lg:text-base transition-colors duration-200 whitespace-nowrap ${
+                      isActive
+                        ? isIndividual ? 'text-emerald-600 font-medium' : 'text-blue-600 font-medium'
+                        : 'text-gray-500 hover:text-gray-900'
+                    }`}
+                  >
+                    <span
+                      className={`w-2 h-2 rounded-full flex-shrink-0 transition-colors duration-200 ${
+                        isActive
+                          ? isIndividual ? 'bg-emerald-600' : 'bg-blue-600'
+                          : 'bg-gray-300 group-hover:bg-gray-400'
+                      }`}
+                    />
+                    <span>{program.title}</span>
+                  </button>
+                )
+              })}
+            </nav>
+
+            {/* Right Content - Selected Program Card */}
+            {selectedProgram && (
+              <article className="min-w-0">
+                {/* Image Area - 21:9 aspect ratio */}
+                <div className="relative overflow-hidden mb-8">
+                  <div className="relative aspect-[21/9]">
+                    <Image
+                      src={selectedProgram.image}
+                      alt={selectedProgram.title}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 1024px) 100vw, 75vw"
+                    />
+                  </div>
+                </div>
+
+                {/* Content Area - Two Columns */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+                  {/* Left Column - Title, Link */}
+                  <div>
+                    {/* Title */}
+                    <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8 leading-tight">
+                      {selectedProgram.title}
+                    </h3>
+
+                    {/* View Detail Link */}
+                    <Link
+                      href={selectedProgram.href}
+                      className={`inline-flex items-center justify-center gap-2 px-8 py-4 bg-white font-medium transition-colors duration-200 text-base border ${
+                        selectedProgram.category === 'individual'
+                          ? 'text-emerald-600 border-emerald-600 hover:bg-emerald-50'
+                          : 'text-blue-600 border-blue-600 hover:bg-blue-50'
+                      }`}
+                    >
+                      カリキュラムを見る
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
+                  </div>
+
+                  {/* Right Column - Description */}
+                  <div>
+                    <p className="text-gray-600 text-base leading-loose">
+                      {selectedProgram.description}
+                    </p>
+                  </div>
+                </div>
+              </article>
+            )}
           </div>
         </section>
 
