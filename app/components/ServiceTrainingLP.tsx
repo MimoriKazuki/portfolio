@@ -370,7 +370,7 @@ export default function ServiceTrainingLP({
           {/* Back Button */}
           <Link
             href={`/services?tab=${theme === 'green' ? 'individual' : 'corporate'}`}
-            className="absolute top-4 left-4 sm:top-6 sm:left-6 z-20 inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-sm text-white text-sm font-medium hover:bg-white/20 transition-colors duration-200 border border-white/20"
+            className="absolute top-4 left-4 sm:top-6 sm:left-6 z-20 inline-flex items-center gap-2 px-4 py-2 text-white text-sm font-medium hover:bg-white/20 hover:backdrop-blur-sm transition-colors duration-200 hover:border hover:border-white/20 border border-transparent"
             style={{
               opacity: heroLoaded ? 1 : 0,
               transform: heroLoaded ? 'translateX(0)' : 'translateX(-20px)',
@@ -747,8 +747,9 @@ export default function ServiceTrainingLP({
           </div>
 
           <div
-            className="bg-white shadow-sm border border-gray-100 p-8 lg:p-10"
+            className="bg-white shadow-sm border border-gray-100"
             style={{
+              padding: '88px',
               opacity: flowSection.isVisible ? 1 : 0,
               transform: flowSection.isVisible ? 'translateY(0)' : 'translateY(30px)',
               transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.5s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.5s',
