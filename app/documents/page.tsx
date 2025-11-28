@@ -2,7 +2,6 @@ import { createClient } from '@/app/lib/supabase/server'
 import { Document } from '@/app/types'
 import Image from 'next/image'
 import Link from 'next/link'
-import { FileText } from 'lucide-react'
 import MainLayout from '@/app/components/MainLayout'
 import PageHeader from '@/app/components/ui/PageHeader'
 
@@ -27,47 +26,51 @@ export default async function DocumentsPage() {
       <div className="w-full">
         <PageHeader title="DOCUMENT" subtitle="資料ダウンロード" />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {documents?.map((document: Document) => (
-            <article 
+            <Link
               key={document.id}
-              className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 flex flex-col"
+              href={`/documents/request/${document.id}`}
+              className="group"
             >
-              {document.thumbnail && (
-                <div className="relative aspect-video">
-                  <Image
-                    src={document.thumbnail}
-                    alt={document.title}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    loading="lazy"
-                    placeholder="blur"
-                    blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAf/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWEREiMxUf/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
-                  />
+              <article
+                className="overflow-hidden border-2 border-transparent hover:border-gray-200 transition-colors duration-300 flex flex-col h-full p-4 rounded"
+              >
+                {document.thumbnail && (
+                  <div className="relative aspect-video overflow-hidden rounded">
+                    <Image
+                      src={document.thumbnail}
+                      alt={document.title}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      loading="lazy"
+                      placeholder="blur"
+                      blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAABAAEDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAf/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWEREiMxUf/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
+                    />
+                  </div>
+                )}
+
+                <div className="pt-4 flex-1 flex flex-col">
+                  <h2 className="font-semibold text-gray-900 mb-2 line-clamp-1 group-hover:text-blue-600 transition-colors">
+                    {document.title}
+                  </h2>
+
+                  <div className="flex-1">
+                    <p className="text-gray-600 text-sm line-clamp-2 mb-4">
+                      {document.description || ''}
+                    </p>
+                  </div>
+
+                  <div
+                    className="inline-flex items-center justify-center text-white px-6 py-3 rounded-lg font-medium w-full"
+                    style={{ backgroundColor: 'rgb(37, 99, 235)' }}
+                  >
+                    資料をダウンロード
+                  </div>
                 </div>
-              )}
-              
-              <div className="p-4 flex-1 flex flex-col">
-                <h2 className="font-semibold text-gray-900 mb-2 line-clamp-1">
-                  {document.title}
-                </h2>
-                
-                <div className="flex-1">
-                  <p className="text-gray-600 text-sm line-clamp-3 mb-4">
-                    {document.description || ''}
-                  </p>
-                </div>
-                
-                <Link
-                  href={`/documents/request/${document.id}`}
-                  className="inline-flex items-center justify-center text-white px-6 py-3 rounded-lg transition-opacity hover:opacity-90 font-medium w-full"
-                  style={{ backgroundColor: 'rgb(37, 99, 235)' }}
-                >
-                  資料をダウンロード
-                </Link>
-              </div>
-            </article>
+              </article>
+            </Link>
           ))}
         </div>
 
