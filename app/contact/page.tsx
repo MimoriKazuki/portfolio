@@ -3,7 +3,6 @@
 import { useState, useCallback, useEffect } from 'react'
 import Link from 'next/link'
 import MainLayout from '@/app/components/MainLayout'
-import ContactCompletionModal from '@/app/components/ContactCompletionModal'
 import { trackContactFormSubmit } from '@/app/components/GoogleAnalyticsEvent'
 import { useRouter } from 'next/navigation'
 
@@ -37,7 +36,6 @@ export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitMessage, setSubmitMessage] = useState('')
   const [emailError, setEmailError] = useState('')
-  const [showCompletionModal, setShowCompletionModal] = useState(false)
 
   // メールアドレスのバリデーション
   const validateEmail = (email: string) => {
@@ -70,10 +68,9 @@ export default function ContactPage() {
       if (response.ok) {
         // Google Analyticsにイベントを送信
         trackContactFormSubmit('general_inquiry')
-        
-        // モーダルを表示
-        setShowCompletionModal(true)
-        setFormData({ name: '', company: '', email: '', message: '', inquiry_type: 'service', service_type: '' })
+
+        // Thanksページに遷移
+        router.push('/thanks?type=contact')
       } else {
         setSubmitMessage(result.error || 'エラーが発生しました。もう一度お試しください。')
       }
@@ -83,12 +80,7 @@ export default function ContactPage() {
     } finally {
       setIsSubmitting(false)
     }
-  }, [formData])
-
-  const handleModalClose = () => {
-    setShowCompletionModal(false)
-    router.push('/')
-  }
+  }, [formData, router])
 
   return (
     <MainLayout hideRightSidebar={true}>
@@ -291,11 +283,6 @@ export default function ContactPage() {
           </div>
         </div>
       </div>
-      
-      <ContactCompletionModal 
-        isOpen={showCompletionModal}
-        onClose={handleModalClose}
-      />
     </MainLayout>
   )
 }
