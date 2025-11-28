@@ -855,7 +855,7 @@ export default function ServiceTrainingLP({
             {faq.items.map((item, index) => (
               <div
                 key={index}
-                className={`border border-gray-200 hover:${colors.borderLight} transition-colors duration-300`}
+                className={`bg-white border border-gray-200 hover:${colors.borderLight} transition-colors duration-300`}
                 style={{
                   opacity: faqSection.isVisible ? 1 : 0,
                   transform: faqSection.isVisible ? 'translateY(0)' : 'translateY(20px)',
