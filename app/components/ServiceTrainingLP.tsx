@@ -326,11 +326,12 @@ export default function ServiceTrainingLP({
       'chatgpt': '/logo_ChatGPT.svg?v=3',
       'claude': '/logo_claude.svg',
       'gemini': '/logo_Gemini.svg?v=3',
-      'sora': '/logo_ChatGPT.svg?v=3',      // Uses OpenAI logo
+      'sora': '/logo_ChatGPT.svg?v=3',      // Uses OpenAI logo (Sora)
       'cursor': '/logo_Cursor.svg?v=2',
-      'claudecode': '/logo_claude.svg', // Uses Claude logo
+      'claudecode': '/logo_claude.svg',     // Uses Claude logo
       'codex': '/logo_ChatGPT.svg?v=3',     // Uses OpenAI logo
       'github': '/logo_GitHub.svg',
+      'higgsfield': '/logo_Higgsfield.svg',
     }
 
     const logoSrc = logoImages[tool.logo]

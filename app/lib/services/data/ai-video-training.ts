@@ -3,8 +3,8 @@ import { generateOtherTrainingProgramsData } from '../training-programs'
 
 export const AI_VIDEO_TRAINING_METADATA: ServicePageMetadata = {
   title: 'AI動画生成研修 - AI駆動研究所',
-  description: 'AI駆動研究所のAI動画生成研修。最新のAI動画生成ツールを活用して、マーケティング動画やプレゼンテーション動画を効率的に制作する技術を学びます。',
-  keywords: ['LandBridge', 'AI動画生成研修', 'AI動画', '動画制作', 'マーケティング動画', 'プレゼン動画', 'Sora', 'Runway', '企業研修', 'AI活用'],
+  description: 'AI駆動研究所のAI動画生成研修。Sora、Gemini、Higgsfieldなど最新のAI動画生成ツールを活用して、マーケティング動画やプレゼンテーション動画を効率的に制作する技術を学びます。',
+  keywords: ['LandBridge', 'AI動画生成研修', 'AI動画', '動画制作', 'マーケティング動画', 'プレゼン動画', 'Sora', 'Gemini', 'Higgsfield', '企業研修', 'AI活用'],
   url: 'https://www.landbridge.ai/services/ai-video-training'
 }
 
@@ -28,7 +28,8 @@ export const AI_VIDEO_TRAINING_DATA: ServiceData = {
     descriptionTop: "最新のAI動画生成技術を活用して、プロレベルの動画を効率的に制作するスキルを習得する専門研修プログラムです。動画制作の経験がない方でも、短期間で実践的な動画制作技術を身につけることができます。",
     tools: [
       { name: "Sora", logo: "sora" },
-      { name: "Gemini", logo: "gemini" }
+      { name: "Gemini", logo: "gemini" },
+      { name: "Higgsfield", logo: "higgsfield" }
     ],
     descriptionBottom: "マーケティング動画、プレゼンテーション動画、研修コンテンツなど、様々な用途に対応した動画制作技術を学習。テキストから動画を生成する技術、既存映像の編集・加工、音声合成との連携まで、AI動画制作の全プロセスをカバーします。制作時間を90%短縮しながら、外注レベルの品質を実現します。",
     featureImage: "https://images.unsplash.com/photo-1658660855429-228f066c8e61?w=400&h=600&fit=crop&crop=center",
@@ -148,7 +149,7 @@ export const AI_VIDEO_TRAINING_DATA: ServiceData = {
       },
       {
         title: "実践的制作技術",
-        description: "Sora、Runway、Pika等の最新AI動画生成ツールを使った実践的な制作手法を学習。シーン設定からカメラワーク、音声同期まで、プロレベルの動画制作技術を身につけます",
+        description: "Sora、Gemini、Higgsfield等の最新AI動画生成ツールを使った実践的な制作手法を学習。シーン設定からカメラワーク、音声同期まで、プロレベルの動画制作技術を身につけます",
         image: "https://images.unsplash.com/photo-1485846234645-a62644f84728?w=300&h=200&fit=crop"
       },
       {
@@ -205,7 +206,7 @@ export const AI_VIDEO_TRAINING_DATA: ServiceData = {
       },
       {
         question: "どのようなAI動画生成ツールを使用しますか？",
-        answer: "Sora、Runway、Pika Labs等の最新AI動画生成ツールを使用します。受講者のニーズに応じて、最適なツールの組み合わせをご提案いたします。"
+        answer: "ChatGPTのSora、Gemini、Higgsfield等の最新AI動画生成ツールを使用します。受講者のニーズに応じて、最適なツールの組み合わせをご提案いたします。"
       },
       {
         question: "企業のブランドイメージに合った動画は作れますか？",
