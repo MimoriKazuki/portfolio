@@ -64,7 +64,7 @@ const DynamicRightSidebar = ({ enterpriseServiceId, individualServiceId }: Dynam
                 className="object-cover"
                 sizes="(max-width: 260px) 100vw, 220px"
               />
-              <div className="absolute top-2 right-2 bg-blue-600 text-white px-2 py-1 text-xs font-medium">
+              <div className="absolute top-2 right-2 bg-white border border-blue-200 text-blue-700 px-3 py-1 text-xs font-medium">
                 企業向け
               </div>
             </div>
@@ -93,7 +93,7 @@ const DynamicRightSidebar = ({ enterpriseServiceId, individualServiceId }: Dynam
                 className="object-cover"
                 sizes="(max-width: 260px) 100vw, 220px"
               />
-              <div className="absolute top-2 right-2 bg-green-600 text-white px-2 py-1 text-xs font-medium">
+              <div className="absolute top-2 right-2 bg-white border border-green-200 text-green-700 px-3 py-1 text-xs font-medium">
                 個人向け
               </div>
             </div>

@@ -6,7 +6,7 @@ import MainLayout from '@/app/components/MainLayout'
 import VideoPlayer from './VideoPlayer'
 import { createStaticClient } from '@/app/lib/supabase/static'
 import { createClient } from '@/app/lib/supabase/server'
-import { CATEGORY_COLORS, CATEGORY_LABELS, PROJECT_BUTTON_STYLES } from '@/app/lib/constants/project'
+import { CATEGORY_COLORS, CATEGORY_BORDER_COLORS, CATEGORY_LABELS, PROJECT_BUTTON_STYLES } from '@/app/lib/constants/project'
 import type { Metadata } from 'next'
 
 export const revalidate = 60 // ISR: 60秒ごとに再生成
@@ -168,43 +168,80 @@ export default async function ProjectDetailPage({
           プロジェクト一覧に戻る
         </Link>
 
-        <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-gray-900">{project.title}</h1>
+        {/* Thumbnail or Video - Full width */}
+        {project.category === 'video' && project.live_url ? (
+          <div className="mb-4">
+            <VideoPlayer
+              thumbnail={project.thumbnail}
+              videoUrl={project.live_url}
+              title={project.title}
+            />
+          </div>
+        ) : (
+          <div className="relative aspect-video rounded-lg overflow-hidden bg-black mb-4">
+            <Image
+              src={project.thumbnail}
+              alt={project.title}
+              fill
+              className="object-cover"
+              priority
+            />
+          </div>
+        )}
 
-        <div className="flex flex-col lg:flex-row gap-6 sm:gap-8">
-          {/* Left column - Thumbnail or Video */}
-          <div className="lg:w-1/2">
-            {project.category === 'video' && project.live_url ? (
-              <VideoPlayer
-                thumbnail={project.thumbnail}
-                videoUrl={project.live_url}
-                title={project.title}
-              />
-            ) : (
-              <div className="relative aspect-video rounded-lg overflow-hidden">
-                <Image
-                  src={project.thumbnail}
-                  alt={project.title}
-                  fill
-                  className="object-cover"
-                  priority
-                />
-                <div className={`absolute top-2 right-2 sm:top-4 sm:right-4 ${CATEGORY_COLORS[project.category]} text-xs sm:text-sm px-2 sm:px-3 py-0.5 sm:py-1 rounded`}>
+        {/* Project Info */}
+        <div className="space-y-4">
+          {/* Title */}
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{project.title}</h1>
+
+          {/* Meta info and action buttons row */}
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 pb-4 border-b border-gray-200">
+            {/* Left side - Meta info */}
+            <div className="flex flex-col gap-2">
+              {/* 1行目: カテゴリバッジ、クライアント */}
+              <div className="flex flex-wrap items-center gap-4">
+                {/* カテゴリバッジ */}
+                <span className={`${CATEGORY_BORDER_COLORS[project.category]} bg-white text-xs px-3 py-1 border font-medium`}>
                   {CATEGORY_LABELS[project.category]}
-                </div>
+                </span>
+                {/* クライアント */}
+                {project.client && (
+                  <span className="text-sm font-medium text-gray-900">{project.client}</span>
+                )}
               </div>
-            )}
-            
-            {/* Action buttons below thumbnail */}
-            <div className="mt-8 flex flex-col gap-3">
+              {/* 2行目: 制作期間 */}
+              {project.duration && (
+                <div className="mt-2">
+                  <h3 className="text-sm font-medium text-gray-600 mb-2">制作期間</h3>
+                  <div className="text-sm text-gray-700">{project.duration}</div>
+                </div>
+              )}
+              {/* 3行目: 使用技術 */}
+              {project.technologies && project.technologies.length > 0 && (
+                <div className="mt-2">
+                  <h3 className="text-sm font-medium text-gray-600 mb-2">使用技術</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {project.technologies.map((tech: string) => (
+                      <span key={tech} className="bg-white border border-gray-200 px-3 py-1 rounded text-sm text-gray-700">
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Right side - Action buttons */}
+            <div className="flex flex-wrap items-center gap-2">
               {project.live_url && project.category !== 'video' && (
                 <a
                   href={project.live_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg transition-all font-medium w-full ${PROJECT_BUTTON_STYLES.primary}`}
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-portfolio-blue hover:bg-portfolio-blue-dark text-white rounded-full transition-all font-medium text-sm whitespace-nowrap"
                 >
-                  サイトを見る
                   <ExternalLink className="w-4 h-4" />
+                  サイトを見る
                 </a>
               )}
               {project.video_url && (
@@ -212,19 +249,19 @@ export default async function ProjectDetailPage({
                   href={project.video_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg transition-all font-medium w-full ${PROJECT_BUTTON_STYLES.videoSecondary}`}
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-full transition-all font-medium text-sm whitespace-nowrap"
                 >
-                  解説動画を見る
                   <ExternalLink className="w-4 h-4" />
+                  解説動画
                 </a>
               )}
               {project.prompt && (
                 <Link
                   href={`/projects/${project.id}/prompt`}
-                  className={`inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg transition-all font-medium w-full ${PROJECT_BUTTON_STYLES.promptSecondary}`}
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-purple-600 hover:bg-purple-700 text-white rounded-full transition-all font-medium text-sm whitespace-nowrap"
                 >
-                  プロンプトをダウンロード
                   <Download className="w-4 h-4" />
+                  プロンプト
                 </Link>
               )}
               {project.github_url && (
@@ -232,7 +269,7 @@ export default async function ProjectDetailPage({
                   href={project.github_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg transition-all font-medium w-full ${PROJECT_BUTTON_STYLES.github}`}
+                  className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-gray-800 hover:bg-gray-900 text-white rounded-full transition-all font-medium text-sm whitespace-nowrap"
                 >
                   <Github className="w-4 h-4" />
                   ソースコード
@@ -241,44 +278,15 @@ export default async function ProjectDetailPage({
             </div>
           </div>
 
-          {/* Right column - Project details */}
-          <div className="lg:w-1/2 space-y-4 sm:space-y-6">
-              <div>
-                <h2 className="text-lg font-semibold mb-2 text-gray-900">プロジェクト概要</h2>
-                <p className="text-gray-700 leading-relaxed">{project.description}</p>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <h3 className="text-base font-medium text-gray-600 mb-2">開発期間</h3>
-                  <div className="flex items-center gap-2 text-gray-700">
-                    <Clock className="w-4 h-4" />
-                    <span>{project.duration}</span>
-                  </div>
-                </div>
-                
-                {project.client && (
-                  <div>
-                    <h3 className="text-base font-medium text-gray-600 mb-2">クライアント</h3>
-                    <p className="text-gray-700">{project.client}</p>
-                  </div>
-                )}
-              </div>
-
-              {project.technologies && project.technologies.length > 0 && (
-                <div>
-                  <h3 className="text-base font-medium text-gray-600 mb-2">使用技術</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {project.technologies.map((tech: string) => (
-                      <span key={tech} className="bg-gray-100 border border-gray-200 px-3 py-1 rounded text-sm text-gray-700">
-                        {tech}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
+          {/* Description box - scrollable */}
+          <div className="bg-gray-50 rounded-xl p-4">
+            <div className="max-h-80 overflow-y-auto">
+              <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
+                {project.description}
+              </p>
             </div>
           </div>
+        </div>
 
         {/* 関連プロジェクト */}
         {relatedProjects.length > 0 && (
@@ -300,7 +308,7 @@ export default async function ProjectDetailPage({
                         className="object-cover"
                         sizes="(max-width: 768px) 100vw, 33vw"
                       />
-                      <div className={`absolute top-2 right-2 ${CATEGORY_COLORS[relatedProject.category]} text-xs px-3 py-1`}>
+                      <div className={`absolute top-2 right-2 bg-white border ${CATEGORY_BORDER_COLORS[relatedProject.category]} text-xs px-3 py-1 font-medium`}>
                         {CATEGORY_LABELS[relatedProject.category]}
                       </div>
                     </div>

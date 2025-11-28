@@ -89,11 +89,11 @@ export default async function NoticeDetailPage({
   }
 
   const categoryColors = {
-    news: 'bg-blue-100 text-blue-700',
-    webinar: 'bg-purple-100 text-purple-700',
-    event: 'bg-pink-100 text-pink-700',
-    maintenance: 'bg-yellow-100 text-yellow-700',
-    other: 'bg-gray-100 text-gray-700'
+    news: 'bg-white border border-blue-200 text-blue-700',
+    webinar: 'bg-white border border-purple-200 text-purple-700',
+    event: 'bg-white border border-pink-200 text-pink-700',
+    maintenance: 'bg-white border border-yellow-200 text-yellow-700',
+    other: 'bg-white border border-gray-200 text-gray-700'
   }
 
   const categoryLabels = {
@@ -125,7 +125,7 @@ export default async function NoticeDetailPage({
 
   return (
     <MainLayout>
-      <div className="p-4 sm:p-6 pt-2 sm:pt-3">
+      <article className="w-full max-w-4xl mx-auto">
         <Link
           href="/notices"
           className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors"
@@ -134,64 +134,82 @@ export default async function NoticeDetailPage({
           お知らせ一覧に戻る
         </Link>
 
-        <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-gray-900">{notice.title}</h1>
-
-        <div className="flex flex-col lg:flex-row gap-6 sm:gap-8">
-          {/* Left column - Thumbnail */}
-          <div className="lg:w-1/2">
-            <div className="relative aspect-video rounded-lg overflow-hidden">
-              {notice.thumbnail ? (
-                <Image
-                  src={notice.thumbnail}
-                  alt={notice.title}
-                  fill
-                  className="object-cover"
-                  priority
-                />
-              ) : (
-                <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
-                  <Bell className="h-24 w-24 text-gray-400" />
-                </div>
-              )}
+        {/* サムネイル画像 */}
+        <div className="relative aspect-video mb-8 rounded-lg overflow-hidden">
+          {notice.thumbnail ? (
+            <Image
+              src={notice.thumbnail}
+              alt={notice.title}
+              fill
+              className="object-cover"
+              sizes="(max-width: 1024px) 100vw, 896px"
+              priority
+            />
+          ) : (
+            <div className="absolute inset-0 bg-gray-100 flex items-center justify-center">
+              <Bell className="h-24 w-24 text-gray-400" />
             </div>
-            
-            {/* Action button below thumbnail */}
-            {notice.site_url && (
-              <div className="mt-8">
-                <a
-                  href={notice.site_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg transition-all font-medium w-full bg-portfolio-blue hover:bg-portfolio-blue-dark text-white"
-                >
-                  詳細を見る
-                  <ExternalLink className="w-4 h-4" />
-                </a>
-              </div>
-            )}
-          </div>
-
-          {/* Right column - Notice details */}
-          <div className="lg:w-1/2 space-y-4 sm:space-y-6">
-            <div className="flex items-center gap-3">
-              <span className={`inline-flex px-3 py-1 rounded-full text-sm font-medium ${
-                categoryColors[notice.category]
-              }`}>
-                {categoryLabels[notice.category]}
-              </span>
-              <div className="flex items-center gap-1 text-gray-500 text-sm">
-                <Calendar className="h-4 w-4" />
-                {formatDate(notice.created_at)}
-              </div>
-            </div>
-
-            {notice.description && (
-              <div>
-                <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{notice.description}</p>
-              </div>
-            )}
-          </div>
+          )}
         </div>
+
+        {/* ヘッダー */}
+        <header className="mb-8">
+          <h1 className="text-[28px] font-bold text-gray-900 mb-4">
+            {notice.title}
+          </h1>
+
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 text-sm text-gray-500">
+              <Calendar className="w-4 h-4" />
+              <time dateTime={notice.created_at}>
+                {new Date(notice.created_at).toLocaleDateString('ja-JP', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                })}
+              </time>
+            </div>
+            <span className={`${categoryColors[notice.category]} text-xs px-3 py-1 font-medium`}>
+              {categoryLabels[notice.category]}
+            </span>
+          </div>
+        </header>
+
+        {/* 説明文 */}
+        {notice.description && (
+          <div className="mb-8">
+            <p className="text-[16px] text-gray-700 leading-relaxed whitespace-pre-wrap">
+              {notice.description}
+            </p>
+          </div>
+        )}
+
+        {/* 外部リンクボタン */}
+        {notice.site_url && (
+          <div className="mb-8">
+            <a
+              href={notice.site_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg transition-all font-medium bg-portfolio-blue hover:bg-portfolio-blue-dark text-white"
+            >
+              詳細を見る
+              <ExternalLink className="w-4 h-4" />
+            </a>
+          </div>
+        )}
+
+        {/* フッター */}
+        <footer className="mt-12 pt-8 border-t border-gray-200">
+          <div className="flex justify-between items-center">
+            <Link
+              href="/notices"
+              className="text-portfolio-blue hover:underline"
+            >
+              ← お知らせ一覧に戻る
+            </Link>
+          </div>
+        </footer>
 
         {/* 関連お知らせ */}
         {relatedNotices && relatedNotices.length > 0 && (
@@ -219,7 +237,7 @@ export default async function NoticeDetailPage({
                           <Bell className="h-12 w-12 text-gray-400" />
                         </div>
                       )}
-                      <div className={`absolute top-2 right-2 ${categoryColors[relatedNotice.category]} text-xs px-3 py-1`}>
+                      <div className={`absolute top-2 right-2 ${categoryColors[relatedNotice.category]} text-xs px-3 py-1 font-medium`}>
                         {categoryLabels[relatedNotice.category]}
                       </div>
                     </div>
@@ -246,7 +264,7 @@ export default async function NoticeDetailPage({
             </div>
           </section>
         )}
-      </div>
+      </article>
     </MainLayout>
   )
 }

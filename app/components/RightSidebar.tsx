@@ -68,7 +68,7 @@ const RightSidebar = () => {
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 260px"
                 className="object-cover"
               />
-              <div className="absolute top-2 right-2 bg-blue-600 text-white px-2 py-1 text-xs font-medium">
+              <div className="absolute top-2 right-2 bg-white border border-blue-200 text-blue-700 px-3 py-1 text-xs font-medium">
                 {corporateService.label}
               </div>
             </div>
@@ -97,7 +97,7 @@ const RightSidebar = () => {
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 260px"
                 className="object-cover"
               />
-              <div className="absolute top-2 right-2 bg-green-600 text-white px-2 py-1 text-xs font-medium">
+              <div className="absolute top-2 right-2 bg-white border border-green-200 text-green-700 px-3 py-1 text-xs font-medium">
                 {individualService.label}
               </div>
             </div>

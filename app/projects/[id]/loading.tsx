@@ -7,56 +7,49 @@ export default function ProjectDetailLoading() {
         {/* Back button skeleton */}
         <div className="h-6 bg-gray-200 rounded w-40 mb-6" />
 
-        {/* Title skeleton */}
-        <div className="h-8 sm:h-10 bg-gray-200 rounded w-3/4 mb-4 sm:mb-6" />
+        {/* Thumbnail skeleton - Full width */}
+        <div className="relative aspect-video rounded-lg bg-gray-200 mb-4" />
 
-        <div className="flex flex-col lg:flex-row gap-6 sm:gap-8">
-          {/* Left column - Thumbnail skeleton */}
-          <div className="lg:w-1/2">
-            <div className="relative aspect-video rounded-lg bg-gray-200" />
-            
-            {/* Action buttons skeleton */}
-            <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-center">
+        {/* Project Info */}
+        <div className="space-y-4">
+          {/* Title skeleton */}
+          <div className="h-7 sm:h-8 bg-gray-200 rounded w-3/4" />
+
+          {/* Meta info and action buttons row */}
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 pb-4 border-b border-gray-200">
+            {/* Left side - Meta info skeleton */}
+            <div className="flex flex-wrap items-center gap-4">
+              <div className="h-6 bg-gray-200 rounded w-20" />
+              <div className="h-5 bg-gray-200 rounded w-24" />
+              <div className="h-5 bg-gray-200 rounded w-32" />
+            </div>
+
+            {/* Right side - Action buttons skeleton */}
+            <div className="flex flex-wrap items-center gap-2">
               <div className="h-10 bg-gray-200 rounded-full w-32" />
-              <div className="h-10 bg-gray-200 rounded-lg w-36" />
+              <div className="h-10 bg-gray-200 rounded-full w-28" />
             </div>
           </div>
 
-          {/* Right column - Project details skeleton */}
-          <div className="lg:w-1/2 space-y-4 sm:space-y-6">
-            {/* Project overview skeleton */}
-            <div>
-              <div className="h-6 bg-gray-200 rounded w-32 mb-2" />
+          {/* Description box skeleton */}
+          <div className="bg-gray-50 rounded-xl p-4">
+            <div className="space-y-4">
+              {/* Description skeleton */}
               <div className="space-y-2">
                 <div className="h-4 bg-gray-200 rounded" />
                 <div className="h-4 bg-gray-200 rounded" />
                 <div className="h-4 bg-gray-200 rounded w-5/6" />
               </div>
-            </div>
 
-            {/* Duration and client skeleton */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <div className="h-5 bg-gray-200 rounded w-24 mb-2" />
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 bg-gray-200 rounded" />
-                  <div className="h-4 bg-gray-200 rounded w-20" />
+              {/* Technologies skeleton */}
+              <div className="pt-4 border-t border-gray-200">
+                <div className="h-4 bg-gray-200 rounded w-20 mb-2" />
+                <div className="flex flex-wrap gap-2">
+                  <div className="h-8 bg-gray-200 rounded w-20" />
+                  <div className="h-8 bg-gray-200 rounded w-24" />
+                  <div className="h-8 bg-gray-200 rounded w-16" />
+                  <div className="h-8 bg-gray-200 rounded w-28" />
                 </div>
-              </div>
-              <div>
-                <div className="h-5 bg-gray-200 rounded w-28 mb-2" />
-                <div className="h-4 bg-gray-200 rounded w-32" />
-              </div>
-            </div>
-
-            {/* Technologies skeleton */}
-            <div>
-              <div className="h-5 bg-gray-200 rounded w-24 mb-2" />
-              <div className="flex flex-wrap gap-2">
-                <div className="h-8 bg-gray-200 rounded w-20" />
-                <div className="h-8 bg-gray-200 rounded w-24" />
-                <div className="h-8 bg-gray-200 rounded w-16" />
-                <div className="h-8 bg-gray-200 rounded w-28" />
               </div>
             </div>
           </div>
@@ -65,13 +58,13 @@ export default function ProjectDetailLoading() {
         {/* Related projects skeleton */}
         <section className="mt-16">
           <div className="h-8 bg-gray-200 rounded w-32 mb-8" />
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             {[...Array(3)].map((_, index) => (
-              <article key={index} className="bg-white rounded-lg overflow-hidden shadow-md">
-                <div className="relative aspect-video bg-gray-200" />
-                <div className="p-5">
-                  <div className="h-6 bg-gray-200 rounded w-3/4 mb-2" />
-                  <div className="space-y-2 mb-4">
+              <article key={index} className="border-2 border-transparent rounded p-4">
+                <div className="relative aspect-video bg-gray-200 rounded" />
+                <div className="pt-4">
+                  <div className="h-5 bg-gray-200 rounded w-3/4 mb-2" />
+                  <div className="space-y-2 mb-3">
                     <div className="h-4 bg-gray-200 rounded" />
                     <div className="h-4 bg-gray-200 rounded w-5/6" />
                   </div>

@@ -203,16 +203,16 @@ export default async function YouTubeVideoDetailPage({
                   <span className="text-sm font-medium text-gray-900">{video.channel_title}</span>
                 )}
                 {/* バッジ（自社チャンネル・外部チャンネル） */}
-                <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-semibold whitespace-nowrap ${
+                <span className={`bg-white text-xs px-3 py-1 border font-medium ${
                   video.is_own_channel
-                    ? 'bg-blue-100 text-blue-800'
-                    : 'bg-green-100 text-green-800'
+                    ? 'border-blue-200 text-blue-700'
+                    : 'border-green-200 text-green-700'
                 }`}>
                   {video.is_own_channel ? '自社チャンネル' : '外部チャンネル'}
                 </span>
                 {/* 注目バッジ */}
                 {video.featured && (
-                  <span className="inline-flex items-center px-2 py-1 rounded text-xs font-semibold bg-yellow-100 text-yellow-800">
+                  <span className="bg-white text-xs px-3 py-1 border border-yellow-200 text-yellow-700 font-medium">
                     ⭐ 注目
                   </span>
                 )}
@@ -269,12 +269,12 @@ export default async function YouTubeVideoDetailPage({
                         unoptimized
                       />
                       {relatedVideo.is_own_channel && (
-                        <div className="absolute top-2 right-2 bg-blue-600 text-white text-xs px-3 py-1 font-medium">
+                        <div className="absolute top-2 right-2 bg-white border border-blue-200 text-blue-700 text-xs px-3 py-1 font-medium">
                           自社チャンネル
                         </div>
                       )}
                       {relatedVideo.featured && (
-                        <div className={`absolute ${relatedVideo.is_own_channel ? 'top-10' : 'top-2'} right-2 bg-yellow-500 text-white text-xs px-3 py-1 font-medium`}>
+                        <div className={`absolute ${relatedVideo.is_own_channel ? 'top-10' : 'top-2'} right-2 bg-white border border-yellow-200 text-yellow-700 text-xs px-3 py-1 font-medium`}>
                           注目
                         </div>
                       )}

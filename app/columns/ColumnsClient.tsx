@@ -3,7 +3,7 @@
 import { useState, useMemo, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Calendar, FolderOpen } from 'lucide-react'
+import { FolderOpen } from 'lucide-react'
 import { Column } from '@/app/types'
 
 const categories = [
@@ -156,12 +156,9 @@ export default function ColumnsClient({ columns }: ColumnsClientProps) {
                   
                   {/* 日付とカテゴリバッジ */}
                   <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1 text-xs text-gray-500">
-                    <Calendar className="w-3 h-3" />
-                    <span>
+                    <span className="text-xs text-gray-500">
                       {new Date(column.created_at).toLocaleDateString('ja-JP')}
                     </span>
-                    </div>
                     {column.category && (
                       <span className={`${categoryColors[column.category] || 'border-gray-200 text-gray-700'} bg-white text-xs px-3 py-1 border font-medium`}>
                         {categoryLabels[column.category] || column.category}

@@ -1,10 +1,19 @@
-// プロジェクトカテゴリの色定義
+// プロジェクトカテゴリの色定義（背景色付き - 関連プロジェクト用）
 export const CATEGORY_COLORS = {
   'homepage': 'bg-purple-100 text-purple-700',
   'landing-page': 'bg-pink-100 text-pink-700',
   'web-app': 'bg-blue-100 text-blue-700',
   'mobile-app': 'bg-green-100 text-green-700',
   'video': 'bg-orange-100 text-orange-700'
+} as const;
+
+// プロジェクトカテゴリのボーダー色定義（白背景 + ボーダー - 一覧・詳細ページ用）
+export const CATEGORY_BORDER_COLORS = {
+  'homepage': 'border-purple-200 text-purple-700',
+  'landing-page': 'border-pink-200 text-pink-700',
+  'web-app': 'border-blue-200 text-blue-700',
+  'mobile-app': 'border-green-200 text-green-700',
+  'video': 'border-orange-200 text-orange-700'
 } as const;
 
 // プロジェクトカテゴリのラベル

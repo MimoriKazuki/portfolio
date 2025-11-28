@@ -199,15 +199,34 @@ export default async function ColumnDetailPage({ params }: PageProps) {
             {column.title}
           </h1>
 
-          <div className="flex items-center gap-2 text-sm text-gray-500">
-            <Calendar className="w-4 h-4" />
-            <time dateTime={column.created_at}>
-              {new Date(column.created_at).toLocaleDateString('ja-JP', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-              })}
-            </time>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 text-sm text-gray-500">
+              <Calendar className="w-4 h-4" />
+              <time dateTime={column.created_at}>
+                {new Date(column.created_at).toLocaleDateString('ja-JP', {
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric'
+                })}
+              </time>
+            </div>
+            {column.category && (
+              <span className={`bg-white text-xs px-3 py-1 border font-medium ${
+                {
+                  'ai-tools': 'border-emerald-200 text-emerald-700',
+                  'industry': 'border-blue-200 text-blue-700',
+                  'topics-news': 'border-purple-200 text-purple-700'
+                }[column.category] || 'border-gray-200 text-gray-700'
+              }`}>
+                {
+                  {
+                    'ai-tools': '生成AIツール',
+                    'industry': '業界別',
+                    'topics-news': 'トピック・ニュース'
+                  }[column.category] || column.category
+                }
+              </span>
+            )}
           </div>
         </header>
 
