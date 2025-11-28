@@ -2,6 +2,7 @@ import { createClient } from '@/app/lib/supabase/server'
 import { Document } from '@/app/types'
 import Image from 'next/image'
 import Link from 'next/link'
+import { Download } from 'lucide-react'
 import MainLayout from '@/app/components/MainLayout'
 import PageHeader from '@/app/components/ui/PageHeader'
 
@@ -62,7 +63,8 @@ export default async function DocumentsPage() {
                     </p>
                   </div>
 
-                  <div className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-blue-600 text-white group-hover:bg-blue-700 transition-colors duration-200 w-full">
+                  <div className="inline-flex items-center justify-center gap-2 px-8 py-3 bg-white text-blue-600 border border-blue-600 group-hover:bg-blue-50 transition-colors duration-200 w-full">
+                    <Download className="w-5 h-5" />
                     資料をダウンロード
                   </div>
                 </div>
