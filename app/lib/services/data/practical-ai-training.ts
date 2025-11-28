@@ -65,7 +65,7 @@ export const PRACTICAL_AI_TRAINING_DATA: ServiceData = {
     audiences: [
       {
         image: "https://images.unsplash.com/photo-1556761175-b413da4baf72?w=300&h=300&fit=crop&crop=center",
-        text: "{顧客対応・販促活動}をAIで効率化したい{営業・マーケティング}の方"
+        text: "{顧客対応・販促}をAIで効率化したい{営業・マーケティング}の方"
       },
       {
         image: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=300&h=300&fit=crop&crop=center",

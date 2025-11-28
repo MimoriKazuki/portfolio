@@ -64,7 +64,7 @@ export const AI_VIDEO_TRAINING_DATA: ServiceData = {
     audiences: [
       {
         image: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=300&h=300&fit=crop&crop=center",
-        text: "{プロモーション動画}を効率的に制作したい{マーケティング・広報}の方"
+        text: "{PR動画}を効率的に制作したい{マーケティング・広報}の方"
       },
       {
         image: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=300&h=300&fit=crop&crop=center",
@@ -76,7 +76,7 @@ export const AI_VIDEO_TRAINING_DATA: ServiceData = {
       },
       {
         image: "https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=300&h=300&fit=crop&crop=center",
-        text: "AI技術で{クリエイティブワーク}の可能性を拡張したい{デザイナー}の方"
+        text: "{クリエイティブ}の可能性を拡張したい{デザイナー}の方"
       }
     ]
   },

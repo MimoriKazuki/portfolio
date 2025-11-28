@@ -65,7 +65,7 @@ export const AI_CODING_TRAINING_DATA: ServiceData = {
     audiences: [
       {
         image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=300&h=300&fit=crop&crop=center",
-        text: "{Web・モバイル開発}の効率を上げたい{フロントエンドエンジニア}の方"
+        text: "{Web・モバイル開発}の効率化を図りたい{フロントエンジニア}の方"
       },
       {
         image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=300&h=300&fit=crop&crop=center",
@@ -77,7 +77,7 @@ export const AI_CODING_TRAINING_DATA: ServiceData = {
       },
       {
         image: "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=300&h=300&fit=crop&crop=center",
-        text: "AI支援で{コーディングスキル}を短期間で習得したい{新人エンジニア}の方"
+        text: "{コーディングスキル}を短期間で習得したい{新人エンジニア}の方"
       }
     ]
   },
