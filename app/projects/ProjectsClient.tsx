@@ -63,7 +63,7 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
           transition: 'opacity 0.6s ease-out, transform 0.6s ease-out',
         }}
       >
-        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 tracking-tight">WORKS</h1>
+        <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 tracking-tight">PORTFOLIO</h1>
         <p className="text-lg text-gray-500">AI制作物</p>
       </div>
       

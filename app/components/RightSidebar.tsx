@@ -6,7 +6,6 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { createClient } from '@/app/lib/supabase/client'
 import { Document } from '@/app/types'
-import { FileText } from 'lucide-react'
 
 // サービス定義（固定）
 const corporateService = {
@@ -14,7 +13,7 @@ const corporateService = {
   title: "生成AI総合研修",
   description: "生成AIの基礎から実践まで、企業の現場で即戦力として活躍できる人材を育成する包括的な研修プログラムです。",
   href: "/services/comprehensive-ai-training",
-  image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=300&fit=crop&crop=center",
+  image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400&h=300&fit=crop&crop=center",
   label: "企業向け"
 }
 
@@ -59,7 +58,7 @@ const RightSidebar = () => {
           href={corporateService.href}
           className="block group"
         >
-          <div className="border-2 border-transparent hover:border-gray-200 rounded p-3 transition-colors duration-300">
+          <article className="border-2 border-transparent hover:border-gray-200 rounded p-3 transition-colors duration-300">
             <div className="relative aspect-video mb-3 overflow-hidden rounded">
               <Image
                 src={corporateService.image}
@@ -68,19 +67,16 @@ const RightSidebar = () => {
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 260px"
                 className="object-cover"
               />
-              <div className="absolute top-2 right-2 bg-white border border-blue-200 text-blue-700 px-3 py-1 text-xs font-medium">
-                {corporateService.label}
-              </div>
             </div>
             <div>
-              <h4 className="text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2 mb-1">
+              <span className="text-xs text-blue-600 font-medium mb-1 block">
+                企業向けプログラム
+              </span>
+              <h4 className="text-sm font-medium text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2">
                 {corporateService.title}
               </h4>
-              <p className="text-xs text-gray-600 line-clamp-2">
-                {corporateService.description}
-              </p>
             </div>
-          </div>
+          </article>
         </Link>
 
         {/* 個人向けサービス */}
@@ -88,7 +84,7 @@ const RightSidebar = () => {
           href={individualService.href}
           className="block group"
         >
-          <div className="border-2 border-transparent hover:border-gray-200 rounded p-3 transition-colors duration-300">
+          <article className="border-2 border-transparent hover:border-gray-200 rounded p-3 transition-colors duration-300">
             <div className="relative aspect-video mb-3 overflow-hidden rounded">
               <Image
                 src={individualService.image}
@@ -97,19 +93,16 @@ const RightSidebar = () => {
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 260px"
                 className="object-cover"
               />
-              <div className="absolute top-2 right-2 bg-white border border-green-200 text-green-700 px-3 py-1 text-xs font-medium">
-                {individualService.label}
-              </div>
             </div>
             <div>
-              <h4 className="text-sm font-semibold text-gray-900 group-hover:text-green-600 transition-colors line-clamp-2 mb-1">
+              <span className="text-xs text-green-600 font-medium mb-1 block">
+                個人向けプログラム
+              </span>
+              <h4 className="text-sm font-medium text-gray-900 group-hover:text-green-600 transition-colors line-clamp-2">
                 {individualService.title}
               </h4>
-              <p className="text-xs text-gray-600 line-clamp-2">
-                {individualService.description}
-              </p>
             </div>
-          </div>
+          </article>
         </Link>
 
         {/* 資料 - 1つ表示 */}
@@ -132,12 +125,9 @@ const RightSidebar = () => {
                 </div>
               )}
               <div>
-                <div className="flex items-center gap-1 mb-1">
-                  <FileText className="w-3 h-3 text-orange-600" />
-                  <span className="text-xs text-orange-600 font-medium">
-                    資料ダウンロード
-                  </span>
-                </div>
+                <span className="text-xs text-orange-600 font-medium mb-1 block">
+                  資料ダウンロード
+                </span>
                 <h4 className="text-sm font-medium text-gray-900 group-hover:text-orange-600 transition-colors line-clamp-2">
                   {document.title}
                 </h4>

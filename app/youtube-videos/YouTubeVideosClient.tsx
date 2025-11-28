@@ -27,7 +27,7 @@ export default function YouTubeVideosClient({ videos }: YouTubeVideosClientProps
         }}
       >
         <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 tracking-tight">YOUTUBE</h1>
-        <p className="text-lg text-gray-500">動画</p>
+        <p className="text-lg text-gray-500">配信動画</p>
       </div>
 
       {/* カードコンテナ */}
