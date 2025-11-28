@@ -187,6 +187,9 @@ interface ServiceTrainingLPProps {
 
   // Theme: blue for enterprise, green for individual
   theme?: 'blue' | 'green'
+
+  // Service slug for contact form pre-selection
+  serviceSlug?: string
 }
 
 export default function ServiceTrainingLP({
@@ -209,8 +212,16 @@ export default function ServiceTrainingLP({
   finalCTA,
   latestColumns = [],
   featuredProjects = [],
-  theme = 'blue'
+  theme = 'blue',
+  serviceSlug
 }: ServiceTrainingLPProps) {
+  // Helper function to add service query param to contact links
+  const getInquiryHref = (href: string) => {
+    if (serviceSlug && href === '/contact') {
+      return `/contact?service=${serviceSlug}`
+    }
+    return href
+  }
   const [openFaqs, setOpenFaqs] = useState<Set<number>>(new Set())
   const [heroLoaded, setHeroLoaded] = useState(false)
 
@@ -406,7 +417,7 @@ export default function ServiceTrainingLP({
                 </p>
               )}
               <Link
-                href={heroCTA.inquiryHref}
+                href={getInquiryHref(heroCTA.inquiryHref)}
                 className={`mt-8 px-8 py-3 ${colors.primary} text-white font-medium ${colors.primaryHover} transition-colors duration-200 inline-flex items-center gap-2`}
                 style={{
                   opacity: heroLoaded ? 1 : 0,
@@ -629,7 +640,7 @@ export default function ServiceTrainingLP({
                       資料をダウンロード
                     </Link>
                     <Link
-                      href={midCTA.inquiryHref}
+                      href={getInquiryHref(midCTA.inquiryHref)}
                       className={`px-10 py-4 ${colors.primary} text-white font-medium ${colors.primaryHover} transition-colors duration-200 flex items-center gap-2`}
                     >
                       <MessageCircle className="w-5 h-5" />
@@ -778,7 +789,7 @@ export default function ServiceTrainingLP({
                 資料をダウンロード
               </Link>
               <Link
-                href={additionalCTA.inquiryHref}
+                href={getInquiryHref(additionalCTA.inquiryHref)}
                 className={`px-10 py-4 ${colors.primary} text-white font-medium ${colors.primaryHover} transition-colors duration-200 flex items-center gap-2`}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
@@ -916,7 +927,7 @@ export default function ServiceTrainingLP({
                   資料をダウンロード
                 </Link>
                 <Link
-                  href={finalCTA.inquiryHref}
+                  href={getInquiryHref(finalCTA.inquiryHref)}
                   className={`px-10 py-4 ${colors.primary} text-white font-medium ${colors.primaryHover} transition-colors duration-200 flex items-center gap-2`}
                 >
                   <MessageCircle className="w-5 h-5" />

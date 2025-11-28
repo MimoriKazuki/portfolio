@@ -13,10 +13,11 @@ export default async function AICodingTrainingPage() {
   
   return (
     <MainLayout hideRightSidebar={true} hideContactButton={true}>
-      <ServiceTrainingLP 
+      <ServiceTrainingLP
         {...AI_CODING_TRAINING_DATA}
         latestColumns={columns}
         featuredProjects={featuredProjects}
+        serviceSlug="ai-coding-training"
       />
     </MainLayout>
   )

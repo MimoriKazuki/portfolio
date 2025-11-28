@@ -13,10 +13,11 @@ export default async function AIVideoTrainingPage() {
   
   return (
     <MainLayout hideRightSidebar={true} hideContactButton={true}>
-      <ServiceTrainingLP 
+      <ServiceTrainingLP
         {...AI_VIDEO_TRAINING_DATA}
         latestColumns={columns}
         featuredProjects={featuredProjects}
+        serviceSlug="ai-video-training"
       />
     </MainLayout>
   )

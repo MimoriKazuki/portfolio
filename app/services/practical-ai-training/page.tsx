@@ -13,10 +13,11 @@ export default async function PracticalAITrainingPage() {
   
   return (
     <MainLayout hideRightSidebar={true} hideContactButton={true}>
-      <ServiceTrainingLP 
+      <ServiceTrainingLP
         {...PRACTICAL_AI_TRAINING_DATA}
         latestColumns={columns}
         featuredProjects={featuredProjects}
+        serviceSlug="practical-ai-training"
       />
     </MainLayout>
   )

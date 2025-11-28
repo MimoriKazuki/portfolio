@@ -18,6 +18,7 @@ export default async function AITalentDevelopmentPage() {
         latestColumns={columns}
         featuredProjects={featuredProjects}
         theme="green"
+        serviceSlug="ai-talent-development"
       />
     </MainLayout>
   )

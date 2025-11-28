@@ -1,17 +1,15 @@
 'use client'
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, Suspense } from 'react'
 import Link from 'next/link'
 import MainLayout from '@/app/components/MainLayout'
 import { trackContactFormSubmit } from '@/app/components/GoogleAnalyticsEvent'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 
-export default function ContactPage() {
+function ContactForm() {
   const [isVisible, setIsVisible] = useState(false)
+  const searchParams = useSearchParams()
 
-  useEffect(() => {
-    setIsVisible(true)
-  }, [])
   const router = useRouter()
   const [formData, setFormData] = useState({
     name: '',
@@ -21,6 +19,22 @@ export default function ContactPage() {
     inquiry_type: 'service' as 'service' | 'partnership' | 'recruit' | 'other',
     service_type: '' as string
   })
+
+  // URLパラメータからサービスタイプを取得して事前選択
+  useEffect(() => {
+    const serviceParam = searchParams.get('service')
+    if (serviceParam) {
+      setFormData(prev => ({
+        ...prev,
+        inquiry_type: 'service',
+        service_type: serviceParam
+      }))
+    }
+  }, [searchParams])
+
+  useEffect(() => {
+    setIsVisible(true)
+  }, [])
 
   // 研修サービスの選択肢
   const serviceOptions = [
@@ -284,5 +298,13 @@ export default function ContactPage() {
         </div>
       </div>
     </MainLayout>
+  )
+}
+
+export default function ContactPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen" />}>
+      <ContactForm />
+    </Suspense>
   )
 }

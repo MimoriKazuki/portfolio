@@ -13,10 +13,11 @@ export default async function ComprehensiveAITrainingPage() {
   
   return (
     <MainLayout hideRightSidebar={true} hideContactButton={true}>
-      <ServiceTrainingLP 
+      <ServiceTrainingLP
         {...COMPREHENSIVE_AI_TRAINING_DATA}
         latestColumns={columns}
         featuredProjects={featuredProjects}
+        serviceSlug="comprehensive-ai-training"
       />
     </MainLayout>
   )
