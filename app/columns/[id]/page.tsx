@@ -270,38 +270,38 @@ export default async function ColumnDetailPage({ params }: PageProps) {
         {relatedColumns && relatedColumns.length > 0 && (
           <section className="mt-16">
             <h2 className="text-2xl font-bold text-gray-900 mb-8">関連記事</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               {relatedColumns.map((relatedColumn) => (
-                <Link 
-                  key={relatedColumn.id} 
+                <Link
+                  key={relatedColumn.id}
                   href={`/columns/${relatedColumn.id}`}
                   className="group"
                 >
-                  <article className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 h-full flex flex-col">
+                  <article className="border-2 border-transparent hover:border-gray-200 rounded p-4 transition-colors duration-300 h-full flex flex-col">
                     {relatedColumn.thumbnail && (
-                      <div className="relative aspect-video">
+                      <div className="relative aspect-video overflow-hidden rounded">
                         <Image
                           src={relatedColumn.thumbnail}
                           alt={relatedColumn.title}
                           fill
-                          className="object-cover group-hover:scale-105 transition-transform duration-300"
+                          className="object-cover"
                           sizes="(max-width: 768px) 100vw, 33vw"
                           loading="lazy"
                         />
                       </div>
                     )}
-                    
-                    <div className="p-5 flex-1 flex flex-col">
-                      <h3 className="font-semibold text-gray-900 mb-2 line-clamp-1 group-hover:text-portfolio-blue transition-colors">
+
+                    <div className="pt-4 flex-1 flex flex-col">
+                      <h3 className="font-semibold text-gray-900 mb-2 line-clamp-1 group-hover:text-blue-600 transition-colors">
                         {relatedColumn.title}
                       </h3>
-                      
+
                       <div className="flex-1">
-                        <p className="text-gray-600 text-sm line-clamp-2 mb-4">
+                        <p className="text-gray-600 text-sm line-clamp-2 mb-3">
                           {relatedColumn.excerpt || ''}
                         </p>
                       </div>
-                      
+
                       <div className="flex items-center gap-1 text-xs text-gray-500">
                         <Calendar className="w-3 h-3" />
                         <span>

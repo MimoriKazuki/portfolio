@@ -284,38 +284,38 @@ export default async function ProjectDetailPage({
         {relatedProjects.length > 0 && (
           <section className="mt-16">
             <h2 className="text-2xl font-bold text-gray-900 mb-8">関連実績</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
               {relatedProjects.map((relatedProject) => (
-                <Link 
-                  key={relatedProject.id} 
+                <Link
+                  key={relatedProject.id}
                   href={`/projects/${relatedProject.id}`}
                   className="group"
                 >
-                  <article className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-all duration-300 h-full flex flex-col">
-                    <div className="relative aspect-video">
+                  <article className="border-2 border-transparent hover:border-gray-200 rounded p-4 transition-colors duration-300 h-full flex flex-col">
+                    <div className="relative aspect-video overflow-hidden rounded">
                       <Image
                         src={relatedProject.thumbnail}
                         alt={relatedProject.title}
                         fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                        className="object-cover"
                         sizes="(max-width: 768px) 100vw, 33vw"
                       />
-                      <div className={`absolute top-4 right-4 ${CATEGORY_COLORS[relatedProject.category]} text-xs px-3 py-1 rounded`}>
+                      <div className={`absolute top-2 right-2 ${CATEGORY_COLORS[relatedProject.category]} text-xs px-3 py-1`}>
                         {CATEGORY_LABELS[relatedProject.category]}
                       </div>
                     </div>
-                    
-                    <div className="p-5 flex-1 flex flex-col">
-                      <h3 className="font-semibold text-gray-900 mb-2 line-clamp-1 group-hover:text-portfolio-blue transition-colors">
+
+                    <div className="pt-4 flex-1 flex flex-col">
+                      <h3 className="font-semibold text-gray-900 mb-2 line-clamp-1 group-hover:text-blue-600 transition-colors">
                         {relatedProject.title}
                       </h3>
-                      
+
                       <div className="flex-1">
-                        <p className="text-gray-600 text-sm line-clamp-2 mb-4">
+                        <p className="text-gray-600 text-sm line-clamp-2 mb-3">
                           {relatedProject.description || ''}
                         </p>
                       </div>
-                      
+
                       {relatedProject.duration && (
                         <div className="flex items-center gap-1 text-xs text-gray-500">
                           <Clock className="w-3 h-3" />
