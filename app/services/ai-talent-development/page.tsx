@@ -12,7 +12,7 @@ export default async function AITalentDevelopmentPage() {
   const featuredProjects = projects.filter(p => p.featured).slice(0, 3)
   
   return (
-    <MainLayout hideRightSidebar={true}>
+    <MainLayout hideRightSidebar={true} hideContactButton={true}>
       <ServiceTrainingLP
         {...AI_TALENT_DEVELOPMENT_DATA}
         latestColumns={columns}

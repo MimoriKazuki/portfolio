@@ -12,7 +12,7 @@ export default async function PracticalAITrainingPage() {
   const featuredProjects = projects.filter(p => p.featured).slice(0, 3)
   
   return (
-    <MainLayout hideRightSidebar={true}>
+    <MainLayout hideRightSidebar={true} hideContactButton={true}>
       <ServiceTrainingLP 
         {...PRACTICAL_AI_TRAINING_DATA}
         latestColumns={columns}

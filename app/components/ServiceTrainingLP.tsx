@@ -819,7 +819,7 @@ export default function ServiceTrainingLP({
             <table className="w-full">
               <tbody>
                 {overviewTable.rows.map(([label, value], index) => (
-                  <tr key={index} className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"} ${colors.bgLightHover} transition-colors duration-200`}>
+                  <tr key={index} className={index % 2 === 0 ? "bg-gray-50" : "bg-white"}>
                     <td className="px-4 sm:px-6 py-4 font-semibold text-gray-900 border-r border-gray-200 w-1/3 text-sm">
                       {label}
                     </td>
@@ -890,39 +890,37 @@ export default function ServiceTrainingLP({
         {/* Final CTA Section */}
         <section
           ref={finalCtaSection.ref as React.RefObject<HTMLElement>}
-          className="mb-16"
+          className="-mx-4 sm:-mx-6 lg:-mx-8 mb-16"
           style={{
             opacity: finalCtaSection.isVisible ? 1 : 0,
             transform: finalCtaSection.isVisible ? 'translateY(0)' : 'translateY(40px)',
             transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
           }}
         >
-          <div className="pt-16 relative">
-            <span className="absolute bottom-0 left-0 text-7xl md:text-8xl font-bold text-gray-100 select-none pointer-events-none tracking-tight leading-none">Contact</span>
-            <div className="relative z-10">
-              <div className="bg-white shadow-sm border border-gray-100 p-8 lg:p-12">
-                <div className="max-w-2xl mx-auto text-center">
-                  <h2 className="text-2xl md:text-3xl font-bold mb-4 text-gray-900">{finalCTA.title}</h2>
-                  <p className="text-gray-600 mb-8 leading-relaxed">
-                    {finalCTA.description}
-                  </p>
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-                    <Link
-                      href={finalCTA.documentHref}
-                      className={`px-10 py-4 bg-white font-medium border ${colors.border} ${colors.text} hover:bg-gray-50 transition-colors duration-200 flex items-center gap-2`}
-                    >
-                      <Download className="w-5 h-5" />
-                      資料をダウンロード
-                    </Link>
-                    <Link
-                      href={finalCTA.inquiryHref}
-                      className={`px-10 py-4 ${colors.primary} text-white font-medium ${colors.primaryHover} transition-colors duration-200 flex items-center gap-2`}
-                    >
-                      <MessageCircle className="w-5 h-5" />
-                      無料相談を予約する
-                    </Link>
-                  </div>
-                </div>
+          <div className="bg-gray-50 py-16 lg:py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+            {/* 背景の大きなテキスト */}
+            <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[120px] md:text-[180px] font-bold text-gray-100 select-none pointer-events-none tracking-tight whitespace-nowrap">Contact</span>
+
+            <div className="max-w-2xl mx-auto text-center relative z-10">
+              <h2 className="text-2xl md:text-3xl font-bold mb-4 text-gray-900">{finalCTA.title}</h2>
+              <p className="text-gray-600 mb-10 leading-relaxed">
+                {finalCTA.description}
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <Link
+                  href={finalCTA.documentHref}
+                  className={`px-10 py-4 bg-white font-medium border ${colors.border} ${colors.text} hover:bg-gray-50 transition-colors duration-200 flex items-center gap-2`}
+                >
+                  <Download className="w-5 h-5" />
+                  資料をダウンロード
+                </Link>
+                <Link
+                  href={finalCTA.inquiryHref}
+                  className={`px-10 py-4 ${colors.primary} text-white font-medium ${colors.primaryHover} transition-colors duration-200 flex items-center gap-2`}
+                >
+                  <MessageCircle className="w-5 h-5" />
+                  無料相談を予約する
+                </Link>
               </div>
             </div>
           </div>
