@@ -357,12 +357,12 @@ export default function ServicesContent() {
               {/* Right Column - Description (6/10) */}
               <div>
                 {/* Subtitle */}
-                <p className="text-gray-900 font-medium mb-6 leading-loose">
+                <p className="text-gray-600 font-medium mb-6 leading-loose">
                   {service.subtitle}
                 </p>
 
                 {/* Description */}
-                <div className="space-y-5 text-gray-600 text-base leading-loose">
+                <div className="space-y-5 text-gray-600 text-base leading-loose font-medium">
                   {service.description.map((paragraph, i) => (
                     <p key={i}>{paragraph}</p>
                   ))}

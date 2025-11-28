@@ -1024,7 +1024,7 @@ export default function ServiceTrainingLP({
 
                   {/* Right Column - Description */}
                   <div>
-                    <p className="text-gray-600 text-base leading-loose">
+                    <p className="text-gray-600 text-base leading-loose font-medium">
                       {selectedProgram.description}
                     </p>
                   </div>
@@ -1033,9 +1033,6 @@ export default function ServiceTrainingLP({
             )}
           </div>
         </section>
-
-        {/* スペース */}
-        <div className="h-16 lg:h-24" />
       </div>
     </>
   )
