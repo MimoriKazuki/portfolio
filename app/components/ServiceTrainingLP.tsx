@@ -739,19 +739,17 @@ export default function ServiceTrainingLP({
           </div>
 
           <div
-            className="bg-gray-50 p-8 lg:p-12 border border-gray-200"
+            className="bg-white shadow-sm border border-gray-100 p-8 lg:p-10"
             style={{
               opacity: flowSection.isVisible ? 1 : 0,
               transform: flowSection.isVisible ? 'translateY(0)' : 'translateY(30px)',
               transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.5s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.5s',
             }}
           >
-            <h3 className="text-xl font-bold text-gray-900 mb-4 text-center">{flow.conclusionTitle}</h3>
-            <div className="max-w-2xl mx-auto text-center">
-              <p className="text-gray-600 leading-relaxed">
-                {flow.conclusionText}
-              </p>
-            </div>
+            <h3 className={`text-xl font-bold ${colors.text} mb-4`}>{flow.conclusionTitle}</h3>
+            <p className="text-gray-600 leading-relaxed">
+              {flow.conclusionText}
+            </p>
           </div>
         </section>
 
@@ -761,7 +759,7 @@ export default function ServiceTrainingLP({
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link
                 href={additionalCTA.documentHref}
-                className="px-10 py-4 bg-white text-gray-900 font-medium border border-gray-300 hover:bg-gray-50 transition-colors duration-200 flex items-center gap-2"
+                className={`px-10 py-4 bg-white ${colors.text} font-medium border ${colors.border} hover:bg-gray-50 transition-colors duration-200 flex items-center gap-2`}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
