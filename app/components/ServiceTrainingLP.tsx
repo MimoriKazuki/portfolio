@@ -652,55 +652,38 @@ export default function ServiceTrainingLP({
               <h2 className="text-2xl md:text-3xl font-bold text-gray-900">{curriculum.title}</h2>
             </div>
           </div>
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {curriculum.modules.map((module, index) => (
               <div
                 key={index}
-                className="group relative bg-white border border-gray-200 overflow-hidden transition-all duration-500 hover:shadow-xl hover:border-transparent"
+                className="relative overflow-hidden"
                 style={{
                   opacity: curriculumSection.isVisible ? 1 : 0,
                   transform: curriculumSection.isVisible ? 'translateY(0)' : 'translateY(40px)',
-                  transition: `opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${0.1 + index * 0.1}s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${0.1 + index * 0.1}s, box-shadow 0.5s ease, border-color 0.5s ease`,
+                  transition: `opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${0.1 + index * 0.1}s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${0.1 + index * 0.1}s`,
                 }}
               >
-                {/* 背景画像（ホバー時に表示） */}
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                {/* 背景画像 */}
+                <div className="absolute inset-0">
                   <Image
                     src={module.image}
                     alt=""
                     fill
                     className="object-cover"
-                    sizes="100vw"
+                    sizes="(max-width: 768px) 100vw, 50vw"
                   />
-                  <div className="absolute inset-0 bg-slate-700/80" />
+                  {/* グラデーションマスク: 左40%は暗く、右に向かって薄く（80%不透明度まで） */}
                   <div
                     className="absolute inset-0"
                     style={{
-                      background: 'linear-gradient(to right, rgb(51 65 85) 0%, rgb(51 65 85) 50%, transparent 100%)'
+                      background: 'linear-gradient(to right, rgb(30 41 59) 0%, rgb(30 41 59) 40%, rgb(30 41 59 / 0.8) 100%)'
                     }}
                   />
                 </div>
-                <div className="flex flex-col md:flex-row relative z-10">
-                  <div className="relative w-full md:w-48 md:flex-shrink-0 overflow-hidden group-hover:opacity-0 transition-opacity duration-500">
-                    <Image
-                      src={module.image}
-                      alt={module.title}
-                      fill
-                      sizes="(max-width: 768px) 100vw, 192px"
-                      className="object-cover w-full h-48 md:h-40"
-                    />
-                  </div>
-                  <div className="flex-1 p-6 flex flex-col justify-center">
-                    <p className={`text-xs font-medium text-gray-400 ${colors.hoverText} transition-colors duration-500 mb-2`}>Module {String(index + 1).padStart(2, '0')}</p>
-                    <h3 className="text-lg font-semibold text-gray-900 group-hover:text-white transition-colors duration-500 mb-2">{module.title}</h3>
-                    <p className="text-gray-600 group-hover:text-gray-300 text-sm leading-relaxed transition-colors duration-500">{module.description}</p>
-                  </div>
-                </div>
-                {/* 矢印ボタン */}
-                <div className="absolute bottom-4 right-4 z-10">
-                  <div className={`w-8 h-8 group-hover:w-10 group-hover:h-10 bg-gray-100 ${colors.hoverBg} flex items-center justify-center transition-all duration-500`}>
-                    <ArrowRight className="w-4 h-4 text-gray-400 group-hover:text-white transition-all duration-500" />
-                  </div>
+                <div className="relative z-10 p-6 md:p-8 min-h-[180px] flex flex-col justify-center">
+                  <p className={`text-xs font-medium ${colors.textLight} mb-2`}>Module {String(index + 1).padStart(2, '0')}</p>
+                  <h3 className="text-lg font-semibold text-white mb-2">{module.title}</h3>
+                  <p className="text-gray-300 text-sm leading-relaxed">{module.description}</p>
                 </div>
               </div>
             ))}
