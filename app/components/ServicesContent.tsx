@@ -145,21 +145,6 @@ export default function ServicesContent() {
       image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=600&fit=crop&crop=center',
       logoText: 'AIコーディング',
       logoSubtext: '開発効率化プログラム'
-    },
-    {
-      id: 'practical-ai-training',
-      number: '05',
-      label: '生成AI実務活用研修',
-      title: '業務プロセスを、AI で最適化。',
-      subtitle: '日常業務における生成AIの具体的な活用シーンを学ぶ研修です。業務フロー分析からAI導入計画の策定まで、組織に合わせた実践的なプログラムを提供します。',
-      description: [
-        '営業、マーケティング、人事、経理など、各部門の業務に特化したAI活用事例を豊富に紹介。自社の業務にすぐに適用できる具体的なノウハウが身につきます。',
-        'ROI測定手法やチーム連携の強化方法も学び、AI活用の効果を可視化しながら継続的な改善を推進。組織全体のDX推進を加速させます。'
-      ],
-      href: '/services/practical-ai-training',
-      image: 'https://images.unsplash.com/photo-1556761175-b413da4baf72?w=800&h=600&fit=crop&crop=center',
-      logoText: '実務活用研修',
-      logoSubtext: '業務効率化プログラム'
     }
   ]
 

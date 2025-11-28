@@ -41,15 +41,6 @@ export const ALL_TRAINING_PROGRAMS: OtherTrainingProgram[] = [
     category: "enterprise"
   },
   {
-    id: "practical-ai",
-    title: "生成AI実務活用研修",
-    description: "日常業務における生成AIの具体的な活用シーンを学び、業務プロセス全体の効率化と品質向上を実現します。",
-    href: "/services/practical-ai-training",
-    image: "https://images.unsplash.com/photo-1556761175-b413da4baf72?w=800&h=600&fit=crop&crop=center",
-    available: true,
-    category: "enterprise"
-  },
-  {
     id: "individual-coaching",
     title: "AI駆動開発育成所",
     description: "完全審査制の個人向けバイブコーディング特化コーチング。Claude CodeやCursorを活用したAI駆動開発スキルを習得できます。",

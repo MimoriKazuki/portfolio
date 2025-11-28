@@ -22,7 +22,6 @@ const serviceTypeLabels: Record<string, string> = {
   'ai-writing-training': 'AIライティング研修',
   'ai-video-training': 'AI動画生成研修',
   'ai-coding-training': 'AIコーディング研修',
-  'practical-ai-training': '生成AI実務活用研修',
   'ai-talent-development': 'AI駆動開発育成所（個人向け）',
   'other-service': 'その他・未定',
 }

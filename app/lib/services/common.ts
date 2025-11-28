@@ -50,7 +50,6 @@ export function generateServiceMetadata(meta: ServicePageMetadata): Metadata {
     'ai-writing-training': 'https://images.unsplash.com/photo-1455390582262-044cdead277a?w=1200&h=630&fit=crop&crop=center',
     'ai-video-training': 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=1200&h=630&fit=crop&crop=center',
     'ai-coding-training': 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1200&h=630&fit=crop&crop=center',
-    'practical-ai-training': 'https://images.unsplash.com/photo-1556761175-b413da4baf72?w=1200&h=630&fit=crop&crop=center',
     'ai-talent-development': 'https://images.unsplash.com/photo-1500989145603-8e7ef71d639e?w=1200&h=630&fit=crop&crop=center'
   }
   

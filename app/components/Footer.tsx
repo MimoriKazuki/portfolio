@@ -132,15 +132,6 @@ const Footer = () => {
                           AIコーディング研修
                         </Link>
                       </li>
-                      <li>
-                        <Link 
-                          href="/services" 
-                          className="hover:text-white transition-colors"
-                          title="生成AI実務活用研修"
-                        >
-                          生成AI実務活用研修
-                        </Link>
-                      </li>
                     </ul>
                   </div>
                   
