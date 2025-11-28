@@ -1,47 +1,31 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 import Sidebar from './Sidebar'
-import RightSidebarSkeleton from './skeletons/RightSidebarSkeleton'
 import FloatingButtons from './FloatingButtons'
 import Footer from './Footer'
 import MobileHeader from './MobileHeader'
 
 // RightSidebarをクライアントサイドのみでレンダリング（ハイドレーションエラー防止）
 const RightSidebar = dynamic(() => import('./RightSidebar'), {
-  ssr: false,
-  loading: () => <RightSidebarSkeleton />
+  ssr: false
 })
 
 const DynamicRightSidebar = dynamic(() => import('./DynamicRightSidebar'), {
-  ssr: false,
-  loading: () => <RightSidebarSkeleton />
+  ssr: false
 })
 
 interface MainLayoutProps {
   children: React.ReactNode
   hideRightSidebar?: boolean
   hideContactButton?: boolean
-  isLoading?: boolean // 全体のローディング状態
   dynamicSidebar?: {
     enterpriseServiceId?: string
     individualServiceId?: string
   }
 }
 
-export default function MainLayout({ children, hideRightSidebar = false, hideContactButton = false, isLoading = false, dynamicSidebar }: MainLayoutProps) {
-  const [isInitialLoading, setIsInitialLoading] = useState(true)
-
-  useEffect(() => {
-    if (!isLoading) {
-      // 外部からのローディング状態が完了したら表示
-      const timer = setTimeout(() => {
-        setIsInitialLoading(false)
-      }, 100)
-      return () => clearTimeout(timer)
-    }
-  }, [isLoading])
+export default function MainLayout({ children, hideRightSidebar = false, hideContactButton = false, dynamicSidebar }: MainLayoutProps) {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Fixed background layer to prevent overscroll color */}
@@ -72,10 +56,8 @@ export default function MainLayout({ children, hideRightSidebar = false, hideCon
               {!hideRightSidebar && (
                 <aside className="w-[260px] flex-shrink-0 hidden xl:block">
                   <div className="sticky top-8">
-                    {isInitialLoading || isLoading ? (
-                      <RightSidebarSkeleton />
-                    ) : dynamicSidebar ? (
-                      <DynamicRightSidebar 
+                    {dynamicSidebar ? (
+                      <DynamicRightSidebar
                         enterpriseServiceId={dynamicSidebar.enterpriseServiceId}
                         individualServiceId={dynamicSidebar.individualServiceId}
                       />
