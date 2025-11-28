@@ -7,7 +7,6 @@ import { createClient } from '@/app/lib/supabase/client'
 import { Document } from '@/app/types'
 import { FileText } from 'lucide-react'
 import { getSelectedServices } from '@/app/lib/services/service-selector'
-import RightSidebarSkeleton from './skeletons/RightSidebarSkeleton'
 
 interface DynamicRightSidebarProps {
   enterpriseServiceId?: string
@@ -16,7 +15,6 @@ interface DynamicRightSidebarProps {
 
 const DynamicRightSidebar = ({ enterpriseServiceId, individualServiceId }: DynamicRightSidebarProps) => {
   const [documents, setDocuments] = useState<Document[]>([])
-  const [loading, setLoading] = useState(true)
 
   // Get selected services based on props
   const { enterprise: enterpriseService, individual: individualService } = getSelectedServices(
@@ -27,7 +25,7 @@ const DynamicRightSidebar = ({ enterpriseServiceId, individualServiceId }: Dynam
   useEffect(() => {
     async function fetchData() {
       const supabase = createClient()
-      
+
       // Fetch documents - 注目優先、最新順、1つまで
       const { data: documentsData } = await supabase
         .from('documents')
@@ -38,15 +36,10 @@ const DynamicRightSidebar = ({ enterpriseServiceId, individualServiceId }: Dynam
         .limit(1)
 
       if (documentsData) setDocuments(documentsData)
-      setLoading(false)
     }
 
     fetchData()
   }, [])
-
-  if (loading) {
-    return <RightSidebarSkeleton />
-  }
 
   if (!enterpriseService || !individualService) {
     console.warn('Services not found for:', { enterpriseServiceId, individualServiceId })

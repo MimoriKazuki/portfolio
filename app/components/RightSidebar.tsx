@@ -7,7 +7,6 @@ import Image from 'next/image'
 import { createClient } from '@/app/lib/supabase/client'
 import { Document } from '@/app/types'
 import { FileText } from 'lucide-react'
-import RightSidebarSkeleton from './skeletons/RightSidebarSkeleton'
 
 // サービス定義（固定）
 const corporateService = {
@@ -31,12 +30,11 @@ const individualService = {
 const RightSidebar = () => {
   const pathname = usePathname()
   const [documents, setDocuments] = useState<Document[]>([])
-  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     async function fetchData() {
       const supabase = createClient()
-      
+
       // Fetch documents - 注目優先、最新順、1つまで
       const { data: documentsData } = await supabase
         .from('documents')
@@ -47,15 +45,10 @@ const RightSidebar = () => {
         .limit(1)
 
       if (documentsData) setDocuments(documentsData)
-      setLoading(false)
     }
 
     fetchData()
   }, [])
-
-  if (loading) {
-    return <RightSidebarSkeleton />
-  }
 
   return (
     <div className="p-4">
