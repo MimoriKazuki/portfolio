@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import Image from 'next/image'
 import Link from 'next/link'
 import { Document } from '@/app/types'
-import { Loader2 } from 'lucide-react'
+import { Loader2, ChevronLeft } from 'lucide-react'
 import MainLayout from '@/app/components/MainLayout'
 
 interface DocumentRequestClientProps {
@@ -129,19 +129,15 @@ export default function DocumentRequestClient({ documentId, initialDocument }: D
 
   return (
     <MainLayout hideRightSidebar={true} hideContactButton={true}>
-      <div className="w-full pt-8">
-        {/* Header */}
-        <div
-          className="mb-12"
-          style={{
-            opacity: isVisible ? 1 : 0,
-            transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
-            transition: 'opacity 0.6s ease-out, transform 0.6s ease-out',
-          }}
+      <div className="w-full">
+        {/* Back Button */}
+        <Link
+          href="/documents"
+          className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors"
         >
-          <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 tracking-tight">DOWNLOAD</h1>
-          <p className="text-lg text-gray-500">資料ダウンロード</p>
-        </div>
+          <ChevronLeft className="w-4 h-4" />
+          資料一覧に戻る
+        </Link>
 
         {/* Two Column Layout */}
         <div
