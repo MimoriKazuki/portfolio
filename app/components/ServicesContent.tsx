@@ -102,19 +102,19 @@ export default function ServicesContent() {
       logoSubtext: 'エンゲージメントプラットフォーム'
     },
     {
-      id: 'ai-writing-training',
+      id: 'ai-organization-os',
       number: '02',
-      label: 'AIライティング研修',
-      title: 'AIで、文章力を武器に。',
-      subtitle: 'ChatGPTやClaudeを活用した効果的な文章作成技術を習得する研修です。プロンプトエンジニアリングの基礎から応用まで、ビジネス文書に特化したノウハウを提供します。',
+      label: 'AI組織OS研修',
+      title: '組織の脳みそを、構築する。',
+      subtitle: 'CursorとGitHubを活用した社内ナレッジ管理で「組織の脳みそ」を構築。情報共有・引き継ぎ業務を革新し、組織全体の生産性を向上させる研修です。',
       description: [
-        'メール、報告書、企画書、プレゼン資料など、日常業務で必要なあらゆる文書を効率的に作成する技術を学びます。文章の構成から表現の磨き方まで、実践的なスキルが身につきます。',
-        '校正・編集の自動化手法も習得し、文章品質の向上と作業時間の短縮を両立。チーム全体のライティング力を底上げし、コミュニケーションの質を高めます。'
+        'シリコンバレーで注目の「組織OS」概念を日本企業に導入。社員の役割・タスク・進捗をGitHubで管理し、CursorのAIに質問することで組織全体の状況を誰でも把握できる環境を構築します。',
+        '管理者は社員への確認なしにAIへの質問で現状を把握でき、異動・退職時の引き継ぎもAIが対応。情報の属人化から解放され、組織全体の知識が継承される仕組みを実現します。'
       ],
-      href: '/services/ai-writing-training',
-      image: 'https://images.unsplash.com/photo-1455390582262-044cdead277a?w=800&h=600&fit=crop&crop=center',
-      logoText: 'AIライティング',
-      logoSubtext: 'ビジネス文書作成効率化'
+      href: '/services/ai-organization-os',
+      image: 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=600&fit=crop&crop=center',
+      logoText: 'AI組織OS',
+      logoSubtext: '組織ナレッジ管理革新'
     },
     {
       id: 'ai-video-training',

@@ -106,12 +106,12 @@ const Footer = () => {
                         </Link>
                       </li>
                       <li>
-                        <Link 
-                          href="/services" 
+                        <Link
+                          href="/services/ai-organization-os"
                           className="hover:text-white transition-colors"
-                          title="AIライティング研修"
+                          title="AI組織OS研修"
                         >
-                          AIライティング研修
+                          AI組織OS研修
                         </Link>
                       </li>
                       <li>

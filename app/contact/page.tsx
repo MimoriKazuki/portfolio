@@ -40,7 +40,7 @@ function ContactForm() {
   const serviceOptions = [
     { value: '', label: '選択してください' },
     { value: 'comprehensive-ai-training', label: '生成AI総合研修' },
-    { value: 'ai-writing-training', label: 'AIライティング研修' },
+    { value: 'ai-organization-os', label: 'AI組織OS研修' },
     { value: 'ai-video-training', label: 'AI動画生成研修' },
     { value: 'ai-coding-training', label: 'AIコーディング研修' },
     { value: 'ai-talent-development', label: 'AI駆動開発育成所（個人向け）' },

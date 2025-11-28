@@ -14,11 +14,11 @@ export const ALL_TRAINING_PROGRAMS: OtherTrainingProgram[] = [
     category: "enterprise"
   },
   {
-    id: "ai-writing",
-    title: "AIライティング研修",
-    description: "ChatGPTやClaude等を活用した効果的な文章作成技術を習得し、業務文書の品質向上と作業効率化を実現します。",
-    href: "/services/ai-writing-training",
-    image: "https://images.unsplash.com/photo-1455390582262-044cdead277a?w=800&h=600&fit=crop&crop=center",
+    id: "ai-organization-os",
+    title: "AI組織OS研修",
+    description: "CursorとGitHubで「組織の脳みそ」を構築し、情報共有・引き継ぎ業務を革新。組織全体の生産性を向上させます。",
+    href: "/services/ai-organization-os",
+    image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=800&h=600&fit=crop&crop=center",
     available: true,
     category: "enterprise"
   },

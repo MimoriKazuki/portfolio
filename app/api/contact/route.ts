@@ -16,7 +16,7 @@ interface ContactFormData {
 // 研修タイプのラベルマッピング
 const serviceTypeLabels: Record<string, string> = {
   'comprehensive-ai-training': '生成AI総合研修',
-  'ai-writing-training': 'AIライティング研修',
+  'ai-organization-os': 'AI組織OS研修',
   'ai-video-training': 'AI動画生成研修',
   'ai-coding-training': 'AIコーディング研修',
   'ai-talent-development': 'AI駆動開発育成所（個人向け）',
