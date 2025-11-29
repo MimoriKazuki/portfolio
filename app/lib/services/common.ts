@@ -48,7 +48,7 @@ export function generateServiceMetadata(meta: ServicePageMetadata): Metadata {
   const serviceImageMapping: Record<string, string> = {
     'comprehensive-ai-training': 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1200&h=630&fit=crop&crop=center',
     'ai-organization-os': 'https://images.unsplash.com/photo-1758873272888-ab12214c8abc?w=1200&h=630&fit=crop&crop=center',
-    'ai-video-training': 'https://images.unsplash.com/photo-1721087331712-e3f61df498a1?w=1200&h=630&fit=crop&crop=center',
+    'ai-video-training': 'https://images.unsplash.com/photo-1677350838456-80a71506de8d?w=1200&h=630&fit=crop&crop=center',
     'ai-coding-training': 'https://images.unsplash.com/photo-1509966756634-9c23dd6e6815?w=1200&h=630&fit=crop&crop=center',
     'ai-talent-development': 'https://images.unsplash.com/photo-1500989145603-8e7ef71d639e?w=1200&h=630&fit=crop&crop=center'
   }

@@ -27,7 +27,7 @@ export const ALL_TRAINING_PROGRAMS: OtherTrainingProgram[] = [
     title: "AI動画生成研修",
     description: "Sora、Gemini、Higgsfield等のAI動画生成ツールを活用して、マーケティング動画やプレゼン動画を効率的に制作する技術を学びます。",
     href: "/services/ai-video-training",
-    image: "https://images.unsplash.com/photo-1721087331712-e3f61df498a1?w=800&h=600&fit=crop&crop=center",
+    image: "https://images.unsplash.com/photo-1677350838456-80a71506de8d?w=800&h=600&fit=crop&crop=center",
     available: true,
     category: "enterprise"
   },

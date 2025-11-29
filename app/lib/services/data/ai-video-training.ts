@@ -12,7 +12,7 @@ export const AI_VIDEO_TRAINING_DATA: ServiceData = {
   pageTitle: "AI動画生成研修",
   heroTitle: "AI動画生成研修",
   heroSubtitle: "最新のAI技術で、プロレベルの動画を誰でも短時間で制作",
-  heroImage: "https://images.unsplash.com/photo-1721087331712-e3f61df498a1?w=1920&h=1080&fit=crop&crop=center",
+  heroImage: "https://images.unsplash.com/photo-1677350838456-80a71506de8d?w=1920&h=1080&fit=crop&crop=center",
   seoTitle: "プロレベルの動画を誰でも作れるAI動画生成研修 - AI駆動研究所",
   
   heroCTA: {
