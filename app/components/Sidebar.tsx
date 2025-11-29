@@ -12,7 +12,7 @@ const Sidebar = () => {
   const menuItems = [
     { icon: Home, label: 'トップ', href: '/' },
     { icon: Briefcase, label: 'サービス', href: '/services' },
-    { icon: FolderOpen, label: 'AI制作物', href: '/projects' },
+    { icon: FolderOpen, label: '制作実績', href: '/projects' },
     { icon: Youtube, label: 'YouTube', href: '/youtube-videos' },
     { icon: FileText, label: 'コラム', href: '/columns' },
     { icon: Bell, label: 'お知らせ', href: '/notices' },

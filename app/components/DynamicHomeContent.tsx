@@ -226,7 +226,7 @@ export default function DynamicHomeContent() {
             <span className="text-2xl font-medium text-blue-600 tracking-tight">Contents</span>
           </div>
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold md:text-3xl tracking-tight">AI制作物</h2>
+            <h2 className="text-2xl font-bold md:text-3xl tracking-tight">制作実績</h2>
             <Link
               href="/projects"
               className="group inline-flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors text-sm"

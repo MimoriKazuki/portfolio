@@ -42,19 +42,19 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
 
   return (
     <div className="w-full">
-      <h1 className="text-3xl font-bold mb-8 text-gray-900">AI制作物管理</h1>
+      <h1 className="text-3xl font-bold mb-8 text-gray-900">制作実績管理</h1>
       
       {!projects || projects.length === 0 ? (
         <div className="bg-white rounded-lg p-16 text-center border border-gray-200">
           <FolderOpen className="h-20 w-20 mx-auto mb-6 text-gray-400" />
-          <h2 className="text-2xl font-bold mb-4 text-gray-900">AI制作物がありません</h2>
-          <p className="text-gray-600 mb-8">最初のAI制作物を追加して実績を公開しましょう</p>
+          <h2 className="text-2xl font-bold mb-4 text-gray-900">制作実績がありません</h2>
+          <p className="text-gray-600 mb-8">最初の制作実績を追加して公開しましょう</p>
           <Link
             href="/admin/projects/new"
             className="inline-flex items-center gap-2 bg-portfolio-blue hover:bg-portfolio-blue-dark text-white px-6 py-3 rounded-lg transition-colors text-lg"
           >
             <Plus className="h-6 w-6" />
-            AI制作物を追加
+            制作実績を追加
           </Link>
         </div>
       ) : (
@@ -104,7 +104,7 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
               className="flex items-center gap-2 bg-portfolio-blue hover:bg-portfolio-blue-dark text-white px-4 py-2 rounded-lg transition-colors"
             >
               <Plus className="h-5 w-5" />
-              AI制作物を追加
+              制作実績を追加
             </Link>
 
             <div className="flex items-center gap-4 flex-1 justify-end">

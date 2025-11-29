@@ -64,7 +64,7 @@ export default function ProjectsClient({ projects }: ProjectsClientProps) {
         }}
       >
         <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4 tracking-tight">PORTFOLIO</h1>
-        <p className="text-lg text-gray-500">AI制作物</p>
+        <p className="text-lg text-gray-500">制作実績</p>
       </div>
       
       {/* Category Tabs */}

@@ -268,7 +268,7 @@ export default function ProjectForm({ initialData, projectId }: ProjectFormProps
   const handleFeaturedChange = (checked: boolean) => {
     // 3つまでの制限をチェック
     if (checked && featuredCount >= 3 && !initialData?.featured) {
-      alert('注目AI制作物は最大3つまでです。')
+      alert('注目制作実績は最大3つまでです。')
       return
     }
     setFormData({ ...formData, featured: checked })
@@ -348,7 +348,7 @@ export default function ProjectForm({ initialData, projectId }: ProjectFormProps
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div>
             <label className="block text-sm font-medium mb-2 text-gray-700">
-              AI制作物名 <span className="text-red-500">*</span>
+              制作実績名 <span className="text-red-500">*</span>
             </label>
             <input
               type="text"
@@ -649,14 +649,14 @@ export default function ProjectForm({ initialData, projectId }: ProjectFormProps
               className="w-4 h-4 text-portfolio-blue bg-white border-gray-300 rounded focus:ring-portfolio-blue disabled:opacity-50"
             />
             <span className="text-sm font-medium text-gray-700">
-              注目AI制作物
+              注目制作実績
               {featuredCount >= 3 && !formData.featured && (
                 <span className="text-xs text-red-500 ml-2">(上限達成: {featuredCount}/3)</span>
               )}
             </span>
           </label>
           <p className="text-xs text-gray-600 mt-1">
-            現在の注目AI制作物: {featuredCount}/3
+            現在の注目制作実績: {featuredCount}/3
           </p>
         </div>
 

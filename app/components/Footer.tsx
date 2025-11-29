@@ -60,7 +60,7 @@ const Footer = () => {
                   </li>
                   <li>
                     <Link href="/projects" className="hover:text-white transition-colors">
-                      AI制作物 - 制作実績
+                      制作実績
                     </Link>
                   </li>
                   <li>

@@ -15,7 +15,7 @@ export default function MobileHeader() {
   const menuItems = [
     { href: '/', label: 'トップページ', icon: Home },
     { href: '/services', label: 'サービス', icon: Briefcase },
-    { href: '/projects', label: 'AI制作物', icon: FolderOpen },
+    { href: '/projects', label: '制作実績', icon: FolderOpen },
     { href: '/columns', label: 'コラム', icon: BookOpen },
     { href: '/notices', label: 'お知らせ', icon: Bell },
     { href: '/documents', label: '資料ダウンロード', icon: Download },

@@ -4,7 +4,7 @@ import { createStaticClient } from '@/app/lib/supabase/static'
 import { Metadata } from 'next'
 
 export const metadata: Metadata = {
-  title: 'AI制作物 - AI駆動研究所',
+  title: '制作実績 - AI駆動研究所',
   description: 'AI駆動研究所の制作実績。ChatGPT、Claude、Gemini等の生成AIとNext.js、TypeScriptを活用したホームページ、LP、Webアプリ、モバイルアプリなど、最新AI技術を駆使した高品質な制作事例をご覧ください。',
 }
 
