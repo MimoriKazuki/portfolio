@@ -12,7 +12,7 @@ export const AI_CODING_TRAINING_DATA: ServiceData = {
   pageTitle: "AIコーディング研修",
   heroTitle: "AIコーディング研修",
   heroSubtitle: "GitHub CopilotやClaude Codeを活用し、開発効率を3〜5倍に向上",
-  heroImage: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1920&h=1080&fit=crop&crop=center",
+  heroImage: "https://images.unsplash.com/photo-1555099962-4199c345e5dd?w=1920&h=1080&fit=crop&crop=center",
   seoTitle: "開発効率を革新するAI支援プログラミング研修 - AI駆動研究所",
   
   heroCTA: {
