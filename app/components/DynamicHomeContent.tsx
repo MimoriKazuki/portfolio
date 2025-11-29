@@ -93,12 +93,10 @@ export default function DynamicHomeContent() {
                 <h2 className="text-2xl font-bold md:text-3xl tracking-tight">お知らせ</h2>
               <Link
                 href="/notices"
-                className="group inline-flex items-center gap-3 text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium"
+                className="group inline-flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors text-sm"
               >
-                <span>すべて見る</span>
-                <div className="flex items-center justify-center w-8 h-8 rounded-full border border-blue-600 bg-white group-hover:bg-blue-600 transition-colors duration-300">
-                  <ArrowRight className="w-4 h-4 text-blue-600 group-hover:text-white transition-colors duration-300" />
-                </div>
+                <span className="tracking-wider">VIEW ALL</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
               </Link>
             </div>
             </ScrollAnimation>
@@ -197,12 +195,10 @@ export default function DynamicHomeContent() {
             <h2 className="text-2xl font-bold md:text-3xl tracking-tight">AI制作物</h2>
             <Link
               href="/projects"
-              className="group inline-flex items-center gap-3 text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium"
+              className="group inline-flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors text-sm"
             >
-              <span>すべて見る</span>
-              <div className="flex items-center justify-center w-8 h-8 rounded-full border border-blue-600 bg-white group-hover:bg-blue-600 transition-colors duration-300">
-                <ArrowRight className="w-4 h-4 text-blue-600 group-hover:text-white transition-colors duration-300" />
-              </div>
+              <span className="tracking-wider">VIEW ALL</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
             </Link>
           </div>
         </ScrollAnimation>
@@ -239,12 +235,10 @@ export default function DynamicHomeContent() {
               <h2 className="text-2xl font-bold md:text-3xl tracking-tight">YouTube</h2>
               <Link
                 href="/youtube-videos"
-                className="group inline-flex items-center gap-3 text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium"
+                className="group inline-flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors text-sm"
               >
-                <span>すべて見る</span>
-                <div className="flex items-center justify-center w-8 h-8 rounded-full border border-blue-600 bg-white group-hover:bg-blue-600 transition-colors duration-300">
-                  <ArrowRight className="w-4 h-4 text-blue-600 group-hover:text-white transition-colors duration-300" />
-                </div>
+                <span className="tracking-wider">VIEW ALL</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
               </Link>
             </div>
           </ScrollAnimation>
@@ -276,12 +270,10 @@ export default function DynamicHomeContent() {
             <h2 className="text-2xl font-bold md:text-3xl tracking-tight">最新のコラム</h2>
             <Link
               href="/columns"
-              className="group inline-flex items-center gap-3 text-gray-900 hover:text-blue-600 transition-colors text-sm font-medium"
+              className="group inline-flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors text-sm"
             >
-              <span>すべて見る</span>
-              <div className="flex items-center justify-center w-8 h-8 rounded-full border border-blue-600 bg-white group-hover:bg-blue-600 transition-colors duration-300">
-                <ArrowRight className="w-4 h-4 text-blue-600 group-hover:text-white transition-colors duration-300" />
-              </div>
+              <span className="tracking-wider">VIEW ALL</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
             </Link>
           </div>
         </ScrollAnimation>
