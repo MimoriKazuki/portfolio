@@ -36,7 +36,7 @@ export const ALL_TRAINING_PROGRAMS: OtherTrainingProgram[] = [
     title: "AIコーディング研修",
     description: "GitHub Copilot、Claude Code等を活用したAI支援プログラミング技術を習得し、開発効率を飛躍的に向上させます。",
     href: "/services/ai-coding-training",
-    image: "https://images.unsplash.com/photo-1555099962-4199c345e5dd?w=800&h=600&fit=crop&crop=center",
+    image: "https://images.unsplash.com/photo-1509966756634-9c23dd6e6815?w=800&h=600&fit=crop&crop=center",
     available: true,
     category: "enterprise"
   },
