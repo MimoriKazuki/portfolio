@@ -15,10 +15,12 @@ export default {
 			'xs': '540px',    // モバイル2枚表示開始: 540px
 			'sm': '640px',
 			'md': '641px',    // タブレット開始: 641px
-			'mid': '720px',   // 2列表示開始: 720px  
+			'mid': '720px',   // 2列表示開始: 720px
 			'lg': '900px',    // 3列表示開始: 900px
 			'xl': '1025px',   // PC開始: 1025px
 			'2xl': '1536px',
+			'max-mid': {'max': '719px'},  // 720px未満
+			'max-xl': {'max': '1024px'},  // タブレット以下
 		},
 		container: {
 			center: true,

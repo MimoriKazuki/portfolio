@@ -136,13 +136,14 @@ export default function DynamicHomeContent() {
                         href={`/notices/${notice.id}`}
                         className="block group"
                       >
-                        <div className="py-6 hover:bg-gray-50 transition-colors duration-200">
-                          <div className="flex items-center gap-4 px-2">
+                        <div className="py-6 hover:bg-gray-50 transition-colors duration-200 px-2">
+                          {/* 720px以上: 1行表示 */}
+                          <div className="hidden mid:flex items-center gap-4">
                             {/* Date */}
                             <div className="text-sm text-gray-600 font-medium w-24 flex-shrink-0">
                               {formatDate(notice.created_at)}
                             </div>
-                            
+
                             {/* Category */}
                             <div className="w-24 flex-shrink-0">
                               <span className={`inline-flex px-3 py-1 text-xs font-medium border ${
@@ -159,7 +160,7 @@ export default function DynamicHomeContent() {
                                  'その他'}
                               </span>
                             </div>
-                            
+
                             {/* Title */}
                             <h3 className="flex-1 font-medium text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-1">
                               {notice.title}
@@ -168,6 +169,39 @@ export default function DynamicHomeContent() {
                             {/* Arrow Icon */}
                             <div className="w-5 flex-shrink-0">
                               <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-blue-600 transition-colors" />
+                            </div>
+                          </div>
+
+                          {/* 720px未満: 2行表示 */}
+                          <div className="mid:hidden">
+                            <div className="flex items-center gap-3 mb-2">
+                              {/* Date */}
+                              <div className="text-sm text-gray-600 font-medium">
+                                {formatDate(notice.created_at)}
+                              </div>
+
+                              {/* Category */}
+                              <span className={`inline-flex px-3 py-1 text-xs font-medium border ${
+                                notice.category === 'news' ? 'border-blue-200 text-blue-700' :
+                                notice.category === 'webinar' ? 'border-purple-200 text-purple-700' :
+                                notice.category === 'event' ? 'border-pink-200 text-pink-700' :
+                                notice.category === 'maintenance' ? 'border-yellow-200 text-yellow-700' :
+                                'border-gray-200 text-gray-700'
+                              }`}>
+                                {notice.category === 'news' ? 'ニュース' :
+                                 notice.category === 'webinar' ? 'ウェビナー' :
+                                 notice.category === 'event' ? 'イベント' :
+                                 notice.category === 'maintenance' ? 'メンテナンス' :
+                                 'その他'}
+                              </span>
+                            </div>
+
+                            {/* Title with Arrow */}
+                            <div className="flex items-center gap-2">
+                              <h3 className="flex-1 font-medium text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-2">
+                                {notice.title}
+                              </h3>
+                              <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-blue-600 transition-colors flex-shrink-0" />
                             </div>
                           </div>
                         </div>

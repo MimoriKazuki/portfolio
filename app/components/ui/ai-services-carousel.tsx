@@ -112,13 +112,15 @@ const AIServicesCarousel = ({
   const getThemeStyles = (theme: "blue" | "green") => {
     if (theme === "blue") {
       return {
-        subtitle: "text-blue-600 group-hover:text-blue-300",
-        button: "group-hover:bg-blue-500",
+        subtitle: "text-blue-300 xl:text-blue-600 xl:group-hover:text-blue-300",
+        buttonBg: "bg-blue-500",
+        buttonBgXl: "xl:bg-gray-100 xl:group-hover:bg-blue-500",
       };
     }
     return {
-      subtitle: "text-emerald-600 group-hover:text-emerald-300",
-      button: "group-hover:bg-emerald-500",
+      subtitle: "text-emerald-300 xl:text-emerald-600 xl:group-hover:text-emerald-300",
+      buttonBg: "bg-emerald-500",
+      buttonBgXl: "xl:bg-gray-100 xl:group-hover:bg-emerald-500",
     };
   };
 
@@ -191,8 +193,8 @@ const AIServicesCarousel = ({
                 >
                   {/* カード本体 */}
                   <div className="relative bg-white rounded-3xl border border-gray-200 overflow-hidden transition-all duration-500 ease-out group-hover:scale-[1.02] group-hover:shadow-2xl group-hover:border-transparent min-h-[240px]">
-                  {/* 背景画像（ホバー時に表示） */}
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                  {/* 背景画像（タブレット以下は常に表示、PC以上はホバー時に表示） */}
+                  <div className="absolute inset-0 opacity-100 xl:opacity-0 xl:group-hover:opacity-100 transition-opacity duration-500">
                     {cardImage && (
                       <Image
                         src={cardImage}
@@ -219,14 +221,14 @@ const AIServicesCarousel = ({
                       <div className="w-[70%] flex flex-col">
                         {/* カテゴリラベル */}
                         {cardCategory && (
-                          <p className="text-sm font-medium text-gray-500 group-hover:text-gray-300 transition-colors duration-500 mb-3">
+                          <p className="text-sm font-medium text-gray-300 xl:text-gray-500 xl:group-hover:text-gray-300 transition-colors duration-500 mb-3">
                             {cardCategory}
                           </p>
                         )}
                         
                         {/* タイトル */}
                         <div className="mb-4">
-                          <h3 className="text-xl md:text-2xl font-bold tracking-tight text-gray-900 group-hover:text-white transition-colors duration-500">
+                          <h3 className="text-xl md:text-2xl font-bold tracking-tight text-white xl:text-gray-900 xl:group-hover:text-white transition-colors duration-500">
                             {card.title}
                           </h3>
                           {cardSubtitle && (
@@ -237,7 +239,7 @@ const AIServicesCarousel = ({
                         </div>
                         
                         {/* 説明文 */}
-                        <p className="text-sm text-gray-600 group-hover:text-gray-200 transition-colors duration-500 leading-relaxed">
+                        <p className="text-sm text-gray-200 xl:text-gray-600 xl:group-hover:text-gray-200 transition-colors duration-500 leading-relaxed">
                           {card.description}
                         </p>
                       </div>
@@ -250,8 +252,8 @@ const AIServicesCarousel = ({
                     
                     {/* 矢印ボタン - カード右下に配置、ホバー時に拡大 */}
                     <div className="absolute bottom-6 right-6 z-10">
-                      <div className={`w-10 h-10 group-hover:w-14 group-hover:h-14 rounded-full bg-gray-100 flex items-center justify-center transition-all duration-500 ${themeStyles.button}`}>
-                        <ArrowRight className="w-4 h-4 group-hover:w-6 group-hover:h-6 text-gray-400 group-hover:text-white transition-all duration-500" />
+                      <div className={`w-14 h-14 xl:w-10 xl:h-10 xl:group-hover:w-14 xl:group-hover:h-14 rounded-full flex items-center justify-center transition-all duration-500 ${themeStyles.buttonBg} ${themeStyles.buttonBgXl}`}>
+                        <ArrowRight className="w-6 h-6 xl:w-4 xl:h-4 xl:group-hover:w-6 xl:group-hover:h-6 text-white xl:text-gray-400 xl:group-hover:text-white transition-all duration-500" />
                       </div>
                     </div>
                   </div>

@@ -52,8 +52,8 @@ const HeroSection = () => {
                     </div>
 
                     {/* Scroll Down Indicator - Bottom Right */}
-                    <div 
-                        className="absolute bottom-0 right-4 sm:right-6 lg:right-8 xl:right-12 2xl:right-16 flex flex-col items-center"
+                    <div
+                        className="absolute bottom-0 right-4 sm:right-6 lg:right-8 xl:right-12 2xl:right-16 hidden xs:flex flex-col items-center"
                         style={{
                             opacity: isLoaded ? 1 : 0,
                             transform: isLoaded ? 'translateY(0)' : 'translateY(20px)',
