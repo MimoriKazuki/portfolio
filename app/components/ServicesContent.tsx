@@ -112,7 +112,7 @@ export default function ServicesContent() {
         '管理者は社員への確認なしにAIへの質問で現状を把握でき、異動・退職時の引き継ぎもAIが対応。情報の属人化から解放され、組織全体の知識が継承される仕組みを実現します。'
       ],
       href: '/services/ai-organization-os',
-      image: 'https://images.unsplash.com/photo-1758873272888-ab12214c8abc?w=800&h=600&fit=crop&crop=center',
+      image: 'https://images.unsplash.com/photo-1758873272869-9130397ff7d2?w=800&h=600&fit=crop&crop=center',
       logoText: 'AI組織OS',
       logoSubtext: '組織ナレッジ管理革新'
     },

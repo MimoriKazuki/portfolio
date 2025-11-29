@@ -18,7 +18,7 @@ export const ALL_TRAINING_PROGRAMS: OtherTrainingProgram[] = [
     title: "AI組織OS研修",
     description: "CursorとGitHubで「組織の脳みそ」を構築し、情報共有・引き継ぎ業務を革新。組織全体の生産性を向上させます。",
     href: "/services/ai-organization-os",
-    image: "https://images.unsplash.com/photo-1758873272888-ab12214c8abc?w=800&h=600&fit=crop&crop=center",
+    image: "https://images.unsplash.com/photo-1758873272869-9130397ff7d2?w=800&h=600&fit=crop&crop=center",
     available: true,
     category: "enterprise"
   },
