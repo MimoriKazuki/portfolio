@@ -127,7 +127,7 @@ export default function ServicesContent() {
         'SNS向けショート動画からプレゼンテーション動画まで、目的に応じた動画制作ノウハウを習得。社内の動画制作コストを大幅に削減しながら、発信力を強化できます。'
       ],
       href: '/services/ai-video-training',
-      image: 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=800&h=600&fit=crop&crop=center',
+      image: 'https://images.unsplash.com/photo-1576750514299-479fe8efd94c?w=800&h=600&fit=crop&crop=center',
       logoText: 'AI動画生成',
       logoSubtext: 'マーケティング動画制作'
     },
