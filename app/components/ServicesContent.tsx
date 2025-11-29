@@ -161,7 +161,7 @@ export default function ServicesContent() {
         '本気でスキル習得を目指す方のみを対象とした完全審査制。審査を通過された方には、質の高いコーチングと実践プロジェクトを通じて、即戦力となるAI駆動開発スキルを伝授します。'
       ],
       href: '/services/ai-talent-development',
-      image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=600&fit=crop&crop=center',
+      image: 'https://images.unsplash.com/photo-1500989145603-8e7ef71d639e?w=800&h=600&fit=crop&crop=center',
       logoText: 'AI駆動開発育成所',
       logoSubtext: 'バイブコーディング特化'
     }
