@@ -677,34 +677,18 @@ export default function ServiceTrainingLP({
             {curriculum.modules.map((module, index) => (
               <div
                 key={index}
-                className="relative overflow-hidden"
                 style={{
                   opacity: curriculumSection.isVisible ? 1 : 0,
                   transform: curriculumSection.isVisible ? 'translateY(0)' : 'translateY(40px)',
                   transition: `opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${0.1 + index * 0.1}s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${0.1 + index * 0.1}s`,
                 }}
               >
-                {/* 背景画像 */}
-                <div className="absolute inset-0">
-                  <Image
-                    src={module.image}
-                    alt=""
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                  />
-                  {/* グラデーションマスク: 左40%は暗く、右に向かって薄く（80%不透明度まで） */}
-                  <div
-                    className="absolute inset-0"
-                    style={{
-                      background: 'linear-gradient(to right, rgb(30 41 59) 0%, rgb(30 41 59) 40%, rgb(30 41 59 / 0.8) 100%)'
-                    }}
-                  />
-                </div>
-                <div className="relative z-10 p-6 md:p-8 min-h-[180px] flex flex-col justify-center">
-                  <p className={`text-xs font-medium ${colors.textLight} mb-2`}>Module {String(index + 1).padStart(2, '0')}</p>
-                  <h3 className="text-lg font-semibold text-white mb-2">{module.title}</h3>
-                  <p className="text-gray-300 text-sm leading-relaxed">{module.description}</p>
+                <div className="group bg-white hover:bg-[#323232] transition-all duration-300 hover:scale-105 h-full">
+                  <div className="p-6 md:p-8 min-h-[180px] flex flex-col justify-center">
+                    <p className={`text-sm font-medium mb-2 ${theme === 'green' ? 'text-emerald-400' : 'text-blue-400'}`}>Module {String(index + 1).padStart(2, '0')}</p>
+                    <h3 className="text-lg font-semibold text-gray-900 group-hover:text-white mb-2 transition-colors duration-300">{module.title}</h3>
+                    <p className="text-gray-600 group-hover:text-gray-300 text-sm leading-relaxed transition-colors duration-300">{module.description}</p>
+                  </div>
                 </div>
               </div>
             ))}
