@@ -985,8 +985,9 @@ export default function ServiceTrainingLP({
               transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s',
             }}
           >
-            <div className="overflow-x-auto scrollbar-hide -mx-4 sm:-mx-6">
-              <div className="flex px-4 sm:px-6 border-b border-gray-200">
+            <div className="border-b border-gray-200">
+              <div className="overflow-x-auto scrollbar-hide -mx-4 sm:-mx-6">
+                <div className="flex px-4 sm:px-6">
                 {filteredPrograms.map((program) => {
                   const isActive = selectedProgramId === program.id
                   const isIndividual = program.category === 'individual'
@@ -1007,6 +1008,7 @@ export default function ServiceTrainingLP({
                     </button>
                   )
                 })}
+                </div>
               </div>
             </div>
           </div>
