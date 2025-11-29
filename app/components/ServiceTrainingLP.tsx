@@ -633,17 +633,17 @@ export default function ServiceTrainingLP({
                   <p className="text-gray-600 mb-8 leading-relaxed">
                     {midCTA.description}
                   </p>
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                  <div className="flex flex-col mid:flex-row gap-3 mid:gap-4 justify-center items-stretch mid:items-center">
                     <Link
                       href={midCTA.documentHref}
-                      className={`px-10 py-4 bg-white font-medium border ${colors.border} ${colors.text} hover:bg-gray-50 transition-colors duration-200 flex items-center gap-2`}
+                      className={`px-8 py-4 bg-white font-medium border ${colors.border} ${colors.text} hover:bg-gray-50 transition-colors duration-200 flex items-center justify-center gap-2`}
                     >
                       <Download className="w-5 h-5" />
                       資料をダウンロード
                     </Link>
                     <Link
                       href={getInquiryHref(midCTA.inquiryHref)}
-                      className={`px-10 py-4 ${colors.primary} text-white font-medium ${colors.primaryHover} transition-colors duration-200 flex items-center gap-2`}
+                      className={`px-8 py-4 ${colors.primary} text-white font-medium ${colors.primaryHover} transition-colors duration-200 flex items-center justify-center gap-2`}
                     >
                       <MessageCircle className="w-5 h-5" />
                       無料相談を予約する
@@ -718,7 +718,8 @@ export default function ServiceTrainingLP({
               {flow.subtitle}
             </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 lg:gap-4 mb-12">
+          {/* Desktop: 5 columns horizontal */}
+          <div className="hidden lg:grid lg:grid-cols-5 gap-4 mb-12">
             {flow.steps.map((step, index) => (
               <div
                 key={index}
@@ -734,11 +735,44 @@ export default function ServiceTrainingLP({
                     {index + 1}
                   </div>
                   {index < flow.steps.length - 1 && (
-                    <ChevronRight className="hidden lg:block absolute top-5 -right-2 h-5 w-5 text-gray-400" />
+                    <ChevronRight className="absolute top-5 -right-2 h-5 w-5 text-gray-400" />
                   )}
                 </div>
                 <p className={`text-xs font-medium ${colors.text} tracking-wide`}>STEP {index + 1}</p>
                 <p className="text-sm text-gray-700 mt-1">{step}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Mobile/Tablet: vertical list with icon left, text right */}
+          <div className="lg:hidden flex flex-col items-center gap-6 mb-12">
+            {flow.steps.map((step, index) => (
+              <div key={index} className="flex flex-col items-center">
+                {/* ステップアイテム */}
+                <div
+                  className="flex items-center gap-4 group"
+                  style={{
+                    opacity: flowSection.isVisible ? 1 : 0,
+                    transform: flowSection.isVisible ? 'translateY(0)' : 'translateY(30px)',
+                    transition: `opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${0.1 + index * 0.1}s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${0.1 + index * 0.1}s`,
+                  }}
+                >
+                  {/* 番号アイコン */}
+                  <div className={`flex-shrink-0 h-12 w-12 ${colors.primary} ${colors.primaryHover} group-hover:scale-110 flex items-center justify-center text-white font-bold text-lg transition-all duration-300`}>
+                    {index + 1}
+                  </div>
+                  {/* テキスト群 */}
+                  <div className="min-w-[200px]">
+                    <p className={`text-xs font-medium ${colors.text} tracking-wide`}>STEP {index + 1}</p>
+                    <p className="text-sm text-gray-700 mt-1">{step}</p>
+                  </div>
+                </div>
+                {/* 下向き矢印（ステップ間の真ん中に配置） */}
+                {index < flow.steps.length - 1 && (
+                  <div className="flex justify-center w-12 mt-6">
+                    <ChevronDown className="h-5 w-5 text-gray-400" />
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -762,10 +796,10 @@ export default function ServiceTrainingLP({
         {/* Additional CTA Section (if provided) */}
         {additionalCTA && (
           <section className="mb-16">
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <div className="flex flex-col mid:flex-row gap-3 mid:gap-4 justify-center items-stretch mid:items-center">
               <Link
                 href={additionalCTA.documentHref}
-                className={`px-10 py-4 bg-white ${colors.text} font-medium border ${colors.border} hover:bg-gray-50 transition-colors duration-200 flex items-center gap-2`}
+                className={`px-8 py-4 bg-white ${colors.text} font-medium border ${colors.border} hover:bg-gray-50 transition-colors duration-200 flex items-center justify-center gap-2`}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
@@ -776,7 +810,7 @@ export default function ServiceTrainingLP({
               </Link>
               <Link
                 href={getInquiryHref(additionalCTA.inquiryHref)}
-                className={`px-10 py-4 ${colors.primary} text-white font-medium ${colors.primaryHover} transition-colors duration-200 flex items-center gap-2`}
+                className={`px-8 py-4 ${colors.primary} text-white font-medium ${colors.primaryHover} transition-colors duration-200 flex items-center justify-center gap-2`}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
                   <rect width="20" height="16" x="2" y="4" rx="2"/>
@@ -904,17 +938,17 @@ export default function ServiceTrainingLP({
               <p className="text-gray-600 mb-10 leading-relaxed">
                 {finalCTA.description}
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <div className="flex flex-col mid:flex-row gap-3 mid:gap-4 justify-center items-stretch mid:items-center">
                 <Link
                   href={finalCTA.documentHref}
-                  className={`px-10 py-4 bg-white font-medium border ${colors.border} ${colors.text} hover:bg-gray-50 transition-colors duration-200 flex items-center gap-2`}
+                  className={`px-8 py-4 bg-white font-medium border ${colors.border} ${colors.text} hover:bg-gray-50 transition-colors duration-200 flex items-center justify-center gap-2`}
                 >
                   <Download className="w-5 h-5" />
                   資料をダウンロード
                 </Link>
                 <Link
                   href={getInquiryHref(finalCTA.inquiryHref)}
-                  className={`px-10 py-4 ${colors.primary} text-white font-medium ${colors.primaryHover} transition-colors duration-200 flex items-center gap-2`}
+                  className={`px-8 py-4 ${colors.primary} text-white font-medium ${colors.primaryHover} transition-colors duration-200 flex items-center justify-center gap-2`}
                 >
                   <MessageCircle className="w-5 h-5" />
                   無料相談を予約する
