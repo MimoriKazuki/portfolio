@@ -467,9 +467,9 @@ export default function ServiceTrainingLP({
               transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s',
             }}
           >
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-              {/* Left: Text content (2/3) */}
-              <div className="lg:col-span-2 space-y-6">
+            <div className="grid grid-cols-1 mid:grid-cols-4 lg:grid-cols-3 gap-8">
+              {/* Left: Text content (3/4 on mid, 2/3 on lg) */}
+              <div className="mid:col-span-3 lg:col-span-2 space-y-6">
                 {/* Training Title */}
                 <h3 className={`text-2xl font-bold ${colors.text}`}>
                   {pageTitle}
@@ -498,8 +498,8 @@ export default function ServiceTrainingLP({
                   {serviceOverview.descriptionBottom}
                 </p>
               </div>
-              {/* Right: Image (1/3) */}
-              <div className="lg:col-span-1 relative min-h-[300px] overflow-hidden">
+              {/* Right: Image (1/4 on mid, 1/3 on lg) - Hidden below 720px */}
+              <div className="hidden mid:block mid:col-span-1 lg:col-span-1 relative min-h-[300px] overflow-hidden">
                 <Image
                   src={serviceOverview.featureImage || serviceOverview.items[0]?.image || heroImage}
                   alt={serviceOverview.title}
