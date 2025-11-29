@@ -142,7 +142,7 @@ export default function ServicesContent() {
         'コード品質の向上とレビュー効率化により、開発チーム全体の生産性を大幅に改善。技術的負債の削減にも貢献し、持続可能な開発体制を構築できます。'
       ],
       href: '/services/ai-coding-training',
-      image: 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=800&h=600&fit=crop&crop=center',
+      image: 'https://images.unsplash.com/photo-1555099962-4199c345e5dd?w=800&h=600&fit=crop&crop=center',
       logoText: 'AIコーディング',
       logoSubtext: '開発効率化プログラム'
     }
