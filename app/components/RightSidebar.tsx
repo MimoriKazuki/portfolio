@@ -22,7 +22,7 @@ const individualService = {
   title: "AI駆動開発育成所",
   description: "完全審査制の個人向けバイブコーディング特化コーチング。Claude CodeやCursorを活用したAI駆動開発スキルを習得できます。",
   href: "/services/ai-talent-development",
-  image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=300&fit=crop&crop=center",
+  image: "https://images.unsplash.com/photo-1500989145603-8e7ef71d639e?w=400&h=300&fit=crop&crop=center",
   label: "個人向け"
 }
 

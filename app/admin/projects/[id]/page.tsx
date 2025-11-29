@@ -45,7 +45,7 @@ export default async function ProjectDetailPage({
             className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors mb-4"
           >
             <ArrowLeft className="h-4 w-4" />
-            プロジェクト一覧に戻る
+            制作実績一覧に戻る
           </Link>
           
           <div className="flex items-center justify-between">
