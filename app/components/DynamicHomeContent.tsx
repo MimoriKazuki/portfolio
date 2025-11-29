@@ -377,11 +377,9 @@ export default function DynamicHomeContent() {
                       サービス詳細や料金プランなど、<br />
                       詳しい資料をお送りいたします。
                     </p>
-                    <div className="flex items-center justify-center gap-3">
-                      <span className="text-sm font-light">see more</span>
-                      <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center group-hover:bg-blue-400 transition-colors duration-300">
-                        <ArrowRight className="w-5 h-5 text-white" />
-                      </div>
+                    <div className="inline-flex items-center gap-2 border border-white/50 px-6 py-3 group-hover:bg-white/10 transition-all duration-300">
+                      <span className="text-sm tracking-wider">VIEW MORE</span>
+                      <ArrowRight className="w-4 h-4" />
                     </div>
                   </div>
                 </div>
@@ -415,11 +413,9 @@ export default function DynamicHomeContent() {
                       ご質問・ご相談について、<br />
                       まずはお気軽にお問合せください。
                     </p>
-                    <div className="flex items-center justify-center gap-3">
-                      <span className="text-sm font-light">see more</span>
-                      <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center group-hover:bg-blue-400 transition-colors duration-300">
-                        <ArrowRight className="w-5 h-5 text-white" />
-                      </div>
+                    <div className="inline-flex items-center gap-2 border border-white/50 px-6 py-3 group-hover:bg-white/10 transition-all duration-300">
+                      <span className="text-sm tracking-wider">VIEW MORE</span>
+                      <ArrowRight className="w-4 h-4" />
                     </div>
                   </div>
                 </div>
