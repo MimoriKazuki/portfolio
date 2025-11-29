@@ -12,7 +12,7 @@ export const AI_ORGANIZATION_OS_DATA: ServiceData = {
   pageTitle: "AI組織OS研修",
   heroTitle: "AI組織OS研修",
   heroSubtitle: "CursorとGitHubで「組織の脳みそ」を構築し、情報共有を革新する",
-  heroImage: "https://images.unsplash.com/photo-1758873272869-9130397ff7d2?w=1920&h=1080&fit=crop&crop=center",
+  heroImage: "https://images.unsplash.com/photo-1617791160536-598cf32026fb?w=1920&h=1080&fit=crop&crop=center",
   seoTitle: "組織の知識をAIで活用 - AI組織OS研修 | AI駆動研究所",
 
   heroCTA: {
