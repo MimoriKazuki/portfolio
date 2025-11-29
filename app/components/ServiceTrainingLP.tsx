@@ -778,9 +778,8 @@ export default function ServiceTrainingLP({
           </div>
 
           <div
-            className="bg-white shadow-sm border border-gray-100"
+            className="bg-white shadow-sm border border-gray-100 p-10 mid:p-[88px]"
             style={{
-              padding: '88px',
               opacity: flowSection.isVisible ? 1 : 0,
               transform: flowSection.isVisible ? 'translateY(0)' : 'translateY(30px)',
               transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.5s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.5s',
