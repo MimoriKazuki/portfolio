@@ -6,8 +6,6 @@ import { ArrowRight, FolderOpen, FileText, Calendar, ChevronRight } from 'lucide
 import Link from 'next/link'
 import Image from 'next/image'
 import { Project, Column, Notice, YouTubeVideo } from '@/app/types'
-import ProjectCardSkeleton from './skeletons/ProjectCardSkeleton'
-import ColumnCardSkeleton from './skeletons/ColumnCardSkeleton'
 import YouTubeVideoCard from '../youtube-videos/YouTubeVideoCard'
 import { ScrollAnimation, StaggerContainer } from './ui/scroll-animation'
 
@@ -81,7 +79,7 @@ export default function DynamicHomeContent() {
   return (
     <div>
       {/* Latest Notices - フルワイド背景 */}
-      {(isLoading || latestNotices.length > 0) && (
+      {latestNotices.length > 0 && (
         <section className="mb-12 -mx-4 sm:-mx-6 lg:-mx-8 bg-white py-12 px-4 sm:px-6 lg:px-8">
           <div className="max-w-[1023px] mx-auto">
             <ScrollAnimation animation="fadeUp">
@@ -100,25 +98,8 @@ export default function DynamicHomeContent() {
               </Link>
             </div>
             </ScrollAnimation>
-            
-            {isLoading ? (
-              <div className="bg-white rounded-lg border border-gray-200 divide-y divide-gray-100">
-                {[...Array(3)].map((_, index) => (
-                  <div key={index} className="px-6 py-4 animate-pulse">
-                    <div className="flex items-center justify-between">
-                      <div className="flex-1">
-                        <div className="h-5 bg-gray-200 rounded w-3/4 mb-2"></div>
-                        <div className="flex items-center gap-3">
-                          <div className="h-4 bg-gray-200 rounded w-24"></div>
-                          <div className="h-5 bg-gray-200 rounded w-16"></div>
-                        </div>
-                      </div>
-                      <div className="h-5 w-5 bg-gray-200 rounded ml-4"></div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
+
+            {latestNotices.length > 0 && (
               <ScrollAnimation animation="fadeUp" delay={0.2}>
                 <div className="divide-y divide-gray-200">
                   {latestNotices.map((notice) => {
@@ -237,13 +218,7 @@ export default function DynamicHomeContent() {
           </div>
         </ScrollAnimation>
         
-        {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-1 mid:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
-            {[...Array(3)].map((_, index) => (
-              <ProjectCardSkeleton key={index} />
-            ))}
-          </div>
-        ) : featuredProjects.length === 0 ? (
+        {featuredProjects.length === 0 && !isLoading ? (
           <div className="bg-youtube-gray rounded-lg p-12 text-center">
             <FolderOpen className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
             <p className="text-xl text-muted-foreground">No featured projects yet</p>
@@ -262,7 +237,7 @@ export default function DynamicHomeContent() {
       </section>
 
       {/* YouTube Videos Section */}
-      {(isLoading || displayVideos.length > 0) && (
+      {displayVideos.length > 0 && (
         <section className="mb-12">
           <ScrollAnimation animation="fadeUp">
             <div className="flex items-center justify-between mb-6">
@@ -277,23 +252,11 @@ export default function DynamicHomeContent() {
             </div>
           </ScrollAnimation>
 
-          {isLoading ? (
-            <div className="grid grid-cols-1 md:grid-cols-1 mid:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
-              {[...Array(3)].map((_, index) => (
-                <div key={index} className="animate-pulse">
-                  <div className="bg-gray-200 rounded-lg aspect-video mb-3"></div>
-                  <div className="h-6 bg-gray-200 rounded mb-2"></div>
-                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-                </div>
-              ))}
-            </div>
-          ) : (
-            <StaggerContainer className="grid grid-cols-1 md:grid-cols-1 mid:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-3">
-              {displayVideos.map((video) => (
-                <YouTubeVideoCard key={video.id} video={video} />
-              ))}
-            </StaggerContainer>
-          )}
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-1 mid:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-3">
+            {displayVideos.map((video) => (
+              <YouTubeVideoCard key={video.id} video={video} />
+            ))}
+          </StaggerContainer>
         </section>
       )}
 
@@ -312,13 +275,7 @@ export default function DynamicHomeContent() {
           </div>
         </ScrollAnimation>
 
-        {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-1 mid:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
-            {[...Array(3)].map((_, index) => (
-              <ColumnCardSkeleton key={index} />
-            ))}
-          </div>
-        ) : latestColumns.length === 0 ? (
+        {latestColumns.length === 0 && !isLoading ? (
           <div className="bg-gray-100 rounded-lg p-12 text-center">
             <FileText className="h-16 w-16 mx-auto mb-4 text-gray-400" />
             <p className="text-xl text-gray-500">まだコラムがありません</p>
