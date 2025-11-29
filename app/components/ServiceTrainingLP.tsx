@@ -977,9 +977,44 @@ export default function ServiceTrainingLP({
             </div>
           </div>
 
-          {/* Navigation + Card Layout */}
+          {/* Mobile/Tablet: Tab UI (899px以下) */}
           <div
-            className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-8 lg:gap-12"
+            className="lg:hidden mb-6"
+            style={{
+              opacity: otherProgramsSection.isVisible ? 1 : 0,
+              transform: otherProgramsSection.isVisible ? 'translateY(0)' : 'translateY(30px)',
+              transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s',
+            }}
+          >
+            <div className="overflow-x-auto scrollbar-hide -mx-4 sm:-mx-6">
+              <div className="flex px-4 sm:px-6 border-b border-gray-200">
+                {filteredPrograms.map((program) => {
+                  const isActive = selectedProgramId === program.id
+                  const isIndividual = program.category === 'individual'
+                  return (
+                    <button
+                      key={program.id}
+                      onClick={() => setSelectedProgramId(program.id)}
+                      className={`px-4 py-3 text-sm font-medium transition-colors whitespace-nowrap relative ${
+                        isActive
+                          ? 'text-gray-900'
+                          : 'text-gray-500 hover:text-gray-700'
+                      }`}
+                    >
+                      {program.title}
+                      {isActive && (
+                        <span className={`absolute bottom-0 left-0 right-0 h-0.5 ${isIndividual ? 'bg-emerald-600' : 'bg-blue-600'}`} />
+                      )}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          </div>
+
+          {/* Desktop: Navigation + Card Layout (900px以上) */}
+          <div
+            className="hidden lg:grid lg:grid-cols-[200px_1fr] gap-12"
             style={{
               opacity: otherProgramsSection.isVisible ? 1 : 0,
               transform: otherProgramsSection.isVisible ? 'translateY(0)' : 'translateY(30px)',
@@ -987,7 +1022,7 @@ export default function ServiceTrainingLP({
             }}
           >
             {/* Left Navigation */}
-            <nav className="flex flex-row lg:flex-col gap-3 lg:gap-4 overflow-x-auto lg:overflow-visible pb-2 lg:pb-0">
+            <nav className="flex flex-col gap-4">
               {filteredPrograms.map((program) => {
                 const isActive = selectedProgramId === program.id
                 const isIndividual = program.category === 'individual'
@@ -995,7 +1030,7 @@ export default function ServiceTrainingLP({
                   <button
                     key={program.id}
                     onClick={() => setSelectedProgramId(program.id)}
-                    className={`group flex items-center gap-3 text-sm lg:text-base transition-colors duration-200 whitespace-nowrap ${
+                    className={`group flex items-center gap-3 text-base transition-colors duration-200 whitespace-nowrap ${
                       isActive
                         ? isIndividual ? 'text-emerald-600 font-medium' : 'text-blue-600 font-medium'
                         : 'text-gray-500 hover:text-gray-900'
@@ -1013,10 +1048,23 @@ export default function ServiceTrainingLP({
                 )
               })}
             </nav>
+          </div>
 
-            {/* Right Content - Selected Program Card */}
-            {selectedProgram && (
-              <article className="min-w-0">
+          {/* Selected Program Card (共通) */}
+          {selectedProgram && (
+            <article
+              className="lg:grid lg:grid-cols-[200px_1fr] lg:gap-12"
+              style={{
+                opacity: otherProgramsSection.isVisible ? 1 : 0,
+                transform: otherProgramsSection.isVisible ? 'translateY(0)' : 'translateY(30px)',
+                transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s',
+              }}
+            >
+              {/* Desktop: Left spacer for alignment */}
+              <div className="hidden lg:block" />
+
+              {/* Card Content */}
+              <div className="min-w-0">
                 {/* Image Area - 21:9 aspect ratio */}
                 <div className="relative overflow-hidden mb-8">
                   <div className="relative aspect-[21/9]">
@@ -1060,9 +1108,9 @@ export default function ServiceTrainingLP({
                     </p>
                   </div>
                 </div>
-              </article>
-            )}
-          </div>
+              </div>
+            </article>
+          )}
         </section>
       </div>
     </>
