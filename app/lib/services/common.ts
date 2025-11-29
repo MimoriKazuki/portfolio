@@ -47,7 +47,7 @@ export function generateServiceMetadata(meta: ServicePageMetadata): Metadata {
   // サービス詳細ページで使用するOG画像をサービス一覧の画像に設定
   const serviceImageMapping: Record<string, string> = {
     'comprehensive-ai-training': 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1200&h=630&fit=crop&crop=center',
-    'ai-organization-os': 'https://images.unsplash.com/photo-1552664730-d307ca884978?w=1200&h=630&fit=crop&crop=center',
+    'ai-organization-os': 'https://images.unsplash.com/photo-1758873272888-ab12214c8abc?w=1200&h=630&fit=crop&crop=center',
     'ai-video-training': 'https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=1200&h=630&fit=crop&crop=center',
     'ai-coding-training': 'https://images.unsplash.com/photo-1555099962-4199c345e5dd?w=1200&h=630&fit=crop&crop=center',
     'ai-talent-development': 'https://images.unsplash.com/photo-1500989145603-8e7ef71d639e?w=1200&h=630&fit=crop&crop=center'
