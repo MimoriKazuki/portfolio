@@ -12,7 +12,7 @@ export const AI_TALENT_DEVELOPMENT_DATA: ServiceData = {
   pageTitle: "AI駆動開発育成所",
   heroTitle: "AI駆動開発育成所",
   heroSubtitle: "バイブコーディング特化の個人向けコーチング",
-  heroImage: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1920&h=1080&fit=crop&crop=center",
+  heroImage: "https://images.unsplash.com/photo-1500989145603-8e7ef71d639e?w=1920&h=1080&fit=crop&crop=center",
   seoTitle: "バイブコーディングで開発力を革新 - AI駆動開発育成所 | AI駆動研究所",
 
   heroCTA: {
