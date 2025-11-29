@@ -1048,22 +1048,64 @@ export default function ServiceTrainingLP({
                 )
               })}
             </nav>
+
+            {/* Right: Card Content (Desktop) */}
+            {selectedProgram && (
+              <article className="min-w-0">
+                {/* Image Area - 21:9 aspect ratio */}
+                <div className="relative overflow-hidden mb-8">
+                  <div className="relative aspect-[21/9]">
+                    <Image
+                      src={selectedProgram.image}
+                      alt={selectedProgram.title}
+                      fill
+                      className="object-cover"
+                      sizes="75vw"
+                    />
+                  </div>
+                </div>
+
+                {/* Content Area - Two Columns */}
+                <div className="grid grid-cols-2 gap-12">
+                  {/* Left Column - Title, Link */}
+                  <div>
+                    <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8 leading-tight">
+                      {selectedProgram.title}
+                    </h3>
+                    <Link
+                      href={selectedProgram.href}
+                      className={`inline-flex items-center justify-center gap-2 px-8 py-4 bg-white font-medium transition-colors duration-200 text-base border ${
+                        selectedProgram.category === 'individual'
+                          ? 'text-emerald-600 border-emerald-600 hover:bg-emerald-50'
+                          : 'text-blue-600 border-blue-600 hover:bg-blue-50'
+                      }`}
+                    >
+                      カリキュラムを見る
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
+                  </div>
+
+                  {/* Right Column - Description */}
+                  <div>
+                    <p className="text-gray-600 text-base leading-loose font-medium">
+                      {selectedProgram.description}
+                    </p>
+                  </div>
+                </div>
+              </article>
+            )}
           </div>
 
-          {/* Selected Program Card (共通) */}
+          {/* Mobile/Tablet: Card Content (899px以下) */}
           {selectedProgram && (
             <article
-              className="lg:grid lg:grid-cols-[200px_1fr] lg:gap-12"
+              className="lg:hidden"
               style={{
                 opacity: otherProgramsSection.isVisible ? 1 : 0,
                 transform: otherProgramsSection.isVisible ? 'translateY(0)' : 'translateY(30px)',
                 transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s',
               }}
             >
-              {/* Desktop: Left spacer for alignment */}
-              <div className="hidden lg:block" />
-
-              {/* Card Content */}
               <div className="min-w-0">
                 {/* Image Area - 21:9 aspect ratio */}
                 <div className="relative overflow-hidden mb-8">
