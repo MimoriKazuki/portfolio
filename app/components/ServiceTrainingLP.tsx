@@ -359,7 +359,7 @@ export default function ServiceTrainingLP({
   }
 
   return (
-    <>
+    <div className="overflow-x-hidden">
       {/* SEO用のh1 */}
       <h1 className="sr-only">{seoTitle}</h1>
 
@@ -1156,6 +1156,6 @@ export default function ServiceTrainingLP({
           )}
         </section>
       </div>
-    </>
+    </div>
   )
 }
