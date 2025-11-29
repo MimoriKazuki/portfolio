@@ -31,22 +31,22 @@ export const AI_ORGANIZATION_OS_DATA: ServiceData = {
       { name: "GitHub", logo: "github" }
     ],
     descriptionBottom: "管理者は社員に状況確認をせずともAIに質問するだけで現状を把握でき、社員も自分のタスクや部署の状況をAIに聞くことで漏れなく対応可能に。異動・退職時の引き継ぎも、更新さえしていればAIに質問して確認できるため、引き継ぎ業務からも解放されます。ディレクトリ設計から運用ノウハウまで、組織OS導入を成功させるすべてを伝授します。",
-    featureImage: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=400&h=600&fit=crop&crop=center",
+    featureImage: "https://images.unsplash.com/photo-1670956007904-ddf3ff0d1eec?w=400&h=600&fit=crop&crop=center",
     items: [
       {
         title: "組織の脳みそ構築",
         description: "社員の役割・タスク・進捗をGitHubで一元管理し、AIが組織全体を理解できる基盤を構築",
-        image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=225&fit=crop&crop=center"
+        image: "https://images.unsplash.com/photo-1553028826-f4804a6dba3b?w=400&h=225&fit=crop&crop=center"
       },
       {
         title: "AIへの質問で状況把握",
         description: "Cursor内でAIに質問するだけで、組織の今を瞬時に把握。確認作業の時間を大幅削減",
-        image: "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=400&h=225&fit=crop&crop=center"
+        image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=225&fit=crop&crop=center"
       },
       {
         title: "引き継ぎ不要化",
         description: "日々の更新さえしていれば、異動・退職時もAIに質問することで業務を引き継ぎ可能に",
-        image: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=400&h=225&fit=crop&crop=center"
+        image: "https://images.unsplash.com/photo-1434626881859-194d67b2b86f?w=400&h=225&fit=crop&crop=center"
       }
     ]
   },
