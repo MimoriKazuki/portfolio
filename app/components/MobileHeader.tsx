@@ -55,12 +55,12 @@ export default function MobileHeader() {
 
       {/* Mobile Menu Overlay */}
       {isMenuOpen && (
-        <div className="lg:hidden fixed inset-0 z-40 bg-black bg-opacity-50" onClick={toggleMenu} />
+        <div className="xl:hidden fixed inset-0 z-40 bg-black bg-opacity-50" onClick={toggleMenu} />
       )}
 
       {/* Mobile Menu Drawer */}
       <div
-        className={`lg:hidden fixed top-16 right-0 bottom-0 z-40 w-64 bg-white shadow-xl transform transition-transform duration-300 ease-in-out ${
+        className={`xl:hidden fixed top-16 right-0 bottom-0 z-40 w-64 bg-white shadow-xl transform transition-transform duration-300 ease-in-out ${
           isMenuOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
@@ -99,7 +99,7 @@ export default function MobileHeader() {
       </div>
 
       {/* Spacer for fixed header on mobile */}
-      <div className="lg:hidden h-16" />
+      <div className="xl:hidden h-16" />
     </>
   )
 }
