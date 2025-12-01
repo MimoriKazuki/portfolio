@@ -223,10 +223,16 @@ export default function ServiceTrainingLP({
   }
   const [openFaqs, setOpenFaqs] = useState<Set<number>>(new Set())
   const [heroLoaded, setHeroLoaded] = useState(false)
+  const [featuresLoaded, setFeaturesLoaded] = useState(false)
 
   // ヒーローアニメーション開始
   useEffect(() => {
     setHeroLoaded(true)
+    // Featuresセクションはヒーローアニメーション完了後に表示（約1秒後）
+    const timer = setTimeout(() => {
+      setFeaturesLoaded(true)
+    }, 1000)
+    return () => clearTimeout(timer)
   }, [])
 
   // Other programs navigation state
@@ -458,8 +464,8 @@ export default function ServiceTrainingLP({
           <div
             className="mb-8 pt-16 relative"
             style={{
-              opacity: featuresSection.isVisible ? 1 : 0,
-              transform: featuresSection.isVisible ? 'translateY(0)' : 'translateY(30px)',
+              opacity: featuresLoaded ? 1 : 0,
+              transform: featuresLoaded ? 'translateY(0)' : 'translateY(30px)',
               transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)',
             }}
           >
@@ -473,8 +479,8 @@ export default function ServiceTrainingLP({
           <div
             className="bg-white border border-gray-200 mb-10 mid:mb-16 p-8"
             style={{
-              opacity: featuresSection.isVisible ? 1 : 0,
-              transform: featuresSection.isVisible ? 'translateY(0)' : 'translateY(40px)',
+              opacity: featuresLoaded ? 1 : 0,
+              transform: featuresLoaded ? 'translateY(0)' : 'translateY(40px)',
               transition: 'opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s',
             }}
           >

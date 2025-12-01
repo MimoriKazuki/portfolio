@@ -24,7 +24,7 @@ export default async function DocumentsPage() {
 
   return (
     <MainLayout hideRightSidebar={true}>
-      <div className="w-full">
+      <div className="w-full pt-8 max-mid:pt-0">
         <PageHeader title="DOCUMENT" subtitle="資料ダウンロード" />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
