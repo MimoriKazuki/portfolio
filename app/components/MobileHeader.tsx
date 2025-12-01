@@ -56,12 +56,8 @@ export default function MobileHeader() {
 
   return (
     <>
-      {/* Mobile Header - sticky に変更（Safari viewport バグ対策） */}
-      {/* viewport-fit: cover 使用時、safe-area-inset-top でノッチ/ステータスバー領域を確保 */}
-      <header
-        className="xl:hidden sticky top-0 z-50 bg-white border-b border-gray-200"
-        style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
-      >
+      {/* Mobile Header - 標準的なfixedヘッダー */}
+      <header className="xl:hidden fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200">
         <div className="flex items-center justify-between px-4 h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center">
@@ -150,7 +146,8 @@ export default function MobileHeader() {
         </nav>
       </div>
 
-      {/* sticky ヘッダーはスペーサー不要（文書フロー内に存在するため） */}
+      {/* fixedヘッダーのスペーサー（h-16 = 64px） */}
+      <div className="xl:hidden h-16" />
     </>
   )
 }

@@ -168,20 +168,15 @@ input[type="range"].audio-slider::-moz-range-track {
     @apply bg-background;
     background-color: hsl(var(--background));
     overflow-x: hidden;
-    /* Safariスクロール位置問題対策 */
-    scroll-padding-top: 0;
-    scroll-margin-top: 0;
   }
 
   body {
     @apply bg-background text-foreground;
     background-color: hsl(var(--background));
-    /* Safari viewport バグ対策: min-height を完全に削除 */
-    /* 100dvh / -webkit-fill-available は Safari の viewport 計算を壊す原因 */
-    min-height: auto;
-    height: auto;
     overflow-x: hidden;
-    /* padding-top も削除（sticky ヘッダーを使用するため不要） */
+    /* 標準的なレイアウト: fixedヘッダー + スペーサーで対応 */
+    padding: 0;
+    margin: 0;
   }
 
   /* モバイルブラウザのフォーム要素スタイルをリセット */

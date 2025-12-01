@@ -4,7 +4,6 @@ import './globals.css'
 import StructuredData from './components/StructuredData'
 import GoogleAnalytics from './components/GoogleAnalytics'
 import MicrosoftClarity from './components/MicrosoftClarity'
-import ScrollToTop from './components/ScrollToTop'
 
 const inter = Inter({ subsets: ['latin'] })
 const caveat = Caveat({
@@ -21,7 +20,6 @@ export const viewport = {
   themeColor: '#1d4ed8',
   width: 'device-width',
   initialScale: 1,
-  viewportFit: 'cover',
 }
 
 export const metadata: Metadata = {
@@ -104,7 +102,6 @@ export default function RootLayout({
         {/* 参照: https://github.com/vercel/next.js/issues/49427 */}
         <div />
         <div className="fixed inset-0 bg-youtube-dark" style={{ backgroundColor: '#0f0f0f', zIndex: -1 }} aria-hidden="true" />
-        <ScrollToTop />
         <GoogleAnalytics />
         <MicrosoftClarity />
         {children}
