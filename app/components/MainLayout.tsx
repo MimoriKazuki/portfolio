@@ -38,7 +38,7 @@ export default function MainLayout({ children, hideRightSidebar = false, hideCon
       <div className="flex-1 flex">
         {/* Left Sidebar - Fixed to left edge */}
         <aside className="w-[178px] flex-shrink-0 hidden xl:block bg-white border-r border-gray-200">
-          <div className="sticky top-0 h-screen overflow-y-auto">
+          <div className="sticky top-0 max-h-screen overflow-y-auto">
             <Sidebar />
           </div>
         </aside>
