@@ -217,13 +217,7 @@ function ContactForm() {
 
               {/* サービス選択時の研修タイプ選択 */}
               {formData.inquiry_type === 'service' && (
-                <div
-                  className="overflow-hidden transition-all duration-300"
-                  style={{
-                    maxHeight: formData.inquiry_type === 'service' ? '200px' : '0',
-                    opacity: formData.inquiry_type === 'service' ? 1 : 0,
-                  }}
-                >
+                <div>
                   <label htmlFor="service_type" className="block text-sm font-medium text-gray-900 mb-2">
                     ご興味のある研修
                   </label>
