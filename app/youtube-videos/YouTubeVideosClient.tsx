@@ -17,7 +17,7 @@ export default function YouTubeVideosClient({ videos }: YouTubeVideosClientProps
   }, [])
 
   return (
-    <div className="w-full pt-8">
+    <div className="w-full min-[720px]:pt-8">
       <div
         className="mb-12"
         style={{

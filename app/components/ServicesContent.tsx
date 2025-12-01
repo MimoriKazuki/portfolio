@@ -170,7 +170,7 @@ export default function ServicesContent() {
   const currentServices = activeTab === 'corporate' ? corporateServices : individualServices
 
   return (
-    <div className="w-full pt-8">
+    <div className="w-full min-[720px]:pt-8">
       {/* SEO用のh1 */}
       <h1 className="sr-only">LandBridge サービス - AI研修・教育プログラム</h1>
 
