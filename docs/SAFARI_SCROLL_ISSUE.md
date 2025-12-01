@@ -96,86 +96,145 @@ Next.js App Routerの既知のバグ（[#49427](https://github.com/vercel/next.j
 - [StackOverflow: Force stop momentum scrolling](https://stackoverflow.com/questions/16109561/force-stop-momentum-scrolling-on-iphone-ipad-in-javascript)
 - [WebKit Bug #169509](https://bugs.webkit.org/show_bug.cgi?id=169509) - Safari scroll direction state bug
 
-## 現在のコード状態
+## 現在のコード状態（2025-01-XX更新）
 
-### ScrollToTop.tsx
+### 実装ファイル一覧
 
-```typescript
-'use client'
+1. **`app/components/ScrollToTop.tsx`** - メインのスクロールリセットコンポーネント
+   - Visual Viewport APIの実装
+   - requestAnimationFrameループの実装
+   - MutationObserverの実装
+   - デバッグ機能の実装
 
-import { useEffect } from 'react'
-import { usePathname } from 'next/navigation'
+2. **`app/components/SafariLink.tsx`** - Safari用のカスタムLinkコンポーネント
+   - リンククリック時のスクロール方向リセット
 
-function isSafari(): boolean {
-  if (typeof navigator === 'undefined') return false
-  const ua = navigator.userAgent
-  return /Safari/.test(ua) && !/Chrome/.test(ua) && !/CriOS/.test(ua)
-}
+3. **`app/globals.css`** - CSSによる解決策
+   - `scroll-padding-top: 0`の設定
+   - アンカー要素の追加
 
-function scrollToAbsoluteTop() {
-  window.scrollTo(0, 0)
-  document.documentElement.scrollTop = 0
-  document.body.scrollTop = 0
-  document.body.scrollIntoView({ block: 'start', behavior: 'instant' })
-}
+4. **`app/components/ServiceTrainingLP.tsx`** - SafariLinkの使用例
+   - 「サービス一覧へ戻る」ボタンでSafariLinkを使用
 
-function forceScrollToTopSafari() {
-  window.scrollTo(0, -100)
-  window.scrollTo(0, 0)
-  document.documentElement.scrollTop = 0
-  document.body.scrollTop = 0
-  document.documentElement.scrollIntoView({ block: 'start', behavior: 'instant' })
-}
+### 主要な実装詳細
 
-export default function ScrollToTop() {
-  const pathname = usePathname()
+#### ScrollToTop.tsxの主要機能
 
-  useEffect(() => {
-    if ('scrollRestoration' in history) {
-      history.scrollRestoration = 'manual'
-    }
+- **`scrollToTopWithVisualViewport()`**: Visual Viewport APIを使用したスクロールリセット
+- **`createScrollMonitor()`**: requestAnimationFrameループで500ms間監視
+- **`createDOMObserver()`**: MutationObserverでDOM変更を監視
+- **`logScrollDebugInfo()`**: 開発環境でのデバッグ情報出力
 
-    if (isSafari()) {
-      const handleClick = (e: MouseEvent) => {
-        const target = e.target as HTMLElement
-        const link = target.closest('a')
-        if (link) {
-          const href = link.getAttribute('href')
-          if (href && href.startsWith('/') && !href.includes('#')) {
-            forceScrollToTopSafari()
-          }
-        }
-      }
-      document.addEventListener('click', handleClick, { capture: true })
-      return () => document.removeEventListener('click', handleClick, { capture: true })
-    }
-  }, [])
+#### SafariLink.tsxの機能
 
-  useEffect(() => {
-    if (isSafari()) {
-      forceScrollToTopSafari()
-      setTimeout(forceScrollToTopSafari, 0)
-      setTimeout(forceScrollToTopSafari, 10)
-      setTimeout(forceScrollToTopSafari, 50)
-      setTimeout(forceScrollToTopSafari, 100)
-    } else {
-      scrollToAbsoluteTop()
-    }
-  }, [pathname])
+- Next.jsの`Link`コンポーネントをラップ
+- Safari検出時にリンククリックでスクロール方向をリセット
+- 通常のLinkと同じプロパティをサポート
 
-  return null
-}
-```
+### テスト方法
 
-## 未検証のアプローチ
+1. **開発環境でのテスト:**
+   - `npm run dev`で開発サーバーを起動
+   - iOS Safariでアクセス
+   - ブラウザコンソールでデバッグ情報を確認
 
-1. **Visual Viewport API** の使用
-2. **Next.js の experimental.scrollRestoration** 設定
-3. **Safari固有のビューポート計算** (`-webkit-fill-available` など)
-4. **ページ遷移アニメーション中のスクロール制御**
-5. **MutationObserver** でDOM変更を監視してスクロールリセット
-6. **requestAnimationFrame** ループでのスクロール監視・リセット
-7. **Next.js Link コンポーネントのカスタマイズ**（onClickで独自処理）
+2. **本番環境でのテスト:**
+   - 実際のiOSデバイスでテスト
+   - ページ遷移時のスクロール位置を確認
+   - 「サービス一覧へ戻る」ボタンが正しく表示されるか確認
+
+### パフォーマンスへの影響
+
+- **requestAnimationFrameループ**: 500ms間のみ実行されるため、影響は限定的
+- **MutationObserver**: DOM変更時のみ実行されるため、パフォーマンスへの影響は最小限
+- **Visual Viewportイベント**: イベント駆動型のため、オーバーヘッドは低い
+
+### 今後のメンテナンス
+
+- 新しいNext.jsバージョンでの動作確認が必要
+- Safariのアップデートで動作が変わる可能性があるため、定期的なテストを推奨
+- 問題が解決した場合は、不要になったアプローチを削除してコードを簡素化可能
+
+## 実装した解決策（2025-01-XX）
+
+### アプローチ1: Visual Viewport APIの活用 ✅
+
+**実装内容:**
+- `window.visualViewport` APIを使用してSafariのビューポート位置を直接制御
+- `visualViewport.pageTop`と`visualViewport.offsetTop`を監視してリセット
+- `visualViewport`の`resize`と`scroll`イベントで継続的に監視
+
+**実装場所:**
+- `ScrollToTop.tsx`の`scrollToTopWithVisualViewport()`関数
+- `visualViewport`イベントリスナーを追加
+
+### アプローチ2: Next.js Linkコンポーネントのカスタマイズ ✅
+
+**実装内容:**
+- `SafariLink.tsx`コンポーネントを作成
+- リンククリック時にスクロール方向をリセット（1px上にスクロール→0に戻す）
+- Safari専用の処理として実装
+
+**実装場所:**
+- `app/components/SafariLink.tsx`（新規作成）
+- `ServiceTrainingLP.tsx`の「サービス一覧へ戻る」ボタンで使用
+
+### アプローチ3: requestAnimationFrameループでの監視 ✅
+
+**実装内容:**
+- ページ遷移直後の500ms間、`requestAnimationFrame`ループでスクロール位置を監視
+- スクロール位置が0でない場合、強制的に0にリセット
+- Safari専用の処理として実装
+
+**実装場所:**
+- `ScrollToTop.tsx`の`createScrollMonitor()`関数
+
+### アプローチ4: MutationObserverによるDOM監視 ✅
+
+**実装内容:**
+- ページ遷移時のDOM変更を`MutationObserver`で監視
+- メインコンテンツのレンダリング完了を検知してスクロールリセット
+- タイムアウト（500ms）でフォールバック
+
+**実装場所:**
+- `ScrollToTop.tsx`の`createDOMObserver()`関数
+
+### アプローチ5: CSSによる強制スクロール位置 ✅
+
+**実装内容:**
+- `html`と`body`要素に`scroll-padding-top: 0`を設定
+- `html::before`でアンカー要素を追加
+
+**実装場所:**
+- `globals.css`の`@layer base`セクション
+
+### 統合実装
+
+すべてのアプローチを`ScrollToTop.tsx`に統合し、以下の順序で実行：
+
+1. **リンククリック時**: Visual Viewport APIで即座にリセット
+2. **ページ遷移時**: 
+   - Visual Viewport APIで即座にリセット
+   - requestAnimationFrameループで500ms間監視
+   - MutationObserverでDOM変更を監視
+   - 複数のタイミング（0, 10, 50, 100, 200ms）でフォールバックリセット
+3. **Visual Viewport変更時**: `resize`と`scroll`イベントで継続的に監視
+
+### デバッグ機能
+
+開発環境では、以下のデバッグ情報をコンソールに出力：
+- スクロール位置（`window.scrollY`, `document.documentElement.scrollTop`など）
+- Visual Viewport情報（`offsetTop`, `pageTop`）
+- タイムスタンプ
+
+**使用方法:**
+開発環境（`NODE_ENV=development`）でSafariを使用すると、自動的にデバッグ情報が出力されます。
+
+## 未検証のアプローチ（将来の検討事項）
+
+1. **Next.js の experimental.scrollRestoration** 設定
+2. **Safari固有のビューポート計算** (`-webkit-fill-available` など)
+3. **ページ遷移アニメーション中のスクロール制御**（`overflow: hidden`の使用）
 
 ## 仮説
 
@@ -192,4 +251,4 @@ export default function ScrollToTop() {
 ---
 
 作成日: 2025-12-02
-最終更新: 2025-12-02
+最終更新: 2025-01-XX（複数のアプローチを実装・統合）

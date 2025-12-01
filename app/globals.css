@@ -168,6 +168,8 @@ input[type="range"].audio-slider::-moz-range-track {
     @apply bg-background;
     background-color: hsl(var(--background));
     overflow-x: hidden;
+    /* Safariスクロール位置問題対策: scroll-padding-topを0に設定 */
+    scroll-padding-top: 0;
   }
 
   body {
@@ -175,6 +177,16 @@ input[type="range"].audio-slider::-moz-range-track {
     background-color: hsl(var(--background));
     min-height: 100vh;
     overflow-x: hidden;
+    /* Safariスクロール位置問題対策: スクロール位置の基準を明確化 */
+    scroll-padding-top: 0;
+  }
+  
+  /* Safari専用: ページトップへのアンカー要素 */
+  html::before {
+    content: '';
+    display: block;
+    height: 0;
+    scroll-margin-top: 0;
   }
 
   /* モバイルブラウザのフォーム要素スタイルをリセット */
