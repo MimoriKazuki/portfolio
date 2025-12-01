@@ -61,19 +61,23 @@ export default function MainLayout({ children, hideRightSidebar = false, hideCon
       {/* Mobile Header */}
       <MobileHeader />
 
-      {/* Left Sidebar - Fixed position, stops at footer */}
-      <aside
-        className="hidden xl:block fixed left-0 w-[178px] h-[640px] bg-white border-r border-gray-200 z-40"
-        style={{
-          top: sidebarBottom !== undefined ? `-${sidebarBottom}px` : '0'
-        }}
-      >
-        <Sidebar />
-      </aside>
-
       {/* Body - contains all main content */}
-      <div className="flex-1 flex xl:ml-[178px]">
-        {/* Main Content Container with Horizontal Scroll for 1025px-1280px */}
+      <div className="flex-1 flex">
+        {/* Left Sidebar Background - stretches full height */}
+        <div className="w-[178px] flex-shrink-0 hidden xl:block bg-white border-r border-gray-200" />
+
+        {/* Left Sidebar Content - Fixed position, stops at footer */}
+        <aside
+          className="hidden xl:block fixed left-0 w-[178px] bg-white border-r border-gray-200 z-40"
+          style={{
+            top: sidebarBottom !== undefined ? `-${sidebarBottom}px` : '0',
+            height: `max(100vh, 640px)`
+          }}
+        >
+          <Sidebar />
+        </aside>
+
+        {/* Main Content Container */}
         <div className="flex-1 min-w-0">
           {/* Scrollable container for mid-range sizes */}
           <div className="h-full overflow-x-visible">
@@ -81,7 +85,7 @@ export default function MainLayout({ children, hideRightSidebar = false, hideCon
               <main className="flex-1 min-w-0">
                 {children}
               </main>
-              
+
               {/* Right Sidebar */}
               {!hideRightSidebar && (
                 <aside className="w-[260px] flex-shrink-0 hidden xl:block">
