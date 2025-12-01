@@ -35,10 +35,10 @@ export default function MainLayout({ children, hideRightSidebar = false, hideCon
       <MobileHeader />
       
       {/* Body - contains all main content */}
-      <div className="flex-1 flex">
+      <div className="flex-1 flex items-start">
         {/* Left Sidebar - Fixed to left edge */}
-        <aside className="w-[178px] flex-shrink-0 hidden xl:block bg-white border-r border-gray-200">
-          <div className="sticky top-0 max-h-screen overflow-y-auto">
+        <aside className="w-[178px] flex-shrink-0 hidden xl:block bg-white border-r border-gray-200 sticky top-0 h-screen">
+          <div className="h-full overflow-y-auto">
             <Sidebar />
           </div>
         </aside>
