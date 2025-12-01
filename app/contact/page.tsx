@@ -47,7 +47,6 @@ function ContactForm() {
     { value: 'ai-coding-training', label: '【企業向け】AIコーディング研修' },
     // 個人向けサービス
     { value: 'ai-talent-development', label: '【個人向け】AI駆動開発育成所' },
-    { value: 'other-service', label: 'その他・未定' },
   ]
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitMessage, setSubmitMessage] = useState('')
