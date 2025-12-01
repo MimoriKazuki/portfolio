@@ -5,23 +5,32 @@ import { usePathname } from 'next/navigation'
 
 // Safari対応のスクロールリセット関数
 function forceScrollToTop() {
-  // 方法1: 標準的なscrollTo
   window.scrollTo(0, 0)
-
-  // 方法2: documentElementとbodyの両方をリセット
   document.documentElement.scrollTop = 0
   document.body.scrollTop = 0
+}
 
-  // 方法3: Safari用の負の値ワークアラウンド
-  // Safariでは0が効かない場合があるため、-1を使用してから0に戻す
-  // 参照: https://stackoverflow.com/questions/24616322/
-  try {
-    window.scroll({ top: -1, left: 0, behavior: 'instant' })
-    window.scroll({ top: 0, left: 0, behavior: 'instant' })
-  } catch {
-    // behavior: 'instant'がサポートされていない場合
-    window.scrollTo(0, 0)
-  }
+// Safariのモメンタムスクロールを強制停止してからスクロールトップ
+// 参照: https://stackoverflow.com/questions/16109561/
+function stopMomentumAndScrollToTop() {
+  const html = document.documentElement
+  const body = document.body
+
+  // overflow: hiddenを設定してモメンタムスクロールを強制停止
+  const originalHtmlOverflow = html.style.overflow
+  const originalBodyOverflow = body.style.overflow
+
+  html.style.overflow = 'hidden'
+  body.style.overflow = 'hidden'
+
+  // スクロール位置をリセット
+  forceScrollToTop()
+
+  // 少し待ってからoverflowを元に戻す（10ms以上必要）
+  setTimeout(() => {
+    html.style.overflow = originalHtmlOverflow
+    body.style.overflow = originalBodyOverflow
+  }, 10)
 }
 
 export default function ScrollToTop() {
@@ -33,25 +42,46 @@ export default function ScrollToTop() {
     if ('scrollRestoration' in history) {
       history.scrollRestoration = 'manual'
     }
+
+    // リンククリック時にモメンタムスクロールを停止
+    // Next.jsのナビゲーション前にモメンタムを止める
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement
+      const link = target.closest('a')
+
+      if (link) {
+        const href = link.getAttribute('href')
+        // 内部リンクの場合のみ処理
+        if (href && (href.startsWith('/') || href.startsWith(window.location.origin))) {
+          // ハッシュリンクでない場合
+          if (!href.includes('#')) {
+            // モメンタムスクロールを停止してからスクロールトップ
+            stopMomentumAndScrollToTop()
+          }
+        }
+      }
+    }
+
+    // キャプチャフェーズで実行（Next.jsより先に処理）
+    document.addEventListener('click', handleClick, { capture: true })
+
+    return () => {
+      document.removeEventListener('click', handleClick, { capture: true })
+    }
   }, [])
 
-  // ページ遷移時にスクロール位置を一番上にリセット
+  // ページ遷移時にもスクロール位置をリセット
   useEffect(() => {
-    // パスが変わった場合のみ実行
     if (prevPathname.current !== pathname) {
       prevPathname.current = pathname
 
-      // 即座にスクロールリセット
-      forceScrollToTop()
+      // モメンタム停止 + スクロールリセット
+      stopMomentumAndScrollToTop()
 
-      // Safari対策: Safariの内部スクロール復元より後にリセット
-      // 複数のタイミングで実行して確実にリセット
+      // 追加の遅延リセット（念のため）
       const timers = [
-        setTimeout(forceScrollToTop, 0),
-        setTimeout(forceScrollToTop, 10),
         setTimeout(forceScrollToTop, 50),
         setTimeout(forceScrollToTop, 100),
-        setTimeout(forceScrollToTop, 200), // 追加: 長めの遅延
       ]
 
       return () => timers.forEach(clearTimeout)
