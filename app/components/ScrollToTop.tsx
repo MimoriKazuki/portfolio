@@ -11,17 +11,22 @@ function isSafari(): boolean {
 }
 
 // デバッグ情報を収集（開発環境のみ）
-function logScrollDebugInfo(label: string) {
+function logScrollDebugInfo(label: string, extra?: Record<string, any>) {
   if (process.env.NODE_ENV === 'development' && isSafari()) {
     const scrollY = window.scrollY
     const scrollTop = document.documentElement.scrollTop
     const bodyScrollTop = document.body.scrollTop
+    const visualViewport = window.visualViewport
     
     console.log(`[Safari Scroll Debug] ${label}:`, {
       windowScrollY: scrollY,
       documentElementScrollTop: scrollTop,
       bodyScrollTop: bodyScrollTop,
-      timestamp: Date.now()
+      visualViewportPageTop: visualViewport?.pageTop || 0,
+      visualViewportOffsetTop: visualViewport?.offsetTop || 0,
+      documentReadyState: document.readyState,
+      timestamp: Date.now(),
+      ...extra
     })
   }
 }
@@ -36,50 +41,76 @@ function scrollToAbsoluteTop() {
 
 // Safari用: スクロール方向を完全にリセットする強力な関数
 // 下方向スクロール状態を上方向に変更してから0に戻す
-function resetScrollDirectionSafari() {
-  const currentScroll = window.scrollY
-  
-  // スクロール位置が0でない場合、スクロール方向を完全にリセット
-  if (currentScroll > 0) {
-    // ステップ1: 現在位置から上方向に10pxスクロール（スクロール方向を上方向に変更）
-    const targetScroll = Math.max(0, currentScroll - 10)
-    window.scrollTo(0, targetScroll)
-    document.documentElement.scrollTop = targetScroll
-    document.body.scrollTop = targetScroll
+// 戻り値: Promise（リセット処理の完了を待機可能）
+function resetScrollDirectionSafari(): Promise<void> {
+  return new Promise((resolve) => {
+    const currentScroll = window.scrollY
+    const startTime = performance.now()
     
-    // ステップ2: さらに上方向にスクロール（確実に上方向状態にする）
-    requestAnimationFrame(() => {
-      const newTargetScroll = Math.max(0, targetScroll - 20)
-      window.scrollTo(0, newTargetScroll)
-      document.documentElement.scrollTop = newTargetScroll
-      document.body.scrollTop = newTargetScroll
+    logScrollDebugInfo('resetScrollDirectionSafari - Start', { currentScroll })
+    
+    // スクロール位置が0でない場合、スクロール方向を完全にリセット
+    if (currentScroll > 0) {
+      // ステップ1: 現在位置から上方向に10pxスクロール（スクロール方向を上方向に変更）
+      const targetScroll = Math.max(0, currentScroll - 10)
+      window.scrollTo(0, targetScroll)
+      document.documentElement.scrollTop = targetScroll
+      document.body.scrollTop = targetScroll
       
-      // ステップ3: 0に戻す（上方向状態を保ったまま）
+      logScrollDebugInfo('resetScrollDirectionSafari - Step 1', { targetScroll })
+      
+      // ステップ2: さらに上方向にスクロール（確実に上方向状態にする）
+      requestAnimationFrame(() => {
+        const newTargetScroll = Math.max(0, targetScroll - 20)
+        window.scrollTo(0, newTargetScroll)
+        document.documentElement.scrollTop = newTargetScroll
+        document.body.scrollTop = newTargetScroll
+        
+        logScrollDebugInfo('resetScrollDirectionSafari - Step 2', { newTargetScroll })
+        
+        // ステップ3: 0に戻す（上方向状態を保ったまま）
+        requestAnimationFrame(() => {
+          window.scrollTo(0, 0)
+          document.documentElement.scrollTop = 0
+          document.body.scrollTop = 0
+          
+          logScrollDebugInfo('resetScrollDirectionSafari - Step 3', { scrollY: window.scrollY })
+          
+          // ステップ4: 最終確認（確実に0に）
+          requestAnimationFrame(() => {
+            window.scrollTo(0, 0)
+            document.documentElement.scrollTop = 0
+            document.body.scrollTop = 0
+            
+            const endTime = performance.now()
+            logScrollDebugInfo('resetScrollDirectionSafari - Complete', { 
+              finalScrollY: window.scrollY,
+              duration: endTime - startTime
+            })
+            resolve()
+          })
+        })
+      })
+    } else {
+      // 既に0の場合は、上方向にスクロールしてから0に戻す（スクロール方向をリセット）
+      window.scrollTo(0, -5)
+      document.documentElement.scrollTop = -5
+      document.body.scrollTop = -5
+      
       requestAnimationFrame(() => {
         window.scrollTo(0, 0)
         document.documentElement.scrollTop = 0
         document.body.scrollTop = 0
         
-        // ステップ4: 最終確認（確実に0に）
-        requestAnimationFrame(() => {
-          window.scrollTo(0, 0)
-          document.documentElement.scrollTop = 0
-          document.body.scrollTop = 0
+        const endTime = performance.now()
+        logScrollDebugInfo('resetScrollDirectionSafari - Complete (was at 0)', { 
+          finalScrollY: window.scrollY,
+          duration: endTime - startTime
         })
+        resolve()
       })
-    })
-  } else {
-    // 既に0の場合は、上方向にスクロールしてから0に戻す（スクロール方向をリセット）
-    window.scrollTo(0, -5)
-    document.documentElement.scrollTop = -5
-    document.body.scrollTop = -5
-    
-    requestAnimationFrame(() => {
-      window.scrollTo(0, 0)
-      document.documentElement.scrollTop = 0
-      document.body.scrollTop = 0
-    })
-  }
+    }
+  })
 }
 
 export default function ScrollToTop() {
@@ -100,7 +131,7 @@ export default function ScrollToTop() {
     }
 
     // Safari用: リンククリック時にスクロール方向を完全にリセット（遷移前）
-    const handleClick = (e: MouseEvent) => {
+    const handleClick = async (e: MouseEvent) => {
       const target = e.target as HTMLElement
       const link = target.closest('a')
 
@@ -108,16 +139,48 @@ export default function ScrollToTop() {
         const href = link.getAttribute('href')
         // 内部リンクでアンカーリンクでない場合のみ処理
         if (href && href.startsWith('/') && !href.includes('#')) {
-          logScrollDebugInfo('Link click detected - Resetting scroll direction before navigation')
+          const clickTime = performance.now()
+          logScrollDebugInfo('Link click detected - Resetting scroll direction before navigation', {
+            href,
+            currentPathname: window.location.pathname,
+            clickTime,
+            currentScrollY: window.scrollY
+          })
+          
           isNavigatingRef.current = true
           
-          // 遷移前にスクロール方向を完全にリセット（即座に実行）
-          resetScrollDirectionSafari()
-          
-          // さらに確実にするため、短い遅延後にもう一度リセット
-          setTimeout(() => {
-            resetScrollDirectionSafari()
-          }, 10)
+          // 遷移前にスクロール方向を完全にリセット（完了を待機）
+          try {
+            // 即座に同期処理でスクロール位置を0に
+            window.scrollTo(0, 0)
+            document.documentElement.scrollTop = 0
+            document.body.scrollTop = 0
+            
+            // 非同期でスクロール方向をリセット
+            await resetScrollDirectionSafari()
+            logScrollDebugInfo('Link click - First reset complete', {
+              duration: performance.now() - clickTime,
+              finalScrollY: window.scrollY
+            })
+            
+            // さらに確実にするため、短い遅延後にもう一度リセット
+            await new Promise(resolve => setTimeout(resolve, 10))
+            await resetScrollDirectionSafari()
+            logScrollDebugInfo('Link click - Second reset complete', {
+              duration: performance.now() - clickTime,
+              finalScrollY: window.scrollY
+            })
+            
+            // 最終確認: スクロール位置が0であることを確認
+            if (window.scrollY > 0) {
+              logScrollDebugInfo('Link click - Final check: scrollY > 0, resetting again', {
+                scrollY: window.scrollY
+              })
+              await resetScrollDirectionSafari()
+            }
+          } catch (error) {
+            logScrollDebugInfo('Link click - Reset error', { error })
+          }
         }
       }
     }
@@ -133,7 +196,13 @@ export default function ScrollToTop() {
       return
     }
 
-    logScrollDebugInfo(`Pathname changed to: ${pathname}`)
+    const pathnameChangeTime = performance.now()
+    logScrollDebugInfo(`Pathname changed to: ${pathname}`, {
+      pathnameChangeTime,
+      documentReadyState: document.readyState,
+      currentScrollY: window.scrollY
+    })
+    
     isNavigatingRef.current = true
     lastScrollYRef.current = window.scrollY
 
@@ -145,8 +214,33 @@ export default function ScrollToTop() {
       cancelAnimationFrame(rafIdRef.current)
     }
 
-    // 即座にスクロール方向を完全にリセット
-    resetScrollDirectionSafari()
+    // DOMのレンダリング完了を待ってからスクロール方向をリセット
+    const resetAfterDOMReady = async () => {
+      // DOMContentLoadedを待つ（既に完了している場合は即座に実行）
+      if (document.readyState === 'loading') {
+        await new Promise<void>((resolve) => {
+          document.addEventListener('DOMContentLoaded', () => resolve(), { once: true })
+        })
+      }
+      
+      // さらに短い遅延を追加（DOMのレンダリングを待つ）
+      await new Promise<void>((resolve) => setTimeout(resolve, 0))
+      
+      logScrollDebugInfo('Pathname change - DOM ready, resetting scroll', {
+        duration: performance.now() - pathnameChangeTime,
+        scrollY: window.scrollY
+      })
+      
+      // スクロール方向を完全にリセット
+      await resetScrollDirectionSafari()
+      
+      logScrollDebugInfo('Pathname change - Reset complete', {
+        duration: performance.now() - pathnameChangeTime,
+        finalScrollY: window.scrollY
+      })
+    }
+    
+    resetAfterDOMReady()
 
     // 遷移完了後、スクロール位置を強制的に0に保つ（500ms間）
     const monitorDuration = 500
@@ -163,8 +257,9 @@ export default function ScrollToTop() {
 
       if (scrollY > 0 || scrollTop > 0 || bodyScrollTop > 0) {
         // スクロール方向をリセットしてから0に戻す
-        resetScrollDirectionSafari()
-        logScrollDebugInfo(`RAF Monitor (check ${checkCount}) - Reset triggered`)
+        resetScrollDirectionSafari().then(() => {
+          logScrollDebugInfo(`RAF Monitor (check ${checkCount}) - Reset triggered and completed`)
+        })
       }
 
       // ユーザーが意図的にスクロールしている場合は停止
@@ -209,34 +304,34 @@ export default function ScrollToTop() {
 
     // 複数のタイミングでもリセット（フォールバック）
     const timeouts = [
-      setTimeout(() => {
+      setTimeout(async () => {
         if (isNavigatingRef.current) {
-          resetScrollDirectionSafari()
-          logScrollDebugInfo('Timeout 0ms')
+          await resetScrollDirectionSafari()
+          logScrollDebugInfo('Timeout 0ms - Reset complete')
         }
       }, 0),
-      setTimeout(() => {
+      setTimeout(async () => {
         if (isNavigatingRef.current) {
-          resetScrollDirectionSafari()
-          logScrollDebugInfo('Timeout 50ms')
+          await resetScrollDirectionSafari()
+          logScrollDebugInfo('Timeout 50ms - Reset complete')
         }
       }, 50),
-      setTimeout(() => {
+      setTimeout(async () => {
         if (isNavigatingRef.current) {
-          resetScrollDirectionSafari()
-          logScrollDebugInfo('Timeout 100ms')
+          await resetScrollDirectionSafari()
+          logScrollDebugInfo('Timeout 100ms - Reset complete')
         }
       }, 100),
-      setTimeout(() => {
+      setTimeout(async () => {
         if (isNavigatingRef.current) {
-          resetScrollDirectionSafari()
-          logScrollDebugInfo('Timeout 200ms')
+          await resetScrollDirectionSafari()
+          logScrollDebugInfo('Timeout 200ms - Reset complete')
         }
       }, 200),
-      setTimeout(() => {
+      setTimeout(async () => {
         if (isNavigatingRef.current) {
-          resetScrollDirectionSafari()
-          logScrollDebugInfo('Timeout 300ms')
+          await resetScrollDirectionSafari()
+          logScrollDebugInfo('Timeout 300ms - Reset complete')
         }
         isNavigatingRef.current = false
       }, 300)
