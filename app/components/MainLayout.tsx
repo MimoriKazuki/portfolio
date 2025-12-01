@@ -30,16 +30,18 @@ export default function MainLayout({ children, hideRightSidebar = false, hideCon
   const footerRef = useRef<HTMLDivElement>(null)
   const [sidebarBottom, setSidebarBottom] = useState<number | undefined>(undefined)
 
+  const SIDEBAR_MIN_HEIGHT = 640
+
   useEffect(() => {
     const handleScroll = () => {
       if (!footerRef.current) return
 
       const footerRect = footerRef.current.getBoundingClientRect()
-      const viewportHeight = window.innerHeight
 
-      // フッターが画面内に入ってきたら、サイドバーの下端を調整
-      if (footerRect.top < viewportHeight) {
-        setSidebarBottom(viewportHeight - footerRect.top)
+      // フッターが画面内に入ってきたら、サイドバーの位置を調整
+      // サイドバーはフッターの上端で止まる
+      if (footerRect.top < SIDEBAR_MIN_HEIGHT) {
+        setSidebarBottom(SIDEBAR_MIN_HEIGHT - footerRect.top)
       } else {
         setSidebarBottom(undefined)
       }
@@ -61,9 +63,9 @@ export default function MainLayout({ children, hideRightSidebar = false, hideCon
 
       {/* Left Sidebar - Fixed position, stops at footer */}
       <aside
-        className="hidden xl:block fixed top-0 left-0 w-[178px] bg-white border-r border-gray-200 z-40 overflow-y-auto"
+        className="hidden xl:block fixed left-0 w-[178px] h-[640px] bg-white border-r border-gray-200 z-40"
         style={{
-          height: sidebarBottom !== undefined ? `calc(100vh - ${sidebarBottom}px)` : '100vh'
+          top: sidebarBottom !== undefined ? `-${sidebarBottom}px` : '0'
         }}
       >
         <Sidebar />
