@@ -96,18 +96,18 @@ Next.js App Routerの既知のバグ（[#49427](https://github.com/vercel/next.j
 - [StackOverflow: Force stop momentum scrolling](https://stackoverflow.com/questions/16109561/force-stop-momentum-scrolling-on-iphone-ipad-in-javascript)
 - [WebKit Bug #169509](https://bugs.webkit.org/show_bug.cgi?id=169509) - Safari scroll direction state bug
 
-## 現在のコード状態（2025-01-XX更新）
+## 現在のコード状態（2025-01-XX最終更新）
 
 ### 実装ファイル一覧
 
 1. **`app/components/ScrollToTop.tsx`** - メインのスクロールリセットコンポーネント
-   - Visual Viewport APIの実装
-   - requestAnimationFrameループの実装
-   - MutationObserverの実装
-   - デバッグ機能の実装
+   - スクロール方向をリセットする`resetScrollDirectionSafari()`関数（Promiseベース）
+   - requestAnimationFrameループでの監視（500ms間）
+   - 詳細なデバッグ機能の実装
+   - DOMのレンダリング完了を待つ処理
 
 2. **`app/components/SafariLink.tsx`** - Safari用のカスタムLinkコンポーネント
-   - リンククリック時のスクロール方向リセット
+   - 現在は通常のLinkと同じ動作（ScrollToTopが処理するため）
 
 3. **`app/globals.css`** - CSSによる解決策
    - `scroll-padding-top: 0`の設定
@@ -118,18 +118,28 @@ Next.js App Routerの既知のバグ（[#49427](https://github.com/vercel/next.j
 
 ### 主要な実装詳細
 
-#### ScrollToTop.tsxの主要機能
+#### ScrollToTop.tsxの主要機能（最新版）
 
-- **`scrollToTopWithVisualViewport()`**: Visual Viewport APIを使用したスクロールリセット
-- **`createScrollMonitor()`**: requestAnimationFrameループで500ms間監視
-- **`createDOMObserver()`**: MutationObserverでDOM変更を監視
-- **`logScrollDebugInfo()`**: 開発環境でのデバッグ情報出力
+- **`resetScrollDirectionSafari()`**: Promiseを返すスクロール方向リセット関数
+  - 下方向スクロール状態を上方向に変更してから0に戻す
+  - 4段階のリセット処理（10px上→20px上→0→最終確認）
+  - requestAnimationFrameを3回使用して非同期処理
+- **`checkAndReset()`**: requestAnimationFrameループで500ms間監視
+  - スクロール位置が0でない場合、`resetScrollDirectionSafari()`を呼び出し
+  - ユーザーが20px以上スクロールした場合、監視を停止
+- **`resetAfterDOMReady()`**: DOMのレンダリング完了を待ってからスクロールリセット
+  - `document.readyState`を確認
+  - DOMContentLoadedイベントを待機
+- **`logScrollDebugInfo()`**: 詳細なデバッグ情報出力
+  - タイミング情報（`performance.now()`）
+  - スクロール位置情報
+  - Visual Viewport API情報
+  - DOM状態情報
 
 #### SafariLink.tsxの機能
 
-- Next.jsの`Link`コンポーネントをラップ
-- Safari検出時にリンククリックでスクロール方向をリセット
-- 通常のLinkと同じプロパティをサポート
+- 現在は通常のLinkと同じ動作
+- ScrollToTopコンポーネントがリンククリックを検知して処理するため、特別な処理は不要
 
 ### テスト方法
 
@@ -155,77 +165,70 @@ Next.js App Routerの既知のバグ（[#49427](https://github.com/vercel/next.j
 - Safariのアップデートで動作が変わる可能性があるため、定期的なテストを推奨
 - 問題が解決した場合は、不要になったアプローチを削除してコードを簡素化可能
 
-## 実装した解決策（2025-01-XX）
+## 実装した解決策の変遷
 
-### アプローチ1: Visual Viewport APIの活用 ✅
+### フェーズ1: 複数アプローチの統合（2025-01-XX初期）
 
-**実装内容:**
-- `window.visualViewport` APIを使用してSafariのビューポート位置を直接制御
-- `visualViewport.pageTop`と`visualViewport.offsetTop`を監視してリセット
-- `visualViewport`の`resize`と`scroll`イベントで継続的に監視
+Visual Viewport API、MutationObserver、requestAnimationFrameループなどを統合したが、Safariでスクロールが常に最上部に戻る問題が発生。
 
-**実装場所:**
-- `ScrollToTop.tsx`の`scrollToTopWithVisualViewport()`関数
-- `visualViewport`イベントリスナーを追加
+### フェーズ2: 実装の簡素化（2025-01-XX中期）
 
-### アプローチ2: Next.js Linkコンポーネントのカスタマイズ ✅
+複数の監視を削除し、シンプルなアプローチに変更。しかし、下方向スクロール時の問題が継続。
+
+### フェーズ3: スクロール方向リセットの実装（2025-01-XX後期）
 
 **実装内容:**
-- `SafariLink.tsx`コンポーネントを作成
-- リンククリック時にスクロール方向をリセット（1px上にスクロール→0に戻す）
-- Safari専用の処理として実装
+- `resetScrollDirectionSafari()`関数を実装
+  - 下方向スクロール状態を上方向に変更してから0に戻す
+  - 4段階のリセット処理（10px上→20px上→0→最終確認）
+  - Promiseを返すように変更し、完了を待機可能に
 
-**実装場所:**
-- `app/components/SafariLink.tsx`（新規作成）
-- `ServiceTrainingLP.tsx`の「サービス一覧へ戻る」ボタンで使用
+**結果:**
+- 上方向スクロール時の問題は解決
+- 下方向スクロール時の問題は一時的に改善（五分五分の成功率）
+- その後、下方向スクロール時に問題が発生する状態に戻る
 
-### アプローチ3: requestAnimationFrameループでの監視 ✅
-
-**実装内容:**
-- ページ遷移直後の500ms間、`requestAnimationFrame`ループでスクロール位置を監視
-- スクロール位置が0でない場合、強制的に0にリセット
-- Safari専用の処理として実装
-
-**実装場所:**
-- `ScrollToTop.tsx`の`createScrollMonitor()`関数
-
-### アプローチ4: MutationObserverによるDOM監視 ✅
+### フェーズ4: 非同期処理とDOM待機の追加（2025-01-XX最終）
 
 **実装内容:**
-- ページ遷移時のDOM変更を`MutationObserver`で監視
-- メインコンテンツのレンダリング完了を検知してスクロールリセット
-- タイムアウト（500ms）でフォールバック
+- リンククリック時に、スクロール方向のリセットが完了するまで待機
+- ページ遷移時に、DOMのレンダリング完了を待ってからスクロールリセット
+- 詳細なデバッグ情報を追加（タイミング、スクロール位置、DOM状態など）
 
-**実装場所:**
-- `ScrollToTop.tsx`の`createDOMObserver()`関数
+**結果:**
+- 下方向スクロール時に問題が発生する状態に戻る
+- デバッグ情報は出力されるが、根本的な解決には至らず
 
-### アプローチ5: CSSによる強制スクロール位置 ✅
+## 現在の実装（2025-01-XX最終版）
 
-**実装内容:**
-- `html`と`body`要素に`scroll-padding-top: 0`を設定
-- `html::before`でアンカー要素を追加
+### 主要な関数
 
-**実装場所:**
-- `globals.css`の`@layer base`セクション
+1. **`resetScrollDirectionSafari()`**: Promiseを返すスクロール方向リセット関数
+   - 下方向スクロール状態を上方向に変更
+   - 4段階の非同期処理（requestAnimationFrameを3回使用）
+   - 各ステップでデバッグ情報を出力
 
-### 統合実装
+2. **リンククリック時の処理**:
+   - 即座に同期処理でスクロール位置を0に設定
+   - 非同期でスクロール方向をリセット（完了を待機）
+   - 10ms後に再度リセット
+   - 最終確認でスクロール位置が0であることを確認
 
-すべてのアプローチを`ScrollToTop.tsx`に統合し、以下の順序で実行：
-
-1. **リンククリック時**: Visual Viewport APIで即座にリセット
-2. **ページ遷移時**: 
-   - Visual Viewport APIで即座にリセット
+3. **ページ遷移時の処理**:
+   - DOMのレンダリング完了を待つ（`document.readyState`を確認）
+   - DOMContentLoadedイベントを待機
+   - スクロール方向をリセット
    - requestAnimationFrameループで500ms間監視
-   - MutationObserverでDOM変更を監視
-   - 複数のタイミング（0, 10, 50, 100, 200ms）でフォールバックリセット
-3. **Visual Viewport変更時**: `resize`と`scroll`イベントで継続的に監視
+   - 複数のタイミング（0ms, 50ms, 100ms, 200ms, 300ms）でフォールバック
 
 ### デバッグ機能
 
-開発環境では、以下のデバッグ情報をコンソールに出力：
+開発環境では、以下の詳細なデバッグ情報をコンソールに出力：
+- 各処理の開始・完了時刻（`performance.now()`）
 - スクロール位置（`window.scrollY`, `document.documentElement.scrollTop`など）
-- Visual Viewport情報（`offsetTop`, `pageTop`）
-- タイムスタンプ
+- Visual Viewport API情報（`pageTop`, `offsetTop`）
+- DOM状態（`document.readyState`）
+- 処理の継続時間
 
 **使用方法:**
 開発環境（`NODE_ENV=development`）でSafariを使用すると、自動的にデバッグ情報が出力されます。
@@ -236,19 +239,94 @@ Next.js App Routerの既知のバグ（[#49427](https://github.com/vercel/next.j
 2. **Safari固有のビューポート計算** (`-webkit-fill-available` など)
 3. **ページ遷移アニメーション中のスクロール制御**（`overflow: hidden`の使用）
 
-## 仮説
+## 仮説と調査結果
 
-1. **Safariの内部スクロール状態**: Safariが「最後のスクロール方向」を内部的に保持しており、これがページ遷移時に影響している可能性
-2. **ビューポート計算の違い**: Safariのビューポート計算がChromeと異なり、スクロール位置0が実際には少し下の位置を指している可能性
-3. **Next.js クライアントナビゲーションのタイミング**: Next.jsのクライアントサイドナビゲーション中のスクロール制御とSafariの内部処理の競合
+### 確認された事実
+
+1. **スクロール方向の影響**: 
+   - 下方向にスクロールした状態でページ遷移すると問題が発生
+   - 上方向にスクロールした状態でページ遷移すると問題が発生しない
+   - Safariがスクロール方向を内部的に保持している可能性が高い
+
+2. **タイミングの問題**:
+   - 五分五分の成功率ということは、タイミングの競合が発生している可能性
+   - リンククリック時の処理とNext.jsのナビゲーションタイミングの競合
+   - DOMのレンダリングタイミングとスクロールリセットのタイミングのずれ
+
+3. **非同期処理の限界**:
+   - `requestAnimationFrame`を使用した非同期処理では、Safariの内部状態を完全にリセットできない可能性
+   - Promiseベースの処理でも、Next.jsのナビゲーションが先に実行される場合がある
+
+### 仮説
+
+1. **Safariの内部スクロール状態**: Safariが「最後のスクロール方向」を内部的に保持しており、これがページ遷移時に影響している可能性が高い
+2. **Next.js クライアントナビゲーションのタイミング**: Next.jsのクライアントサイドナビゲーションが、スクロール方向のリセット処理を上書きしている可能性
+3. **Safariのスクロール方向リセットのタイミング**: Safariのスクロール方向の内部状態をリセットするには、ページ遷移前に確実に完了させる必要があるが、Next.jsのナビゲーションが非同期で実行されるため、タイミングが合わない可能性
+4. **DOMのレンダリングタイミング**: ページ遷移直後にDOMがレンダリングされる前にスクロール位置をリセットしても、Safariが内部状態を更新する前にナビゲーションが完了してしまう可能性
+
+## 未解決の問題と次のステップ
+
+### 現在の状態（2025-01-XX）
+
+- **上方向スクロール時**: 問題なし ✅
+- **下方向スクロール時**: 問題が発生する状態に戻る ❌
+- **成功率**: 五分五分（タイミングに依存）
+
+### 考えられる根本原因
+
+1. **Safariのスクロール方向の内部状態が、JavaScriptから完全に制御できない**
+   - `requestAnimationFrame`や`setTimeout`では、Safariの内部状態を確実にリセットできない可能性
+   - Safariのスクロール方向は、ページ遷移時に自動的に引き継がれる可能性
+
+2. **Next.jsのクライアントナビゲーションとSafariの内部処理の競合**
+   - Next.jsのナビゲーションが、スクロール方向のリセット処理を上書きしている可能性
+   - ナビゲーションのタイミングを制御する必要がある可能性
+
+3. **DOMのレンダリングタイミングとSafariのスクロール状態の更新タイミングのずれ**
+   - DOMがレンダリングされる前にスクロール位置をリセットしても、Safariが内部状態を更新する前にナビゲーションが完了してしまう可能性
+
+### 次のステップ（推奨される調査・実装）
+
+1. **Next.jsのナビゲーションを遅延させる**
+   - リンククリック時に、スクロール方向のリセットが完了するまでナビゲーションを遅延させる
+   - `e.preventDefault()`を使用してナビゲーションを一時的に停止し、リセット完了後に手動でナビゲーションを実行
+
+2. **Safariのスクロール方向を強制的にリセットする別の方法を調査**
+   - Safariの内部APIやWebKitのバグレポートを調査
+   - 他のWebサイトで同様の問題を解決している方法を調査
+
+3. **ページ遷移前のスクロール位置の固定**
+   - リンククリック時に、スクロール位置を0に固定し、遷移完了まで維持する
+   - `position: fixed`や`overflow: hidden`を使用してスクロールを一時的に無効化
+
+4. **Next.jsのLinkコンポーネントを完全にラップ**
+   - カスタムLinkコンポーネントを作成し、ナビゲーションのタイミングを完全に制御
+   - `router.push()`を使用して、スクロール方向のリセット後に手動でナビゲーションを実行
+
+5. **Safariのバグレポートを確認**
+   - [WebKit Bug #169509](https://bugs.webkit.org/show_bug.cgi?id=169509)の最新の状況を確認
+   - 他の開発者が報告している解決策を調査
+
+### デバッグ情報の活用
+
+現在の実装では、開発環境で詳細なデバッグ情報が出力されます。以下の情報を確認することで、問題の原因を特定できる可能性があります：
+
+- リンククリックからページ遷移までの時間
+- スクロール方向のリセット処理の完了時間
+- DOMのレンダリングタイミング
+- 最終的なスクロール位置
+
+**成功時と失敗時の違い**を確認することで、タイミングの問題を特定できる可能性があります。
 
 ## 連絡事項
 
 - Chromeでは問題が解決しているため、Safari専用の修正が必要
 - ユーザー体験に影響するため、優先度は高い
 - 「サービス一覧へ戻る」ボタンが半分隠れる程度のオフセット（約30-50px程度）
+- 上方向スクロール時は問題なく動作するため、下方向スクロール時の問題に焦点を当てる必要がある
+- タイミングの問題が原因の可能性が高いため、Next.jsのナビゲーションタイミングを制御する方法を検討する必要がある
 
 ---
 
 作成日: 2025-12-02
-最終更新: 2025-01-XX（複数のアプローチを実装・統合）
+最終更新: 2025-01-XX（スクロール方向リセットの実装、非同期処理とDOM待機の追加、デバッグ強化）
