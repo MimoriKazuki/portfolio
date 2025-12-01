@@ -34,15 +34,13 @@ export default function MainLayout({ children, hideRightSidebar = false, hideCon
       {/* Mobile Header */}
       <MobileHeader />
       
+      {/* Left Sidebar - Fixed position */}
+      <aside className="hidden xl:block fixed top-0 left-0 w-[178px] h-screen bg-white border-r border-gray-200 z-40 overflow-y-auto">
+        <Sidebar />
+      </aside>
+
       {/* Body - contains all main content */}
-      <div className="flex-1 flex">
-        {/* Left Sidebar - Fixed to left edge */}
-        <aside className="w-[178px] flex-shrink-0 hidden xl:block bg-white border-r border-gray-200 self-stretch">
-          <div className="sticky top-0 h-screen overflow-y-auto">
-            <Sidebar />
-          </div>
-        </aside>
-        
+      <div className="flex-1 flex xl:ml-[178px]">
         {/* Main Content Container with Horizontal Scroll for 1025px-1280px */}
         <div className="flex-1 min-w-0">
           {/* Scrollable container for mid-range sizes */}
