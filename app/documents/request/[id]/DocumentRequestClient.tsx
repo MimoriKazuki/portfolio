@@ -176,38 +176,36 @@ export default function DocumentRequestClient({ documentId, initialDocument }: D
           {/* Right Column - Form */}
           <div className="lg:col-span-6">
             <form onSubmit={handleSubmit} className="space-y-8">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div>
-                  <label htmlFor="company_name" className="block text-sm font-medium text-gray-900 mb-2">
-                    会社名 <span className="text-blue-600">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    id="company_name"
-                    name="company_name"
-                    required
-                    value={formData.company_name}
-                    onChange={handleInputChange}
-                    className="w-full px-0 py-3 bg-transparent border-0 border-b border-gray-300 text-gray-900 focus:outline-none focus:border-blue-600 transition-colors placeholder:text-gray-400"
-                    placeholder="株式会社〇〇"
-                  />
-                </div>
+              <div>
+                <label htmlFor="company_name" className="block text-sm font-medium text-gray-900 mb-2">
+                  会社名 <span className="text-blue-600">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="company_name"
+                  name="company_name"
+                  required
+                  value={formData.company_name}
+                  onChange={handleInputChange}
+                  className="w-full px-0 py-3 bg-transparent border-0 border-b border-gray-300 text-gray-900 focus:outline-none focus:border-blue-600 transition-colors placeholder:text-gray-400"
+                  placeholder="株式会社〇〇"
+                />
+              </div>
 
-                <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-900 mb-2">
-                    お名前 <span className="text-blue-600">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    required
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    className="w-full px-0 py-3 bg-transparent border-0 border-b border-gray-300 text-gray-900 focus:outline-none focus:border-blue-600 transition-colors placeholder:text-gray-400"
-                    placeholder="山田 太郎"
-                  />
-                </div>
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium text-gray-900 mb-2">
+                  お名前 <span className="text-blue-600">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  required
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  className="w-full px-0 py-3 bg-transparent border-0 border-b border-gray-300 text-gray-900 focus:outline-none focus:border-blue-600 transition-colors placeholder:text-gray-400"
+                  placeholder="山田 太郎"
+                />
               </div>
 
               <div>

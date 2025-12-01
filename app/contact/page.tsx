@@ -135,37 +135,35 @@ function ContactForm() {
           {/* Right Column - Form */}
           <div className="lg:col-span-6">
             <form onSubmit={handleSubmit} className="space-y-8">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-900 mb-2">
-                    お名前 <span className="text-blue-600">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-0 py-3 bg-transparent border-0 border-b border-gray-300 text-gray-900 focus:outline-none focus:border-blue-600 transition-colors placeholder:text-gray-400"
-                    placeholder="山田 太郎"
-                    required
-                  />
-                </div>
+              <div>
+                <label htmlFor="company" className="block text-sm font-medium text-gray-900 mb-2">
+                  会社名
+                </label>
+                <input
+                  type="text"
+                  id="company"
+                  name="company"
+                  value={formData.company}
+                  onChange={(e) => setFormData({ ...formData, company: e.target.value })}
+                  className="w-full px-0 py-3 bg-transparent border-0 border-b border-gray-300 text-gray-900 focus:outline-none focus:border-blue-600 transition-colors placeholder:text-gray-400"
+                  placeholder="株式会社〇〇"
+                />
+              </div>
 
-                <div>
-                  <label htmlFor="company" className="block text-sm font-medium text-gray-900 mb-2">
-                    会社名
-                  </label>
-                  <input
-                    type="text"
-                    id="company"
-                    name="company"
-                    value={formData.company}
-                    onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                    className="w-full px-0 py-3 bg-transparent border-0 border-b border-gray-300 text-gray-900 focus:outline-none focus:border-blue-600 transition-colors placeholder:text-gray-400"
-                    placeholder="株式会社〇〇"
-                  />
-                </div>
+              <div>
+                <label htmlFor="name" className="block text-sm font-medium text-gray-900 mb-2">
+                  お名前 <span className="text-blue-600">*</span>
+                </label>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className="w-full px-0 py-3 bg-transparent border-0 border-b border-gray-300 text-gray-900 focus:outline-none focus:border-blue-600 transition-colors placeholder:text-gray-400"
+                  placeholder="山田 太郎"
+                  required
+                />
               </div>
 
               <div>
