@@ -97,12 +97,21 @@ const Footer = () => {
                     <h4 className="text-white text-base font-bold mb-2">企業向け</h4>
                     <ul className="space-y-2 text-sm">
                       <li>
-                        <Link 
-                          href="/services/comprehensive-ai-training" 
+                        <Link
+                          href="/services/comprehensive-ai-training"
                           className="hover:text-white transition-colors"
                           title="生成AI総合研修"
                         >
                           生成AI総合研修
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          href="/services/ai-coding-training"
+                          className="hover:text-white transition-colors"
+                          title="AIコーディング研修"
+                        >
+                          AIコーディング研修
                         </Link>
                       </li>
                       <li>
@@ -115,21 +124,12 @@ const Footer = () => {
                         </Link>
                       </li>
                       <li>
-                        <Link 
-                          href="/services" 
+                        <Link
+                          href="/services/ai-video-training"
                           className="hover:text-white transition-colors"
                           title="AI動画生成研修"
                         >
                           AI動画生成研修
-                        </Link>
-                      </li>
-                      <li>
-                        <Link 
-                          href="/services" 
-                          className="hover:text-white transition-colors"
-                          title="AIコーディング研修"
-                        >
-                          AIコーディング研修
                         </Link>
                       </li>
                     </ul>
@@ -141,9 +141,9 @@ const Footer = () => {
                     <ul className="space-y-2 text-sm">
                       <li>
                         <Link
-                          href="/services"
+                          href="/services/ai-talent-development"
                           className="hover:text-white transition-colors"
-                          title="AI駆動開発育成所（個人向け）"
+                          title="AI駆動開発育成所"
                         >
                           AI駆動開発育成所
                         </Link>

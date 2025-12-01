@@ -42,9 +42,9 @@ function ContactForm() {
     { value: '', label: '選択してください' },
     // 企業向けサービス
     { value: 'comprehensive-ai-training', label: '【企業向け】生成AI総合研修' },
+    { value: 'ai-coding-training', label: '【企業向け】AIコーディング研修' },
     { value: 'ai-organization-os', label: '【企業向け】AI組織OS研修' },
     { value: 'ai-video-training', label: '【企業向け】AI動画生成研修' },
-    { value: 'ai-coding-training', label: '【企業向け】AIコーディング研修' },
     // 個人向けサービス
     { value: 'ai-talent-development', label: '【個人向け】AI駆動開発育成所' },
   ]

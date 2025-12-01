@@ -102,8 +102,23 @@ export default function ServicesContent() {
       logoSubtext: 'エンゲージメントプラットフォーム'
     },
     {
-      id: 'ai-organization-os',
+      id: 'ai-coding-training',
       number: '02',
+      label: 'AIコーディング研修',
+      title: '開発効率を、飛躍的に。',
+      subtitle: 'AI支援プログラミング技術を習得し、開発効率を飛躍的に向上させる研修です。GitHub Copilot、Claude Code、Cursorなど最新ツールの効果的な活用法を学びます。',
+      description: [
+        'コード生成、リファクタリング、デバッグまで、開発の各フェーズでAIを最大限に活用する方法を習得。ペアプログラミングの新しい形として、AIとの協働開発スキルが身につきます。',
+        'コード品質の向上とレビュー効率化により、開発チーム全体の生産性を大幅に改善。技術的負債の削減にも貢献し、持続可能な開発体制を構築できます。'
+      ],
+      href: '/services/ai-coding-training',
+      image: 'https://images.unsplash.com/photo-1509966756634-9c23dd6e6815?w=800&h=600&fit=crop&crop=center',
+      logoText: 'AIコーディング',
+      logoSubtext: '開発効率化プログラム'
+    },
+    {
+      id: 'ai-organization-os',
+      number: '03',
       label: 'AI組織OS研修',
       title: '組織の脳みそを、構築する。',
       subtitle: 'CursorとGitHubを活用した社内ナレッジ管理で「組織の脳みそ」を構築。情報共有・引き継ぎ業務を革新し、組織全体の生産性を向上させる研修です。',
@@ -118,7 +133,7 @@ export default function ServicesContent() {
     },
     {
       id: 'ai-video-training',
-      number: '03',
+      number: '04',
       label: 'AI動画生成研修',
       title: '動画制作を、誰でも簡単に。',
       subtitle: '最新のAI動画生成ツールを活用した動画制作技術を学ぶ研修です。Sora、Gemini、Higgsfield等の主要ツールの特徴と使い分けを実践的に学習します。',
@@ -130,21 +145,6 @@ export default function ServicesContent() {
       image: 'https://images.unsplash.com/photo-1677350838456-80a71506de8d?w=800&h=600&fit=crop&crop=center',
       logoText: 'AI動画生成',
       logoSubtext: 'マーケティング動画制作'
-    },
-    {
-      id: 'ai-coding-training',
-      number: '04',
-      label: 'AIコーディング研修',
-      title: '開発効率を、飛躍的に。',
-      subtitle: 'AI支援プログラミング技術を習得し、開発効率を飛躍的に向上させる研修です。GitHub Copilot、Claude Code、Cursorなど最新ツールの効果的な活用法を学びます。',
-      description: [
-        'コード生成、リファクタリング、デバッグまで、開発の各フェーズでAIを最大限に活用する方法を習得。ペアプログラミングの新しい形として、AIとの協働開発スキルが身につきます。',
-        'コード品質の向上とレビュー効率化により、開発チーム全体の生産性を大幅に改善。技術的負債の削減にも貢献し、持続可能な開発体制を構築できます。'
-      ],
-      href: '/services/ai-coding-training',
-      image: 'https://images.unsplash.com/photo-1509966756634-9c23dd6e6815?w=800&h=600&fit=crop&crop=center',
-      logoText: 'AIコーディング',
-      logoSubtext: '開発効率化プログラム'
     }
   ]
 

@@ -14,6 +14,15 @@ export const ALL_TRAINING_PROGRAMS: OtherTrainingProgram[] = [
     category: "enterprise"
   },
   {
+    id: "ai-coding",
+    title: "AIコーディング研修",
+    description: "GitHub Copilot、Claude Code等を活用したAI支援プログラミング技術を習得し、開発効率を飛躍的に向上させます。",
+    href: "/services/ai-coding-training",
+    image: "https://images.unsplash.com/photo-1509966756634-9c23dd6e6815?w=800&h=600&fit=crop&crop=center",
+    available: true,
+    category: "enterprise"
+  },
+  {
     id: "ai-organization-os",
     title: "AI組織OS研修",
     description: "CursorとGitHubで「組織の脳みそ」を構築し、情報共有・引き継ぎ業務を革新。組織全体の生産性を向上させます。",
@@ -28,15 +37,6 @@ export const ALL_TRAINING_PROGRAMS: OtherTrainingProgram[] = [
     description: "Sora、Gemini、Higgsfield等のAI動画生成ツールを活用して、マーケティング動画やプレゼン動画を効率的に制作する技術を学びます。",
     href: "/services/ai-video-training",
     image: "https://images.unsplash.com/photo-1677350838456-80a71506de8d?w=800&h=600&fit=crop&crop=center",
-    available: true,
-    category: "enterprise"
-  },
-  {
-    id: "ai-coding",
-    title: "AIコーディング研修",
-    description: "GitHub Copilot、Claude Code等を活用したAI支援プログラミング技術を習得し、開発効率を飛躍的に向上させます。",
-    href: "/services/ai-coding-training",
-    image: "https://images.unsplash.com/photo-1509966756634-9c23dd6e6815?w=800&h=600&fit=crop&crop=center",
     available: true,
     category: "enterprise"
   },
