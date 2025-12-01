@@ -12,7 +12,7 @@ export const AI_CODING_TRAINING_DATA: ServiceData = {
   pageTitle: "AIコーディング研修",
   heroTitle: "AIコーディング研修",
   heroSubtitle: "GitHub CopilotやClaude Codeを活用し、開発効率を3〜5倍に向上",
-  heroImage: "/images/services/ai-coding-training-hero.jpg",
+  heroImage: "/images/services/hero/ai-coding-training-hero.jpg",
   seoTitle: "開発効率を革新するAI支援プログラミング研修 - AI駆動研究所",
   
   heroCTA: {
@@ -32,7 +32,7 @@ export const AI_CODING_TRAINING_DATA: ServiceData = {
       { name: "Gemini", logo: "gemini" }
     ],
     descriptionBottom: "AI支援開発環境の構築から、効果的なプロンプト設計、チーム開発への適用方法まで、実践的なスキルを体系的に学習。フロントエンド、バックエンド、データベース操作など、あらゆる開発領域でAIを活用できるようになります。研修後は開発効率が3〜5倍向上し、コード品質も大幅に改善されます。",
-    featureImage: "/images/services/ai-coding-training-feature.jpg",
+    featureImage: "/images/services/features/ai-coding-training-feature.jpg",
     items: [
       {
         title: "開発効率向上",

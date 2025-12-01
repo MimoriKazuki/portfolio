@@ -48,7 +48,7 @@ const serviceCards: AIServiceCardItem[] = [
     subtitle: "組織のAI活用力を底上げする実践型プログラム",
     description: "企業の課題に合わせてカスタマイズした研修で、現場で使えるAIスキルと活用文化を定着させます。",
     href: "/services#enterprise",
-    backgroundImage: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=600&fit=crop&crop=center",
+    backgroundImage: "/images/services/cards/enterprise-training-bg.jpg",
     theme: "blue",
   },
   {
@@ -58,7 +58,7 @@ const serviceCards: AIServiceCardItem[] = [
     subtitle: "マンツーマンで習得する実践型AIスキル",
     description: "目的やレベルに合わせて専属コーチが伴走し、日常業務で使えるAIスキルを最短で身につけられます。",
     href: "/services/ai-talent-development",
-    backgroundImage: "https://images.unsplash.com/photo-1497032628192-86f99bcd76bc?w=800&h=600&fit=crop&crop=center",
+    backgroundImage: "/images/services/cards/individual-coaching-bg.jpg",
     theme: "green",
   },
 ];

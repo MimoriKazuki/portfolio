@@ -12,7 +12,7 @@ export const COMPREHENSIVE_AI_TRAINING_DATA: ServiceData = {
   pageTitle: "生成AI総合研修",
   heroTitle: "生成AI総合研修",
   heroSubtitle: "全社員のAIリテラシーを底上げし、組織全体のDX推進を加速する",
-  heroImage: "/images/services/comprehensive-ai-training-hero.jpg",
+  heroImage: "/images/services/hero/comprehensive-ai-training-hero.jpg",
   seoTitle: "AI人材を社内で育てる企業向けAI研修 - AI駆動研究所",
   
   heroCTA: {
@@ -32,7 +32,7 @@ export const COMPREHENSIVE_AI_TRAINING_DATA: ServiceData = {
       { name: "Gemini", logo: "gemini" }
     ],
     descriptionBottom: "プロンプト設計、業務改善、セキュリティ対策まで、生成AI活用に必要なスキルを総合的に習得。文書作成、データ分析、企画立案、カスタマーサポートなど、あらゆる業務シーンでのAI活用方法を実践的に学びます。研修終了後は、即座に現場で活用できる実践力が身につきます。",
-    featureImage: "/images/services/comprehensive-ai-training-feature.jpg",
+    featureImage: "/images/services/features/comprehensive-ai-training-feature.jpg",
     items: [
       {
         title: "包括的なAI学習",

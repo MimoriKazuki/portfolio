@@ -12,7 +12,7 @@ export const AI_TALENT_DEVELOPMENT_DATA: ServiceData = {
   pageTitle: "AI駆動開発育成所",
   heroTitle: "AI駆動開発育成所",
   heroSubtitle: "バイブコーディング特化の個人向けコーチング",
-  heroImage: "/images/services/ai-talent-development-hero.jpg",
+  heroImage: "/images/services/hero/ai-talent-development-hero.jpg",
   seoTitle: "バイブコーディングで開発力を革新 - AI駆動開発育成所 | AI駆動研究所",
 
   heroCTA: {
@@ -32,7 +32,7 @@ export const AI_TALENT_DEVELOPMENT_DATA: ServiceData = {
       { name: "Gemini", logo: "gemini" }
     ],
     descriptionBottom: "プロンプト設計からアプリケーション構築、デバッグ、リファクタリングまで、バイブコーディングの全プロセスを実践的に学習。コードを書かずに高品質なアプリケーションを開発する技術を習得し、開発効率を飛躍的に向上させます。修了後も3ヶ月間の継続サポート付きで、実践での課題解決をサポートします。",
-    featureImage: "/images/services/ai-talent-development-feature.jpg",
+    featureImage: "/images/services/features/ai-talent-development-feature.jpg",
     items: [
       {
         title: "少人数制",
