@@ -71,7 +71,9 @@ export default function MainLayout({ children, hideRightSidebar = false, hideCon
       </div>
       
       {/* Footer */}
-      <Footer />
+      <div className="xl:ml-[178px]">
+        <Footer />
+      </div>
       
       {!hideContactButton && <FloatingButtons />}
     </div>
