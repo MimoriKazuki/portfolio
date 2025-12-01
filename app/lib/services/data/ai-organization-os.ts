@@ -36,17 +36,17 @@ export const AI_ORGANIZATION_OS_DATA: ServiceData = {
       {
         title: "組織の脳みそ構築",
         description: "社員の役割・タスク・進捗をGitHubで一元管理し、AIが組織全体を理解できる基盤を構築",
-        image: "https://images.unsplash.com/photo-1553028826-f4804a6dba3b?w=400&h=225&fit=crop&crop=center"
+        image: "/images/services/detail/1553028826-whiteboard.jpg"
       },
       {
         title: "AIへの質問で状況把握",
         description: "Cursor内でAIに質問するだけで、組織の今を瞬時に把握。確認作業の時間を大幅削減",
-        image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=225&fit=crop&crop=center"
+        image: "/images/services/detail/1516321318423-laptop.jpg"
       },
       {
         title: "引き継ぎ不要化",
         description: "日々の更新さえしていれば、異動・退職時もAIに質問することで業務を引き継ぎ可能に",
-        image: "https://images.unsplash.com/photo-1434626881859-194d67b2b86f?w=400&h=225&fit=crop&crop=center"
+        image: "/images/services/detail/1434626881859-chart.jpg"
       }
     ]
   },
@@ -63,19 +63,19 @@ export const AI_ORGANIZATION_OS_DATA: ServiceData = {
     subtitle: "組織の情報共有・ナレッジ管理に課題を感じている方に価値をお届けします",
     audiences: [
       {
-        image: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=300&h=300&fit=crop&crop=center",
+        image: "/images/services/detail/1519085360753-business.jpg",
         text: "{部下の状況把握}に時間がかかっている{マネージャー・管理職}の方"
       },
       {
-        image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=300&h=300&fit=crop&crop=center",
+        image: "/images/services/detail/1560250097-executive.jpg",
         text: "{組織全体の可視化}を進めたい{経営者・役員}の方"
       },
       {
-        image: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=300&h=300&fit=crop&crop=center",
+        image: "/images/services/detail/1573497019940-woman.jpg",
         text: "{ナレッジ管理・DX推進}を担当している{情報システム部門}の方"
       },
       {
-        image: "https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=300&h=300&fit=crop&crop=center",
+        image: "/images/services/detail/1517048676732-team.jpg",
         text: "{引き継ぎ・情報共有}の効率化を目指す{人事・総務}の方"
       }
     ]
@@ -144,22 +144,22 @@ export const AI_ORGANIZATION_OS_DATA: ServiceData = {
       {
         title: "組織OS概念とツール導入",
         description: "シリコンバレー発の組織OS概念を解説し、CursorとGitHubの基本操作から環境構築まで、導入に必要な基礎知識と技術を習得します",
-        image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=300&h=200&fit=crop"
+        image: "/images/services/detail/1552664730-workshop.jpg"
       },
       {
         title: "ディレクトリ設計・運用ルール",
         description: "組織構造に合わせたフォルダ・ファイル設計、更新ルールの策定、命名規則など、持続可能な運用のためのベストプラクティスを学びます",
-        image: "https://images.unsplash.com/photo-1507925921958-8a62f3d1a50d?w=300&h=200&fit=crop"
+        image: "/images/services/detail/1507925921958-desk.jpg"
       },
       {
         title: "情報更新・記録の実践",
         description: "日々のタスク・進捗・決定事項の記録方法、効果的な情報の構造化、AIが理解しやすい記述方法など、実践的なスキルを習得します",
-        image: "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=300&h=200&fit=crop"
+        image: "/images/services/detail/1531482615713-meeting.jpg"
       },
       {
         title: "AI活用・運用定着ワークショップ",
         description: "CursorでのAI質問テクニック、組織内への展開方法、継続的な運用のコツなど、実際の業務への適用と定着を支援します",
-        image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=300&h=200&fit=crop"
+        image: "/images/services/detail/1522071820081-teamwork.jpg"
       }
     ]
   },

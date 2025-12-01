@@ -37,17 +37,17 @@ export const AI_VIDEO_TRAINING_DATA: ServiceData = {
       {
         title: "制作時間短縮",
         description: "従来数日かかっていた動画制作を数時間で完成させる革新的な効率化を実現します",
-        image: "https://images.unsplash.com/photo-1485846234645-a62644f84728?w=400&h=225&fit=crop&crop=center"
+        image: "/images/services/detail/1485846234645-video.jpg"
       },
       {
         title: "コスト削減",
         description: "外注費用や高額な制作ツール不要で、社内でプロレベルの動画制作が可能になります",
-        image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=225&fit=crop&crop=center"
+        image: "/images/services/detail/1460925895917-data.jpg"
       },
       {
         title: "多様な用途対応",
         description: "マーケティング動画からプレゼン資料、研修コンテンツまで幅広く対応します",
-        image: "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=400&h=225&fit=crop&crop=center"
+        image: "/images/services/detail/1574717024653-camera.jpg"
       }
     ]
   },
@@ -64,19 +64,19 @@ export const AI_VIDEO_TRAINING_DATA: ServiceData = {
     subtitle: "動画制作に関わる全ての部署・職種の方に価値をお届けします",
     audiences: [
       {
-        image: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=300&h=300&fit=crop&crop=center",
+        image: "/images/services/detail/1551836022-marketing.jpg",
         text: "{PR動画}を効率的に制作したい{マーケティング・広報}の方"
       },
       {
-        image: "https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=300&h=300&fit=crop&crop=center",
+        image: "/images/services/detail/1556761175-office.jpg",
         text: "{提案動画・デモ}を素早く作成したい{営業・セールス}担当の方"
       },
       {
-        image: "https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=300&h=300&fit=crop&crop=center",
+        image: "/images/services/detail/1524178232363-classroom.jpg",
         text: "{教育コンテンツ}を効率的に制作したい{人事・研修}担当の方"
       },
       {
-        image: "https://images.unsplash.com/photo-1558655146-9f40138edfeb?w=300&h=300&fit=crop&crop=center",
+        image: "/images/services/detail/1558655146-work.jpg",
         text: "{クリエイティブ}の可能性を拡張したい{デザイナー}の方"
       }
     ]
@@ -145,22 +145,22 @@ export const AI_VIDEO_TRAINING_DATA: ServiceData = {
       {
         title: "AI動画生成基礎",
         description: "AI動画生成技術の基本概念から主要ツールの概要、プロンプト設計の基礎まで、AI動画制作に必要な土台知識を体系的に習得し、効率的な制作ワークフローを理解します",
-        image: "https://images.unsplash.com/photo-1574717024653-61fd2cf4d44d?w=300&h=200&fit=crop"
+        image: "/images/services/detail/1574717024653-camera.jpg"
       },
       {
         title: "実践的制作技術",
         description: "Sora、Gemini、Higgsfield等の最新AI動画生成ツールを使った実践的な制作手法を学習。シーン設定からカメラワーク、音声同期まで、プロレベルの動画制作技術を身につけます",
-        image: "https://images.unsplash.com/photo-1485846234645-a62644f84728?w=300&h=200&fit=crop"
+        image: "/images/services/detail/1485846234645-video.jpg"
       },
       {
         title: "用途別制作手法",
         description: "マーケティング動画、プレゼンテーション動画、研修動画など、用途に応じた最適な制作アプローチと表現技法を習得。目的に合わせた効果的な動画コンテンツを制作できるようになります",
-        image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=300&h=200&fit=crop"
+        image: "/images/services/detail/1460925895917-data.jpg"
       },
       {
         title: "業務活用ワークショップ",
         description: "実際の業務課題を題材として、AI動画生成技術を活用した解決策を検討・制作します。現場ですぐに活用できる実践的なノウハウと制作プロセスを確立できます",
-        image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=300&h=200&fit=crop"
+        image: "/images/services/detail/1552664730-workshop.jpg"
       }
     ]
   },

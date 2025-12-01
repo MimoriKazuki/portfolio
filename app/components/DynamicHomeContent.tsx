@@ -344,7 +344,7 @@ export default function DynamicHomeContent() {
               <div className="relative h-[320px] md:h-[400px]">
                 {/* 背景画像 */}
                 <Image
-                  src="https://images.unsplash.com/photo-1611079830811-865ff4428d17?w=800&h=600&fit=crop&crop=center"
+                  src="/images/cta/document.jpg"
                   alt="資料請求"
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -380,7 +380,7 @@ export default function DynamicHomeContent() {
               <div className="relative h-[320px] md:h-[400px]">
                 {/* 背景画像 */}
                 <Image
-                  src="https://images.unsplash.com/photo-1423666639041-f56000c27a9a?w=800&h=600&fit=crop&crop=center"
+                  src="/images/cta/contact.jpg"
                   alt="お問い合わせ"
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-105"

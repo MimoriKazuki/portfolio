@@ -13,7 +13,7 @@ const corporateService = {
   title: "生成AI総合研修",
   description: "生成AIの基礎から実践まで、企業の現場で即戦力として活躍できる人材を育成する包括的な研修プログラムです。",
   href: "/services/comprehensive-ai-training",
-  image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=400&h=300&fit=crop&crop=center",
+  image: "/images/sidebar/comprehensive-ai-training.jpg",
   label: "企業向け"
 }
 
@@ -22,7 +22,7 @@ const individualService = {
   title: "AI駆動開発育成所",
   description: "完全審査制の個人向けバイブコーディング特化コーチング。Claude CodeやCursorを活用したAI駆動開発スキルを習得できます。",
   href: "/services/ai-talent-development",
-  image: "https://images.unsplash.com/photo-1500989145603-8e7ef71d639e?w=400&h=300&fit=crop&crop=center",
+  image: "/images/sidebar/ai-talent-development.jpg",
   label: "個人向け"
 }
 

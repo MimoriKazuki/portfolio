@@ -9,7 +9,7 @@ export const ALL_TRAINING_PROGRAMS: OtherTrainingProgram[] = [
     title: "生成AI総合研修",
     description: "ChatGPTやClaude等の生成AIツールを活用し、未経験者から実務レベルまで体系的に学習。企業の現場で即戦力として活躍できる人材を育成します。",
     href: "/services/comprehensive-ai-training",
-    image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=800&h=600&fit=crop&crop=center",
+    image: "/images/services/list/comprehensive-ai-training.jpg",
     available: true,
     category: "enterprise"
   },
@@ -18,7 +18,7 @@ export const ALL_TRAINING_PROGRAMS: OtherTrainingProgram[] = [
     title: "AIコーディング研修",
     description: "GitHub Copilot、Claude Code等を活用したAI支援プログラミング技術を習得し、開発効率を飛躍的に向上させます。",
     href: "/services/ai-coding-training",
-    image: "https://images.unsplash.com/photo-1509966756634-9c23dd6e6815?w=800&h=600&fit=crop&crop=center",
+    image: "/images/services/list/ai-coding-training.jpg",
     available: true,
     category: "enterprise"
   },
@@ -27,7 +27,7 @@ export const ALL_TRAINING_PROGRAMS: OtherTrainingProgram[] = [
     title: "AI組織OS研修",
     description: "CursorとGitHubで「組織の脳みそ」を構築し、情報共有・引き継ぎ業務を革新。組織全体の生産性を向上させます。",
     href: "/services/ai-organization-os",
-    image: "https://images.unsplash.com/photo-1617791160536-598cf32026fb?w=800&h=600&fit=crop&crop=center",
+    image: "/images/services/list/ai-organization-os.jpg",
     available: true,
     category: "enterprise"
   },
@@ -36,7 +36,7 @@ export const ALL_TRAINING_PROGRAMS: OtherTrainingProgram[] = [
     title: "AI動画生成研修",
     description: "Sora、Gemini、Higgsfield等のAI動画生成ツールを活用して、マーケティング動画やプレゼン動画を効率的に制作する技術を学びます。",
     href: "/services/ai-video-training",
-    image: "https://images.unsplash.com/photo-1677350838456-80a71506de8d?w=800&h=600&fit=crop&crop=center",
+    image: "/images/services/list/ai-video-training.jpg",
     available: true,
     category: "enterprise"
   },
@@ -45,7 +45,7 @@ export const ALL_TRAINING_PROGRAMS: OtherTrainingProgram[] = [
     title: "AI駆動開発育成所",
     description: "完全審査制の個人向けバイブコーディング特化コーチング。Claude CodeやCursorを活用したAI駆動開発スキルを習得できます。",
     href: "/services/ai-talent-development",
-    image: "https://images.unsplash.com/photo-1500989145603-8e7ef71d639e?w=800&h=600&fit=crop&crop=center",
+    image: "/images/services/list/ai-talent-development.jpg",
     available: true,
     category: "individual"
   }

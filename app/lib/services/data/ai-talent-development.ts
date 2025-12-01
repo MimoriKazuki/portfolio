@@ -37,17 +37,17 @@ export const AI_TALENT_DEVELOPMENT_DATA: ServiceData = {
       {
         title: "少人数制",
         description: "質の高いコーチングを提供するため、少人数制で丁寧に指導します",
-        image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=225&fit=crop&crop=center"
+        image: "/images/services/detail/1516321318423-laptop.jpg"
       },
       {
         title: "バイブコーディング特化",
         description: "自然言語でアプリを構築するバイブコーディングの技術を、基礎から応用まで体系的に習得",
-        image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=225&fit=crop&crop=center"
+        image: "/images/services/detail/1555066931-code.jpg"
       },
       {
         title: "実践プロジェクト",
         description: "実際のアプリケーション開発を通じて、即戦力となるAI駆動開発スキルを身につけます",
-        image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=225&fit=crop&crop=center"
+        image: "/images/services/detail/1461749280684-coding.jpg"
       }
     ]
   },
@@ -64,19 +64,19 @@ export const AI_TALENT_DEVELOPMENT_DATA: ServiceData = {
     subtitle: "AI駆動開発を本格的に習得したい方を対象としています",
     audiences: [
       {
-        image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=300&h=300&fit=crop&crop=center",
+        image: "/images/services/detail/1461749280684-coding.jpg",
         text: "{バイブコーディング}で{開発効率}を上げたいエンジニアの方"
       },
       {
-        image: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=300&h=300&fit=crop&crop=center",
+        image: "/images/services/detail/1573497019940-woman.jpg",
         text: "{非エンジニア}だが{自分でアプリ}を作れるようになりたい方"
       },
       {
-        image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=300&h=300&fit=crop&crop=center",
+        image: "/images/services/detail/1522071820081-teamwork.jpg",
         text: "{フリーランス・副業}で{AI開発案件}を獲得したい方"
       },
       {
-        image: "https://images.unsplash.com/photo-1507925921958-8a62f3d1a50d?w=300&h=300&fit=crop&crop=center",
+        image: "/images/services/detail/1507925921958-desk.jpg",
         text: "{起業・新規事業}で{プロトタイプ}を素早く作りたい方"
       }
     ]
@@ -145,22 +145,22 @@ export const AI_TALENT_DEVELOPMENT_DATA: ServiceData = {
       {
         title: "AI駆動開発環境構築",
         description: "Claude Code、Cursor等の主要AI開発ツールのセットアップから基本操作まで、バイブコーディングに必要な環境構築と基礎知識を体系的に習得します",
-        image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=300&h=200&fit=crop"
+        image: "/images/services/detail/1461749280684-coding.jpg"
       },
       {
         title: "プロンプトエンジニアリング",
         description: "AIに的確な指示を出すためのプロンプト設計技術を習得。効率的なコード生成、デバッグ、リファクタリングを実現するプロンプトの書き方を学びます",
-        image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=300&h=200&fit=crop"
+        image: "/images/services/detail/1555066931-code.jpg"
       },
       {
         title: "実践アプリケーション開発",
         description: "実際のWebアプリケーション開発を通じて、バイブコーディングの実践的スキルを習得。フロントエンド、バックエンド、データベース操作まで一貫して学びます",
-        image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=300&h=200&fit=crop"
+        image: "/images/services/detail/1516321318423-laptop.jpg"
       },
       {
         title: "品質管理とデバッグ",
         description: "AIが生成したコードの品質評価、テスト作成、デバッグ技術を習得。保守性と拡張性に優れたアプリケーション開発の手法を身につけます",
-        image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=300&h=200&fit=crop"
+        image: "/images/services/detail/1522202176988-collaboration.jpg"
       }
     ]
   },

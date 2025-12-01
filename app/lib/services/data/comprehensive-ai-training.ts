@@ -37,17 +37,17 @@ export const COMPREHENSIVE_AI_TRAINING_DATA: ServiceData = {
       {
         title: "包括的なAI学習",
         description: "生成AIの基礎知識から高度な活用テクニックまで、体系的に学習できる総合カリキュラムを提供します",
-        image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=400&h=225&fit=crop&crop=center"
+        image: "/images/services/detail/1677442136019-ai-gen.jpg"
       },
       {
         title: "実務直結の内容",
         description: "貴社の業務プロセスに合わせたカスタム事例とワークショップで、学習した内容を即座に現場で活用できます",
-        image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=400&h=225&fit=crop&crop=center"
+        image: "/images/services/detail/1552664730-workshop.jpg"
       },
       {
         title: "全社員対応",
         description: "管理職から新入社員まで、職種やスキルレベルに関わらず全ての社員が効果的に学習できる柔軟な研修設計です",
-        image: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=400&h=225&fit=crop&crop=center"
+        image: "/images/services/detail/1434030216411-study.jpg"
       }
     ]
   },
@@ -64,19 +64,19 @@ export const COMPREHENSIVE_AI_TRAINING_DATA: ServiceData = {
     subtitle: "職種・スキルレベルに関わらず、すべての社員が効果的に学習できる包括的な研修プログラムです",
     audiences: [
       {
-        image: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=300&h=300&fit=crop&crop=center",
+        image: "/images/services/detail/1560250097-executive.jpg",
         text: "{AI戦略}の立案・推進を担う{経営陣・管理職}の方"
       },
       {
-        image: "https://images.unsplash.com/photo-1552664730-d307ca884978?w=300&h=300&fit=crop&crop=center",
+        image: "/images/services/detail/1552664730-workshop.jpg",
         text: "チームの{DX推進}をリードする{マネージャー層}の方"
       },
       {
-        image: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=300&h=300&fit=crop&crop=center",
+        image: "/images/services/detail/1600880292203-group.jpg",
         text: "日常業務で{生産性向上}を目指す{一般社員}の方"
       },
       {
-        image: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=300&h=300&fit=crop&crop=center",
+        image: "/images/services/detail/1529156069898-friends.jpg",
         text: "{AI時代}のビジネススキルを身につけたい{新入社員・若手}の方"
       }
     ]
@@ -145,22 +145,22 @@ export const COMPREHENSIVE_AI_TRAINING_DATA: ServiceData = {
       {
         title: "生成AI基礎理解",
         description: "生成AIの基本原理から最新動向まで包括的に学習。ChatGPT、Claude、Geminiなどの主要ツールの特徴比較と、セキュリティ・コンプライアンス対応まで幅広くカバーし、組織全体での活用基盤を構築します",
-        image: "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=300&h=200&fit=crop"
+        image: "/images/services/detail/1485827404703-robot.jpg"
       },
       {
         title: "実践的プロンプト設計",
         description: "効果的なプロンプトエンジニアリング技法を習得。職種別の活用パターンと業務シーン別の最適化手法を実践的に学習し、各部署での即戦力となるスキルを身につけます",
-        image: "https://images.unsplash.com/photo-1677442136019-21780ecad995?w=300&h=200&fit=crop"
+        image: "/images/services/detail/1677442136019-ai-gen.jpg"
       },
       {
         title: "業務プロセス改善ワーク",
         description: "貴社の実際の業務フローを題材に、AI導入による効率化シナリオを設計。部署横断でのワークフロー最適化から組織全体のDX戦略まで、実践的な導入計画を策定します",
-        image: "https://images.unsplash.com/photo-1556761175-b413da4baf72?w=300&h=200&fit=crop"
+        image: "/images/services/detail/1556761175-b413-meeting.jpg"
       },
       {
         title: "AI活用の組織展開",
         description: "研修で習得したスキルの組織展開方法を学習。社内でのAI活用推進体制構築、継続的な学習プログラム設計、ROI測定手法まで、持続可能なAI活用組織への変革を支援します",
-        image: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=300&h=200&fit=crop"
+        image: "/images/services/detail/1600880292203-group.jpg"
       }
     ]
   },

@@ -97,7 +97,7 @@ export default function ServicesContent() {
         '座学だけでなく実務を想定したワークショップを通じて、現場で即座に使えるスキルを習得。チーム全体のAI活用文化を定着させ、組織の生産性向上を実現します。'
       ],
       href: '/services/comprehensive-ai-training',
-      image: 'https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=1470&auto=format&fit=crop',
+      image: '/images/services/list/comprehensive-ai-training.jpg',
       logoText: '生成AI総合研修',
       logoSubtext: 'エンゲージメントプラットフォーム'
     },
@@ -112,7 +112,7 @@ export default function ServicesContent() {
         'コード品質の向上とレビュー効率化により、開発チーム全体の生産性を大幅に改善。技術的負債の削減にも貢献し、持続可能な開発体制を構築できます。'
       ],
       href: '/services/ai-coding-training',
-      image: 'https://images.unsplash.com/photo-1509966756634-9c23dd6e6815?w=800&h=600&fit=crop&crop=center',
+      image: '/images/services/list/ai-coding-training.jpg',
       logoText: 'AIコーディング',
       logoSubtext: '開発効率化プログラム'
     },
@@ -127,7 +127,7 @@ export default function ServicesContent() {
         '管理者は社員への確認なしにAIへの質問で現状を把握でき、異動・退職時の引き継ぎもAIが対応。情報の属人化から解放され、組織全体の知識が継承される仕組みを実現します。'
       ],
       href: '/services/ai-organization-os',
-      image: 'https://images.unsplash.com/photo-1617791160536-598cf32026fb?w=800&h=600&fit=crop&crop=center',
+      image: '/images/services/list/ai-organization-os.jpg',
       logoText: 'AI組織OS',
       logoSubtext: '組織ナレッジ管理革新'
     },
@@ -142,7 +142,7 @@ export default function ServicesContent() {
         'SNS向けショート動画からプレゼンテーション動画まで、目的に応じた動画制作ノウハウを習得。社内の動画制作コストを大幅に削減しながら、発信力を強化できます。'
       ],
       href: '/services/ai-video-training',
-      image: 'https://images.unsplash.com/photo-1677350838456-80a71506de8d?w=800&h=600&fit=crop&crop=center',
+      image: '/images/services/list/ai-video-training.jpg',
       logoText: 'AI動画生成',
       logoSubtext: 'マーケティング動画制作'
     }
@@ -161,7 +161,7 @@ export default function ServicesContent() {
         '本気でスキル習得を目指す方のみを対象とした完全審査制。審査を通過された方には、質の高いコーチングと実践プロジェクトを通じて、即戦力となるAI駆動開発スキルを伝授します。'
       ],
       href: '/services/ai-talent-development',
-      image: 'https://images.unsplash.com/photo-1500989145603-8e7ef71d639e?w=800&h=600&fit=crop&crop=center',
+      image: '/images/services/list/ai-talent-development.jpg',
       logoText: 'AI駆動開発育成所',
       logoSubtext: 'バイブコーディング特化'
     }
@@ -371,7 +371,7 @@ export default function ServicesContent() {
           >
             <div className="relative h-[320px] md:h-[400px]">
               <Image
-                src="https://images.unsplash.com/photo-1611079830811-865ff4428d17?w=800&h=600&fit=crop&crop=center"
+                src="/images/cta/document.jpg"
                 alt="資料請求"
                 fill
                 className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -404,7 +404,7 @@ export default function ServicesContent() {
           >
             <div className="relative h-[320px] md:h-[400px]">
               <Image
-                src="https://images.unsplash.com/photo-1423666639041-f56000c27a9a?w=800&h=600&fit=crop&crop=center"
+                src="/images/cta/contact.jpg"
                 alt="お問い合わせ"
                 fill
                 className="object-cover transition-transform duration-700 group-hover:scale-105"

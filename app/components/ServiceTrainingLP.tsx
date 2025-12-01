@@ -6,7 +6,6 @@ import Image from 'next/image'
 import { Column, Project } from '@/app/types'
 import { useState, useEffect, useRef } from 'react'
 import TargetAudienceCard from './TargetAudienceCard'
-import { AITrainingHeroSection } from './ui/ai-training-hero-section'
 
 // Animation hook for scroll-triggered animations
 function useScrollAnimation(threshold = 0.1) {

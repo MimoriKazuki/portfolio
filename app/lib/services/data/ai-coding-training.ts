@@ -37,17 +37,17 @@ export const AI_CODING_TRAINING_DATA: ServiceData = {
       {
         title: "開発効率向上",
         description: "コード生成から debugging まで、AI支援により開発速度を3-5倍向上させます",
-        image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400&h=225&fit=crop&crop=center"
+        image: "/images/services/detail/1555066931-code.jpg"
       },
       {
         title: "コード品質改善",
         description: "AIによるコードレビューと最適化提案により、保守性の高いコードを作成します",
-        image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400&h=225&fit=crop&crop=center"
+        image: "/images/services/detail/1516321318423-laptop.jpg"
       },
       {
         title: "学習効率化",
         description: "新しい技術やフレームワークの習得時間を大幅に短縮し、継続的なスキルアップを実現",
-        image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=400&h=225&fit=crop&crop=center"
+        image: "/images/services/detail/1461749280684-coding.jpg"
       }
     ]
   },
@@ -64,19 +64,19 @@ export const AI_CODING_TRAINING_DATA: ServiceData = {
     subtitle: "開発に関わる全てのエンジニアとマネージャーに価値をお届けします",
     audiences: [
       {
-        image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=300&h=300&fit=crop&crop=center",
+        image: "/images/services/detail/1461749280684-coding.jpg",
         text: "{Web・モバイル開発}の効率化を図りたい{フロントエンジニア}の方"
       },
       {
-        image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=300&h=300&fit=crop&crop=center",
+        image: "/images/services/detail/1555066931-code.jpg",
         text: "{API設計・実装}を効率化したい{バックエンドエンジニア}の方"
       },
       {
-        image: "https://images.unsplash.com/photo-1519389950473-47ba0277781c?w=300&h=300&fit=crop&crop=center",
+        image: "/images/services/detail/1519389950473-workspace.jpg",
         text: "チームの{開発生産性}を向上させたい{開発マネージャー}の方"
       },
       {
-        image: "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=300&h=300&fit=crop&crop=center",
+        image: "/images/services/detail/1531482615713-meeting.jpg",
         text: "{コーディングスキル}を短期間で習得したい{新人エンジニア}の方"
       }
     ]
@@ -145,22 +145,22 @@ export const AI_CODING_TRAINING_DATA: ServiceData = {
       {
         title: "AI支援開発環境構築",
         description: "GitHub Copilot、Claude Code、Cursor等の主要AI開発ツールのセットアップから基本操作まで、AI支援開発に必要な環境構築と基礎知識を体系的に習得します",
-        image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=300&h=200&fit=crop"
+        image: "/images/services/detail/1461749280684-coding.jpg"
       },
       {
         title: "AI支援コーディング実践",
         description: "実際のプロジェクトを題材として、AI支援によるコード生成、リファクタリング、テストコード作成等の実践的な開発手法を習得し、開発効率を劇的に向上させます",
-        image: "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=300&h=200&fit=crop"
+        image: "/images/services/detail/1555066931-code.jpg"
       },
       {
         title: "コード品質最適化",
         description: "AIを活用したコードレビュー、バグ検出、パフォーマンス最適化等の品質向上技術を学習。保守性と拡張性に優れたコード作成技術を身につけます",
-        image: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=300&h=200&fit=crop"
+        image: "/images/services/detail/1516321318423-laptop.jpg"
       },
       {
         title: "チーム開発への適用",
         description: "AI支援開発をチーム全体で効果的に活用するための運用方法、コーディング規約の策定、知識共有の仕組みづくりまで、組織レベルでの導入方法を習得します",
-        image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=300&h=200&fit=crop"
+        image: "/images/services/detail/1522202176988-collaboration.jpg"
       }
     ]
   },
