@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { Menu, X } from 'lucide-react'
+import { Menu, X, Mail } from 'lucide-react'
 import { cn } from '@/app/lib/utils'
 
 export default function MobileHeader() {
@@ -80,7 +80,7 @@ export default function MobileHeader() {
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "block w-full px-4 py-3 transition-all duration-200 relative group",
+                    "block w-full px-4 py-3 text-center transition-all duration-200 relative group",
                     isActive
                       ? "text-blue-600"
                       : "text-gray-600 hover:text-gray-900"
@@ -105,12 +105,13 @@ export default function MobileHeader() {
           </div>
 
           {/* Contact Info */}
-          <div className="pt-6 border-t border-gray-200">
+          <div className="pt-6 border-t border-gray-200 text-center">
             <p className="text-xs text-gray-500 mb-2">お問い合わせ</p>
             <a
               href="mailto:info@landbridge.co.jp"
-              className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+              className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
             >
+              <Mail className="h-4 w-4" />
               info@landbridge.co.jp
             </a>
           </div>
