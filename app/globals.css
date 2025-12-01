@@ -167,11 +167,7 @@ input[type="range"].audio-slider::-moz-range-track {
   html {
     @apply bg-background;
     background-color: hsl(var(--background));
-  }
-
-  html {
-    @apply bg-background;
-    background-color: hsl(var(--background));
+    overflow-x: hidden;
   }
   
   body {
