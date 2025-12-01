@@ -169,50 +169,21 @@ input[type="range"].audio-slider::-moz-range-track {
     background-color: hsl(var(--background));
     overflow-x: hidden;
     scroll-behavior: auto;
-    overscroll-behavior: none;
-    /* iOS Safari: スクロール位置の問題を防ぐ */
-    height: 100%;
   }
 
   body {
     @apply bg-background text-foreground;
     background-color: hsl(var(--background));
-    min-height: 100%;
+    min-height: 100vh;
     position: relative;
+    -webkit-overflow-scrolling: touch;
     overflow-x: hidden;
-    overscroll-behavior: none;
-    /* iOS Safari: スクロール位置リセット */
-    margin: 0;
-    padding: 0;
-  }
-
-  /* iOS Safari固有の対応 */
-  @supports (-webkit-touch-callout: none) {
-    html {
-      height: -webkit-fill-available;
-    }
-    body {
-      min-height: -webkit-fill-available;
-    }
   }
 
   /* モバイル固定ヘッダー用のスクロールパディング */
   @media (max-width: 1279px) {
     html {
       scroll-padding-top: 64px;
-    }
-  }
-
-  /* iOS Safari: 負のマージンを持つヒーローセクションのスクロール位置補正 */
-  main > div:first-child {
-    scroll-margin-top: 0;
-  }
-
-  /* iOS Safari: スクロール位置の安定化 */
-  @supports (-webkit-touch-callout: none) {
-    main {
-      -webkit-transform: translateZ(0);
-      transform: translateZ(0);
     }
   }
 

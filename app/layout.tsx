@@ -98,8 +98,6 @@ export default function RootLayout({
         <link rel="stylesheet" href="https://use.typekit.net/uoy2cka.css" />
       </head>
       <body className="bg-youtube-dark" style={{ backgroundColor: '#0f0f0f', fontFamily: 'var(--font-primary)' }}>
-        {/* iOS Safari スクロール位置アンカー */}
-        <div id="page-top" style={{ position: 'absolute', top: 0, left: 0, height: 0, width: 0 }} aria-hidden="true" />
         <div className="fixed inset-0 bg-youtube-dark" style={{ backgroundColor: '#0f0f0f', zIndex: -1 }} aria-hidden="true" />
         <ScrollToTop />
         <GoogleAnalytics />

@@ -8,27 +8,13 @@ const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffec
 
 export default function ScrollToTop() {
   const pathname = usePathname()
-  const isInitialMount = useRef(true)
+  const prevPathname = useRef(pathname)
 
   // スクロールをトップにリセットする関数
   const scrollToTop = useCallback(() => {
-    // アンカー要素へのスクロール（iOS Safari対策）
-    const pageTop = document.getElementById('page-top')
-    if (pageTop) {
-      pageTop.scrollIntoView({ behavior: 'instant', block: 'start' })
-    }
-
-    // 複数の方法でスクロールリセット
     window.scrollTo(0, 0)
     document.documentElement.scrollTop = 0
     document.body.scrollTop = 0
-
-    // scrollTo with options
-    try {
-      window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
-    } catch {
-      window.scrollTo(0, 0)
-    }
   }, [])
 
   // 初期化
@@ -38,49 +24,65 @@ export default function ScrollToTop() {
       history.scrollRestoration = 'manual'
     }
 
-    // iOS Safari bfcache対応: pageshow イベント
+    // 内部リンククリック時にスクロールをリセット（iOS Safari対策）
+    // Next.jsのクライアントサイドナビゲーション前にスクロール位置をリセット
+    const handleLinkClick = (event: MouseEvent) => {
+      const target = event.target as HTMLElement
+      const link = target.closest('a')
+
+      if (link) {
+        const href = link.getAttribute('href')
+        // 内部リンクの場合のみ処理
+        if (href && (href.startsWith('/') || href.startsWith(window.location.origin))) {
+          // ハッシュリンク以外の場合
+          if (!href.includes('#') || href.split('#')[0] !== window.location.pathname) {
+            // ナビゲーション前にスクロールをリセット
+            scrollToTop()
+          }
+        }
+      }
+    }
+
+    // キャプチャフェーズで実行して、Next.jsのナビゲーションより先に処理
+    document.addEventListener('click', handleLinkClick, { capture: true })
+
+    // iOS Safari bfcache対応
     const handlePageShow = (event: PageTransitionEvent) => {
-      // bfcacheから復元された場合は特に重要
       if (event.persisted) {
         scrollToTop()
-        // Safari用の追加リセット
-        requestAnimationFrame(() => {
-          scrollToTop()
-          setTimeout(scrollToTop, 50)
-        })
+        requestAnimationFrame(scrollToTop)
       }
     }
 
     window.addEventListener('pageshow', handlePageShow)
 
     return () => {
+      document.removeEventListener('click', handleLinkClick, { capture: true })
       window.removeEventListener('pageshow', handlePageShow)
     }
   }, [scrollToTop])
 
   // ページ遷移時にスクロール位置を一番上にリセット
   useIsomorphicLayoutEffect(() => {
-    // 初回マウント時はスキップ（サーバーからの初期レンダリング時）
-    if (isInitialMount.current) {
-      isInitialMount.current = false
-      // 初回でも確実にトップに
+    // パスが変わった場合のみリセット
+    if (prevPathname.current !== pathname) {
+      prevPathname.current = pathname
+      // 即座にリセット
       scrollToTop()
-      // Safari用の追加リセット（負のマージンによるズレ対策）
+      // Safari用の追加リセット（複数タイミング）
       requestAnimationFrame(() => {
         scrollToTop()
-        setTimeout(scrollToTop, 100)
-        setTimeout(scrollToTop, 300)
+        setTimeout(scrollToTop, 0)
+        setTimeout(scrollToTop, 50)
       })
-      return
     }
-
-    // ページ遷移時
-    scrollToTop()
-    requestAnimationFrame(() => {
-      scrollToTop()
-      setTimeout(scrollToTop, 100)
-    })
   }, [pathname, scrollToTop])
+
+  // 初回マウント時
+  useEffect(() => {
+    scrollToTop()
+    requestAnimationFrame(scrollToTop)
+  }, [scrollToTop])
 
   return null
 }
