@@ -28,29 +28,41 @@ interface MainLayoutProps {
 
 export default function MainLayout({ children, hideRightSidebar = false, hideContactButton = false, dynamicSidebar }: MainLayoutProps) {
   const footerRef = useRef<HTMLDivElement>(null)
-  const [sidebarBottom, setSidebarBottom] = useState<number | undefined>(undefined)
-
-  const SIDEBAR_MIN_HEIGHT = 640
+  const [sidebarOffset, setSidebarOffset] = useState(0)
 
   useEffect(() => {
-    const handleScroll = () => {
+    let rafId: number
+
+    const updateSidebarPosition = () => {
       if (!footerRef.current) return
 
       const footerRect = footerRef.current.getBoundingClientRect()
+      const sidebarHeight = window.innerHeight
 
-      // フッターが画面内に入ってきたら、サイドバーの位置を調整
-      // サイドバーはフッターの上端で止まる
-      if (footerRect.top < SIDEBAR_MIN_HEIGHT) {
-        setSidebarBottom(SIDEBAR_MIN_HEIGHT - footerRect.top)
+      // フッターがサイドバーと重なる場合、サイドバーを上にずらす
+      if (footerRect.top < sidebarHeight) {
+        const offset = sidebarHeight - footerRect.top
+        setSidebarOffset(-offset)
       } else {
-        setSidebarBottom(undefined)
+        setSidebarOffset(0)
       }
     }
 
-    window.addEventListener('scroll', handleScroll)
-    handleScroll() // 初期チェック
+    const handleScroll = () => {
+      // requestAnimationFrameでスムーズに更新
+      cancelAnimationFrame(rafId)
+      rafId = requestAnimationFrame(updateSidebarPosition)
+    }
 
-    return () => window.removeEventListener('scroll', handleScroll)
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    window.addEventListener('resize', handleScroll, { passive: true })
+    updateSidebarPosition()
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll)
+      window.removeEventListener('resize', handleScroll)
+      cancelAnimationFrame(rafId)
+    }
   }, [])
 
   return (
@@ -58,28 +70,30 @@ export default function MainLayout({ children, hideRightSidebar = false, hideCon
       {/* Fixed background layer to prevent overscroll color */}
       <div className="fixed inset-0 bg-gray-50" style={{ zIndex: -1 }} aria-hidden="true" />
 
+      {/* Left Sidebar Background - Fixed, full height, behind footer */}
+      <div
+        className="fixed top-0 left-0 bottom-0 w-[178px] bg-white border-r border-gray-200 hidden xl:block z-30"
+        aria-hidden="true"
+      />
+
       {/* Mobile Header */}
       <MobileHeader />
 
+      {/* Left Sidebar Content - Fixed, follows scroll, slides up at footer */}
+      <aside
+        className="fixed top-0 left-0 h-screen w-[178px] z-[35] hidden xl:block"
+        style={{ transform: `translateY(${sidebarOffset}px)` }}
+      >
+        <Sidebar />
+      </aside>
+
       {/* Body - contains all main content */}
       <div className="flex-1 flex">
-        {/* Left Sidebar Background - stretches full height */}
-        <div className="w-[178px] flex-shrink-0 hidden xl:block bg-white border-r border-gray-200" />
-
-        {/* Left Sidebar Content - Fixed position, stops at footer */}
-        <aside
-          className="hidden xl:block fixed left-0 w-[178px] bg-white border-r border-gray-200 z-40"
-          style={{
-            top: sidebarBottom !== undefined ? `-${sidebarBottom}px` : '0',
-            height: `max(100vh, 640px)`
-          }}
-        >
-          <Sidebar />
-        </aside>
+        {/* Left Sidebar Spacer - maintains layout space */}
+        <div className="w-[178px] flex-shrink-0 hidden xl:block" />
 
         {/* Main Content Container */}
         <div className="flex-1 min-w-0">
-          {/* Scrollable container for mid-range sizes */}
           <div className="h-full overflow-x-visible">
             <div className="flex gap-8 px-4 sm:px-6 lg:px-8 py-8">
               <main className="flex-1 min-w-0">
@@ -105,12 +119,12 @@ export default function MainLayout({ children, hideRightSidebar = false, hideCon
           </div>
         </div>
       </div>
-      
-      {/* Footer */}
-      <div ref={footerRef}>
+
+      {/* Footer - Above sidebar background */}
+      <div ref={footerRef} className="relative z-40">
         <Footer />
       </div>
-      
+
       {!hideContactButton && <FloatingButtons />}
     </div>
   )
