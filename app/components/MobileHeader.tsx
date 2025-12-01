@@ -68,8 +68,8 @@ export default function MobileHeader() {
           isMenuOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
-        <nav className="py-6 px-4">
-          <div className="space-y-1">
+        <nav className="py-6 px-4 h-full flex flex-col">
+          <div className="space-y-1 flex-1">
             {menuItems.map((item) => {
               const isActive = item.href === '/'
                 ? pathname === item.href
@@ -102,6 +102,17 @@ export default function MobileHeader() {
                 </Link>
               )
             })}
+          </div>
+
+          {/* Contact Info */}
+          <div className="pt-6 border-t border-gray-200">
+            <p className="text-xs text-gray-500 mb-2">お問い合わせ</p>
+            <a
+              href="mailto:info@landbridge.co.jp"
+              className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
+            >
+              info@landbridge.co.jp
+            </a>
           </div>
         </nav>
       </div>
