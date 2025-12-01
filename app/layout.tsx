@@ -98,6 +98,9 @@ export default function RootLayout({
         <link rel="stylesheet" href="https://use.typekit.net/uoy2cka.css" />
       </head>
       <body className="bg-youtube-dark" style={{ backgroundColor: '#0f0f0f', fontFamily: 'var(--font-primary)' }}>
+        {/* Safari スクロール位置問題対策: ページ最上部のアンカー要素 */}
+        {/* #top アンカーを使用することで、Safariのネイティブスクロール機能を利用 */}
+        <div id="top" style={{ position: 'absolute', top: 0, left: 0, height: 0, width: 0 }} />
         {/* Next.js App Router スクロールリセット用アンカー要素 */}
         {/* fixed要素の前に配置することで、正しいスクロール位置計算を保証 */}
         {/* 参照: https://github.com/vercel/next.js/issues/49427 */}

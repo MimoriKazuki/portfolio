@@ -157,20 +157,27 @@ export default function SafariLink({ children, onClick, href, ...props }: Safari
       onClick?.()
 
       // ============================================
-      // 検証: ハードナビゲーション（完全なページリロード）
-      // SPAナビゲーションの問題かどうかを切り分けるため
+      // アプローチ: アンカーリンクによる強制スクロール
+      // Safariのネイティブアンカースクロール機能を利用
       // ============================================
       unfreeze()
 
       const duration = performance.now() - startTime
-      debugLog('Step 3: Using HARD navigation (full page reload)', {
-        href: targetHref,
+
+      // URLに#topアンカーを追加（既にアンカーがある場合は置換）
+      const urlWithAnchor = targetHref.includes('#')
+        ? targetHref.replace(/#.*$/, '#top')
+        : `${targetHref}#top`
+
+      debugLog('Step 3: Using anchor-based navigation', {
+        originalHref: targetHref,
+        hrefWithAnchor: urlWithAnchor,
         duration: `${duration.toFixed(2)}ms`
       })
 
-      // ハードナビゲーション: 完全なページリロードを行う
-      // これでSafariの全ての内部状態（アドレスバー、スクロール方向等）がリセットされる
-      window.location.href = targetHref
+      // ハードナビゲーション + アンカー
+      // Safariのネイティブアンカースクロールで強制的に最上部へ
+      window.location.href = urlWithAnchor
 
     } catch (error) {
       debugLog('Error during navigation', { error })
