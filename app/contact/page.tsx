@@ -99,7 +99,7 @@ function ContactForm() {
 
   return (
     <MainLayout hideRightSidebar={true}>
-      <div className="w-full pt-8 max-[719px]:pt-0">
+      <div className="w-full pt-8 max-mid:pt-0">
         {/* Header */}
         <div
           className="mb-12"

@@ -17,7 +17,7 @@ const HeroSection = () => {
     return (
         <div className="relative overflow-hidden w-full bg-white">
             {/* Content Container - Fluid Design */}
-            <div className="w-full py-16 max-[719px]:py-8">
+            <div className="w-full py-16 max-mid:py-8">
 
                 {/* Text Content with responsive padding */}
                 <div className="px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 mb-8 relative">
