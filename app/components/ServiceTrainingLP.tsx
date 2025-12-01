@@ -677,7 +677,7 @@ export default function ServiceTrainingLP({
               >
                 <div className="group bg-white hover:bg-[#323232] transition-all duration-300 hover:scale-105 h-full">
                   <div className="p-6 md:p-8 min-h-[180px] flex flex-col justify-center">
-                    <p className={`text-sm font-medium mb-2 ${theme === 'green' ? 'text-emerald-400' : 'text-blue-400'}`}>Module {String(index + 1).padStart(2, '0')}</p>
+                    <p className={`text-sm font-medium mb-2 transition-colors duration-300 ${theme === 'green' ? 'text-emerald-600 group-hover:text-emerald-400' : 'text-blue-600 group-hover:text-blue-400'}`}>Module {String(index + 1).padStart(2, '0')}</p>
                     <h3 className="text-lg font-semibold text-gray-900 group-hover:text-white mb-2 transition-colors duration-300">{module.title}</h3>
                     <p className="text-gray-600 group-hover:text-gray-300 text-sm leading-relaxed transition-colors duration-300">{module.description}</p>
                   </div>
