@@ -5,6 +5,7 @@ import Link from 'next/link'
 import MainLayout from '@/app/components/MainLayout'
 import { trackContactFormSubmit } from '@/app/components/GoogleAnalyticsEvent'
 import { useRouter, useSearchParams } from 'next/navigation'
+import CustomSelect from '@/app/components/ui/CustomSelect'
 
 function ContactForm() {
   const [isVisible, setIsVisible] = useState(false)
@@ -199,19 +200,19 @@ function ContactForm() {
                 <label htmlFor="inquiry_type" className="block text-sm font-medium text-gray-900 mb-2">
                   お問い合わせ種別 <span className="text-blue-600">*</span>
                 </label>
-                <select
+                <CustomSelect
                   id="inquiry_type"
                   name="inquiry_type"
                   value={formData.inquiry_type}
-                  onChange={(e) => setFormData({ ...formData, inquiry_type: e.target.value as any, service_type: '' })}
-                  className="w-full px-0 py-3 bg-transparent border-0 border-b border-gray-300 text-gray-900 focus:outline-none focus:border-blue-600 transition-colors cursor-pointer"
+                  onChange={(value) => setFormData({ ...formData, inquiry_type: value as any, service_type: '' })}
+                  options={[
+                    { value: 'service', label: 'サービスについて' },
+                    { value: 'partnership', label: '提携・協業' },
+                    { value: 'recruit', label: '採用関連' },
+                    { value: 'other', label: 'その他' },
+                  ]}
                   required
-                >
-                  <option value="service">サービスについて</option>
-                  <option value="partnership">提携・協業</option>
-                  <option value="recruit">採用関連</option>
-                  <option value="other">その他</option>
-                </select>
+                />
               </div>
 
               {/* サービス選択時の研修タイプ選択 */}
@@ -226,19 +227,13 @@ function ContactForm() {
                   <label htmlFor="service_type" className="block text-sm font-medium text-gray-900 mb-2">
                     ご興味のある研修
                   </label>
-                  <select
+                  <CustomSelect
                     id="service_type"
                     name="service_type"
                     value={formData.service_type}
-                    onChange={(e) => setFormData({ ...formData, service_type: e.target.value })}
-                    className="w-full px-0 py-3 bg-transparent border-0 border-b border-gray-300 text-gray-900 focus:outline-none focus:border-blue-600 transition-colors cursor-pointer"
-                  >
-                    {serviceOptions.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
+                    onChange={(value) => setFormData({ ...formData, service_type: value })}
+                    options={serviceOptions}
+                  />
                 </div>
               )}
 

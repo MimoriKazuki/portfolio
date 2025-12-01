@@ -169,7 +169,7 @@ input[type="range"].audio-slider::-moz-range-track {
     background-color: hsl(var(--background));
     overflow-x: hidden;
   }
-  
+
   body {
     @apply bg-background text-foreground;
     background-color: hsl(var(--background));
@@ -177,6 +177,55 @@ input[type="range"].audio-slider::-moz-range-track {
     position: relative;
     -webkit-overflow-scrolling: touch;
     overflow-x: hidden;
+  }
+
+  /* モバイルブラウザのフォーム要素スタイルをリセット */
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="password"],
+  input[type="number"],
+  input[type="search"],
+  input[type="url"],
+  textarea,
+  select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border-radius: 0;
+    background-color: transparent;
+    font-size: 16px; /* iOS zoom防止 */
+  }
+
+  /* iOS Safariの内側シャドウを削除 */
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="password"],
+  input[type="number"],
+  input[type="search"],
+  input[type="url"],
+  textarea {
+    -webkit-box-shadow: none;
+    box-shadow: none;
+  }
+
+  /* フォーカス時のアウトラインをリセット（独自スタイルで上書き） */
+  input:focus,
+  textarea:focus,
+  select:focus {
+    outline: none;
+  }
+
+  /* iOS Safariのボタンスタイルリセット */
+  button,
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border-radius: 0;
   }
 
   .hover-scale {
