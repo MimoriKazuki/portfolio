@@ -105,7 +105,7 @@ export default function MobileHeader() {
           </div>
 
           {/* Contact Info */}
-          <div className="pt-6 border-t border-gray-200 text-center">
+          <div className="py-6 border-t border-gray-200 text-center">
             <p className="text-xs text-gray-500 mb-2">お問い合わせ</p>
             <a
               href="mailto:info@landbridge.co.jp"
