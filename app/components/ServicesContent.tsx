@@ -291,7 +291,7 @@ export default function ServicesContent() {
       </section>
 
       {/* Services List */}
-      <section ref={sectionRef} className="space-y-32">
+      <section ref={sectionRef} className="space-y-16 mid:space-y-32">
         {currentServices.map((service, index) => (
           <article
             key={service.id}
