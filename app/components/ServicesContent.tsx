@@ -312,7 +312,7 @@ export default function ServicesContent() {
             </div>
 
             {/* Content Area - Two Columns (4:6 ratio) */}
-            <div className="grid grid-cols-1 md:grid-cols-[4fr_6fr] gap-8 md:gap-12 lg:gap-16 w-full">
+            <div className="grid grid-cols-1 md:grid-cols-[4fr_6fr] xl:grid-cols-1 wide:grid-cols-[4fr_6fr] gap-8 md:gap-12 xl:gap-8 wide:gap-12 2xl:gap-16 w-full">
               {/* Left Column - Label, Title, Link (4/10) */}
               <div>
                 {/* Service Number */}
@@ -321,7 +321,7 @@ export default function ServicesContent() {
                 </p>
 
                 {/* Title (Service Name) */}
-                <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 sm:mb-12 leading-tight">
+                <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 sm:mb-12 xl:mb-6 wide:mb-12 leading-tight">
                   {service.label}
                 </h3>
 

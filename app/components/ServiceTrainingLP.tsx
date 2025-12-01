@@ -1059,10 +1059,10 @@ export default function ServiceTrainingLP({
                 </div>
 
                 {/* Content Area - Two Columns */}
-                <div className="grid grid-cols-2 gap-12">
+                <div className="grid grid-cols-1 wide:grid-cols-2 gap-8 wide:gap-12">
                   {/* Left Column - Title, Link */}
                   <div>
-                    <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8 leading-tight">
+                    <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 wide:mb-8 leading-tight">
                       {selectedProgram.title}
                     </h3>
                     <Link

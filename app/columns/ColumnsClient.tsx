@@ -113,7 +113,7 @@ export default function ColumnsClient({ columns }: ColumnsClientProps) {
           <p className="text-lg sm:text-xl text-gray-500">このカテゴリにコラムはありません</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 wide:grid-cols-3 gap-3">
           {filteredColumns.map((column: Column) => (
             <Link 
               key={column.id} 
