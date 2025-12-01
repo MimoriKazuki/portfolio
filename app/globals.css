@@ -168,25 +168,36 @@ input[type="range"].audio-slider::-moz-range-track {
     @apply bg-background;
     background-color: hsl(var(--background));
     overflow-x: hidden;
-    /* Safariスクロール位置問題対策: scroll-padding-topを0に設定 */
+    /* Safariスクロール位置問題対策 */
     scroll-padding-top: 0;
+    scroll-margin-top: 0;
   }
 
   body {
     @apply bg-background text-foreground;
     background-color: hsl(var(--background));
-    min-height: 100vh;
+    /* Safari ビューポート問題対策: dvh単位を使用 */
+    /* dvh = dynamic viewport height: アドレスバーの状態に応じて動的に変化 */
+    min-height: 100dvh;
     overflow-x: hidden;
-    /* Safariスクロール位置問題対策: スクロール位置の基準を明確化 */
     scroll-padding-top: 0;
-  }
-  
-  /* Safari専用: ページトップへのアンカー要素 */
-  html::before {
-    content: '';
-    display: block;
-    height: 0;
     scroll-margin-top: 0;
+    /* iOS Safe Area 対応 */
+    padding-top: env(safe-area-inset-top, 0);
+  }
+
+  /* Safari専用スタイル */
+  @supports (-webkit-touch-callout: none) {
+    /* iOSのみに適用 */
+    html {
+      /* スクロール位置の強制リセット */
+      scroll-behavior: auto !important;
+    }
+
+    body {
+      /* ビューポート高さを動的に設定 */
+      min-height: -webkit-fill-available;
+    }
   }
 
   /* モバイルブラウザのフォーム要素スタイルをリセット */

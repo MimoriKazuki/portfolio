@@ -226,6 +226,26 @@ export default function ScrollToTop() {
         pathname,
         scrollY: window.scrollY
       })
+
+      // Safari専用: スクロールジョルト
+      // 1pxスクロールしてから0に戻すことで、Safariのビューポートを強制的に再計算
+      // これによりアドレスバーの状態がリセットされる
+      const performScrollJolt = () => {
+        window.scrollTo(0, 1)
+        requestAnimationFrame(() => {
+          window.scrollTo(0, 0)
+          document.documentElement.scrollTop = 0
+          document.body.scrollTop = 0
+          logScrollDebugInfo('Scroll jolt completed', { scrollY: window.scrollY })
+        })
+      }
+
+      // 即座にジョルト実行
+      performScrollJolt()
+
+      // 少し遅延してもう一度（アドレスバーアニメーション完了後）
+      setTimeout(performScrollJolt, 100)
+      setTimeout(performScrollJolt, 300)
     }
   }, [pathname])
 
