@@ -15,7 +15,7 @@ export default function PageHeader({ title, subtitle }: PageHeaderProps) {
   }, [])
 
   return (
-    <div className="pt-8 mb-12">
+    <div className="pt-8 max-mid:pt-0 mb-12">
       <div
         style={{
           opacity: isVisible ? 1 : 0,
