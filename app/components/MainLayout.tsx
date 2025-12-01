@@ -67,6 +67,11 @@ export default function MainLayout({ children, hideRightSidebar = false, hideCon
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
+      {/* Next.js App Router スクロールリセット用アンカー要素 */}
+      {/* fixed/sticky要素の前に配置することで、正しいスクロール位置計算を保証 */}
+      {/* 参照: https://github.com/vercel/next.js/issues/49427 */}
+      <div />
+
       {/* Fixed background layer to prevent overscroll color */}
       <div className="fixed inset-0 bg-gray-50" style={{ zIndex: -1 }} aria-hidden="true" />
 

@@ -98,6 +98,10 @@ export default function RootLayout({
         <link rel="stylesheet" href="https://use.typekit.net/uoy2cka.css" />
       </head>
       <body className="bg-youtube-dark" style={{ backgroundColor: '#0f0f0f', fontFamily: 'var(--font-primary)' }}>
+        {/* Next.js App Router スクロールリセット用アンカー要素 */}
+        {/* fixed要素の前に配置することで、正しいスクロール位置計算を保証 */}
+        {/* 参照: https://github.com/vercel/next.js/issues/49427 */}
+        <div />
         <div className="fixed inset-0 bg-youtube-dark" style={{ backgroundColor: '#0f0f0f', zIndex: -1 }} aria-hidden="true" />
         <ScrollToTop />
         <GoogleAnalytics />
