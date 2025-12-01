@@ -170,28 +170,11 @@ input[type="range"].audio-slider::-moz-range-track {
     overflow-x: hidden;
   }
 
-  html {
-    height: 100%;
-  }
-
   body {
     @apply bg-background text-foreground;
     background-color: hsl(var(--background));
-    min-height: 100%;
+    min-height: 100vh;
     overflow-x: hidden;
-    /* 以下のプロパティはiOS Safariでスクロール問題を引き起こすため削除:
-       - position: relative
-       - -webkit-overflow-scrolling: touch
-       - min-height: 100vh（100%に変更）
-       参照: https://stackoverflow.com/questions/24616322/mobile-safari-why-is-window-scrollto0-0-not-scrolling-to-0-0
-    */
-  }
-
-  /* モバイル固定ヘッダー用のスクロールパディング */
-  @media (max-width: 1279px) {
-    html {
-      scroll-padding-top: 64px;
-    }
   }
 
   /* モバイルブラウザのフォーム要素スタイルをリセット */
