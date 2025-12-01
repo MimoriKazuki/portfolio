@@ -222,7 +222,12 @@ export default function ServiceTrainingLP({
     return href
   }
   const [openFaqs, setOpenFaqs] = useState<Set<number>>(new Set())
-  const [heroLoaded, setHeroLoaded] = useState(true)
+  const [heroLoaded, setHeroLoaded] = useState(false)
+
+  // ヒーローアニメーション開始
+  useEffect(() => {
+    setHeroLoaded(true)
+  }, [])
 
   // Other programs navigation state
   const filteredPrograms = otherTrainingPrograms.programs.filter(
@@ -361,15 +366,30 @@ export default function ServiceTrainingLP({
       {/* Hero Section - 画面いっぱい */}
       <div className="-mx-4 sm:-mx-6 lg:-mx-8 -mt-8">
         <div className="h-[320px] md:h-[400px] relative overflow-hidden w-full">
-          <Image
-            src={heroImage}
-            alt={heroTitle}
-            fill
-            sizes="100vw"
-            className="object-cover object-center"
-            priority
+          <div
+            style={{
+              opacity: heroLoaded ? 1 : 0,
+              transform: heroLoaded ? 'scale(1)' : 'scale(1.1)',
+              transition: 'opacity 1s ease-out, transform 1.2s ease-out',
+            }}
+            className="absolute inset-0"
+          >
+            <Image
+              src={heroImage}
+              alt={heroTitle}
+              fill
+              sizes="100vw"
+              className="object-cover object-center"
+              priority
+            />
+          </div>
+          <div
+            className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent"
+            style={{
+              opacity: heroLoaded ? 1 : 0,
+              transition: 'opacity 0.8s ease-out 0.2s',
+            }}
           />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent" />
 
           {/* Back Button */}
           <Link

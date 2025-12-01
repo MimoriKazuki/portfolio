@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import { ArrowRight, Building2, User } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { ScrollAnimation } from './ui/scroll-animation'
 
 // サービスデータの型定義
 interface ServiceItem {
@@ -292,70 +293,158 @@ export default function ServicesContent() {
 
       {/* Services List */}
       <section ref={sectionRef} className="space-y-16 mid:space-y-32">
-        {currentServices.map((service, index) => (
-          <article
-            key={service.id}
-            id={service.id}
-            className="scroll-mt-24"
-          >
-            {/* Image Area - Full Width, 21:9 aspect ratio */}
-            <div className="relative overflow-hidden mb-8">
-              <div className="relative aspect-[21/9]">
-                <Image
-                  src={service.image}
-                  alt={service.label}
-                  fill
-                  className="object-cover"
-                  sizes="100vw"
-                />
-              </div>
-            </div>
+        {currentServices.map((service, index) => {
+          // 一番目のカードはページ読み込み時アニメーション、それ以外はスクロールアニメーション
+          const isFirstCard = index === 0
+          const baseDelay = isFirstCard ? 0.3 : 0
 
-            {/* Content Area - Two Columns (4:6 ratio) */}
-            <div className="grid grid-cols-1 md:grid-cols-[4fr_6fr] xl:grid-cols-1 wide:grid-cols-[4fr_6fr] gap-8 md:gap-12 xl:gap-8 wide:gap-12 2xl:gap-16 w-full">
-              {/* Left Column - Label, Title, Link (4/10) */}
-              <div>
-                {/* Service Number */}
-                <p className={`text-base font-medium mb-4 ${activeTab === 'corporate' ? 'text-blue-600' : 'text-emerald-600'}`}>
-                  Service {service.number}
-                </p>
-
-                {/* Title (Service Name) */}
-                <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 sm:mb-12 xl:mb-6 wide:mb-12 leading-tight">
-                  {service.label}
-                </h3>
-
-                {/* View Detail Link */}
-                <Link
-                  href={service.href}
-                  className={`inline-flex items-center justify-center gap-2 px-8 py-4 bg-white font-medium transition-colors duration-200 text-base border ${
-                    activeTab === 'corporate'
-                      ? 'text-blue-600 border-blue-600 hover:bg-blue-50'
-                      : 'text-emerald-600 border-emerald-600 hover:bg-emerald-50'
-                  }`}
+          return (
+            <article
+              key={service.id}
+              id={service.id}
+              className="scroll-mt-24"
+            >
+              {/* Image Area - Full Width, 21:9 aspect ratio */}
+              {isFirstCard ? (
+                <div
+                  className="relative overflow-hidden mb-8"
+                  style={{
+                    opacity: isVisible ? 1 : 0,
+                    transform: isVisible ? 'translateY(0)' : 'translateY(40px)',
+                    transition: `opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${baseDelay}s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${baseDelay}s`,
+                  }}
                 >
-                  カリキュラムを見る
-                  <ArrowRight className="w-4 h-4" />
-                </Link>
-              </div>
-
-              {/* Right Column - Description (6/10) */}
-              <div>
-                {/* Subtitle */}
-                <p className="text-gray-600 font-medium mb-6 leading-loose">
-                  {service.subtitle}
-                </p>
-
-                {/* Description */}
-                <div className="space-y-5 text-gray-600 text-base leading-loose font-medium">
-                  {service.description.map((paragraph, i) => (
-                    <p key={i}>{paragraph}</p>
-                  ))}
+                  <div className="relative aspect-[21/9]">
+                    <Image
+                      src={service.image}
+                      alt={service.label}
+                      fill
+                      className="object-cover"
+                      sizes="100vw"
+                    />
+                  </div>
                 </div>
+              ) : (
+                <ScrollAnimation animation="fadeUp" delay={0}>
+                  <div className="relative overflow-hidden mb-8">
+                    <div className="relative aspect-[21/9]">
+                      <Image
+                        src={service.image}
+                        alt={service.label}
+                        fill
+                        className="object-cover"
+                        sizes="100vw"
+                      />
+                    </div>
+                  </div>
+                </ScrollAnimation>
+              )}
+
+              {/* Content Area - Two Columns (4:6 ratio) */}
+              <div className="grid grid-cols-1 md:grid-cols-[4fr_6fr] xl:grid-cols-1 wide:grid-cols-[4fr_6fr] gap-8 md:gap-12 xl:gap-8 wide:gap-12 2xl:gap-16 w-full">
+                {/* Left Column - Label, Title, Link (4/10) */}
+                {isFirstCard ? (
+                  <div
+                    style={{
+                      opacity: isVisible ? 1 : 0,
+                      transform: isVisible ? 'translateY(0)' : 'translateY(40px)',
+                      transition: `opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${baseDelay + 0.1}s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${baseDelay + 0.1}s`,
+                    }}
+                  >
+                    {/* Service Number */}
+                    <p className={`text-base font-medium mb-4 ${activeTab === 'corporate' ? 'text-blue-600' : 'text-emerald-600'}`}>
+                      Service {service.number}
+                    </p>
+
+                    {/* Title (Service Name) */}
+                    <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 sm:mb-12 xl:mb-6 wide:mb-12 leading-tight">
+                      {service.label}
+                    </h3>
+
+                    {/* View Detail Link */}
+                    <Link
+                      href={service.href}
+                      className={`inline-flex items-center justify-center gap-2 px-8 py-4 bg-white font-medium transition-colors duration-200 text-base border ${
+                        activeTab === 'corporate'
+                          ? 'text-blue-600 border-blue-600 hover:bg-blue-50'
+                          : 'text-emerald-600 border-emerald-600 hover:bg-emerald-50'
+                      }`}
+                    >
+                      カリキュラムを見る
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
+                  </div>
+                ) : (
+                  <ScrollAnimation animation="fadeUp" delay={0.1}>
+                    <div>
+                      {/* Service Number */}
+                      <p className={`text-base font-medium mb-4 ${activeTab === 'corporate' ? 'text-blue-600' : 'text-emerald-600'}`}>
+                        Service {service.number}
+                      </p>
+
+                      {/* Title (Service Name) */}
+                      <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 sm:mb-12 xl:mb-6 wide:mb-12 leading-tight">
+                        {service.label}
+                      </h3>
+
+                      {/* View Detail Link */}
+                      <Link
+                        href={service.href}
+                        className={`inline-flex items-center justify-center gap-2 px-8 py-4 bg-white font-medium transition-colors duration-200 text-base border ${
+                          activeTab === 'corporate'
+                            ? 'text-blue-600 border-blue-600 hover:bg-blue-50'
+                            : 'text-emerald-600 border-emerald-600 hover:bg-emerald-50'
+                        }`}
+                      >
+                        カリキュラムを見る
+                        <ArrowRight className="w-4 h-4" />
+                      </Link>
+                    </div>
+                  </ScrollAnimation>
+                )}
+
+                {/* Right Column - Description (6/10) */}
+                {isFirstCard ? (
+                  <div
+                    style={{
+                      opacity: isVisible ? 1 : 0,
+                      transform: isVisible ? 'translateY(0)' : 'translateY(40px)',
+                      transition: `opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${baseDelay + 0.2}s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${baseDelay + 0.2}s`,
+                    }}
+                  >
+                    {/* Subtitle */}
+                    <p className="text-gray-600 font-medium mb-6 leading-loose">
+                      {service.subtitle}
+                    </p>
+
+                    {/* Description */}
+                    <div className="space-y-5 text-gray-600 text-base leading-loose font-medium">
+                      {service.description.map((paragraph, i) => (
+                        <p key={i}>{paragraph}</p>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <ScrollAnimation animation="fadeUp" delay={0.2}>
+                    <div>
+                      {/* Subtitle */}
+                      <p className="text-gray-600 font-medium mb-6 leading-loose">
+                        {service.subtitle}
+                      </p>
+
+                      {/* Description */}
+                      <div className="space-y-5 text-gray-600 text-base leading-loose font-medium">
+                        {service.description.map((paragraph, i) => (
+                          <p key={i}>{paragraph}</p>
+                        ))}
+                      </div>
+                    </div>
+                  </ScrollAnimation>
+                )}
               </div>
-            </div>
-          </article>
-        ))}
+            </article>
+          )
+        })}
       </section>
 
       </div>
@@ -363,73 +452,75 @@ export default function ServicesContent() {
 
       {/* CTA Section - Full Width */}
       <section ref={ctaSectionRef} className="mt-32 -mx-4 sm:-mx-6 lg:-mx-8 -mb-8">
-        <div className="grid grid-cols-1 md:grid-cols-2">
-          {/* 資料請求 */}
-          <Link
-            href="/documents"
-            className="group relative block overflow-hidden"
-          >
-            <div className="relative h-[320px] md:h-[400px]">
-              <Image
-                src="/images/cta/document.jpg"
-                alt="資料請求"
-                fill
-                className="object-cover transition-transform duration-700 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-black/60" />
+        <ScrollAnimation animation="fadeUp">
+          <div className="grid grid-cols-1 md:grid-cols-2">
+            {/* 資料請求 */}
+            <Link
+              href="/documents"
+              className="group relative block overflow-hidden"
+            >
+              <div className="relative h-[320px] md:h-[400px]">
+                <Image
+                  src="/images/cta/document.jpg"
+                  alt="資料請求"
+                  fill
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-black/60" />
 
-              <div className="absolute inset-0 flex items-center justify-center text-white text-center px-6">
-                <div>
-                  <h3 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">
-                    DOCUMENT
-                  </h3>
-                  <p className="text-lg font-medium mb-4">資料請求</p>
-                  <p className="text-sm text-gray-200 mb-8 max-w-xs leading-relaxed mx-auto">
-                    サービス詳細や料金プランなど、<br />
-                    詳しい資料をお送りいたします。
-                  </p>
-                  <div className="inline-flex items-center gap-2 border border-white/50 px-6 py-3 group-hover:bg-white/10 transition-all duration-300">
-                    <span className="text-sm tracking-wider">VIEW MORE</span>
-                    <ArrowRight className="w-4 h-4" />
+                <div className="absolute inset-0 flex items-center justify-center text-white text-center px-6">
+                  <div>
+                    <h3 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">
+                      DOCUMENT
+                    </h3>
+                    <p className="text-lg font-medium mb-4">資料請求</p>
+                    <p className="text-sm text-gray-200 mb-8 max-w-xs leading-relaxed mx-auto">
+                      サービス詳細や料金プランなど、<br />
+                      詳しい資料をお送りいたします。
+                    </p>
+                    <div className="inline-flex items-center gap-2 border border-white/50 px-6 py-3 group-hover:bg-white/10 transition-all duration-300">
+                      <span className="text-sm tracking-wider">VIEW MORE</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </Link>
+            </Link>
 
-          {/* お問い合わせ */}
-          <Link
-            href="/contact"
-            className="group relative block overflow-hidden"
-          >
-            <div className="relative h-[320px] md:h-[400px]">
-              <Image
-                src="/images/cta/contact.jpg"
-                alt="お問い合わせ"
-                fill
-                className="object-cover transition-transform duration-700 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-black/60" />
+            {/* お問い合わせ */}
+            <Link
+              href="/contact"
+              className="group relative block overflow-hidden"
+            >
+              <div className="relative h-[320px] md:h-[400px]">
+                <Image
+                  src="/images/cta/contact.jpg"
+                  alt="お問い合わせ"
+                  fill
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-black/60" />
 
-              <div className="absolute inset-0 flex items-center justify-center text-white text-center px-6">
-                <div>
-                  <h3 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">
-                    CONTACT
-                  </h3>
-                  <p className="text-lg font-medium mb-4">お問い合わせ</p>
-                  <p className="text-sm text-gray-200 mb-8 max-w-xs leading-relaxed mx-auto">
-                    ご質問・ご相談について、<br />
-                    まずはお気軽にお問合せください。
-                  </p>
-                  <div className="inline-flex items-center gap-2 border border-white/50 px-6 py-3 group-hover:bg-white/10 transition-all duration-300">
-                    <span className="text-sm tracking-wider">VIEW MORE</span>
-                    <ArrowRight className="w-4 h-4" />
+                <div className="absolute inset-0 flex items-center justify-center text-white text-center px-6">
+                  <div>
+                    <h3 className="text-3xl md:text-4xl font-bold tracking-tight mb-2">
+                      CONTACT
+                    </h3>
+                    <p className="text-lg font-medium mb-4">お問い合わせ</p>
+                    <p className="text-sm text-gray-200 mb-8 max-w-xs leading-relaxed mx-auto">
+                      ご質問・ご相談について、<br />
+                      まずはお気軽にお問合せください。
+                    </p>
+                    <div className="inline-flex items-center gap-2 border border-white/50 px-6 py-3 group-hover:bg-white/10 transition-all duration-300">
+                      <span className="text-sm tracking-wider">VIEW MORE</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </Link>
-        </div>
+            </Link>
+          </div>
+        </ScrollAnimation>
       </section>
     </div>
   )
