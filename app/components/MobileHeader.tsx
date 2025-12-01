@@ -59,7 +59,7 @@ export default function MobileHeader() {
 
       {/* Mobile Menu Overlay */}
       {isMenuOpen && (
-        <div className="xl:hidden fixed inset-0 z-50 bg-black/30" onClick={toggleMenu} />
+        <div className="xl:hidden fixed inset-0 z-[45] bg-black/30" onClick={toggleMenu} />
       )}
 
       {/* Mobile Menu Drawer */}
