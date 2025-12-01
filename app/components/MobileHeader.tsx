@@ -3,23 +3,27 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Menu, X, Home, FolderOpen, BookOpen, Download, Mail, Bell, Briefcase } from 'lucide-react'
+import { usePathname } from 'next/navigation'
+import { Menu, X } from 'lucide-react'
+import { cn } from '@/app/lib/utils'
 
 export default function MobileHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const pathname = usePathname()
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen)
   }
 
   const menuItems = [
-    { href: '/', label: 'トップページ', icon: Home },
-    { href: '/services', label: 'サービス', icon: Briefcase },
-    { href: '/projects', label: '制作実績', icon: FolderOpen },
-    { href: '/columns', label: 'コラム', icon: BookOpen },
-    { href: '/notices', label: 'お知らせ', icon: Bell },
-    { href: '/documents', label: '資料ダウンロード', icon: Download },
-    { href: '/contact', label: 'お問い合わせ', icon: Mail },
+    { href: '/', label: 'トップ' },
+    { href: '/services', label: 'サービス' },
+    { href: '/projects', label: '制作実績' },
+    { href: '/youtube-videos', label: 'YouTube' },
+    { href: '/columns', label: 'コラム' },
+    { href: '/notices', label: 'お知らせ' },
+    { href: '/documents', label: '資料請求' },
+    { href: '/contact', label: '問い合わせ' },
   ]
 
   return (
@@ -41,7 +45,7 @@ export default function MobileHeader() {
           {/* Hamburger Menu Button */}
           <button
             onClick={toggleMenu}
-            className="p-2 rounded-md text-gray-600 hover:text-gray-900 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="p-2 text-gray-600 hover:text-gray-900 focus:outline-none"
             aria-label={isMenuOpen ? 'メニューを閉じる' : 'メニューを開く'}
           >
             {isMenuOpen ? (
@@ -55,45 +59,49 @@ export default function MobileHeader() {
 
       {/* Mobile Menu Overlay */}
       {isMenuOpen && (
-        <div className="xl:hidden fixed inset-0 z-40 bg-black bg-opacity-50" onClick={toggleMenu} />
+        <div className="xl:hidden fixed inset-0 z-40 bg-black/30" onClick={toggleMenu} />
       )}
 
       {/* Mobile Menu Drawer */}
       <div
-        className={`xl:hidden fixed top-16 right-0 bottom-0 z-40 w-64 bg-white shadow-xl transform transition-transform duration-300 ease-in-out ${
+        className={`xl:hidden fixed top-16 right-0 bottom-0 z-40 w-64 bg-white border-l border-gray-200 transform transition-transform duration-300 ease-in-out ${
           isMenuOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
-        <nav className="p-4">
-          <ul className="space-y-2">
+        <nav className="py-6 px-4">
+          <div className="space-y-1">
             {menuItems.map((item) => {
-              const Icon = item.icon
+              const isActive = item.href === '/'
+                ? pathname === item.href
+                : pathname.startsWith(item.href)
+
               return (
-                <li key={item.href}>
-                  <Link
-                    href={item.href}
-                    className="flex items-center gap-3 px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    <Icon className="h-5 w-5 text-gray-500" />
-                    <span className="font-medium">{item.label}</span>
-                  </Link>
-                </li>
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "block w-full px-4 py-3 transition-all duration-200 relative group",
+                    isActive
+                      ? "text-blue-600"
+                      : "text-gray-600 hover:text-gray-900"
+                  )}
+                  style={isActive ? { fontWeight: 550 } : { fontWeight: 500 }}
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  <span>{item.label}</span>
+
+                  {/* アクティブ時: 青い下線 */}
+                  {isActive && (
+                    <span className="absolute bottom-0 left-0 w-full h-px bg-blue-600"></span>
+                  )}
+
+                  {/* ホバー時: 左から右に伸びる下線 */}
+                  {!isActive && (
+                    <span className="absolute bottom-0 left-0 w-0 h-px bg-gray-900 transition-all duration-300 ease-out group-hover:w-full"></span>
+                  )}
+                </Link>
               )
             })}
-          </ul>
-
-          {/* Contact Info in Menu */}
-          <div className="mt-8 pt-8 border-t border-gray-200">
-            <h3 className="text-sm font-semibold text-gray-900 mb-4">お問い合わせ</h3>
-            <div className="space-y-3 text-sm text-gray-600">
-              <a
-                href="mailto:info@landbridge.co.jp"
-                className="block hover:text-gray-900"
-              >
-                info@landbridge.co.jp
-              </a>
-            </div>
           </div>
         </nav>
       </div>
