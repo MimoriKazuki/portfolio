@@ -65,7 +65,7 @@ export default function ColumnsClient({ columns }: ColumnsClientProps) {
   }
     
   return (
-    <div className="w-full min-[720px]:pt-8">
+    <div className="w-full pt-8 max-[719px]:pt-0">
       <div
         className="mb-12"
         style={{
