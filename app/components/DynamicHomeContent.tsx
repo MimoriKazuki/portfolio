@@ -224,13 +224,14 @@ export default function DynamicHomeContent() {
             <p className="text-xl text-muted-foreground">No featured projects yet</p>
           </div>
         ) : (
-          <StaggerContainer className="grid grid-cols-1 md:grid-cols-1 mid:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-1 mid:grid-cols-2 lg:grid-cols-3 gap-6">
             {featuredProjects.map((project, index) => (
-              <ProjectCard 
-                key={project.id} 
-                project={project} 
-                priority={index < 3}
-              />
+              <div key={project.id} className={index >= 2 ? 'mid:hidden lg:block' : ''}>
+                <ProjectCard
+                  project={project}
+                  priority={index < 3}
+                />
+              </div>
             ))}
           </StaggerContainer>
         )}
@@ -252,9 +253,11 @@ export default function DynamicHomeContent() {
             </div>
           </ScrollAnimation>
 
-          <StaggerContainer className="grid grid-cols-1 md:grid-cols-1 mid:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-3">
-            {displayVideos.map((video) => (
-              <YouTubeVideoCard key={video.id} video={video} />
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-1 mid:grid-cols-2 lg:grid-cols-3 gap-3">
+            {displayVideos.map((video, index) => (
+              <div key={video.id} className={index >= 2 ? 'mid:hidden lg:block' : ''}>
+                <YouTubeVideoCard video={video} />
+              </div>
             ))}
           </StaggerContainer>
         </section>
@@ -281,12 +284,12 @@ export default function DynamicHomeContent() {
             <p className="text-xl text-gray-500">まだコラムがありません</p>
           </div>
         ) : (
-          <StaggerContainer className="grid grid-cols-1 md:grid-cols-1 mid:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-3">
+          <StaggerContainer className="grid grid-cols-1 md:grid-cols-1 mid:grid-cols-2 lg:grid-cols-3 gap-3">
             {latestColumns.map((column, index) => (
               <Link
                 key={column.id}
                 href={`/columns/${column.id}`}
-                className="group"
+                className={`group ${index >= 2 ? 'mid:hidden lg:block' : ''}`}
               >
                 <article className="overflow-hidden border-2 border-transparent hover:border-gray-200 transition-colors duration-300 h-full flex flex-col p-4 rounded">
                   {column.thumbnail && (

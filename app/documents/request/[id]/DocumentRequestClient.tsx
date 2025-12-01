@@ -150,27 +150,34 @@ export default function DocumentRequestClient({ documentId, initialDocument }: D
         >
           {/* Left Column - Document Info */}
           <div className="lg:col-span-4">
-            {documentData.thumbnail && (
-              <div className="relative aspect-video mb-6 rounded-lg overflow-hidden">
-                <Image
-                  src={documentData.thumbnail}
-                  alt={documentData.title}
-                  fill
-                  className="object-cover"
-                />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-6 sm:gap-8 lg:gap-0">
+              {/* Image */}
+              {documentData.thumbnail && (
+                <div className="relative aspect-video lg:mb-6 rounded-lg overflow-hidden">
+                  <Image
+                    src={documentData.thumbnail}
+                    alt={documentData.title}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+              )}
+
+              {/* Text Content */}
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">
+                  {documentData.title}
+                </h2>
+                {documentData.description && (
+                  <p className="text-gray-600 leading-loose mb-8">
+                    {documentData.description}
+                  </p>
+                )}
+                <p className="text-gray-600 leading-loose">
+                  フォームに必要事項をご入力いただくと、資料をダウンロードいただけます。
+                </p>
               </div>
-            )}
-            <h2 className="text-xl font-semibold text-gray-900 mb-4">
-              {documentData.title}
-            </h2>
-            {documentData.description && (
-              <p className="text-gray-600 leading-loose mb-8">
-                {documentData.description}
-              </p>
-            )}
-            <p className="text-gray-600 leading-loose">
-              フォームに必要事項をご入力いただくと、資料をダウンロードいただけます。
-            </p>
+            </div>
           </div>
 
           {/* Right Column - Form */}
