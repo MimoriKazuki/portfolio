@@ -57,7 +57,11 @@ export default function MobileHeader() {
   return (
     <>
       {/* Mobile Header - sticky に変更（Safari viewport バグ対策） */}
-      <header className="xl:hidden sticky top-0 z-50 bg-white border-b border-gray-200">
+      {/* viewport-fit: cover 使用時、safe-area-inset-top でノッチ/ステータスバー領域を確保 */}
+      <header
+        className="xl:hidden sticky top-0 z-50 bg-white border-b border-gray-200"
+        style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}
+      >
         <div className="flex items-center justify-between px-4 h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center">
