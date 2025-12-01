@@ -176,28 +176,12 @@ input[type="range"].audio-slider::-moz-range-track {
   body {
     @apply bg-background text-foreground;
     background-color: hsl(var(--background));
-    /* Safari ビューポート問題対策: dvh単位を使用 */
-    /* dvh = dynamic viewport height: アドレスバーの状態に応じて動的に変化 */
-    min-height: 100dvh;
+    /* Safari viewport バグ対策: min-height を完全に削除 */
+    /* 100dvh / -webkit-fill-available は Safari の viewport 計算を壊す原因 */
+    min-height: auto;
+    height: auto;
     overflow-x: hidden;
-    scroll-padding-top: 0;
-    scroll-margin-top: 0;
-    /* iOS Safe Area 対応 */
-    padding-top: env(safe-area-inset-top, 0);
-  }
-
-  /* Safari専用スタイル */
-  @supports (-webkit-touch-callout: none) {
-    /* iOSのみに適用 */
-    html {
-      /* スクロール位置の強制リセット */
-      scroll-behavior: auto !important;
-    }
-
-    body {
-      /* ビューポート高さを動的に設定 */
-      min-height: -webkit-fill-available;
-    }
+    /* padding-top も削除（sticky ヘッダーを使用するため不要） */
   }
 
   /* モバイルブラウザのフォーム要素スタイルをリセット */

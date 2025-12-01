@@ -56,8 +56,8 @@ export default function MobileHeader() {
 
   return (
     <>
-      {/* Mobile Header */}
-      <header className="xl:hidden fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200">
+      {/* Mobile Header - sticky に変更（Safari viewport バグ対策） */}
+      <header className="xl:hidden sticky top-0 z-50 bg-white border-b border-gray-200">
         <div className="flex items-center justify-between px-4 h-16">
           {/* Logo */}
           <Link href="/" className="flex items-center">
@@ -146,8 +146,7 @@ export default function MobileHeader() {
         </nav>
       </div>
 
-      {/* Spacer for fixed header on mobile */}
-      <div className="xl:hidden h-16" />
+      {/* sticky ヘッダーはスペーサー不要（文書フロー内に存在するため） */}
     </>
   )
 }

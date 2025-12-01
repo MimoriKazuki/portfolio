@@ -2,7 +2,6 @@
 
 import { ArrowRight, ArrowLeft, Users, Target, Lightbulb, CheckCircle, Check, X, ChevronRight, Calendar, FileText, Download, MessageCircle, ChevronDown, LucideIcon, Crown, UserCheck, Zap, GraduationCap, TrendingUp, Settings, AlertCircle, HelpCircle, MessageSquare } from 'lucide-react'
 import Link from 'next/link'
-import SafariLink from './SafariLink'
 import Image from 'next/image'
 import { Column, Project } from '@/app/types'
 import { useState, useEffect, useRef } from 'react'
@@ -392,8 +391,8 @@ export default function ServiceTrainingLP({
             }}
           />
 
-          {/* Back Button - Safari用のカスタムLinkを使用 */}
-          <SafariLink
+          {/* Back Button */}
+          <Link
             href={`/services?tab=${theme === 'green' ? 'individual' : 'corporate'}`}
             className="absolute top-4 left-4 sm:top-6 sm:left-6 z-20 inline-flex items-center gap-2 px-4 py-2 text-white text-sm font-medium hover:bg-white/20 hover:backdrop-blur-sm transition-colors duration-200 hover:border hover:border-white/20 border border-transparent"
             style={{
@@ -404,7 +403,7 @@ export default function ServiceTrainingLP({
           >
             <ArrowLeft className="w-4 h-4" />
             サービス一覧へ戻る
-          </SafariLink>
+          </Link>
 
           <div className="relative z-10 flex items-center h-full max-w-[1023px] mx-auto px-4 sm:px-6 lg:px-8">
             <div>
