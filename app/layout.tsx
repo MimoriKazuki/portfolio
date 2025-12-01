@@ -31,19 +31,19 @@ export const metadata: Metadata = {
   publisher: 'AI駆動研究所',
   icons: {
     icon: [
-      { url: '/AI_driven_favicon.png', type: 'image/png' },
+      { url: '/images/brand/AI_driven_favicon.png', type: 'image/png' },
       { url: '/favicon.ico', type: 'image/x-icon' },
     ],
     shortcut: [
-      { url: '/AI_driven_favicon.png' },
+      { url: '/images/brand/AI_driven_favicon.png' },
     ],
     apple: [
-      { url: '/AI_driven_favicon.png' },
+      { url: '/images/brand/AI_driven_favicon.png' },
     ],
     other: [
       {
         rel: 'apple-touch-icon-precomposed',
-        url: '/AI_driven_favicon.png',
+        url: '/images/brand/AI_driven_favicon.png',
       },
     ],
   },
@@ -61,7 +61,7 @@ export const metadata: Metadata = {
     siteName: 'AI駆動研究所',
     images: [
       {
-        url: 'https://www.landbridge.ai/AI_driven_ogpImageimage.png',
+        url: 'https://www.landbridge.ai/images/brand/AI_driven_ogpImageimage.png',
         width: 1200,
         height: 630,
         alt: 'AI駆動研究所 - 生成AIで未来を創る',
@@ -74,10 +74,10 @@ export const metadata: Metadata = {
     title: 'AI駆動研究所 - 生成AIで未来を創る',
     description: 'AI駆動研究所は、生成AI技術の研究・開発・実装を専門とする研究機関です。最新AI技術を活用したプロダクト開発、AI研修サービス、技術コンサルティングを提供。',
     creator: '@ai_driven_lab',
-    images: ['https://www.landbridge.ai/AI_driven_ogpImageimage.png'],
+    images: ['https://www.landbridge.ai/images/brand/AI_driven_ogpImageimage.png'],
   },
   other: {
-    'msapplication-TileImage': 'https://www.landbridge.ai/AI_driven_ogpImageimage.png',
+    'msapplication-TileImage': 'https://www.landbridge.ai/images/brand/AI_driven_ogpImageimage.png',
   },
 }
 

@@ -9,19 +9,19 @@
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/AI_driven_favicon.png",
+      "src": "/images/brand/AI_driven_favicon.png",
       "sizes": "any",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/AI_driven_favicon.png",
+      "src": "/images/brand/AI_driven_favicon.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/AI_driven_favicon.png",
+      "src": "/images/brand/AI_driven_favicon.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"

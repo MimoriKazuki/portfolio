@@ -8,7 +8,7 @@ export default function AdminLoginPage() {
       <div className="bg-white p-8 rounded-lg shadow-lg border border-gray-200 w-full max-w-md">
         <div className="flex items-center justify-center mb-8">
           <Image
-            src="/AI_driven_logo_light.png"
+            src="/images/brand/AI_driven_logo_light.png"
             alt="AI駆動研究所"
             width={168}
             height={48}

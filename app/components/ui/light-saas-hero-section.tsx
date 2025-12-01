@@ -78,7 +78,7 @@ const HeroSection = () => {
                 >
                     <div className="relative w-full aspect-[21/9]">
                         <Image 
-                            src="/hero.png"
+                            src="/images/hero/hero.png"
                             alt="AI人材育成の未来を表現する画像"
                             fill
                             priority

@@ -16,7 +16,7 @@ const Footer = () => {
           <div className="lg:flex-1 lg:max-w-md">
             <div className="mb-4">
               <Image
-                src="/AI_driven_logo_dark.png"
+                src="/images/brand/AI_driven_logo_dark.png"
                 alt="AI駆動研究所 - 生成AI研究・開発"
                 width={140}
                 height={40}

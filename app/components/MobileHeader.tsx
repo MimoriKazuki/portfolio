@@ -34,7 +34,7 @@ export default function MobileHeader() {
           {/* Logo */}
           <Link href="/" className="flex items-center">
             <Image
-              src="/AI_driven_logo_light.png"
+              src="/images/brand/AI_driven_logo_light.png"
               alt="AI駆動研究所"
               width={120}
               height={34}

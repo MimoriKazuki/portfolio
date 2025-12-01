@@ -23,7 +23,7 @@ const Header = () => {
         <div className="flex items-center">
           <Link href="/" className="flex items-center space-x-2 group">
             <Image
-              src="/AI_driven_logo_light.png"
+              src="/images/brand/AI_driven_logo_light.png"
               alt="AI駆動研究所"
               width={150}
               height={48}

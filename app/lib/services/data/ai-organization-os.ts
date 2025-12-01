@@ -12,7 +12,7 @@ export const AI_ORGANIZATION_OS_DATA: ServiceData = {
   pageTitle: "AI組織OS研修",
   heroTitle: "AI組織OS研修",
   heroSubtitle: "CursorとGitHubで「組織の脳みそ」を構築し、情報共有を革新する",
-  heroImage: "https://images.unsplash.com/photo-1617791160536-598cf32026fb?w=1920&h=1080&fit=crop&crop=center",
+  heroImage: "/images/services/ai-organization-os-hero.jpg",
   seoTitle: "組織の知識をAIで活用 - AI組織OS研修 | AI駆動研究所",
 
   heroCTA: {
@@ -31,7 +31,7 @@ export const AI_ORGANIZATION_OS_DATA: ServiceData = {
       { name: "GitHub", logo: "github" }
     ],
     descriptionBottom: "管理者は社員に状況確認をせずともAIに質問するだけで現状を把握でき、社員も自分のタスクや部署の状況をAIに聞くことで漏れなく対応可能に。異動・退職時の引き継ぎも、更新さえしていればAIに質問して確認できるため、引き継ぎ業務からも解放されます。ディレクトリ設計から運用ノウハウまで、組織OS導入を成功させるすべてを伝授します。",
-    featureImage: "https://images.unsplash.com/photo-1670956007904-ddf3ff0d1eec?w=400&h=600&fit=crop&crop=center",
+    featureImage: "/images/services/ai-organization-os-feature.jpg",
     items: [
       {
         title: "組織の脳みそ構築",

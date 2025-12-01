@@ -19,7 +19,7 @@ export default function AnalyticsButtons() {
         title="Microsoft Clarity ダッシュボード"
       >
         <Image
-          src="/Clarity_logo.png"
+          src="/images/admin/Clarity_logo.png"
           alt="Microsoft Clarity"
           width={16}
           height={16}
@@ -38,7 +38,7 @@ export default function AnalyticsButtons() {
         title="Google Analytics ダッシュボード"
       >
         <Image
-          src="/GoogleAnalytics_logo.png"
+          src="/images/admin/GoogleAnalytics_logo.png"
           alt="Google Analytics"
           width={16}
           height={16}
@@ -57,7 +57,7 @@ export default function AnalyticsButtons() {
         title="Google Search Console ダッシュボード"
       >
         <Image
-          src="/GoogleSearchConsole_logoIcon.png"
+          src="/images/admin/GoogleSearchConsole_logoIcon.png"
           alt="Google Search Console"
           width={16}
           height={16}

@@ -223,7 +223,7 @@ export default function ServiceTrainingLP({
     return href
   }
   const [openFaqs, setOpenFaqs] = useState<Set<number>>(new Set())
-  const [heroLoaded, setHeroLoaded] = useState(false)
+  const [heroLoaded, setHeroLoaded] = useState(true)
 
   // Other programs navigation state
   const filteredPrograms = otherTrainingPrograms.programs.filter(
@@ -285,10 +285,6 @@ export default function ServiceTrainingLP({
   const finalCtaSection = useScrollAnimation()
   const otherProgramsSection = useScrollAnimation()
 
-  useEffect(() => {
-    const timer = setTimeout(() => setHeroLoaded(true), 100)
-    return () => clearTimeout(timer)
-  }, [])
 
   const toggleFaq = (index: number) => {
     setOpenFaqs(prev => {
@@ -323,15 +319,15 @@ export default function ServiceTrainingLP({
   const renderToolLogo = (tool: AITool) => {
     // Map tool logo identifiers to actual image paths
     const logoImages: { [key: string]: string } = {
-      'chatgpt': '/logo_ChatGPT.svg?v=3',
-      'claude': '/logo_claude.svg',
-      'gemini': '/logo_Gemini.svg?v=3',
-      'sora': '/logo_ChatGPT.svg?v=3',      // Uses OpenAI logo (Sora)
-      'cursor': '/logo_Cursor.svg?v=2',
-      'claudecode': '/logo_claude.svg',     // Uses Claude logo
-      'codex': '/logo_ChatGPT.svg?v=3',     // Uses OpenAI logo
-      'github': '/logo_GitHub.svg',
-      'higgsfield': '/logo_Higgsfield.svg',
+      'chatgpt': '/images/tools/logo_ChatGPT.svg?v=3',
+      'claude': '/images/tools/logo_claude.svg',
+      'gemini': '/images/tools/logo_Gemini.svg?v=3',
+      'sora': '/images/tools/logo_ChatGPT.svg?v=3',      // Uses OpenAI logo (Sora)
+      'cursor': '/images/tools/logo_Cursor.svg?v=2',
+      'claudecode': '/images/tools/logo_claude.svg',     // Uses Claude logo
+      'codex': '/images/tools/logo_ChatGPT.svg?v=3',     // Uses OpenAI logo
+      'github': '/images/tools/logo_GitHub.svg',
+      'higgsfield': '/images/tools/logo_Higgsfield.svg',
     }
 
     const logoSrc = logoImages[tool.logo]
@@ -372,10 +368,6 @@ export default function ServiceTrainingLP({
             fill
             sizes="100vw"
             className="object-cover object-center"
-            style={{
-              transform: heroLoaded ? 'scale(1)' : 'scale(1.05)',
-              transition: 'transform 1.2s cubic-bezier(0.16, 1, 0.3, 1)',
-            }}
             priority
           />
           <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/50 to-transparent" />

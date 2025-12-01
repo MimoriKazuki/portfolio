@@ -41,7 +41,7 @@ const AdminSidebar = memo(function AdminSidebar({ user }: AdminSidebarProps) {
       <div className="p-6 border-b border-gray-200 flex justify-center">
         <Link href="/admin" className="block">
           <Image
-            src="/AI_driven_logo_light.png"
+            src="/images/brand/AI_driven_logo_light.png"
             alt="AI駆動研究所 Admin"
             width={140}
             height={40}
