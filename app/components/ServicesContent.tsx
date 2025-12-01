@@ -321,7 +321,7 @@ export default function ServicesContent() {
                 </p>
 
                 {/* Title (Service Name) */}
-                <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-12 leading-tight">
+                <h3 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 sm:mb-12 leading-tight">
                   {service.label}
                 </h3>
 
