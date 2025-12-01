@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import Sidebar from './Sidebar'
 import FloatingButtons from './FloatingButtons'
@@ -26,16 +27,45 @@ interface MainLayoutProps {
 }
 
 export default function MainLayout({ children, hideRightSidebar = false, hideContactButton = false, dynamicSidebar }: MainLayoutProps) {
+  const footerRef = useRef<HTMLDivElement>(null)
+  const [sidebarBottom, setSidebarBottom] = useState<number | undefined>(undefined)
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!footerRef.current) return
+
+      const footerRect = footerRef.current.getBoundingClientRect()
+      const viewportHeight = window.innerHeight
+
+      // フッターが画面内に入ってきたら、サイドバーの下端を調整
+      if (footerRect.top < viewportHeight) {
+        setSidebarBottom(viewportHeight - footerRect.top)
+      } else {
+        setSidebarBottom(undefined)
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    handleScroll() // 初期チェック
+
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Fixed background layer to prevent overscroll color */}
       <div className="fixed inset-0 bg-gray-50" style={{ zIndex: -1 }} aria-hidden="true" />
-      
+
       {/* Mobile Header */}
       <MobileHeader />
-      
-      {/* Left Sidebar - Fixed position */}
-      <aside className="hidden xl:block fixed top-0 left-0 w-[178px] h-screen bg-white border-r border-gray-200 z-40 overflow-y-auto">
+
+      {/* Left Sidebar - Fixed position, stops at footer */}
+      <aside
+        className="hidden xl:block fixed top-0 left-0 w-[178px] bg-white border-r border-gray-200 z-40 overflow-y-auto"
+        style={{
+          height: sidebarBottom !== undefined ? `calc(100vh - ${sidebarBottom}px)` : '100vh'
+        }}
+      >
         <Sidebar />
       </aside>
 
@@ -71,7 +101,7 @@ export default function MainLayout({ children, hideRightSidebar = false, hideCon
       </div>
       
       {/* Footer */}
-      <div className="xl:ml-[178px]">
+      <div ref={footerRef}>
         <Footer />
       </div>
       
