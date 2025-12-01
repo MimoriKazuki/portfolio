@@ -19,7 +19,7 @@ export const COMPREHENSIVE_AI_TRAINING_DATA: ServiceData = {
     inquiryText: "お問い合わせ",
     documentText: "資料ダウンロード",
     inquiryHref: "/contact",
-    documentHref: "/documents"
+    documentHref: "/documents/request/c8793579-1dea-4772-aa68-7aa7a48268f8"
   },
   
   serviceOverview: {
@@ -56,7 +56,7 @@ export const COMPREHENSIVE_AI_TRAINING_DATA: ServiceData = {
     title: "生成AI総合研修で組織変革を実現",
     description: "全社員のAIリテラシー向上により、組織全体のDX推進を加速します",
     inquiryHref: "/contact",
-    documentHref: "/documents"
+    documentHref: "/documents/request/c8793579-1dea-4772-aa68-7aa7a48268f8"
   },
   
   targetAudience: {
@@ -183,7 +183,7 @@ export const COMPREHENSIVE_AI_TRAINING_DATA: ServiceData = {
     title: "全社員のAIスキル底上げで組織を変革",
     description: "生成AI総合研修により、すべての部署でAI活用が日常となる組織を実現します",
     inquiryHref: "/contact",
-    documentHref: "/documents"
+    documentHref: "/documents/request/c8793579-1dea-4772-aa68-7aa7a48268f8"
   },
   
   overviewTable: {
@@ -235,6 +235,6 @@ export const COMPREHENSIVE_AI_TRAINING_DATA: ServiceData = {
     title: "生成AI総合研修で組織の未来を切り拓く",
     description: "全社員のAIリテラシー向上により、競争力のあるAI活用組織への変革を実現します",
     inquiryHref: "/contact",
-    documentHref: "/documents"
+    documentHref: "/documents/request/c8793579-1dea-4772-aa68-7aa7a48268f8"
   }
 }
