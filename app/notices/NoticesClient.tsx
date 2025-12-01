@@ -130,32 +130,38 @@ export default function NoticesClient({ notices }: NoticesClientProps) {
               className="block group"
             >
               <div className="py-6 hover:bg-gray-50 transition-colors duration-200">
-                <div className="flex items-center gap-4 px-2">
-                  {/* Date */}
-                  <div className="text-sm text-gray-600 font-medium w-24 flex-shrink-0">
-                    {formatDate(notice.created_at)}
+                <div className="grid grid-cols-[1fr_auto] items-center gap-4 px-2">
+                  {/* Content Area */}
+                  <div className="flex flex-col sm:flex-row sm:items-center xl:flex-col xl:items-start wide:flex-row wide:items-center gap-2 sm:gap-4 xl:gap-2 wide:gap-4 min-w-0">
+                    {/* Date + Category row */}
+                    <div className="flex items-center gap-4">
+                      {/* Date */}
+                      <div className="text-sm text-gray-600 font-medium flex-shrink-0">
+                        {formatDate(notice.created_at)}
+                      </div>
+
+                      {/* Category */}
+                      <div className="flex-shrink-0">
+                        <span className={`inline-flex px-3 py-1 text-xs font-medium border ${
+                          notice.category === 'news' ? 'border-blue-200 text-blue-700' :
+                          notice.category === 'webinar' ? 'border-purple-200 text-purple-700' :
+                          notice.category === 'event' ? 'border-pink-200 text-pink-700' :
+                          notice.category === 'maintenance' ? 'border-yellow-200 text-yellow-700' :
+                          'border-gray-200 text-gray-700'
+                          }`}>
+                            {categoryLabels[notice.category]}
+                          </span>
+                      </div>
+                    </div>
+
+                    {/* Title */}
+                    <h3 className="font-medium text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-1">
+                      {notice.title}
+                    </h3>
                   </div>
 
-                  {/* Category */}
-                  <div className="w-24 flex-shrink-0">
-                    <span className={`inline-flex px-3 py-1 text-xs font-medium border ${
-                      notice.category === 'news' ? 'border-blue-200 text-blue-700' :
-                      notice.category === 'webinar' ? 'border-purple-200 text-purple-700' :
-                      notice.category === 'event' ? 'border-pink-200 text-pink-700' :
-                      notice.category === 'maintenance' ? 'border-yellow-200 text-yellow-700' :
-                      'border-gray-200 text-gray-700'
-                      }`}>
-                        {categoryLabels[notice.category]}
-                      </span>
-                  </div>
-
-                  {/* Title */}
-                  <h3 className="flex-1 font-medium text-gray-900 group-hover:text-blue-600 transition-colors line-clamp-1">
-                    {notice.title}
-                  </h3>
-
-                  {/* Arrow Icon */}
-                  <div className="w-5 flex-shrink-0">
+                  {/* Arrow Icon - always right aligned and vertically centered */}
+                  <div className="flex-shrink-0">
                     <ChevronRight className="h-5 w-5 text-gray-400 group-hover:text-blue-600 transition-colors" />
                   </div>
                 </div>
