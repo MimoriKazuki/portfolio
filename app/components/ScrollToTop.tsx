@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useLayoutEffect, useRef } from 'react'
 import { usePathname } from 'next/navigation'
 
 // Safariかどうかを判定
@@ -11,13 +11,13 @@ function isSafari(): boolean {
 }
 
 // デバッグ情報を収集（開発環境のみ）
-function logScrollDebugInfo(label: string, extra?: Record<string, any>) {
+function logScrollDebugInfo(label: string, extra?: Record<string, unknown>) {
   if (process.env.NODE_ENV === 'development' && isSafari()) {
     const scrollY = window.scrollY
     const scrollTop = document.documentElement.scrollTop
     const bodyScrollTop = document.body.scrollTop
     const visualViewport = window.visualViewport
-    
+
     console.log(`[Safari Scroll Debug] ${label}:`, {
       windowScrollY: scrollY,
       documentElementScrollTop: scrollTop,
@@ -31,12 +31,36 @@ function logScrollDebugInfo(label: string, extra?: Record<string, any>) {
   }
 }
 
-// 完全に最上部にスクロール（非Safari用）
-function scrollToAbsoluteTop() {
-  window.scrollTo(0, 0)
+/**
+ * 複数の方法でスクロール位置を0にリセット（最も強力な方法）
+ * Safari固有の問題に対応するため、複数のAPIを使用
+ */
+function forceScrollToTopAllMethods(): void {
+  // Method 1: window.scrollTo with instant behavior
+  window.scrollTo({ top: 0, left: 0, behavior: 'instant' })
+
+  // Method 2: scrollTop直接設定
   document.documentElement.scrollTop = 0
   document.body.scrollTop = 0
-  document.body.scrollIntoView({ block: 'start', behavior: 'instant' })
+
+  // Method 3: scrollTo on document elements
+  if (document.documentElement.scrollTo) {
+    document.documentElement.scrollTo(0, 0)
+  }
+  if (document.body.scrollTo) {
+    document.body.scrollTo(0, 0)
+  }
+
+  // Method 4: scrollIntoView（最上部の要素がある場合）
+  const topElement = document.body.firstElementChild
+  if (topElement && topElement.scrollIntoView) {
+    topElement.scrollIntoView({ block: 'start', behavior: 'instant' })
+  }
+}
+
+// 完全に最上部にスクロール（非Safari用）
+function scrollToAbsoluteTop() {
+  forceScrollToTopAllMethods()
 }
 
 // Safari用: スクロール方向を完全にリセットする強力な関数
@@ -189,6 +213,22 @@ export default function ScrollToTop() {
     return () => document.removeEventListener('click', handleClick, { capture: true })
   }, [])
 
+  // Safari用: useLayoutEffectで描画前に即座にスクロールをリセット
+  // useLayoutEffectはDOM変更後、ブラウザが描画する前に同期的に実行される
+  useLayoutEffect(() => {
+    if (typeof window === 'undefined') return
+
+    // 即座にスクロール位置をリセット（描画前）
+    forceScrollToTopAllMethods()
+
+    if (isSafari()) {
+      logScrollDebugInfo('useLayoutEffect - Immediate scroll reset', {
+        pathname,
+        scrollY: window.scrollY
+      })
+    }
+  }, [pathname])
+
   // ページ遷移時にスクロール位置をリセット
   useEffect(() => {
     if (!isSafari()) {
@@ -202,7 +242,7 @@ export default function ScrollToTop() {
       documentReadyState: document.readyState,
       currentScrollY: window.scrollY
     })
-    
+
     isNavigatingRef.current = true
     lastScrollYRef.current = window.scrollY
 
