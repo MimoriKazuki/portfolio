@@ -4,6 +4,7 @@ import './globals.css'
 import StructuredData from './components/StructuredData'
 import GoogleAnalytics from './components/GoogleAnalytics'
 import MicrosoftClarity from './components/MicrosoftClarity'
+import ScrollToTop from './components/ScrollToTop'
 
 const inter = Inter({ subsets: ['latin'] })
 const caveat = Caveat({
@@ -98,6 +99,7 @@ export default function RootLayout({
       </head>
       <body className="bg-youtube-dark" style={{ backgroundColor: '#0f0f0f', fontFamily: 'var(--font-primary)' }}>
         <div className="fixed inset-0 bg-youtube-dark" style={{ backgroundColor: '#0f0f0f', zIndex: -1 }} aria-hidden="true" />
+        <ScrollToTop />
         <GoogleAnalytics />
         <MicrosoftClarity />
         {children}
