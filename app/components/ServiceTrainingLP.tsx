@@ -442,7 +442,7 @@ export default function ServiceTrainingLP({
         {/* Service Overview Section */}
         <section
           ref={featuresSection.ref as React.RefObject<HTMLElement>}
-          className="mt-16 mb-16"
+          className="mt-10 mid:mt-16 mb-10 mid:mb-16"
         >
           <div
             className="mb-8 pt-16 relative"
@@ -460,7 +460,7 @@ export default function ServiceTrainingLP({
 
           {/* 2-column layout: Text left (3), Image right (1) - wrapped in white box */}
           <div
-            className="bg-white border border-gray-200 mb-16 p-8"
+            className="bg-white border border-gray-200 mb-10 mid:mb-16 p-8"
             style={{
               opacity: featuresSection.isVisible ? 1 : 0,
               transform: featuresSection.isVisible ? 'translateY(0)' : 'translateY(40px)',
@@ -549,7 +549,7 @@ export default function ServiceTrainingLP({
         {/* Before/After Section */}
         <section
           ref={transformSection.ref as React.RefObject<HTMLElement>}
-          className="mb-16"
+          className="mb-10 mid:mb-16"
         >
           <div
             className="mb-8"
@@ -615,7 +615,7 @@ export default function ServiceTrainingLP({
         {/* Mid CTA Section */}
         <section
           ref={midCtaSection.ref as React.RefObject<HTMLElement>}
-          className="mb-16"
+          className="mb-10 mid:mb-16"
           style={{
             opacity: midCtaSection.isVisible ? 1 : 0,
             transform: midCtaSection.isVisible ? 'translateY(0)' : 'translateY(40px)',
@@ -658,7 +658,7 @@ export default function ServiceTrainingLP({
         {/* Curriculum Section */}
         <section
           ref={curriculumSection.ref as React.RefObject<HTMLElement>}
-          className="mb-16"
+          className="mb-10 mid:mb-16"
         >
           <div
             className="mb-12 pt-16 relative"
@@ -698,7 +698,7 @@ export default function ServiceTrainingLP({
         {/* Flow Section */}
         <section
           ref={flowSection.ref as React.RefObject<HTMLElement>}
-          className="mb-16"
+          className="mb-10 mid:mb-16"
         >
           <div
             className="mb-12"
@@ -794,7 +794,7 @@ export default function ServiceTrainingLP({
 
         {/* Additional CTA Section (if provided) */}
         {additionalCTA && (
-          <section className="mb-16">
+          <section className="mb-10 mid:mb-16">
             <div className="flex flex-col mid:flex-row gap-3 mid:gap-4 justify-center items-stretch mid:items-center">
               <Link
                 href={additionalCTA.documentHref}
@@ -824,7 +824,7 @@ export default function ServiceTrainingLP({
         {/* Overview Table */}
         <section
           ref={overviewSection.ref as React.RefObject<HTMLElement>}
-          className="mb-16"
+          className="mb-10 mid:mb-16"
         >
           <div
             className="mb-12 pt-16 relative"
@@ -867,7 +867,7 @@ export default function ServiceTrainingLP({
         {/* FAQ Section */}
         <section
           ref={faqSection.ref as React.RefObject<HTMLElement>}
-          className="mb-16"
+          className="mb-10 mid:mb-16"
         >
           <div
             className="mb-12 pt-16 relative"
@@ -921,7 +921,7 @@ export default function ServiceTrainingLP({
         {/* Final CTA Section */}
         <section
           ref={finalCtaSection.ref as React.RefObject<HTMLElement>}
-          className="-mx-4 sm:-mx-6 lg:-mx-8 mb-16"
+          className="-mx-4 sm:-mx-6 lg:-mx-8 mb-10 mid:mb-16"
           style={{
             opacity: finalCtaSection.isVisible ? 1 : 0,
             transform: finalCtaSection.isVisible ? 'translateY(0)' : 'translateY(40px)',
@@ -960,7 +960,7 @@ export default function ServiceTrainingLP({
         {/* Other Training Programs Section */}
         <section
           ref={otherProgramsSection.ref as React.RefObject<HTMLElement>}
-          className="mb-16"
+          className="mb-10 mid:mb-16"
         >
           <div
             className="mb-12 pt-16 relative"
