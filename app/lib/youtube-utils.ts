@@ -26,12 +26,12 @@ export function extractYouTubeVideoId(url: string): string | null {
 
     // youtu.be/VIDEO_ID
     if (urlObj.hostname === 'youtu.be') {
-      return urlObj.pathname.slice(1)
+      return urlObj.pathname.slice(1).split('?')[0]
     }
 
-    // youtube.com/embed/VIDEO_ID or youtube.com/v/VIDEO_ID
+    // youtube.com/embed/VIDEO_ID, youtube.com/v/VIDEO_ID, youtube.com/live/VIDEO_ID, youtube.com/shorts/VIDEO_ID
     if (urlObj.hostname.includes('youtube.com')) {
-      const match = urlObj.pathname.match(/\/(embed|v)\/([^/?]+)/)
+      const match = urlObj.pathname.match(/\/(embed|v|live|shorts)\/([^/?]+)/)
       if (match) {
         return match[2]
       }
