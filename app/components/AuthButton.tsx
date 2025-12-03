@@ -67,14 +67,16 @@ export default function AuthButton() {
       <button
         onClick={handleLogout}
         disabled={loggingOut}
-        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
+        className="group w-full flex items-center justify-center gap-2 px-4 py-3 text-sm text-gray-600 font-medium border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-all duration-200 disabled:opacity-50"
       >
         {loggingOut ? (
           <Loader2 className="h-4 w-4 animate-spin" />
         ) : (
-          <LogOut className="h-4 w-4" />
+          <LogOut className="h-4 w-4 group-hover:scale-110 transition-transform duration-200" />
         )}
-        <span>{loggingOut ? 'ログアウト中...' : 'ログアウト'}</span>
+        <span className="group-hover:text-gray-900 transition-colors duration-200">
+          {loggingOut ? 'ログアウト中...' : 'ログアウト'}
+        </span>
       </button>
     )
   }
@@ -82,10 +84,10 @@ export default function AuthButton() {
   return (
     <button
       onClick={handleLogin}
-      className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+      className="group w-full flex items-center justify-center gap-2 px-4 py-3 text-sm text-gray-600 font-medium border border-gray-300 hover:border-gray-400 hover:bg-gray-50 transition-all duration-200"
     >
-      <LogIn className="h-4 w-4" />
-      <span>ログイン</span>
+      <LogIn className="h-4 w-4 group-hover:scale-110 transition-transform duration-200" />
+      <span className="group-hover:text-gray-900 transition-colors duration-200">ログイン</span>
     </button>
   )
 }
