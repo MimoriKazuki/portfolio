@@ -1,10 +1,11 @@
 'use client'
 
-import { Home, FolderOpen, Mail, FileText, Download, Bell, Briefcase, Youtube } from 'lucide-react'
+import { Home, FolderOpen, Mail, FileText, Download, Bell, Briefcase, Youtube, PlayCircle } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/app/lib/utils'
+import AuthButton from './AuthButton'
 
 const Sidebar = () => {
   const pathname = usePathname()
@@ -12,6 +13,7 @@ const Sidebar = () => {
   const menuItems = [
     { icon: Home, label: 'トップ', href: '/' },
     { icon: Briefcase, label: 'サービス', href: '/services' },
+    { icon: PlayCircle, label: 'eラーニング', href: '/e-learning' },
     { icon: FolderOpen, label: '制作実績', href: '/projects' },
     { icon: Youtube, label: 'YouTube', href: '/youtube-videos' },
     { icon: FileText, label: 'コラム', href: '/columns' },
@@ -22,7 +24,7 @@ const Sidebar = () => {
 
 
   return (
-    <nav className="h-full px-4 py-6">
+    <nav className="h-full px-4 py-6 flex flex-col">
       {/* Logo */}
       <div className="mb-6 flex justify-center">
         <Link href="/" className="block group">
@@ -37,12 +39,12 @@ const Sidebar = () => {
           />
         </Link>
       </div>
-      
-      <div className="space-y-2">
+
+      <div className="space-y-2 flex-1">
         {menuItems.map((item) => {
           // Check if current path starts with the menu item's href (except for home page)
-          const isActive = item.href === '/' 
-            ? pathname === item.href 
+          const isActive = item.href === '/'
+            ? pathname === item.href
             : pathname.startsWith(item.href)
           return (
             <Link
@@ -50,20 +52,20 @@ const Sidebar = () => {
               href={item.href}
               className={cn(
                 "block w-full px-4 py-3 transition-all duration-200 text-center relative group",
-                isActive 
-                  ? "text-portfolio-blue hover:text-blue-700" 
+                isActive
+                  ? "text-portfolio-blue hover:text-blue-700"
                   : "text-gray-600 hover:text-gray-900 font-medium"
               )}
               style={isActive ? { fontWeight: 550 } : undefined}
               prefetch={true}
             >
               <span>{item.label}</span>
-              
+
               {/* 選択済み: 青い下線（ホバーでも色は変わらない） */}
               {isActive && (
                 <span className="absolute bottom-0 left-0 w-full h-px bg-portfolio-blue"></span>
               )}
-              
+
               {/* ホバー時: 左から右に伸びる下線（ホバー時のテキストと同じグレー） */}
               {!isActive && (
                 <span className="absolute bottom-0 left-0 w-0 h-px bg-gray-900 transition-all duration-300 ease-out group-hover:w-full"></span>
@@ -71,6 +73,11 @@ const Sidebar = () => {
             </Link>
           )
         })}
+      </div>
+
+      {/* ログイン/ログアウトボタン */}
+      <div className="pt-4 border-t border-gray-200">
+        <AuthButton />
       </div>
     </nav>
   )

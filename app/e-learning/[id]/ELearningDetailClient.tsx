@@ -1,0 +1,319 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { ELearningContent } from '@/app/types'
+import { User } from '@supabase/supabase-js'
+import Link from 'next/link'
+import Image from 'next/image'
+import {
+  ArrowLeft,
+  PlayCircle,
+  Download,
+  Lock,
+  Play
+} from 'lucide-react'
+
+interface ELearningDetailClientProps {
+  content: ELearningContent
+  user: User
+  hasPurchased: boolean
+  relatedContents?: ELearningContent[]
+}
+
+// YouTube動画IDを抽出
+const getYouTubeId = (url: string) => {
+  const regex = /(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/live\/)([^&\n?#]+)/
+  const match = url.match(regex)
+  return match ? match[1] : null
+}
+
+// Google Drive埋め込みURLを取得
+const getGoogleDriveEmbedUrl = (url: string) => {
+  const regex = /\/file\/d\/([a-zA-Z0-9_-]+)/
+  const match = url.match(regex)
+  if (match) {
+    const fileId = match[1]
+    return `https://drive.google.com/file/d/${fileId}/preview`
+  }
+  return null
+}
+
+export default function ELearningDetailClient({
+  content,
+  user,
+  hasPurchased,
+  relatedContents = []
+}: ELearningDetailClientProps) {
+  const [isVisible, setIsVisible] = useState(false)
+  const [isPlaying, setIsPlaying] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+
+  useEffect(() => {
+    setIsVisible(true)
+  }, [])
+
+  // 動画タイプを判定
+  const isYouTube = content.video_url?.includes('youtube.com') || content.video_url?.includes('youtu.be')
+  const isGoogleDrive = content.video_url?.includes('drive.google.com')
+
+  const youTubeId = isYouTube ? getYouTubeId(content.video_url) : null
+  const googleDriveEmbedUrl = isGoogleDrive ? getGoogleDriveEmbedUrl(content.video_url) : null
+
+  // 資料をdisplay_order順にソート
+  const sortedMaterials = content.materials
+    ? [...content.materials].sort((a, b) => a.display_order - b.display_order)
+    : []
+
+  return (
+    <div className="p-4 sm:p-6 pt-2 sm:pt-3 xl:min-h-[calc(100vh-64px)]">
+      <div
+        style={{
+          opacity: isVisible ? 1 : 0,
+          transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
+          transition: 'opacity 0.6s ease-out, transform 0.6s ease-out',
+        }}
+      >
+        {/* 戻るリンク */}
+        <Link
+          href="/e-learning"
+          className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          eラーニング一覧に戻る
+        </Link>
+
+        {/* 動画プレイヤー */}
+        <div className="relative aspect-video rounded-lg overflow-hidden bg-black mb-4">
+          {hasPurchased ? (
+            !isPlaying ? (
+              <>
+                {content.thumbnail_url && (
+                  <Image
+                    src={content.thumbnail_url}
+                    alt={content.title}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 1024px) 100vw, 896px"
+                    priority
+                  />
+                )}
+                <button
+                  onClick={() => {
+                    setIsLoading(true)
+                    setTimeout(() => {
+                      setIsPlaying(true)
+                      setIsLoading(false)
+                    }, 500)
+                  }}
+                  className="absolute inset-0 flex items-center justify-center bg-black/30 hover:bg-black/40 transition-colors group"
+                  aria-label="動画を再生"
+                >
+                  {isLoading ? (
+                    <div className="w-20 h-20 bg-white/90 rounded-full flex items-center justify-center shadow-lg">
+                      <div className="w-8 h-8 border-4 border-gray-300 border-t-gray-900 rounded-full animate-spin"></div>
+                    </div>
+                  ) : (
+                    <div className="w-20 h-20 bg-white/90 rounded-full flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
+                      <Play className="w-10 h-10 text-gray-900 ml-1" fill="currentColor" />
+                    </div>
+                  )}
+                </button>
+              </>
+            ) : (
+              <>
+                {isYouTube && youTubeId ? (
+                  <iframe
+                    className="absolute inset-0 w-full h-full"
+                    src={`https://www.youtube.com/embed/${youTubeId}?autoplay=1&rel=0`}
+                    title={content.title}
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                ) : isGoogleDrive && googleDriveEmbedUrl ? (
+                  <iframe
+                    className="absolute inset-0 w-full h-full"
+                    src={googleDriveEmbedUrl}
+                    title={content.title}
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                    loading="lazy"
+                  />
+                ) : (
+                  <video
+                    className="absolute inset-0 w-full h-full"
+                    controls
+                    autoPlay
+                    src={content.video_url}
+                  >
+                    お使いのブラウザは動画再生に対応していません。
+                  </video>
+                )}
+              </>
+            )
+          ) : (
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-900">
+              {content.thumbnail_url && (
+                <Image
+                  src={content.thumbnail_url}
+                  alt={content.title}
+                  fill
+                  className="object-cover opacity-30"
+                />
+              )}
+              <div className="relative z-10 text-center">
+                <Lock className="h-16 w-16 text-white/80 mx-auto mb-4" />
+                <p className="text-white text-lg font-medium mb-2">
+                  このコンテンツは有料です
+                </p>
+                <p className="text-white/70 text-sm mb-4">
+                  視聴するには購入が必要です
+                </p>
+                <button
+                  className="px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+                  onClick={() => {
+                    // TODO: 購入フローの実装
+                    alert('購入機能は準備中です')
+                  }}
+                >
+                  ¥{content.price.toLocaleString()}で購入する
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Video Info */}
+        <div className="space-y-4">
+          {/* Title */}
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900">{content.title}</h1>
+
+          {/* メタ情報とダウンロードボタン */}
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 pb-4 border-b border-gray-200">
+            {/* 左側 - メタ情報 */}
+            <div className="flex flex-col gap-2">
+              {/* 1行目: カテゴリ、料金バッジ */}
+              <div className="flex flex-wrap items-center gap-4">
+                {content.category && (
+                  <span className="text-sm font-medium text-gray-900">{content.category.name}</span>
+                )}
+                <span className={`bg-white text-xs px-3 py-1 border font-medium ${
+                  content.is_free
+                    ? 'border-green-200 text-green-700'
+                    : 'border-orange-200 text-orange-700'
+                }`}>
+                  {content.is_free ? '無料' : `¥${content.price.toLocaleString()}`}
+                </span>
+                {content.is_featured && (
+                  <span className="bg-white text-xs px-3 py-1 border border-yellow-200 text-yellow-700 font-medium">
+                    ⭐ 注目
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* 右側 - ダウンロードボタン */}
+            {sortedMaterials.length > 0 && (
+              <div className="flex items-center gap-2">
+                {hasPurchased ? (
+                  <div className="flex flex-col gap-2">
+                    {sortedMaterials.map((material) => (
+                      <a
+                        key={material.id}
+                        href={material.file_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition-all font-medium text-sm whitespace-nowrap"
+                      >
+                        <Download className="w-4 h-4" />
+                        {material.title}
+                      </a>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-gray-300 text-gray-500 rounded-full font-medium text-sm whitespace-nowrap cursor-not-allowed">
+                    <Lock className="w-4 h-4" />
+                    資料ダウンロード
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Description box - scrollable */}
+          {content.description && (
+            <div className="bg-gray-50 rounded-xl p-4">
+              <div className="max-h-80 overflow-y-auto">
+                <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
+                  {content.description}
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* 関連コンテンツ */}
+        {relatedContents.length > 0 && (
+          <section className="mt-16">
+            <h2 className="text-2xl font-bold text-gray-900 mb-8">関連動画</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {relatedContents.map((relatedContent) => (
+                <Link
+                  key={relatedContent.id}
+                  href={`/e-learning/${relatedContent.id}`}
+                  className="group"
+                >
+                  <article className="border-2 border-transparent hover:border-gray-200 rounded p-4 transition-colors duration-300 h-full flex flex-col">
+                    <div className="relative aspect-video overflow-hidden rounded">
+                      {relatedContent.thumbnail_url ? (
+                        <Image
+                          src={relatedContent.thumbnail_url}
+                          alt={relatedContent.title}
+                          fill
+                          className="object-cover"
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                        />
+                      ) : (
+                        <div className="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600">
+                          <PlayCircle className="h-10 w-10 text-white/80" />
+                        </div>
+                      )}
+                      <div className={`absolute top-2 left-2 px-2 py-0.5 text-xs font-bold rounded ${
+                        relatedContent.is_free
+                          ? 'bg-green-500 text-white'
+                          : 'bg-orange-500 text-white'
+                      }`}>
+                        {relatedContent.is_free ? '無料' : `¥${relatedContent.price.toLocaleString()}`}
+                      </div>
+                    </div>
+
+                    <div className="pt-4 flex-1 flex flex-col">
+                      <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                        {relatedContent.title}
+                      </h3>
+
+                      {relatedContent.description && (
+                        <div className="flex-1">
+                          <p className="text-gray-600 text-sm line-clamp-2 mb-3">
+                            {relatedContent.description}
+                          </p>
+                        </div>
+                      )}
+
+                      {relatedContent.category && (
+                        <div className="text-xs text-gray-500">
+                          {relatedContent.category.name}
+                        </div>
+                      )}
+                    </div>
+                  </article>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+      </div>
+    </div>
+  )
+}

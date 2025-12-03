@@ -127,3 +127,66 @@ export interface YouTubeVideo {
   last_synced_at?: string
   is_own_channel: boolean // 自社チャンネルかどうか（手動で切り替え可能）
 }
+
+// eラーニング関連の型定義
+export interface ELearningCategory {
+  id: string
+  name: string
+  slug: string
+  description?: string
+  display_order: number
+  is_active: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface ELearningContent {
+  id: string
+  title: string
+  description?: string
+  thumbnail_url?: string
+  video_url: string
+  category_id?: string
+  category?: ELearningCategory
+  is_free: boolean
+  price: number
+  stripe_price_id?: string
+  display_order: number
+  is_published: boolean
+  is_featured: boolean
+  view_count: number
+  created_at: string
+  updated_at: string
+  materials?: ELearningMaterial[]
+}
+
+export interface ELearningMaterial {
+  id: string
+  content_id: string
+  title: string
+  file_url: string
+  file_size?: number
+  display_order: number
+  created_at: string
+}
+
+export interface ELearningUser {
+  id: string
+  auth_user_id: string
+  email: string
+  display_name?: string
+  avatar_url?: string
+  is_active: boolean
+  created_at: string
+  updated_at: string
+}
+
+export interface ELearningPurchase {
+  id: string
+  user_id: string
+  content_id: string
+  stripe_session_id?: string
+  amount: number
+  status: 'pending' | 'completed' | 'refunded'
+  created_at: string
+}

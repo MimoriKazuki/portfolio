@@ -1,0 +1,91 @@
+'use client'
+
+import { useState, useEffect } from 'react'
+import { createClient } from '@/app/lib/supabase/client'
+import { User } from '@supabase/supabase-js'
+import { LogIn, LogOut, Loader2 } from 'lucide-react'
+
+export default function AuthButton() {
+  const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [loggingOut, setLoggingOut] = useState(false)
+
+  useEffect(() => {
+    const supabase = createClient()
+
+    // 初期認証状態を取得
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      setUser(user)
+      setLoading(false)
+    }
+
+    getUser()
+
+    // 認証状態の変更を監視
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+    })
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [])
+
+  const handleLogin = async () => {
+    const supabase = createClient()
+    await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback?redirect_to=${window.location.pathname}`,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        },
+      },
+    })
+  }
+
+  const handleLogout = async () => {
+    setLoggingOut(true)
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    setLoggingOut(false)
+    window.location.reload()
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-3">
+        <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
+      </div>
+    )
+  }
+
+  if (user) {
+    return (
+      <button
+        onClick={handleLogout}
+        disabled={loggingOut}
+        className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors disabled:opacity-50"
+      >
+        {loggingOut ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          <LogOut className="h-4 w-4" />
+        )}
+        <span>{loggingOut ? 'ログアウト中...' : 'ログアウト'}</span>
+      </button>
+    )
+  }
+
+  return (
+    <button
+      onClick={handleLogin}
+      className="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+    >
+      <LogIn className="h-4 w-4" />
+      <span>ログイン</span>
+    </button>
+  )
+}
