@@ -28,6 +28,7 @@
   │   ├── /notices        # お知らせ管理
   │   ├── /documents      # ドキュメント管理
   │   ├── /columns        # コラム管理
+  │   ├── /e-learning     # eラーニング管理
   │   └── /analytics      # アナリティクス
   ├── /api                # APIルート
   │   ├── /contact        # お問い合わせAPI
@@ -48,8 +49,10 @@
   │   ├── /ai-coding-training         # AIコーディング研修
   │   ├── /practical-ai-training      # 生成AI実務活用研修
   │   └── /ai-talent-development      # AI人材育成所
+  ├── /e-learning         # eラーニング一覧・詳細
+  ├── /auth               # 認証（Googleログイン）
   ├── /contact            # お問い合わせ
-  ├── /login              # ログイン
+  ├── /login              # 管理者ログイン
   ├── /components         # 共通コンポーネント
   └── /lib                # ユーティリティ
       ├── /supabase       # Supabaseクライアント
@@ -169,10 +172,47 @@
 - **レコード数**: 1件 (posts)
 - **用途**: ブログ機能（現在は主にcolumnsを使用）
 
+#### 10. e_learning_categories (eラーニングカテゴリ)
+- **RLS**: 有効
+- **用途**: eラーニングのカテゴリマスタ
+- **主要フィールド**:
+  - id, name, slug, description
+  - display_order, is_active
+
+#### 11. e_learning_contents (eラーニングコンテンツ)
+- **RLS**: 有効
+- **用途**: eラーニング動画コンテンツ
+- **主要フィールド**:
+  - id, title, description, thumbnail_url, video_url
+  - duration, category_id (FK)
+  - is_free, price, stripe_price_id
+  - display_order, is_published, is_featured, view_count
+
+#### 12. e_learning_materials (eラーニング資料)
+- **RLS**: 有効
+- **用途**: eラーニングの添付資料（PDF等）
+- **主要フィールド**:
+  - id, content_id (FK), title, file_url, file_size, display_order
+
+#### 13. e_learning_users (eラーニングユーザー)
+- **RLS**: 有効
+- **用途**: eラーニング用の一般ユーザー（管理者と分離）
+- **主要フィールド**:
+  - id, auth_user_id, email, display_name, avatar_url, is_active
+
+#### 14. e_learning_purchases (eラーニング購入履歴)
+- **RLS**: 有効
+- **用途**: Stripe連携用の購入履歴
+- **主要フィールド**:
+  - id, user_id (FK), content_id (FK)
+  - stripe_session_id, amount, status
+
 ### Storageバケット
 1. **project-videos**: プロジェクトの動画ファイル
 2. **notice-thumbnails**: お知らせのサムネイル画像
 3. **column-audio**: コラムの音声ファイル (.m4a)
+4. **e-learning-thumbnails**: eラーニングコンテンツのサムネイル画像
+5. **e-learning-materials**: eラーニングの資料ファイル（PDF等）
 
 ## 主要機能
 
@@ -187,6 +227,7 @@
 - **お知らせ一覧**: 最新情報の表示
 - **サービスページ**: 6種類のAI研修サービスLP
 - **お問い合わせフォーム**: Slack通知連携
+- **eラーニング**: バイブコーディング学習動画（Googleログイン認証）
 
 ### 2. 管理画面機能 (/admin)
 - **認証**: Supabase Auth（メール/パスワード）
