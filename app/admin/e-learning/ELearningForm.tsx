@@ -13,6 +13,7 @@ interface ELearningFormData {
   description: string
   thumbnail_url: string
   video_url: string
+  duration: string
   category_id: string
   is_free: boolean
   price: number
@@ -50,6 +51,7 @@ export default function ELearningForm({ initialData, initialMaterials, contentId
     description: initialData?.description || '',
     thumbnail_url: initialData?.thumbnail_url || '',
     video_url: initialData?.video_url || '',
+    duration: initialData?.duration || '',
     category_id: initialData?.category_id || '',
     is_free: initialData?.is_free ?? true,
     price: initialData?.price || 0,

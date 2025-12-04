@@ -1,9 +1,8 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import Sidebar from './Sidebar'
-import FloatingButtons from './FloatingButtons'
+import FixedBottomElements from './FixedBottomElements'
 import Footer from './Footer'
 import MobileHeader from './MobileHeader'
 
@@ -27,69 +26,28 @@ interface MainLayoutProps {
 }
 
 export default function MainLayout({ children, hideRightSidebar = false, hideContactButton = false, dynamicSidebar }: MainLayoutProps) {
-  const footerRef = useRef<HTMLDivElement>(null)
-  const [sidebarOffset, setSidebarOffset] = useState(0)
-
-  useEffect(() => {
-    let rafId: number
-
-    const updateSidebarPosition = () => {
-      if (!footerRef.current) return
-
-      const footerRect = footerRef.current.getBoundingClientRect()
-      const sidebarHeight = window.innerHeight
-
-      // フッターがサイドバーと重なる場合、サイドバーを上にずらす
-      if (footerRect.top < sidebarHeight) {
-        const offset = sidebarHeight - footerRect.top
-        setSidebarOffset(-offset)
-      } else {
-        setSidebarOffset(0)
-      }
-    }
-
-    const handleScroll = () => {
-      // requestAnimationFrameでスムーズに更新
-      cancelAnimationFrame(rafId)
-      rafId = requestAnimationFrame(updateSidebarPosition)
-    }
-
-    window.addEventListener('scroll', handleScroll, { passive: true })
-    window.addEventListener('resize', handleScroll, { passive: true })
-    updateSidebarPosition()
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll)
-      window.removeEventListener('resize', handleScroll)
-      cancelAnimationFrame(rafId)
-    }
-  }, [])
-
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Next.js App Router スクロールリセット用アンカー要素 */}
-      {/* fixed/sticky要素の前に配置することで、正しいスクロール位置計算を保証 */}
-      {/* 参照: https://github.com/vercel/next.js/issues/49427 */}
       <div />
 
       {/* Fixed background layer to prevent overscroll color */}
       <div className="fixed inset-0 bg-gray-50" style={{ zIndex: -1 }} aria-hidden="true" />
 
-      {/* Left Sidebar Background - Fixed, full height, behind footer */}
+      {/* Left Sidebar Background - Fixed */}
       <div
-        className="fixed top-0 left-0 bottom-0 w-[178px] bg-white border-r border-gray-200 hidden xl:block z-30"
+        className="fixed top-0 left-0 w-[178px] h-screen bg-white border-r border-gray-200 hidden xl:block z-30"
         aria-hidden="true"
       />
 
       {/* Mobile Header */}
       <MobileHeader />
 
-      {/* Left Sidebar Content - Fixed, follows scroll, slides up at footer */}
-      <aside
-        className="fixed top-0 left-0 h-screen w-[178px] z-[35] hidden xl:block"
-        style={{ transform: `translateY(${sidebarOffset}px)` }}
-      >
-        <Sidebar />
+      {/* Left Sidebar Content - Fixed */}
+      <aside className="fixed top-0 left-0 w-[178px] h-screen z-30 hidden xl:block overflow-hidden">
+        <div className="h-full">
+          <Sidebar />
+        </div>
       </aside>
 
       {/* Body - contains all main content */}
@@ -125,12 +83,13 @@ export default function MainLayout({ children, hideRightSidebar = false, hideCon
         </div>
       </div>
 
-      {/* Footer - Above sidebar background */}
-      <div ref={footerRef} className="relative z-40">
+      {/* Footer - z-index higher than sidebar so sidebar hides behind it */}
+      <div className="relative z-40">
         <Footer />
       </div>
 
-      {!hideContactButton && <FloatingButtons />}
+      {/* フローティングCTA & ログインバナー（統合コンポーネント） */}
+      <FixedBottomElements hideContactButton={hideContactButton} />
     </div>
   )
 }

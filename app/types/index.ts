@@ -146,6 +146,7 @@ export interface ELearningContent {
   description?: string
   thumbnail_url?: string
   video_url: string
+  duration?: string
   category_id?: string
   category?: ELearningCategory
   is_free: boolean

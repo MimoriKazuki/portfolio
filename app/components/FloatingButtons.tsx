@@ -4,26 +4,33 @@ import { Mail, FileText } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
-export default function FloatingButtons() {
+interface FloatingButtonsProps {
+  bannerVisible?: boolean
+}
+
+export default function FloatingButtons({ bannerVisible = false }: FloatingButtonsProps) {
   const pathname = usePathname()
-  
+
   // トップページではフローティングボタンを非表示
   if (pathname === '/') {
     return null
   }
-  
+
   // 問い合わせページでは問い合わせボタンを非表示
   const hideContactButton = pathname === '/contact'
   // 資料請求ページでは資料請求ボタンを非表示
   const hideDocumentButton = pathname.startsWith('/documents')
-  
+
   // 両方非表示の場合はコンポーネント自体を非表示
   if (hideContactButton && hideDocumentButton) {
     return null
   }
-  
+
+  // バナーが表示されている場合は上に移動（バナー高さ約70px + 16px余白）
+  const bottomClass = bannerVisible ? 'bottom-[86px]' : 'bottom-6'
+
   return (
-    <div className="fixed bottom-6 right-4 md:right-6 z-30 flex gap-3">
+    <div className={`fixed ${bottomClass} right-4 md:right-6 z-30 flex gap-3 transition-all duration-300`}>
       {/* 資料請求ボタン */}
       {!hideDocumentButton && (
         <Link
