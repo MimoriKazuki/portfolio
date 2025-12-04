@@ -65,8 +65,8 @@ export default function LoginPromptModal({ isOpen, onClose }: LoginPromptModalPr
         <div className="flex flex-col md:flex-row">
           {/* 左側: メインコンテンツ */}
           <div className="flex-1 p-8 md:p-10">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              ログインが必要です
+            <h2 className="text-2xl font-bold text-gray-900 mb-4 text-center">
+              無料ログイン
             </h2>
 
             <p className="text-gray-600 mb-8 leading-relaxed">

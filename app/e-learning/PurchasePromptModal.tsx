@@ -64,8 +64,8 @@ export default function PurchasePromptModal({ isOpen, onClose, contentId, cancel
         <div className="flex flex-col md:flex-row">
           {/* 左側: メインコンテンツ */}
           <div className="flex-1 p-8 md:p-10">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              有料コンテンツです
+            <h2 className="text-2xl font-bold text-gray-900 mb-4 text-center">
+              有料コンテンツ
             </h2>
 
             <p className="text-gray-600 mb-4 leading-relaxed">
