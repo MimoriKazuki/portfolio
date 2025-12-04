@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { Loader2 } from 'lucide-react'
-import Link from 'next/link'
 
 interface PurchasePromptModalProps {
   isOpen: boolean
@@ -112,12 +111,12 @@ export default function PurchasePromptModal({ isOpen, onClose, contentId }: Purc
                 </div>
               )}
 
-              <Link
-                href="/e-learning"
+              <button
+                onClick={() => window.history.back()}
                 className="inline-flex items-center justify-center w-full px-8 py-4 bg-white text-gray-700 font-medium border border-gray-300 transition-colors duration-200 hover:bg-gray-50"
               >
-                一覧に戻る
-              </Link>
+                戻る
+              </button>
             </div>
           </div>
 

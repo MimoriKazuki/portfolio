@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { createClient } from '@/app/lib/supabase/client'
 import { Loader2 } from 'lucide-react'
-import Link from 'next/link'
 
 interface LoginPromptModalProps {
   isOpen: boolean
@@ -124,12 +123,12 @@ export default function LoginPromptModal({ isOpen, onClose }: LoginPromptModalPr
                 </div>
               )}
 
-              <Link
-                href="/"
+              <button
+                onClick={() => window.history.back()}
                 className="inline-flex items-center justify-center w-full px-8 py-4 bg-white text-gray-700 font-medium border border-gray-300 transition-colors duration-200 hover:bg-gray-50"
               >
-                トップページに戻る
-              </Link>
+                戻る
+              </button>
             </div>
           </div>
 
