@@ -4,6 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import MainLayout from '@/app/components/MainLayout'
 import { createClient } from '@/app/lib/supabase/server'
+import { LinkifiedText } from '@/app/lib/utils/linkify'
 import type { Metadata } from 'next'
 import type { Notice } from '@/app/types'
 
@@ -179,7 +180,7 @@ export default async function NoticeDetailPage({
         {notice.description && (
           <div className="mb-8">
             <p className="text-[16px] text-gray-700 leading-relaxed whitespace-pre-wrap">
-              {notice.description}
+              <LinkifiedText text={notice.description} />
             </p>
           </div>
         )}
