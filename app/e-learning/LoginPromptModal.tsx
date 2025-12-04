@@ -66,10 +66,7 @@ export default function LoginPromptModal({ isOpen, onClose }: LoginPromptModalPr
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center px-4">
       {/* オーバーレイ */}
-      <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-        onClick={onClose}
-      />
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
 
       {/* モーダル（横長） */}
       <div className="relative bg-white shadow-xl max-w-3xl w-full">
