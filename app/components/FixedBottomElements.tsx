@@ -83,8 +83,9 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
     }
   }, [loading, user, showBannerAnim])
 
-  // バナー表示条件
-  const showBanner = !loading && !user
+  // バナー表示条件（eラーニングページではモーダルがあるため非表示）
+  const isElearningPage = pathname.startsWith('/e-learning')
+  const showBanner = !loading && !user && !isElearningPage
 
   // フローティングボタンの表示条件
   const isTopPage = pathname === '/'
@@ -158,10 +159,10 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
           >
             <div className="px-4 sm:px-6 lg:px-8">
               <div className="flex flex-col items-center justify-center py-3 gap-1">
-                <p className="text-white text-sm sm:text-base font-semibold text-center">
+                <p className="text-white text-xs sm:text-base font-semibold text-center">
                   AI駆動開発特化型のeラーニングサービスを開始しました。
                 </p>
-                <p className="text-white text-sm sm:text-base font-semibold text-center flex items-center gap-1">
+                <p className="text-white text-xs sm:text-base font-semibold text-center flex items-center gap-1">
                   無料ログインでまずはお試し
                   <ChevronRight className="h-4 w-4" />
                 </p>
