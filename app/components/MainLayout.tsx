@@ -1,5 +1,7 @@
 'use client'
 
+import { useEffect, useRef } from 'react'
+import { usePathname } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import Sidebar from './Sidebar'
 import FixedBottomElements from './FixedBottomElements'
@@ -26,6 +28,22 @@ interface MainLayoutProps {
 }
 
 export default function MainLayout({ children, hideRightSidebar = false, hideContactButton = false, dynamicSidebar }: MainLayoutProps) {
+  const sidebarRef = useRef<HTMLElement>(null)
+  const pathname = usePathname()
+
+  // クライアントサイドナビゲーション時にstickyポジションを再計算させる
+  useEffect(() => {
+    if (sidebarRef.current) {
+      // スタイルを一時的に変更して再計算をトリガー
+      const sidebar = sidebarRef.current
+      sidebar.style.position = 'relative'
+      // 次のフレームでstickyに戻す
+      requestAnimationFrame(() => {
+        sidebar.style.position = ''
+      })
+    }
+  }, [pathname])
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Next.js App Router スクロールリセット用アンカー要素 */}
@@ -65,7 +83,10 @@ export default function MainLayout({ children, hideRightSidebar = false, hideCon
 
               {/* Right Sidebar */}
               {!hideRightSidebar && (
-                <aside className="w-[260px] flex-shrink-0 hidden xl:block self-start sticky top-8">
+                <aside
+                  ref={sidebarRef}
+                  className="w-[260px] flex-shrink-0 hidden xl:block self-start sticky top-8"
+                >
                   {dynamicSidebar ? (
                     <DynamicRightSidebar
                       enterpriseServiceId={dynamicSidebar.enterpriseServiceId}
