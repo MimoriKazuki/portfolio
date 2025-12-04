@@ -123,7 +123,7 @@ export default function LoginPromptModal({ isOpen, onClose }: LoginPromptModalPr
 
           {/* 右側: ログインするメリット */}
           <div className="bg-gray-50 p-8 md:p-10 md:flex-[2] border-t md:border-t-0 md:border-l border-gray-200">
-            <h3 className="text-base font-semibold text-gray-900 mb-4">ログインするメリット</h3>
+            <h3 className="text-base font-semibold text-gray-900 mb-6">ログインするメリット</h3>
             <ul className="text-sm text-gray-600 space-y-4">
               <li className="flex items-start gap-3">
                 <div className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center mt-[-2px]">

@@ -112,7 +112,7 @@ export default function PurchasePromptModal({ isOpen, onClose, contentId, cancel
 
           {/* 右側: 購入するメリット */}
           <div className="bg-gray-50 p-8 md:p-10 md:flex-[2] border-t md:border-t-0 md:border-l border-gray-200">
-            <h3 className="text-base font-semibold text-gray-900 mb-4">購入するメリット</h3>
+            <h3 className="text-base font-semibold text-gray-900 mb-6">購入するメリット</h3>
             <ul className="text-sm text-gray-600 space-y-4">
               <li className="flex items-start gap-3">
                 <div className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center mt-[-2px]">
