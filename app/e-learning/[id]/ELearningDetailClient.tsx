@@ -60,6 +60,7 @@ export default function ELearningDetailClient({
   const [isBookmarkLoading, setIsBookmarkLoading] = useState(false)
   const [isPurchaseLoading, setIsPurchaseLoading] = useState(false)
   const [purchaseMessage, setPurchaseMessage] = useState<{ type: 'success' | 'error' | 'canceled', text: string } | null>(null)
+  const [returnUrl, setReturnUrl] = useState<string>('/e-learning')
   const supabase = createClient()
 
   // 有料コンテンツで未購入の場合、初期表示でモーダルを表示
@@ -67,6 +68,25 @@ export default function ELearningDetailClient({
   const initialShowModal = !hasPurchased && !content.is_free &&
     !searchParams.get('success') && !searchParams.get('canceled')
   const [showPurchaseModal, setShowPurchaseModal] = useState(initialShowModal)
+
+  // 元のページURL（referrer）を取得
+  useEffect(() => {
+    if (typeof window !== 'undefined' && document.referrer) {
+      try {
+        const referrerUrl = new URL(document.referrer)
+        // 同一オリジンのe-learning関連ページの場合のみ使用
+        if (referrerUrl.origin === window.location.origin &&
+            referrerUrl.pathname.startsWith('/e-learning')) {
+          // 詳細ページ自体は除外（一覧系ページのみ）
+          if (!referrerUrl.pathname.match(/^\/e-learning\/[^/]+$/)) {
+            setReturnUrl(referrerUrl.pathname)
+          }
+        }
+      } catch {
+        // Invalid URL, use default
+      }
+    }
+  }, [])
 
   // URLパラメータからメッセージを設定
   useEffect(() => {
@@ -447,6 +467,7 @@ export default function ELearningDetailClient({
         isOpen={showPurchaseModal}
         onClose={() => setShowPurchaseModal(false)}
         contentId={content.id}
+        returnUrl={returnUrl}
       />
     </div>
   )

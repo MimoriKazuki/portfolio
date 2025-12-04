@@ -7,9 +7,10 @@ interface PurchasePromptModalProps {
   isOpen: boolean
   onClose: () => void
   contentId: string
+  returnUrl?: string // キャンセル時の戻り先URL
 }
 
-export default function PurchasePromptModal({ isOpen, onClose, contentId }: PurchasePromptModalProps) {
+export default function PurchasePromptModal({ isOpen, onClose, contentId, returnUrl }: PurchasePromptModalProps) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -33,7 +34,7 @@ export default function PurchasePromptModal({ isOpen, onClose, contentId }: Purc
       const response = await fetch('/api/stripe/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contentId })
+        body: JSON.stringify({ contentId, returnUrl })
       })
 
       const data = await response.json()

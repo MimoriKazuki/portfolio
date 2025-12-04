@@ -18,9 +18,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // リダイレクト先のコンテンツID（オプション）
+    // リダイレクト先のコンテンツID（オプション）とキャンセル時の戻り先URL
     const body = await request.json().catch(() => ({}))
-    const { contentId } = body
+    const { contentId, returnUrl } = body
 
     // eラーニングユーザーを取得または作成
     let { data: elearningUser } = await supabase
@@ -62,8 +62,16 @@ export async function POST(request: NextRequest) {
     // Stripe Checkout Session作成
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.landbridge.ai'
 
-    // リダイレクト先URL（コンテンツIDがあればそのページ、なければ一覧ページ）
-    const redirectPath = contentId ? `/e-learning/${contentId}` : '/e-learning'
+    // リダイレクト先URL
+    // 成功時: コンテンツIDがあればそのページ、なければ一覧ページ
+    // キャンセル時: 元いたページに戻る（returnUrlがあればそれを使用、なければ一覧ページ）
+    const successPath = contentId ? `/e-learning/${contentId}` : '/e-learning'
+    // returnUrlのバリデーション（e-learning関連のパスのみ許可）
+    const isValidReturnUrl = returnUrl &&
+      typeof returnUrl === 'string' &&
+      returnUrl.startsWith('/e-learning') &&
+      !returnUrl.includes('..')
+    const cancelPath = isValidReturnUrl ? returnUrl : '/e-learning'
 
     const stripe = getStripe()
     const session = await stripe.checkout.sessions.create({
@@ -75,8 +83,8 @@ export async function POST(request: NextRequest) {
         },
       ],
       mode: 'payment',
-      success_url: `${baseUrl}${redirectPath}?success=true`,
-      cancel_url: `${baseUrl}${redirectPath}?canceled=true`,
+      success_url: `${baseUrl}${successPath}?success=true`,
+      cancel_url: `${baseUrl}${cancelPath}?canceled=true`,
       customer_email: user.email,
       metadata: {
         userId: elearningUser.id,
