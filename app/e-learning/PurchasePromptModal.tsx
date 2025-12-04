@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Loader2 } from 'lucide-react'
+import { Loader2, Check } from 'lucide-react'
 
 interface PurchasePromptModalProps {
   isOpen: boolean
@@ -60,7 +60,7 @@ export default function PurchasePromptModal({ isOpen, onClose, contentId, cancel
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
 
       {/* モーダル（横長） */}
-      <div className="relative bg-white shadow-xl max-w-3xl w-full">
+      <div className="relative bg-white shadow-xl max-w-4xl w-full">
         <div className="flex flex-col md:flex-row">
           {/* 左側: メインコンテンツ */}
           <div className="flex-1 p-8 md:p-10">
@@ -111,23 +111,31 @@ export default function PurchasePromptModal({ isOpen, onClose, contentId, cancel
           </div>
 
           {/* 右側: 購入するメリット */}
-          <div className="bg-gray-50 p-8 md:p-10 md:w-72 border-t md:border-t-0 md:border-l border-gray-200">
+          <div className="bg-gray-50 p-8 md:p-10 md:w-80 border-t md:border-t-0 md:border-l border-gray-200">
             <h3 className="text-sm font-semibold text-gray-900 mb-4">購入するメリット</h3>
-            <ul className="text-sm text-gray-600 space-y-3">
-              <li className="flex items-start gap-2">
-                <span className="text-blue-600 mt-0.5 flex-shrink-0">✓</span>
+            <ul className="text-sm text-gray-600 space-y-4">
+              <li className="flex items-start gap-3">
+                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center mt-0.5">
+                  <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+                </div>
                 <span>全ての有料コンテンツが見放題</span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-blue-600 mt-0.5 flex-shrink-0">✓</span>
+              <li className="flex items-start gap-3">
+                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center mt-0.5">
+                  <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+                </div>
                 <span>買い切りなので追加料金なし</span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-blue-600 mt-0.5 flex-shrink-0">✓</span>
+              <li className="flex items-start gap-3">
+                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center mt-0.5">
+                  <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+                </div>
                 <span>新しいコンテンツも追加料金なしで視聴可能</span>
               </li>
-              <li className="flex items-start gap-2">
-                <span className="text-blue-600 mt-0.5 flex-shrink-0">✓</span>
+              <li className="flex items-start gap-3">
+                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center mt-0.5">
+                  <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+                </div>
                 <span>何度でも繰り返し学習できます</span>
               </li>
             </ul>
