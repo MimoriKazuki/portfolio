@@ -34,12 +34,9 @@ function CarouselCard({
     }
   }
 
-  // 現在のURLをfromパラメータとして渡す
-  const href = `/e-learning/${content.id}?from=${encodeURIComponent('/e-learning')}`
-
   return (
     <Link
-      href={href}
+      href={`/e-learning/${content.id}`}
       onClick={handleClick}
       className="group flex-shrink-0 w-[300px] md:w-[350px]"
     >
@@ -110,12 +107,9 @@ function ContentCard({
     }
   }
 
-  // 現在のURLをfromパラメータとして渡す
-  const href = `/e-learning/${content.id}?from=${encodeURIComponent('/e-learning')}`
-
   return (
     <Link
-      href={href}
+      href={`/e-learning/${content.id}`}
       onClick={handleClick}
       className="group block h-full"
     >

@@ -3,7 +3,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { useSearchParams, useRouter, usePathname } from 'next/navigation'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { Play, PlayCircle, Lock, Bookmark } from 'lucide-react'
 import { ELearningContent, ELearningCategory } from '@/app/types'
 import LoginPromptModal from '../LoginPromptModal'
@@ -20,13 +20,11 @@ function CourseCard({
   isLoggedIn,
   isBookmarked,
   onCardClick,
-  currentUrl,
 }: {
   content: ELearningContent
   isLoggedIn: boolean
   isBookmarked: boolean
   onCardClick: () => void
-  currentUrl: string
 }) {
   const handleClick = (e: React.MouseEvent) => {
     if (!isLoggedIn) {
@@ -35,12 +33,9 @@ function CourseCard({
     }
   }
 
-  // 現在のURLをfromパラメータとして渡す
-  const href = `/e-learning/${content.id}?from=${encodeURIComponent(currentUrl)}`
-
   return (
     <Link
-      href={href}
+      href={`/e-learning/${content.id}`}
       onClick={handleClick}
       className="group block h-full"
     >
@@ -112,7 +107,6 @@ export default function ELearningCoursesClient({
   userBookmarks: initialBookmarks,
 }: ELearningCoursesClientProps) {
   const router = useRouter()
-  const pathname = usePathname()
   const searchParams = useSearchParams()
   const initialCategory = searchParams.get('category') || 'all'
 
@@ -120,11 +114,6 @@ export default function ELearningCoursesClient({
   const [showLoginModal, setShowLoginModal] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState(initialCategory)
   const [bookmarks] = useState<string[]>(initialBookmarks)
-
-  // 現在のURL（パス + クエリパラメータ）
-  const currentUrl = searchParams.toString()
-    ? `${pathname}?${searchParams.toString()}`
-    : pathname
 
   useEffect(() => {
     setIsVisible(true)
@@ -246,7 +235,6 @@ export default function ELearningCoursesClient({
               isLoggedIn={isLoggedIn}
               isBookmarked={bookmarks.includes(content.id)}
               onCardClick={handleCardClick}
-              currentUrl={currentUrl}
             />
           ))}
         </div>

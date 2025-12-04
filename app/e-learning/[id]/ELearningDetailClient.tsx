@@ -60,7 +60,6 @@ export default function ELearningDetailClient({
   const [isBookmarkLoading, setIsBookmarkLoading] = useState(false)
   const [isPurchaseLoading, setIsPurchaseLoading] = useState(false)
   const [purchaseMessage, setPurchaseMessage] = useState<{ type: 'success' | 'error' | 'canceled', text: string } | null>(null)
-  const [returnUrl, setReturnUrl] = useState<string>('/e-learning')
   const supabase = createClient()
 
   // 有料コンテンツで未購入の場合、初期表示でモーダルを表示
@@ -68,38 +67,6 @@ export default function ELearningDetailClient({
   const initialShowModal = !hasPurchased && !content.is_free &&
     !searchParams.get('success') && !searchParams.get('canceled')
   const [showPurchaseModal, setShowPurchaseModal] = useState(initialShowModal)
-
-  // 元のページURL（fromパラメータまたはreferrer）を取得
-  useEffect(() => {
-    // まずURLパラメータからfromを取得
-    const fromParam = searchParams.get('from')
-    if (fromParam) {
-      // fromパラメータがe-learning関連のパスで、詳細ページでない場合のみ使用
-      if (fromParam.startsWith('/e-learning') &&
-          !fromParam.match(/^\/e-learning\/[^/?]+/)) {
-        setReturnUrl(fromParam)
-        return
-      }
-    }
-
-    // fromパラメータがない場合はreferrerを使用
-    if (typeof window !== 'undefined' && document.referrer) {
-      try {
-        const referrerUrl = new URL(document.referrer)
-        // 同一オリジンのe-learning関連ページの場合のみ使用
-        if (referrerUrl.origin === window.location.origin &&
-            referrerUrl.pathname.startsWith('/e-learning')) {
-          // 詳細ページ自体は除外（一覧系ページのみ）
-          if (!referrerUrl.pathname.match(/^\/e-learning\/[^/]+$/)) {
-            // パス + クエリパラメータを保持（タブの状態などを復元するため）
-            setReturnUrl(referrerUrl.pathname + referrerUrl.search)
-          }
-        }
-      } catch {
-        // Invalid URL, use default
-      }
-    }
-  }, [searchParams])
 
   // URLパラメータからメッセージを設定
   useEffect(() => {
@@ -203,7 +170,7 @@ export default function ELearningDetailClient({
       >
         {/* 戻るリンク */}
         <Link
-          href={returnUrl}
+          href="/e-learning"
           className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
@@ -480,7 +447,6 @@ export default function ELearningDetailClient({
         isOpen={showPurchaseModal}
         onClose={() => setShowPurchaseModal(false)}
         contentId={content.id}
-        returnUrl={returnUrl}
       />
     </div>
   )
