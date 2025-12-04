@@ -79,7 +79,8 @@ export default function ELearningDetailClient({
             referrerUrl.pathname.startsWith('/e-learning')) {
           // 詳細ページ自体は除外（一覧系ページのみ）
           if (!referrerUrl.pathname.match(/^\/e-learning\/[^/]+$/)) {
-            setReturnUrl(referrerUrl.pathname)
+            // パス + クエリパラメータを保持（タブの状態などを復元するため）
+            setReturnUrl(referrerUrl.pathname + referrerUrl.search)
           }
         }
       } catch {
