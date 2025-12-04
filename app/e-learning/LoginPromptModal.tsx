@@ -125,20 +125,20 @@ export default function LoginPromptModal({ isOpen, onClose }: LoginPromptModalPr
           <div className="bg-gray-50 p-8 md:p-10 md:flex-[2] border-t md:border-t-0 md:border-l border-gray-200">
             <h3 className="text-base font-semibold text-gray-900 mb-4">ログインするメリット</h3>
             <ul className="text-sm text-gray-600 space-y-4">
-              <li className="flex items-center gap-3">
-                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center">
+              <li className="flex items-start gap-3">
+                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center mt-[-2px]">
                   <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
                 </div>
                 <span>無料の学習動画にアクセスできます</span>
               </li>
-              <li className="flex items-center gap-3">
-                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center">
+              <li className="flex items-start gap-3">
+                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center mt-[-2px]">
                   <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
                 </div>
                 <span>お気に入りの動画を保存できます</span>
               </li>
-              <li className="flex items-center gap-3">
-                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center">
+              <li className="flex items-start gap-3">
+                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center mt-[-2px]">
                   <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
                 </div>
                 <span>購入したコンテンツを制限なく視聴できます</span>
