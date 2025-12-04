@@ -7,7 +7,7 @@
 - **組織**: AI駆動研究所（旧：LandBridge株式会社）
 
 ## 技術スタック
-- **フレームワーク**: Next.js 15.3.5 (App Router)
+- **フレームワーク**: Next.js 15.3.6 (App Router)
 - **言語**: TypeScript 5.5.3
 - **スタイリング**: Tailwind CSS 3.4.11
 - **データベース**: Supabase (PostgreSQL)

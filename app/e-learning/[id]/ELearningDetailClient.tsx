@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { ELearningContent } from '@/app/types'
 import { User } from '@supabase/supabase-js'
 import Link from 'next/link'
@@ -11,9 +12,12 @@ import {
   Download,
   Lock,
   Play,
-  Bookmark
+  Bookmark,
+  CheckCircle,
+  XCircle
 } from 'lucide-react'
 import { createClient } from '@/app/lib/supabase/client'
+import PurchasePromptModal from '../PurchasePromptModal'
 
 interface ELearningDetailClientProps {
   content: ELearningContent
@@ -48,12 +52,66 @@ export default function ELearningDetailClient({
   relatedContents = [],
   initialBookmarked = false
 }: ELearningDetailClientProps) {
+  const searchParams = useSearchParams()
   const [isVisible, setIsVisible] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isBookmarked, setIsBookmarked] = useState(initialBookmarked)
   const [isBookmarkLoading, setIsBookmarkLoading] = useState(false)
+  const [isPurchaseLoading, setIsPurchaseLoading] = useState(false)
+  const [purchaseMessage, setPurchaseMessage] = useState<{ type: 'success' | 'error' | 'canceled', text: string } | null>(null)
   const supabase = createClient()
+
+  // 有料コンテンツで未購入の場合、初期表示でモーダルを表示
+  // success/canceledパラメータがある場合はモーダルを表示しない
+  const initialShowModal = !hasPurchased && !content.is_free &&
+    !searchParams.get('success') && !searchParams.get('canceled')
+  const [showPurchaseModal, setShowPurchaseModal] = useState(initialShowModal)
+
+  // URLパラメータからメッセージを設定
+  useEffect(() => {
+    if (searchParams.get('success') === 'true') {
+      setPurchaseMessage({ type: 'success', text: '購入が完了しました。動画をお楽しみください！' })
+      // URLからパラメータを削除
+      window.history.replaceState({}, '', `/e-learning/${content.id}`)
+    } else if (searchParams.get('canceled') === 'true') {
+      setPurchaseMessage({ type: 'canceled', text: '購入がキャンセルされました。' })
+      window.history.replaceState({}, '', `/e-learning/${content.id}`)
+    }
+  }, [searchParams, content.id])
+
+  // 購入処理
+  const handlePurchase = async () => {
+    setIsPurchaseLoading(true)
+    setPurchaseMessage(null)
+
+    try {
+      const response = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contentId: content.id })
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || '購入処理中にエラーが発生しました')
+      }
+
+      // Stripe Checkoutにリダイレクト
+      if (data.url) {
+        window.location.href = data.url
+      }
+    } catch (error) {
+      console.error('Purchase error:', error)
+      setPurchaseMessage({
+        type: 'error',
+        text: error instanceof Error ? error.message : '購入処理中にエラーが発生しました'
+      })
+    } finally {
+      setIsPurchaseLoading(false)
+    }
+  }
 
   // ブックマーク切り替え
   const handleBookmarkToggle = async () => {
@@ -118,6 +176,32 @@ export default function ELearningDetailClient({
           <ArrowLeft className="w-4 h-4" />
           eラーニング一覧に戻る
         </Link>
+
+        {/* 購入結果メッセージ */}
+        {purchaseMessage && (
+          <div className={`mb-6 p-4 rounded-lg flex items-center gap-3 ${
+            purchaseMessage.type === 'success'
+              ? 'bg-green-50 text-green-800 border border-green-200'
+              : purchaseMessage.type === 'canceled'
+              ? 'bg-yellow-50 text-yellow-800 border border-yellow-200'
+              : 'bg-red-50 text-red-800 border border-red-200'
+          }`}>
+            {purchaseMessage.type === 'success' ? (
+              <CheckCircle className="w-5 h-5 flex-shrink-0" />
+            ) : purchaseMessage.type === 'canceled' ? (
+              <XCircle className="w-5 h-5 flex-shrink-0" />
+            ) : (
+              <XCircle className="w-5 h-5 flex-shrink-0" />
+            )}
+            <p>{purchaseMessage.text}</p>
+            <button
+              onClick={() => setPurchaseMessage(null)}
+              className="ml-auto text-current opacity-60 hover:opacity-100"
+            >
+              ×
+            </button>
+          </div>
+        )}
 
         {/* 動画プレイヤー */}
         <div className="relative aspect-video rounded-lg overflow-hidden bg-black mb-4">
@@ -200,34 +284,20 @@ export default function ELearningDetailClient({
               </>
             )
           ) : (
-            <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-900">
+            // 未購入時はサムネイルのみ表示（モーダルで購入を促す）
+            <>
               {content.thumbnail_url && (
                 <Image
                   src={content.thumbnail_url}
                   alt={content.title}
                   fill
-                  className="object-cover opacity-30"
+                  className="object-cover"
+                  sizes="(max-width: 1024px) 100vw, 896px"
+                  priority
                 />
               )}
-              <div className="relative z-10 text-center">
-                <Lock className="h-16 w-16 text-white/80 mx-auto mb-4" />
-                <p className="text-white text-lg font-medium mb-2">
-                  このコンテンツは有料です
-                </p>
-                <p className="text-white/70 text-sm mb-4">
-                  視聴するには購入が必要です
-                </p>
-                <button
-                  className="px-6 py-2.5 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
-                  onClick={() => {
-                    // TODO: 購入フローの実装
-                    alert('購入機能は準備中です')
-                  }}
-                >
-                  購入する
-                </button>
-              </div>
-            </div>
+              <div className="absolute inset-0 bg-black/40" />
+            </>
           )}
         </div>
 
@@ -371,6 +441,13 @@ export default function ELearningDetailClient({
           </section>
         )}
       </div>
+
+      {/* 購入促進モーダル */}
+      <PurchasePromptModal
+        isOpen={showPurchaseModal}
+        onClose={() => setShowPurchaseModal(false)}
+        contentId={content.id}
+      />
     </div>
   )
 }

@@ -109,66 +109,16 @@ export default async function ELearningDetailPage({ params }: PageProps) {
     notFound()
   }
 
-  // 有料コンテンツの場合は購入チェック
-  if (!content.is_free) {
-    // eラーニングユーザーを取得
-    const { data: eLearningUser } = await supabase
-      .from('e_learning_users')
-      .select('id')
-      .eq('auth_user_id', user.id)
-      .single()
+  // eラーニングユーザーを取得（has_paid_accessを含む）
+  const { data: eLearningUser } = await supabase
+    .from('e_learning_users')
+    .select('id, has_paid_access')
+    .eq('auth_user_id', user.id)
+    .single()
 
-    if (eLearningUser) {
-      // 購入履歴をチェック
-      const { data: purchase } = await supabase
-        .from('e_learning_purchases')
-        .select('id')
-        .eq('user_id', eLearningUser.id)
-        .eq('content_id', content.id)
-        .eq('status', 'completed')
-        .single()
-
-      if (!purchase) {
-        // 未購入の場合 - ブックマーク状態を取得
-        const { data: bookmark } = await supabase
-          .from('e_learning_bookmarks')
-          .select('id')
-          .eq('user_id', user.id)
-          .eq('content_id', content.id)
-          .single()
-
-        return (
-          <MainLayout>
-            <ELearningDetailClient
-              content={content as ELearningContent}
-              user={user}
-              hasPurchased={false}
-              initialBookmarked={!!bookmark}
-            />
-          </MainLayout>
-        )
-      }
-    } else {
-      // eラーニングユーザーが存在しない場合 - ブックマーク状態を取得
-      const { data: bookmark } = await supabase
-        .from('e_learning_bookmarks')
-        .select('id')
-        .eq('user_id', user.id)
-        .eq('content_id', content.id)
-        .single()
-
-      return (
-        <MainLayout>
-          <ELearningDetailClient
-            content={content as ELearningContent}
-            user={user}
-            hasPurchased={false}
-            initialBookmarked={!!bookmark}
-          />
-        </MainLayout>
-      )
-    }
-  }
+  // 有料コンテンツへのアクセス権限を判定
+  // 無料コンテンツまたはhas_paid_access=trueの場合はアクセス可能
+  const hasPaidAccess = content.is_free || (eLearningUser?.has_paid_access ?? false)
 
   // 関連コンテンツを取得（同じカテゴリの動画、現在の動画を除く最新3件）
   const { data: relatedContents } = await supabase
@@ -196,7 +146,7 @@ export default async function ELearningDetailPage({ params }: PageProps) {
       <ELearningDetailClient
         content={content as ELearningContent}
         user={user}
-        hasPurchased={true}
+        hasPurchased={hasPaidAccess}
         relatedContents={relatedContents as ELearningContent[] || []}
         initialBookmarked={!!bookmark}
       />

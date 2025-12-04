@@ -146,11 +146,15 @@ export interface ELearningContent {
   description?: string
   thumbnail_url?: string
   video_url: string
+  duration?: string
   category_id?: string
   category?: ELearningCategory
   is_free: boolean
+  price?: number
+  stripe_price_id?: string
   is_published: boolean
   is_featured: boolean
+  display_order: number
   view_count: number
   created_at: string
   updated_at: string
