@@ -58,7 +58,7 @@ export default function MainLayout({ children, hideRightSidebar = false, hideCon
         {/* Main Content Container */}
         <div className="flex-1 min-w-0">
           <div className="h-full overflow-x-visible">
-            <div className="flex gap-8 px-4 sm:px-6 lg:px-8 py-8">
+            <div className="flex items-start gap-8 px-4 sm:px-6 lg:px-8 py-8">
               <main className="flex-1 min-w-0">
                 {children}
               </main>
