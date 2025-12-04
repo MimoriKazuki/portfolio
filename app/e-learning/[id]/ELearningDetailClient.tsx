@@ -69,8 +69,20 @@ export default function ELearningDetailClient({
     !searchParams.get('success') && !searchParams.get('canceled')
   const [showPurchaseModal, setShowPurchaseModal] = useState(initialShowModal)
 
-  // 元のページURL（referrer）を取得
+  // 元のページURL（fromパラメータまたはreferrer）を取得
   useEffect(() => {
+    // まずURLパラメータからfromを取得
+    const fromParam = searchParams.get('from')
+    if (fromParam) {
+      // fromパラメータがe-learning関連のパスで、詳細ページでない場合のみ使用
+      if (fromParam.startsWith('/e-learning') &&
+          !fromParam.match(/^\/e-learning\/[^/?]+/)) {
+        setReturnUrl(fromParam)
+        return
+      }
+    }
+
+    // fromパラメータがない場合はreferrerを使用
     if (typeof window !== 'undefined' && document.referrer) {
       try {
         const referrerUrl = new URL(document.referrer)
@@ -87,7 +99,7 @@ export default function ELearningDetailClient({
         // Invalid URL, use default
       }
     }
-  }, [])
+  }, [searchParams])
 
   // URLパラメータからメッセージを設定
   useEffect(() => {
