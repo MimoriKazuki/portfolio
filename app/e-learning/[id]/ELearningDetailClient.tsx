@@ -68,6 +68,9 @@ export default function ELearningDetailClient({
     !searchParams.get('success') && !searchParams.get('canceled')
   const [showPurchaseModal, setShowPurchaseModal] = useState(initialShowModal)
 
+  // 戻り先URL（from=coursesの場合は/e-learning/courses、それ以外は/e-learning）
+  const returnUrl = searchParams.get('from') === 'courses' ? '/e-learning/courses' : '/e-learning'
+
   // URLパラメータからメッセージを設定
   useEffect(() => {
     if (searchParams.get('success') === 'true') {
@@ -170,7 +173,7 @@ export default function ELearningDetailClient({
       >
         {/* 戻るリンク */}
         <Link
-          href="/e-learning"
+          href={returnUrl}
           className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-6 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
@@ -447,6 +450,7 @@ export default function ELearningDetailClient({
         isOpen={showPurchaseModal}
         onClose={() => setShowPurchaseModal(false)}
         contentId={content.id}
+        cancelReturnUrl={returnUrl}
       />
     </div>
   )

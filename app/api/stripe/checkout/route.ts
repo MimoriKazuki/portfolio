@@ -18,9 +18,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // リダイレクト先のコンテンツID（オプション）
+    // リダイレクト先のコンテンツID（オプション）とキャンセル時の戻り先
     const body = await request.json().catch(() => ({}))
-    const { contentId } = body
+    const { contentId, cancelReturnUrl } = body
 
     // eラーニングユーザーを取得または作成
     let { data: elearningUser } = await supabase
@@ -64,9 +64,13 @@ export async function POST(request: NextRequest) {
 
     // リダイレクト先URL
     // 成功時: コンテンツIDがあればそのページ、なければ一覧ページ
-    // キャンセル時: 常に一覧ページに戻る
+    // キャンセル時: cancelReturnUrlがあればそこに戻る（バリデーション付き）
     const successPath = contentId ? `/e-learning/${contentId}` : '/e-learning'
-    const cancelPath = '/e-learning'
+    // cancelReturnUrlのバリデーション（/e-learningまたは/e-learning/coursesのみ許可）
+    const validCancelUrls = ['/e-learning', '/e-learning/courses']
+    const cancelPath = cancelReturnUrl && validCancelUrls.includes(cancelReturnUrl)
+      ? cancelReturnUrl
+      : '/e-learning'
 
     const stripe = getStripe()
     const session = await stripe.checkout.sessions.create({

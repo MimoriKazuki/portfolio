@@ -33,9 +33,10 @@ function CourseCard({
     }
   }
 
+  // /e-learning/coursesから来たことを示すパラメータを追加
   return (
     <Link
-      href={`/e-learning/${content.id}`}
+      href={`/e-learning/${content.id}?from=courses`}
       onClick={handleClick}
       className="group block h-full"
     >
