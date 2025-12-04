@@ -129,26 +129,27 @@ export default function ELearningTopClient({
 
       {/* おすすめセクション */}
       {featuredContents.length > 0 && (
-        <section className="mb-16">
+        <section className="mb-12">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">おすすめ</h2>
+            <h2 className="text-2xl font-bold md:text-3xl tracking-tight">おすすめ</h2>
             <Link
               href="/e-learning/courses?category=featured"
-              className="flex items-center gap-1 text-portfolio-blue hover:text-portfolio-blue-dark transition-colors text-sm font-medium"
+              className="group inline-flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors text-sm"
             >
-              もっと見る
-              <ArrowRight className="h-4 w-4" />
+              <span className="tracking-wider">VIEW ALL</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
             </Link>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {featuredContents.slice(0, 3).map((content) => (
-              <ContentCard
-                key={content.id}
-                content={content}
-                isLoggedIn={isLoggedIn}
-                isBookmarked={userBookmarks.includes(content.id)}
-                onCardClick={handleCardClick}
-              />
+          <div className="grid grid-cols-1 md:grid-cols-1 mid:grid-cols-2 lg:grid-cols-3 gap-3">
+            {featuredContents.slice(0, 3).map((content, index) => (
+              <div key={content.id} className={index >= 2 ? 'mid:hidden lg:block' : ''}>
+                <ContentCard
+                  content={content}
+                  isLoggedIn={isLoggedIn}
+                  isBookmarked={userBookmarks.includes(content.id)}
+                  onCardClick={handleCardClick}
+                />
+              </div>
             ))}
           </div>
         </section>
@@ -160,26 +161,27 @@ export default function ELearningTopClient({
         if (categoryContents.length === 0) return null
 
         return (
-          <section key={category.id} className="mb-16">
+          <section key={category.id} className="mb-12">
             <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-900">{category.name}</h2>
+              <h2 className="text-2xl font-bold md:text-3xl tracking-tight">{category.name}</h2>
               <Link
                 href={`/e-learning/courses?category=${category.slug}`}
-                className="flex items-center gap-1 text-portfolio-blue hover:text-portfolio-blue-dark transition-colors text-sm font-medium"
+                className="group inline-flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors text-sm"
               >
-                もっと見る
-                <ArrowRight className="h-4 w-4" />
+                <span className="tracking-wider">VIEW ALL</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform duration-300" />
               </Link>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {categoryContents.slice(0, 3).map((content) => (
-                <ContentCard
-                  key={content.id}
-                  content={content}
-                  isLoggedIn={isLoggedIn}
-                  isBookmarked={userBookmarks.includes(content.id)}
-                  onCardClick={handleCardClick}
-                />
+            <div className="grid grid-cols-1 md:grid-cols-1 mid:grid-cols-2 lg:grid-cols-3 gap-3">
+              {categoryContents.slice(0, 3).map((content, index) => (
+                <div key={content.id} className={index >= 2 ? 'mid:hidden lg:block' : ''}>
+                  <ContentCard
+                    content={content}
+                    isLoggedIn={isLoggedIn}
+                    isBookmarked={userBookmarks.includes(content.id)}
+                    onCardClick={handleCardClick}
+                  />
+                </div>
               ))}
             </div>
           </section>
