@@ -150,13 +150,13 @@ export default function ELearningCoursesClient({
     return contents.filter(c => c.category?.slug === selectedCategory)
   }, [contents, selectedCategory, bookmarks])
 
-  // カテゴリ変更
+  // カテゴリ変更（replaceで履歴を上書きし、戻るボタンで前のタブに戻らないようにする）
   const handleCategoryChange = (categorySlug: string) => {
     setSelectedCategory(categorySlug)
     if (categorySlug === 'all') {
-      router.push('/e-learning/courses')
+      router.replace('/e-learning/courses')
     } else {
-      router.push(`/e-learning/courses?category=${categorySlug}`)
+      router.replace(`/e-learning/courses?category=${categorySlug}`)
     }
   }
 
