@@ -89,8 +89,8 @@ export default async function ELearningDetailPage({ params }: PageProps) {
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
-    // 未ログインの場合はログインページへリダイレクト
-    redirect(`/auth/login?redirect_to=/e-learning/${id}`)
+    // 未ログインの場合はeラーニング一覧ページへリダイレクト（そこでログインモーダルが表示される）
+    redirect('/e-learning')
   }
 
   // コンテンツ取得
