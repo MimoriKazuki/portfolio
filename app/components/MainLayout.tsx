@@ -65,17 +65,15 @@ export default function MainLayout({ children, hideRightSidebar = false, hideCon
 
               {/* Right Sidebar */}
               {!hideRightSidebar && (
-                <aside className="w-[260px] flex-shrink-0 hidden xl:block">
-                  <div className="sticky top-8">
-                    {dynamicSidebar ? (
-                      <DynamicRightSidebar
-                        enterpriseServiceId={dynamicSidebar.enterpriseServiceId}
-                        individualServiceId={dynamicSidebar.individualServiceId}
-                      />
-                    ) : (
-                      <RightSidebar />
-                    )}
-                  </div>
+                <aside className="w-[260px] flex-shrink-0 hidden xl:block self-start sticky top-8">
+                  {dynamicSidebar ? (
+                    <DynamicRightSidebar
+                      enterpriseServiceId={dynamicSidebar.enterpriseServiceId}
+                      individualServiceId={dynamicSidebar.individualServiceId}
+                    />
+                  ) : (
+                    <RightSidebar />
+                  )}
                 </aside>
               )}
             </div>
