@@ -10,14 +10,17 @@ import {
   PlayCircle,
   Download,
   Lock,
-  Play
+  Play,
+  Bookmark
 } from 'lucide-react'
+import { createClient } from '@/app/lib/supabase/client'
 
 interface ELearningDetailClientProps {
   content: ELearningContent
   user: User
   hasPurchased: boolean
   relatedContents?: ELearningContent[]
+  initialBookmarked?: boolean
 }
 
 // YouTube動画IDを抽出
@@ -42,11 +45,45 @@ export default function ELearningDetailClient({
   content,
   user,
   hasPurchased,
-  relatedContents = []
+  relatedContents = [],
+  initialBookmarked = false
 }: ELearningDetailClientProps) {
   const [isVisible, setIsVisible] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [isBookmarked, setIsBookmarked] = useState(initialBookmarked)
+  const [isBookmarkLoading, setIsBookmarkLoading] = useState(false)
+  const supabase = createClient()
+
+  // ブックマーク切り替え
+  const handleBookmarkToggle = async () => {
+    setIsBookmarkLoading(true)
+    try {
+      if (isBookmarked) {
+        // ブックマーク削除
+        const { error } = await supabase
+          .from('e_learning_bookmarks')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('content_id', content.id)
+
+        if (error) throw error
+        setIsBookmarked(false)
+      } else {
+        // ブックマーク追加
+        const { error } = await supabase
+          .from('e_learning_bookmarks')
+          .insert({ user_id: user.id, content_id: content.id })
+
+        if (error) throw error
+        setIsBookmarked(true)
+      }
+    } catch (error) {
+      console.error('Error toggling bookmark:', error)
+    } finally {
+      setIsBookmarkLoading(false)
+    }
+  }
 
   useEffect(() => {
     setIsVisible(true)
@@ -98,8 +135,18 @@ export default function ELearningDetailClient({
                   />
                 )}
                 <button
-                  onClick={() => {
+                  onClick={async () => {
                     setIsLoading(true)
+                    // 閲覧数をカウント
+                    try {
+                      await fetch('/api/e-learning/view', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ contentId: content.id })
+                      })
+                    } catch (error) {
+                      console.error('Failed to track view:', error)
+                    }
                     setTimeout(() => {
                       setIsPlaying(true)
                       setIsLoading(false)
@@ -177,7 +224,7 @@ export default function ELearningDetailClient({
                     alert('購入機能は準備中です')
                   }}
                 >
-                  ¥{content.price.toLocaleString()}で購入する
+                  購入する
                 </button>
               </div>
             </div>
@@ -193,52 +240,62 @@ export default function ELearningDetailClient({
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 pb-4 border-b border-gray-200">
             {/* 左側 - メタ情報 */}
             <div className="flex flex-col gap-2">
-              {/* 1行目: カテゴリ、料金バッジ */}
+              {/* カテゴリバッジ */}
               <div className="flex flex-wrap items-center gap-4">
                 {content.category && (
-                  <span className="text-sm font-medium text-gray-900">{content.category.name}</span>
-                )}
-                <span className={`bg-white text-xs px-3 py-1 border font-medium ${
-                  content.is_free
-                    ? 'border-green-200 text-green-700'
-                    : 'border-orange-200 text-orange-700'
-                }`}>
-                  {content.is_free ? '無料' : `¥${content.price.toLocaleString()}`}
-                </span>
-                {content.is_featured && (
-                  <span className="bg-white text-xs px-3 py-1 border border-yellow-200 text-yellow-700 font-medium">
-                    ⭐ 注目
+                  <span className="bg-white text-xs px-3 py-1 border border-gray-200 text-gray-700 font-medium">
+                    {content.category.name}
                   </span>
                 )}
               </div>
             </div>
 
-            {/* 右側 - ダウンロードボタン */}
-            {sortedMaterials.length > 0 && (
-              <div className="flex items-center gap-2">
-                {hasPurchased ? (
-                  <div className="flex flex-col gap-2">
-                    {sortedMaterials.map((material) => (
-                      <a
-                        key={material.id}
-                        href={material.file_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition-all font-medium text-sm whitespace-nowrap"
-                      >
-                        <Download className="w-4 h-4" />
-                        {material.title}
-                      </a>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-gray-300 text-gray-500 rounded-full font-medium text-sm whitespace-nowrap cursor-not-allowed">
-                    <Lock className="w-4 h-4" />
-                    資料ダウンロード
-                  </div>
-                )}
-              </div>
-            )}
+            {/* 右側 - ブックマーク・ダウンロードボタン */}
+            <div className="flex items-center gap-3">
+              {/* ブックマークボタン */}
+              <button
+                onClick={handleBookmarkToggle}
+                disabled={isBookmarkLoading}
+                className={`inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full transition-all font-medium text-sm whitespace-nowrap border ${
+                  isBookmarked
+                    ? 'bg-yellow-50 border-yellow-300 text-yellow-600 hover:bg-yellow-100'
+                    : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+                } ${isBookmarkLoading ? 'opacity-50 cursor-wait' : ''}`}
+              >
+                <Bookmark
+                  className="w-4 h-4"
+                  fill={isBookmarked ? 'currentColor' : 'none'}
+                />
+                ブックマーク
+              </button>
+
+              {/* ダウンロードボタン */}
+              {sortedMaterials.length > 0 && (
+                <>
+                  {hasPurchased ? (
+                    <div className="flex flex-col gap-2">
+                      {sortedMaterials.map((material, index) => (
+                        <a
+                          key={material.id}
+                          href={material.file_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition-all font-medium text-sm whitespace-nowrap"
+                        >
+                          <Download className="w-4 h-4" />
+                          資料ダウンロード{sortedMaterials.length > 1 ? ` (${index + 1})` : ''}
+                        </a>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-gray-300 text-gray-500 rounded-full font-medium text-sm whitespace-nowrap cursor-not-allowed">
+                      <Lock className="w-4 h-4" />
+                      資料ダウンロード
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
           </div>
 
           {/* Description box - scrollable */}
@@ -279,12 +336,12 @@ export default function ELearningDetailClient({
                           <PlayCircle className="h-10 w-10 text-white/80" />
                         </div>
                       )}
-                      <div className={`absolute top-2 left-2 px-2 py-0.5 text-xs font-bold rounded ${
+                      <div className={`absolute top-2 left-2 px-3 py-1 text-xs font-medium bg-white border ${
                         relatedContent.is_free
-                          ? 'bg-green-500 text-white'
-                          : 'bg-orange-500 text-white'
+                          ? 'border-green-200 text-green-700'
+                          : 'border-orange-200 text-orange-700'
                       }`}>
-                        {relatedContent.is_free ? '無料' : `¥${relatedContent.price.toLocaleString()}`}
+                        {relatedContent.is_free ? '無料' : '有料'}
                       </div>
                     </div>
 

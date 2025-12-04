@@ -44,6 +44,17 @@
           "--project",
           "/Users/kosuke/Desktop/AI_driven/portfolio"
         ]
+      },
+      "stripe": {
+        "command": "npx",
+        "args": [
+          "-y",
+          "@stripe/mcp",
+          "--tools=all"
+        ],
+        "env": {
+          "STRIPE_SECRET_KEY": "sk_***"
+        }
       }
     }
   }

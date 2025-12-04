@@ -4,6 +4,7 @@ import './globals.css'
 import StructuredData from './components/StructuredData'
 import GoogleAnalytics from './components/GoogleAnalytics'
 import MicrosoftClarity from './components/MicrosoftClarity'
+import Providers from './providers/Providers'
 
 const inter = Inter({ subsets: ['latin'] })
 const caveat = Caveat({
@@ -104,7 +105,9 @@ export default function RootLayout({
         <div className="fixed inset-0 bg-youtube-dark" style={{ backgroundColor: '#0f0f0f', zIndex: -1 }} aria-hidden="true" />
         <GoogleAnalytics />
         <MicrosoftClarity />
-        {children}
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   )

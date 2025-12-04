@@ -44,11 +44,8 @@ export default async function EditELearningPage({ params }: EditELearningPagePro
           description: content.description || '',
           thumbnail_url: content.thumbnail_url || '',
           video_url: content.video_url,
-          duration: content.duration || '',
           category_id: content.category_id || '',
           is_free: content.is_free,
-          price: content.price,
-          display_order: content.display_order,
           is_published: content.is_published,
           is_featured: content.is_featured,
         }}

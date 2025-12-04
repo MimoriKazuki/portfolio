@@ -146,13 +146,9 @@ export interface ELearningContent {
   description?: string
   thumbnail_url?: string
   video_url: string
-  duration?: string
   category_id?: string
   category?: ELearningCategory
   is_free: boolean
-  price: number
-  stripe_price_id?: string
-  display_order: number
   is_published: boolean
   is_featured: boolean
   view_count: number
@@ -189,5 +185,12 @@ export interface ELearningPurchase {
   stripe_session_id?: string
   amount: number
   status: 'pending' | 'completed' | 'refunded'
+  created_at: string
+}
+
+export interface ELearningBookmark {
+  id: string
+  user_id: string
+  content_id: string
   created_at: string
 }

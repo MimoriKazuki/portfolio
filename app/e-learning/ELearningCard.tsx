@@ -73,18 +73,17 @@ export default function ELearningCard({ content, onCardClick, isLoggedIn }: ELea
             </p>
           </div>
 
-          {/* 公開日と無料/有料バッジ */}
+          {/* 公開日と無料バッジ */}
           <div className="flex items-center justify-between">
             <span className="text-xs text-gray-500">
               {new Date(content.created_at).toLocaleDateString('ja-JP')}
             </span>
-            <span className={`bg-white text-xs px-3 py-1 border font-medium ${
-              content.is_free
-                ? 'border-green-200 text-green-700'
-                : 'border-orange-200 text-orange-700'
-            }`}>
-              {content.is_free ? '無料' : `¥${content.price.toLocaleString()}`}
-            </span>
+            {/* 無料コンテンツのみバッジ表示（有料がデフォルトであることを示唆） */}
+            {content.is_free && (
+              <span className="bg-white text-xs px-3 py-1 border border-green-200 text-green-700 font-medium">
+                無料
+              </span>
+            )}
           </div>
         </div>
       </article>

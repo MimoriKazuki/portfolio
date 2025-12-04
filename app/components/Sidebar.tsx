@@ -6,14 +6,16 @@ import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/app/lib/utils'
 import AuthButton from './AuthButton'
+import { useELearningRelease } from '@/app/contexts/ELearningReleaseContext'
 
 const Sidebar = () => {
   const pathname = usePathname()
+  const { handleELearningClick } = useELearningRelease()
 
   const menuItems = [
     { icon: Home, label: 'トップ', href: '/' },
     { icon: Briefcase, label: 'サービス', href: '/services' },
-    { icon: PlayCircle, label: 'eラーニング', href: '/e-learning' },
+    { icon: PlayCircle, label: 'eラーニング', href: '/e-learning', isELearning: true },
     { icon: FolderOpen, label: '制作実績', href: '/projects' },
     { icon: Youtube, label: 'YouTube', href: '/youtube-videos' },
     { icon: FileText, label: 'コラム', href: '/columns' },
@@ -50,6 +52,7 @@ const Sidebar = () => {
             <Link
               key={item.href}
               href={item.href}
+              onClick={item.isELearning ? handleELearningClick : undefined}
               className={cn(
                 "block w-full px-4 py-3 transition-all duration-200 text-center relative group",
                 isActive

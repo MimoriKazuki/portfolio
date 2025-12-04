@@ -5,6 +5,7 @@ import { createClient } from '@/app/lib/supabase/client'
 import { User } from '@supabase/supabase-js'
 import { ChevronRight } from 'lucide-react'
 import Link from 'next/link'
+import { useELearningRelease } from '@/app/contexts/ELearningReleaseContext'
 
 interface LoginBannerProps {
   onVisibilityChange?: (visible: boolean) => void
@@ -13,6 +14,7 @@ interface LoginBannerProps {
 export default function LoginBanner({ onVisibilityChange }: LoginBannerProps) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
+  const { handleELearningClick } = useELearningRelease()
 
   useEffect(() => {
     const supabase = createClient()
@@ -51,6 +53,7 @@ export default function LoginBanner({ onVisibilityChange }: LoginBannerProps) {
     <div className="fixed bottom-0 left-0 xl:left-[178px] right-0 z-30">
       <Link
         href="/e-learning"
+        onClick={handleELearningClick}
         className="block w-full bg-amber-500 hover:bg-amber-600 transition-colors cursor-pointer"
       >
         <div className="px-4 sm:px-6 lg:px-8">

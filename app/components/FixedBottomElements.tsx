@@ -6,6 +6,7 @@ import { User } from '@supabase/supabase-js'
 import { ChevronRight, Mail, FileText } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { useELearningRelease } from '@/app/contexts/ELearningReleaseContext'
 
 interface FixedBottomElementsProps {
   hideContactButton?: boolean
@@ -19,6 +20,7 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
   const [loading, setLoading] = useState(true)
   const [showFloating, setShowFloating] = useState(false)
   const [showBannerAnim, setShowBannerAnim] = useState(false)
+  const { handleELearningClick } = useELearningRelease()
 
   // 認証状態の取得
   useEffect(() => {
@@ -155,6 +157,7 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
         >
           <Link
             href="/e-learning"
+            onClick={handleELearningClick}
             className="block w-full bg-amber-500 hover:bg-amber-600 transition-colors cursor-pointer"
           >
             <div className="px-4 sm:px-6 lg:px-8">

@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/app/lib/supabase/client'
-import { Check, X, Loader2, Plus, Trash2, FileText, Upload } from 'lucide-react'
+import { Check, X, Loader2, Upload } from 'lucide-react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { ELearningCategory, ELearningMaterial } from '@/app/types'
@@ -13,11 +13,8 @@ interface ELearningFormData {
   description: string
   thumbnail_url: string
   video_url: string
-  duration: string
   category_id: string
   is_free: boolean
-  price: number
-  display_order: number
   is_published: boolean
   is_featured: boolean
 }
@@ -51,11 +48,8 @@ export default function ELearningForm({ initialData, initialMaterials, contentId
     description: initialData?.description || '',
     thumbnail_url: initialData?.thumbnail_url || '',
     video_url: initialData?.video_url || '',
-    duration: initialData?.duration || '',
     category_id: initialData?.category_id || '',
     is_free: initialData?.is_free ?? true,
-    price: initialData?.price || 0,
-    display_order: initialData?.display_order || 0,
     is_published: initialData?.is_published ?? true,
     is_featured: initialData?.is_featured ?? false,
   })
@@ -121,11 +115,10 @@ export default function ELearningForm({ initialData, initialMaterials, contentId
         .from('e-learning-materials')
         .getPublicUrl(filePath)
 
-      // 新しい資料を追加
       setMaterials(prev => [
         ...prev,
         {
-          title: file.name.replace(/\.[^/.]+$/, ''), // 拡張子を除いたファイル名
+          title: file.name.replace(/\.[^/.]+$/, ''),
           file_url: publicUrl,
           file_size: file.size,
           display_order: prev.length,
@@ -140,26 +133,15 @@ export default function ELearningForm({ initialData, initialMaterials, contentId
     }
   }
 
-  // 資料を削除（削除フラグを立てる）
+  // 資料を削除
   const handleRemoveMaterial = (index: number) => {
     setMaterials(prev => {
       const updated = [...prev]
       if (updated[index].id) {
-        // 既存の資料は削除フラグを立てる
         updated[index].isDeleted = true
       } else {
-        // 新規追加の資料はリストから削除
         updated.splice(index, 1)
       }
-      return updated
-    })
-  }
-
-  // 資料タイトル変更
-  const handleMaterialTitleChange = (index: number, title: string) => {
-    setMaterials(prev => {
-      const updated = [...prev]
-      updated[index].title = title
       return updated
     })
   }
@@ -187,8 +169,6 @@ export default function ELearningForm({ initialData, initialMaterials, contentId
         video_url: formData.video_url,
         category_id: formData.category_id || null,
         is_free: formData.is_free,
-        price: formData.is_free ? 0 : formData.price,
-        display_order: formData.display_order,
         is_published: formData.is_published,
         is_featured: formData.is_featured,
         updated_at: new Date().toISOString(),
@@ -197,7 +177,6 @@ export default function ELearningForm({ initialData, initialMaterials, contentId
       let savedContentId = contentId
 
       if (contentId) {
-        // Update existing content
         const { error } = await supabase
           .from('e_learning_contents')
           .update(dataToSave)
@@ -205,7 +184,6 @@ export default function ELearningForm({ initialData, initialMaterials, contentId
 
         if (error) throw error
       } else {
-        // Create new content
         const { data, error } = await supabase
           .from('e_learning_contents')
           .insert(dataToSave)
@@ -217,7 +195,6 @@ export default function ELearningForm({ initialData, initialMaterials, contentId
       }
 
       // 資料の保存処理
-      // 1. 削除フラグが立っている資料を削除
       const materialsToDelete = materials.filter(m => m.isDeleted && m.id)
       for (const material of materialsToDelete) {
         await supabase
@@ -226,7 +203,6 @@ export default function ELearningForm({ initialData, initialMaterials, contentId
           .eq('id', material.id)
       }
 
-      // 2. 新規資料を追加
       const materialsToInsert = materials.filter(m => m.isNew && !m.isDeleted)
       for (const material of materialsToInsert) {
         await supabase
@@ -240,7 +216,6 @@ export default function ELearningForm({ initialData, initialMaterials, contentId
           })
       }
 
-      // 3. 既存資料の更新（タイトルや順序）
       const materialsToUpdate = materials.filter(m => m.id && !m.isNew && !m.isDeleted)
       for (const material of materialsToUpdate) {
         await supabase
@@ -263,31 +238,53 @@ export default function ELearningForm({ initialData, initialMaterials, contentId
     }
   }
 
-  // 表示用の資料（削除フラグが立っていないもの）
   const visibleMaterials = materials.filter(m => !m.isDeleted)
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="bg-white rounded-lg shadow-md p-8">
-        <h2 className="text-2xl font-bold mb-6 text-gray-900">基本情報</h2>
+    <div className="bg-white rounded-lg p-6">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* タイトルとカテゴリ */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              タイトル <span className="text-red-500">*</span>
+            </label>
+            <input
+              type="text"
+              value={formData.title}
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              placeholder="動画のタイトルを入力"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-portfolio-blue focus:border-transparent text-gray-900"
+              required
+            />
+          </div>
 
-        {/* Title */}
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            タイトル <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            value={formData.title}
-            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-            placeholder="動画のタイトルを入力"
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-portfolio-blue focus:border-transparent text-gray-900"
-            required
-          />
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              カテゴリ
+            </label>
+            <div className="relative">
+              <select
+                value={formData.category_id}
+                onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
+                className="w-full appearance-none px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-portfolio-blue focus:border-transparent text-gray-900"
+              >
+                <option value="">カテゴリなし</option>
+                {categories.map(cat => (
+                  <option key={cat.id} value={cat.id}>{cat.name}</option>
+                ))}
+              </select>
+              <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                </svg>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Description */}
-        <div className="mb-6">
+        {/* 説明文 */}
+        <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
             説明
           </label>
@@ -295,35 +292,36 @@ export default function ELearningForm({ initialData, initialMaterials, contentId
             value={formData.description}
             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
             placeholder="動画の説明を入力"
-            rows={5}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-portfolio-blue focus:border-transparent text-gray-900"
+            rows={4}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-portfolio-blue focus:border-transparent text-gray-900"
           />
         </div>
 
-        {/* Thumbnail */}
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            サムネイル画像
-          </label>
-          <div className="flex items-start gap-4">
+        {/* サムネイル（左）と動画URL・設定（右）の左右分割 */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* 左: サムネイル画像 */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              サムネイル画像
+            </label>
             {formData.thumbnail_url ? (
-              <div className="relative w-40 h-24 bg-gray-100 rounded-lg overflow-hidden">
+              <div className="relative aspect-video w-full bg-gray-100 rounded-lg overflow-hidden mb-3">
                 <Image
                   src={formData.thumbnail_url}
                   alt="Thumbnail"
                   fill
                   className="object-cover"
-                  sizes="160px"
+                  sizes="(max-width: 1024px) 100vw, 50vw"
                   unoptimized
                 />
               </div>
             ) : (
-              <div className="w-40 h-24 bg-gray-100 rounded-lg flex items-center justify-center">
-                <span className="text-gray-400 text-sm">No image</span>
+              <div className="aspect-video w-full bg-gray-100 rounded-lg flex items-center justify-center mb-3">
+                <span className="text-gray-400">No image</span>
               </div>
             )}
-            <div>
-              <label className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg cursor-pointer transition-colors">
+            <div className="flex items-center gap-3">
+              <label className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg cursor-pointer transition-colors text-sm">
                 {uploadingThumbnail ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -343,242 +341,219 @@ export default function ELearningForm({ initialData, initialMaterials, contentId
                   disabled={uploadingThumbnail}
                 />
               </label>
-              <p className="text-xs text-gray-500 mt-2">推奨: 16:9のアスペクト比</p>
+              <p className="text-xs text-gray-500">推奨: 16:9</p>
+            </div>
+          </div>
+
+          {/* 右: 動画URLと設定 */}
+          <div className="space-y-4">
+            {/* 動画URL */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                動画URL (Google Drive) <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="url"
+                value={formData.video_url}
+                onChange={(e) => setFormData({ ...formData, video_url: e.target.value })}
+                placeholder="https://drive.google.com/file/d/..."
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-portfolio-blue focus:border-transparent text-gray-900"
+                required
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Google Driveの動画URLを入力
+              </p>
+            </div>
+
+            {/* 料金タイプ */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                料金タイプ
+              </label>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, is_free: true })}
+                  className={`flex-1 px-4 py-2 rounded-lg font-medium text-sm transition-all ${
+                    formData.is_free
+                      ? 'bg-green-100 text-green-800 ring-2 ring-green-500'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  無料
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, is_free: false })}
+                  className={`flex-1 px-4 py-2 rounded-lg font-medium text-sm transition-all ${
+                    !formData.is_free
+                      ? 'bg-orange-100 text-orange-800 ring-2 ring-orange-500'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  有料
+                </button>
+              </div>
+            </div>
+
+            {/* 公開設定 */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                公開設定
+              </label>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, is_published: false })}
+                  className={`flex-1 px-4 py-2 rounded-lg font-medium text-sm transition-all ${
+                    !formData.is_published
+                      ? 'bg-gray-300 text-gray-700 ring-2 ring-gray-400'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  非公開
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, is_published: true })}
+                  className={`flex-1 px-4 py-2 rounded-lg font-medium text-sm transition-all ${
+                    formData.is_published
+                      ? 'bg-blue-100 text-blue-800 ring-2 ring-blue-500'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  公開
+                </button>
+              </div>
+            </div>
+
+            {/* おすすめ設定 */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                おすすめに表示
+              </label>
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, is_featured: false })}
+                  className={`flex-1 px-4 py-2 rounded-lg font-medium text-sm transition-all ${
+                    !formData.is_featured
+                      ? 'bg-gray-300 text-gray-700 ring-2 ring-gray-400'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  OFF
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, is_featured: true })}
+                  className={`flex-1 px-4 py-2 rounded-lg font-medium text-sm transition-all ${
+                    formData.is_featured
+                      ? 'bg-purple-100 text-purple-800 ring-2 ring-purple-500'
+                      : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  }`}
+                >
+                  ON
+                </button>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Video URL */}
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            動画URL (Google Drive) <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="url"
-            value={formData.video_url}
-            onChange={(e) => setFormData({ ...formData, video_url: e.target.value })}
-            placeholder="https://drive.google.com/file/d/..."
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-portfolio-blue focus:border-transparent text-gray-900"
-            required
-          />
-          <p className="text-sm text-gray-500 mt-2">
-            Google Driveにアップロードした動画のURLを入力してください
-          </p>
-        </div>
-
-        {/* Category */}
-        {categories.length > 0 && (
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              カテゴリ
-            </label>
-            <select
-              value={formData.category_id}
-              onChange={(e) => setFormData({ ...formData, category_id: e.target.value })}
-              className="w-full max-w-xs px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-portfolio-blue focus:border-transparent text-gray-900"
-            >
-              <option value="">カテゴリなし</option>
-              {categories.map(cat => (
-                <option key={cat.id} value={cat.id}>{cat.name}</option>
-              ))}
-            </select>
-          </div>
-        )}
-      </div>
-
-      {/* Price Settings */}
-      <div className="bg-white rounded-lg shadow-md p-8">
-        <h2 className="text-2xl font-bold mb-6 text-gray-900">料金設定</h2>
-
-        {/* Free/Paid Toggle */}
-        <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            料金タイプ
-          </label>
-          <div className="flex gap-3">
-            <button
-              type="button"
-              onClick={() => setFormData({ ...formData, is_free: true, price: 0 })}
-              className={`px-6 py-2 rounded-lg font-semibold text-sm transition-all ${
-                formData.is_free
-                  ? 'bg-green-100 text-green-800 ring-2 ring-green-500'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              無料
-            </button>
-            <button
-              type="button"
-              onClick={() => setFormData({ ...formData, is_free: false })}
-              className={`px-6 py-2 rounded-lg font-semibold text-sm transition-all ${
-                !formData.is_free
-                  ? 'bg-orange-100 text-orange-800 ring-2 ring-orange-500'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              }`}
-            >
-              有料
-            </button>
-          </div>
-        </div>
-
-        {/* Price (only for paid content) */}
-        {!formData.is_free && (
-          <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              価格 (円)
-            </label>
-            <input
-              type="number"
-              value={formData.price}
-              onChange={(e) => setFormData({ ...formData, price: parseInt(e.target.value) || 0 })}
-              min="0"
-              step="100"
-              className="w-full max-w-xs px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-portfolio-blue focus:border-transparent text-gray-900"
-            />
-            <p className="text-sm text-gray-500 mt-2">
-              ※Stripe連携は後日実装予定です
-            </p>
-          </div>
-        )}
-      </div>
-
-      {/* Publication Settings */}
-      <div className="bg-white rounded-lg shadow-md p-8">
-        <h2 className="text-2xl font-bold mb-6 text-gray-900">公開設定</h2>
-
-        <div className="flex flex-wrap gap-6">
-          {/* Published */}
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={formData.is_published}
-              onChange={(e) => setFormData({ ...formData, is_published: e.target.checked })}
-              className="w-4 h-4 text-blue-600 bg-white border-gray-300 rounded focus:ring-blue-600"
-            />
-            <span className="text-sm font-medium text-gray-700">公開する</span>
+        {/* 資料（PDF） */}
+        <div>
+          <label className="block text-sm font-medium mb-2 text-gray-700">
+            資料 (PDF)
           </label>
 
-          {/* Featured */}
-          <label className="flex items-center gap-2 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={formData.is_featured}
-              onChange={(e) => setFormData({ ...formData, is_featured: e.target.checked })}
-              className="w-4 h-4 text-blue-600 bg-white border-gray-300 rounded focus:ring-blue-600"
-            />
-            <span className="text-sm font-medium text-gray-700">注目コンテンツ</span>
-          </label>
-        </div>
-
-        {/* Display Order */}
-        <div className="mt-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            表示順
-          </label>
-          <input
-            type="number"
-            value={formData.display_order}
-            onChange={(e) => setFormData({ ...formData, display_order: parseInt(e.target.value) || 0 })}
-            min="0"
-            className="w-full max-w-xs px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-portfolio-blue focus:border-transparent text-gray-900"
-          />
-          <p className="text-sm text-gray-500 mt-2">
-            数字が小さいほど先に表示されます
-          </p>
-        </div>
-      </div>
-
-      {/* Materials */}
-      <div className="bg-white rounded-lg shadow-md p-8">
-        <h2 className="text-2xl font-bold mb-6 text-gray-900">資料 (PDF)</h2>
-
-        {/* Material List */}
-        {visibleMaterials.length > 0 && (
-          <div className="space-y-3 mb-6">
-            {visibleMaterials.map((material, index) => (
-              <div key={material.id || index} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                <FileText className="h-5 w-5 text-red-500 flex-shrink-0" />
-                <input
-                  type="text"
-                  value={material.title}
-                  onChange={(e) => handleMaterialTitleChange(materials.indexOf(material), e.target.value)}
-                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-portfolio-blue focus:border-transparent text-gray-900 text-sm"
-                />
-                {material.file_size && (
-                  <span className="text-xs text-gray-500">
-                    {(material.file_size / 1024 / 1024).toFixed(1)}MB
-                  </span>
-                )}
-                <a
-                  href={material.file_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:text-blue-800 text-sm"
-                >
-                  プレビュー
-                </a>
-                <button
-                  type="button"
-                  onClick={() => handleRemoveMaterial(materials.indexOf(material))}
-                  className="p-1.5 hover:bg-red-100 rounded-lg transition-colors text-red-600"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
+          <div className="space-y-4">
+            {visibleMaterials.length > 0 ? (
+              <div className="space-y-3">
+                {visibleMaterials.map((material, index) => (
+                  <div key={material.id || index} className="space-y-3">
+                    <div className="bg-gray-100 p-3 rounded-lg flex items-center justify-between">
+                      <span className="text-sm text-gray-700">
+                        {material.title || 'PDFファイル'}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveMaterial(materials.indexOf(material))}
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        <X className="h-5 w-5" />
+                      </button>
+                    </div>
+                    <a
+                      href={material.file_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-portfolio-blue hover:text-portfolio-blue-dark underline text-sm"
+                    >
+                      PDFを表示
+                    </a>
+                  </div>
+                ))}
               </div>
-            ))}
+            ) : (
+              <div>
+                <label className="cursor-pointer inline-block">
+                  <input
+                    type="file"
+                    accept=".pdf"
+                    onChange={handleMaterialUpload}
+                    className="hidden"
+                    disabled={uploadingMaterial}
+                  />
+                  <div className="flex items-center gap-2 bg-gray-100 hover:bg-gray-200 text-gray-700 px-4 py-2 rounded-lg transition-colors">
+                    {uploadingMaterial ? (
+                      <>
+                        <Loader2 className="h-5 w-5 animate-spin" />
+                        アップロード中...
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="h-5 w-5" />
+                        PDFファイルを選択
+                      </>
+                    )}
+                  </div>
+                </label>
+              </div>
+            )}
+            {uploadingMaterial && (
+              <p className="text-sm text-blue-600">アップロード中...</p>
+            )}
           </div>
-        )}
+        </div>
 
-        {/* Upload Button */}
-        <label className="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg cursor-pointer transition-colors">
-          {uploadingMaterial ? (
-            <>
-              <Loader2 className="h-4 w-4 animate-spin" />
-              アップロード中...
-            </>
-          ) : (
-            <>
-              <Plus className="h-4 w-4" />
-              PDFを追加
-            </>
-          )}
-          <input
-            type="file"
-            accept=".pdf"
-            onChange={handleMaterialUpload}
-            className="hidden"
-            disabled={uploadingMaterial}
-          />
-        </label>
-      </div>
-
-      {/* Submit buttons */}
-      <div className="flex justify-end gap-4">
-        <Link
-          href="/admin/e-learning"
-          className="flex items-center gap-2 px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors"
-        >
-          <X className="h-5 w-5" />
-          キャンセル
-        </Link>
-        <button
-          type="submit"
-          disabled={loading}
-          className="flex items-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {loading ? (
-            <>
-              <Loader2 className="h-5 w-5 animate-spin" />
-              保存中...
-            </>
-          ) : (
-            <>
-              <Check className="h-5 w-5" />
-              保存する
-            </>
-          )}
-        </button>
-      </div>
-    </form>
+        {/* 送信ボタン */}
+        <div className="flex justify-end gap-4 pt-6 border-t border-gray-200">
+          <Link
+            href="/admin/e-learning"
+            className="flex items-center gap-2 px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors"
+          >
+            <X className="h-5 w-5" />
+            キャンセル
+          </Link>
+          <button
+            type="submit"
+            disabled={loading}
+            className="flex items-center gap-2 px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="h-5 w-5 animate-spin" />
+                保存中...
+              </>
+            ) : (
+              <>
+                <Check className="h-5 w-5" />
+                保存する
+              </>
+            )}
+          </button>
+        </div>
+      </form>
+    </div>
   )
 }

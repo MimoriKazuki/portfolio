@@ -2,20 +2,45 @@
 
 import { useState, useMemo } from 'react'
 import Link from 'next/link'
-import { Plus, Edit, Trash2, FolderOpen, Search, Eye, Filter, PlayCircle } from 'lucide-react'
+import { Plus, Edit, Trash2, FolderOpen, Search, Eye, Filter, PlayCircle, Settings, Loader2 } from 'lucide-react'
 import Image from 'next/image'
 import DeleteELearningButton from './DeleteELearningButton'
 import { ELearningContent } from '@/app/types'
 import { formatDate } from '@/app/lib/date-utils'
+import { createClient } from '@/app/lib/supabase/client'
 
 interface ELearningAdminClientProps {
   contents: ELearningContent[]
+  isReleased: boolean
 }
 
-export default function ELearningAdminClient({ contents }: ELearningAdminClientProps) {
+export default function ELearningAdminClient({ contents, isReleased: initialReleased }: ELearningAdminClientProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [priceFilter, setPriceFilter] = useState('')
   const [publishFilter, setPublishFilter] = useState('')
+  const [isReleased, setIsReleased] = useState(initialReleased)
+  const [isUpdating, setIsUpdating] = useState(false)
+
+  const handleReleaseToggle = async () => {
+    setIsUpdating(true)
+    try {
+      const supabase = createClient()
+      const newValue = !isReleased
+
+      const { error } = await supabase
+        .from('site_settings')
+        .update({ value: newValue })
+        .eq('key', 'e_learning_released')
+
+      if (error) throw error
+      setIsReleased(newValue)
+    } catch (error) {
+      console.error('Error updating release status:', error)
+      alert('更新に失敗しました')
+    } finally {
+      setIsUpdating(false)
+    }
+  }
 
   const filteredContents = useMemo(() => {
     return contents.filter(content => {
@@ -62,6 +87,48 @@ export default function ELearningAdminClient({ contents }: ELearningAdminClientP
         </div>
       ) : (
         <div className="space-y-6">
+          {/* Release Toggle Card */}
+          <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900">eラーニング公開設定</h2>
+                <p className="text-sm text-gray-600 mt-1">
+                  {isReleased
+                    ? 'eラーニング機能は公開中です'
+                    : 'eラーニング機能は準備中です（Coming Soonモーダルが表示されます）'}
+                </p>
+              </div>
+              <button
+                onClick={handleReleaseToggle}
+                disabled={isUpdating}
+                className={`relative inline-flex h-8 w-16 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-portfolio-blue focus:ring-offset-2 ${
+                  isReleased ? 'bg-green-500' : 'bg-gray-300'
+                } ${isUpdating ? 'opacity-50 cursor-wait' : ''}`}
+              >
+                {isUpdating ? (
+                  <span className="absolute left-1/2 -translate-x-1/2">
+                    <Loader2 className="h-4 w-4 animate-spin text-white" />
+                  </span>
+                ) : (
+                  <span
+                    className={`inline-block h-6 w-6 transform rounded-full bg-white shadow-md transition-transform ${
+                      isReleased ? 'translate-x-9' : 'translate-x-1'
+                    }`}
+                  />
+                )}
+              </button>
+            </div>
+            <div className="mt-3">
+              <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                isReleased
+                  ? 'bg-green-100 text-green-800'
+                  : 'bg-yellow-100 text-yellow-800'
+              }`}>
+                {isReleased ? '公開中' : '準備中'}
+              </span>
+            </div>
+          </div>
+
           {/* Stats Cards */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
@@ -84,13 +151,22 @@ export default function ELearningAdminClient({ contents }: ELearningAdminClientP
 
           {/* Action bar */}
           <div className="flex flex-wrap items-center justify-between gap-4">
-            <Link
-              href="/admin/e-learning/new"
-              className="flex items-center gap-2 bg-portfolio-blue hover:bg-portfolio-blue-dark text-white px-4 py-2 rounded-lg transition-colors"
-            >
-              <Plus className="h-5 w-5" />
-              新規追加
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link
+                href="/admin/e-learning/new"
+                className="flex items-center gap-2 bg-portfolio-blue hover:bg-portfolio-blue-dark text-white px-4 py-2 rounded-lg transition-colors"
+              >
+                <Plus className="h-5 w-5" />
+                新規追加
+              </Link>
+              <Link
+                href="/admin/e-learning/categories"
+                className="flex items-center gap-2 bg-white hover:bg-gray-50 text-gray-700 px-4 py-2 rounded-lg border border-gray-300 transition-colors"
+              >
+                <Settings className="h-5 w-5" />
+                カテゴリ管理
+              </Link>
+            </div>
 
             <div className="flex items-center gap-4 flex-1 justify-end flex-wrap">
               {/* Price Filter */}
@@ -142,7 +218,7 @@ export default function ELearningAdminClient({ contents }: ELearningAdminClientP
                 <tr>
                   <th className="w-32 text-center px-4 py-3 text-xs font-medium text-gray-700">画像</th>
                   <th className="text-center px-4 py-3 text-xs font-medium text-gray-700 min-w-[200px]">タイトル</th>
-                  <th className="w-20 text-center px-4 py-3 text-xs font-medium text-gray-700">長さ</th>
+                  <th className="w-24 text-center px-4 py-3 text-xs font-medium text-gray-700">閲覧数</th>
                   <th className="w-24 text-center px-4 py-3 text-xs font-medium text-gray-700">料金</th>
                   <th className="w-24 text-center px-4 py-3 text-xs font-medium text-gray-700">公開</th>
                   <th className="w-20 text-center px-4 py-3 text-xs font-medium text-gray-700">注目</th>
@@ -189,9 +265,9 @@ export default function ELearningAdminClient({ contents }: ELearningAdminClientP
                           </h3>
                         </div>
                       </td>
-                      {/* 動画の長さ */}
+                      {/* 閲覧数 */}
                       <td className="px-4 py-3 text-center text-sm text-gray-700">
-                        {content.duration || '-'}
+                        {content.view_count || 0}
                       </td>
                       {/* 料金 */}
                       <td className="px-4 py-3 text-center">
@@ -200,7 +276,7 @@ export default function ELearningAdminClient({ contents }: ELearningAdminClientP
                             ? 'bg-green-100 text-green-800'
                             : 'bg-orange-100 text-orange-800'
                         }`}>
-                          {content.is_free ? '無料' : `¥${content.price.toLocaleString()}`}
+                          {content.is_free ? '無料' : '有料'}
                         </span>
                       </td>
                       {/* 公開 */}

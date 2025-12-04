@@ -110,7 +110,7 @@ export default async function ELearningDetailPage({ params }: PageProps) {
   }
 
   // 有料コンテンツの場合は購入チェック
-  if (!content.is_free && content.price > 0) {
+  if (!content.is_free) {
     // eラーニングユーザーを取得
     const { data: eLearningUser } = await supabase
       .from('e_learning_users')
@@ -129,37 +129,46 @@ export default async function ELearningDetailPage({ params }: PageProps) {
         .single()
 
       if (!purchase) {
-        // 未購入の場合は購入ページへ（TODO: 購入ページ実装後）
-        // 現在は視聴不可のメッセージを表示
+        // 未購入の場合 - ブックマーク状態を取得
+        const { data: bookmark } = await supabase
+          .from('e_learning_bookmarks')
+          .select('id')
+          .eq('user_id', user.id)
+          .eq('content_id', content.id)
+          .single()
+
         return (
           <MainLayout>
             <ELearningDetailClient
               content={content as ELearningContent}
               user={user}
               hasPurchased={false}
+              initialBookmarked={!!bookmark}
             />
           </MainLayout>
         )
       }
     } else {
-      // eラーニングユーザーが存在しない場合
+      // eラーニングユーザーが存在しない場合 - ブックマーク状態を取得
+      const { data: bookmark } = await supabase
+        .from('e_learning_bookmarks')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('content_id', content.id)
+        .single()
+
       return (
         <MainLayout>
           <ELearningDetailClient
             content={content as ELearningContent}
             user={user}
             hasPurchased={false}
+            initialBookmarked={!!bookmark}
           />
         </MainLayout>
       )
     }
   }
-
-  // ビューカウントを増やす
-  await supabase
-    .from('e_learning_contents')
-    .update({ view_count: (content.view_count || 0) + 1 })
-    .eq('id', content.id)
 
   // 関連コンテンツを取得（同じカテゴリの動画、現在の動画を除く最新3件）
   const { data: relatedContents } = await supabase
@@ -171,8 +180,16 @@ export default async function ELearningDetailPage({ params }: PageProps) {
     .eq('is_published', true)
     .eq('category_id', content.category_id)
     .neq('id', content.id)
-    .order('display_order', { ascending: true })
+    .order('created_at', { ascending: false })
     .limit(3)
+
+  // ブックマーク状態を取得
+  const { data: bookmark } = await supabase
+    .from('e_learning_bookmarks')
+    .select('id')
+    .eq('user_id', user.id)
+    .eq('content_id', content.id)
+    .single()
 
   return (
     <MainLayout>
@@ -181,6 +198,7 @@ export default async function ELearningDetailPage({ params }: PageProps) {
         user={user}
         hasPurchased={true}
         relatedContents={relatedContents as ELearningContent[] || []}
+        initialBookmarked={!!bookmark}
       />
     </MainLayout>
   )
