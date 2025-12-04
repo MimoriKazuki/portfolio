@@ -81,7 +81,7 @@ export default async function ELearningCoursesPage() {
   ])
 
   return (
-    <MainLayout hideRightSidebar={true}>
+    <MainLayout>
       <div className="w-full">
         <ELearningCoursesClient
           contents={contents}

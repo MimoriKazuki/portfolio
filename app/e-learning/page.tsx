@@ -109,7 +109,7 @@ export default async function ELearningPage() {
   const userBookmarks = user ? await getUserBookmarks(user.id) : []
 
   return (
-    <MainLayout hideRightSidebar={true}>
+    <MainLayout>
       <div className="w-full">
         <ELearningTopClient
           featuredContents={featuredContents}
