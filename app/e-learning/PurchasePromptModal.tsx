@@ -63,7 +63,7 @@ export default function PurchasePromptModal({ isOpen, onClose, contentId, cancel
       <div className="relative bg-white shadow-xl max-w-4xl w-full">
         <div className="flex flex-col md:flex-row">
           {/* 左側: メインコンテンツ */}
-          <div className="flex-1 p-8 md:p-10">
+          <div className="flex-1 md:flex-[3] p-8 md:p-10">
             <h2 className="text-2xl font-bold text-gray-900 mb-4 text-center">
               有料コンテンツ
             </h2>
@@ -111,29 +111,29 @@ export default function PurchasePromptModal({ isOpen, onClose, contentId, cancel
           </div>
 
           {/* 右側: 購入するメリット */}
-          <div className="bg-gray-50 p-8 md:p-10 md:w-80 border-t md:border-t-0 md:border-l border-gray-200">
-            <h3 className="text-sm font-semibold text-gray-900 mb-4">購入するメリット</h3>
+          <div className="bg-gray-50 p-8 md:p-10 md:flex-[2] border-t md:border-t-0 md:border-l border-gray-200">
+            <h3 className="text-base font-semibold text-gray-900 mb-4">購入するメリット</h3>
             <ul className="text-sm text-gray-600 space-y-4">
-              <li className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center mt-0.5">
+              <li className="flex items-center gap-3">
+                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center">
                   <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
                 </div>
                 <span>全ての有料コンテンツが見放題</span>
               </li>
-              <li className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center mt-0.5">
+              <li className="flex items-center gap-3">
+                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center">
                   <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
                 </div>
                 <span>買い切りなので追加料金なし</span>
               </li>
-              <li className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center mt-0.5">
+              <li className="flex items-center gap-3">
+                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center">
                   <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
                 </div>
                 <span>新しいコンテンツも追加料金なしで視聴可能</span>
               </li>
-              <li className="flex items-start gap-3">
-                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center mt-0.5">
+              <li className="flex items-center gap-3">
+                <div className="flex-shrink-0 w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center">
                   <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
                 </div>
                 <span>何度でも繰り返し学習できます</span>
