@@ -139,18 +139,18 @@ export default function ELearningTopClient({
         {/* タイトル（左揃え） */}
         <div className="mb-8">
           <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold leading-relaxed tracking-tight">
-            実践的なAIスキルを、<br />
+            AI駆動開発スキルを、<br />
             いつでもどこでも学べる。
           </h2>
         </div>
 
         {/* 説明文（右寄せ - 左マージンが画面縮小で縮小） */}
-        <div className="pl-0 md:pl-16 lg:pl-32 xl:pl-48 mb-8">
+        <div className="pl-0 md:pl-16 lg:pl-32 xl:pl-48 mb-16">
           <p className="text-gray-600 leading-loose mb-6">
-            AI駆動研究所のeラーニングでは、生成AIを活用した実践的なスキルを動画で学ぶことができます。基礎から応用まで、体系的なカリキュラムで効率的に学習を進められます。
+            AI駆動開発に必要な知識を、基礎から応用まで体系的に学べる動画コンテンツを用意しています。実際の開発現場で使える実践的なスキルを、効率よく習得できます。
           </p>
           <p className="text-gray-600 leading-loose">
-            プロンプトエンジニアリング、AIライティング、AI動画制作など、今すぐ仕事に活かせるスキルを、経験豊富な講師陣がわかりやすく解説します。
+            書籍や断片的な情報を集める手間なく、AI駆動開発に必要なエッセンスを凝縮。すぐに仕事に活かせる知識を、わかりやすく解説しています。
           </p>
         </div>
 
@@ -227,14 +227,14 @@ export default function ELearningTopClient({
         )
       })}
 
-      {/* すべてのコースへのリンク */}
-      <div className="text-center py-8">
+      {/* すべてのコンテンツへのリンク */}
+      <div className="flex justify-center py-8">
         <Link
           href="/e-learning/courses"
-          className="inline-flex items-center gap-2 px-8 py-4 bg-portfolio-blue hover:bg-portfolio-blue-dark text-white rounded-lg transition-colors font-medium"
+          className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-blue-600 border border-blue-600 font-light hover:bg-blue-50 transition-colors duration-200 text-base"
         >
-          すべてのコースを見る
-          <ArrowRight className="h-5 w-5" />
+          すべてのコンテンツを見る
+          <ArrowRight className="size-4" />
         </Link>
       </div>
 
