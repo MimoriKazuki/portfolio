@@ -1,7 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import { usePathname } from 'next/navigation'
+import { useEffect, useState, useRef } from 'react'
 import dynamic from 'next/dynamic'
 import Sidebar from './Sidebar'
 import FixedBottomElements from './FixedBottomElements'
@@ -28,14 +27,37 @@ interface MainLayoutProps {
 }
 
 export default function MainLayout({ children, hideRightSidebar = false, hideContactButton = false, dynamicSidebar }: MainLayoutProps) {
-  const pathname = usePathname()
-  const [sidebarKey, setSidebarKey] = useState(0)
+  const [sidebarPosition, setSidebarPosition] = useState<'fixed' | 'absolute'>('fixed')
+  const [sidebarTop, setSidebarTop] = useState(32) // top-8 = 2rem = 32px
+  const sidebarRef = useRef<HTMLDivElement>(null)
+  const footerRef = useRef<HTMLDivElement>(null)
 
-  // クライアントサイドナビゲーション時にサイドバーを強制的に再マウント
+  // 右サイドバーのスクロール制御（ServicesContentと同じアプローチ）
   useEffect(() => {
-    // パス変更時にkeyを更新してReactに再マウントを強制
-    setSidebarKey(prev => prev + 1)
-  }, [pathname])
+    if (hideRightSidebar) return
+
+    const handleScroll = () => {
+      if (!sidebarRef.current || !footerRef.current) return
+
+      const footerRect = footerRef.current.getBoundingClientRect()
+      const sidebarHeight = sidebarRef.current.offsetHeight
+      const initialTop = 32 // top-8相当
+
+      // フッターに到達したらサイドバーを止める
+      if (footerRect.top <= initialTop + sidebarHeight + 32) {
+        setSidebarPosition('absolute')
+        setSidebarTop(footerRef.current.offsetTop - sidebarHeight - 32)
+      } else {
+        setSidebarPosition('fixed')
+        setSidebarTop(initialTop)
+      }
+    }
+
+    window.addEventListener('scroll', handleScroll)
+    handleScroll() // 初期位置を設定
+
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [hideRightSidebar])
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -73,28 +95,38 @@ export default function MainLayout({ children, hideRightSidebar = false, hideCon
               {children}
             </main>
 
-            {/* Right Sidebar */}
+            {/* Right Sidebar Spacer - maintains layout space */}
             {!hideRightSidebar && (
-              <aside
-                key={sidebarKey}
-                className="w-[260px] flex-shrink-0 hidden xl:block self-start sticky top-8"
-              >
-                {dynamicSidebar ? (
-                  <DynamicRightSidebar
-                    enterpriseServiceId={dynamicSidebar.enterpriseServiceId}
-                    individualServiceId={dynamicSidebar.individualServiceId}
-                  />
-                ) : (
-                  <RightSidebar />
-                )}
-              </aside>
+              <div className="w-[260px] flex-shrink-0 hidden xl:block" />
             )}
           </div>
         </div>
       </div>
 
+      {/* Right Sidebar - Fixed position with JavaScript scroll control */}
+      {!hideRightSidebar && (
+        <div
+          ref={sidebarRef}
+          className="hidden xl:block w-[260px] z-20"
+          style={{
+            position: sidebarPosition,
+            top: `${sidebarTop}px`,
+            right: '32px', // px-8 = 2rem = 32px
+          }}
+        >
+          {dynamicSidebar ? (
+            <DynamicRightSidebar
+              enterpriseServiceId={dynamicSidebar.enterpriseServiceId}
+              individualServiceId={dynamicSidebar.individualServiceId}
+            />
+          ) : (
+            <RightSidebar />
+          )}
+        </div>
+      )}
+
       {/* Footer - z-index higher than sidebar so sidebar hides behind it */}
-      <div className="relative z-40">
+      <div ref={footerRef} className="relative z-40">
         <Footer />
       </div>
 
