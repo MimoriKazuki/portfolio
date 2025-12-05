@@ -129,7 +129,7 @@ export default function ELearningTopClient({
 
       {/* 説明セクション */}
       <section
-        className="mb-16"
+        className="mt-16 mb-16"
         style={{
           opacity: isVisible ? 1 : 0,
           transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
