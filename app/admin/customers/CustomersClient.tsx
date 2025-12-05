@@ -1,9 +1,10 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { Search, Download, Users, CreditCard, UserCheck, UserX } from 'lucide-react'
+import { Search, Download, Users, Filter } from 'lucide-react'
 import { format } from 'date-fns'
 import { ja } from 'date-fns/locale'
+import Image from 'next/image'
 
 interface Purchase {
   id: string
@@ -102,126 +103,86 @@ export default function CustomersClient({ customers }: CustomersClientProps) {
   }
 
   return (
-    <div className="space-y-6">
-      {/* ヘッダー */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">顧客管理</h1>
-          <p className="text-sm text-gray-500 mt-1">eラーニングユーザーの一覧と管理</p>
-        </div>
-        <button
-          onClick={handleExportCSV}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
-        >
-          <Download className="h-4 w-4" />
-          CSV出力
-        </button>
-      </div>
+    <div className="w-full">
+      <h1 className="text-3xl font-bold mb-8 text-gray-900">顧客管理</h1>
 
-      {/* 統計カード */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Users className="h-5 w-5 text-blue-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">総ユーザー数</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
-            </div>
+      <div className="space-y-6">
+        {/* 統計カード */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+            <div className="text-3xl font-bold text-portfolio-blue">{stats.total}</div>
+            <div className="text-sm text-gray-600">総ユーザー数</div>
+          </div>
+          <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+            <div className="text-3xl font-bold text-green-600">{stats.paid}</div>
+            <div className="text-sm text-gray-600">有料ユーザー</div>
+          </div>
+          <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+            <div className="text-3xl font-bold text-gray-600">{stats.free}</div>
+            <div className="text-sm text-gray-600">無料ユーザー</div>
+          </div>
+          <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+            <div className="text-3xl font-bold text-purple-600">¥{stats.totalRevenue.toLocaleString()}</div>
+            <div className="text-sm text-gray-600">総売上</div>
           </div>
         </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <UserCheck className="h-5 w-5 text-green-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">有料ユーザー</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.paid}</p>
-            </div>
-          </div>
-        </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-gray-100 rounded-lg">
-              <UserX className="h-5 w-5 text-gray-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">無料ユーザー</p>
-              <p className="text-2xl font-bold text-gray-900">{stats.free}</p>
-            </div>
-          </div>
-        </div>
-        <div className="bg-white rounded-lg border border-gray-200 p-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <CreditCard className="h-5 w-5 text-purple-600" />
-            </div>
-            <div>
-              <p className="text-sm text-gray-500">総売上</p>
-              <p className="text-2xl font-bold text-gray-900">¥{stats.totalRevenue.toLocaleString()}</p>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      {/* フィルター */}
-      <div className="bg-white rounded-lg border border-gray-200 p-4">
-        <div className="flex flex-col sm:flex-row gap-4">
-          {/* 検索 */}
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <input
-              type="text"
-              placeholder="メールアドレスまたは名前で検索..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-
-          {/* ステータスフィルター */}
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as 'all' | 'paid' | 'free')}
-            className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+        {/* Action bar */}
+        <div className="flex items-center justify-between gap-4">
+          <button
+            onClick={handleExportCSV}
+            className="flex items-center gap-2 bg-portfolio-blue hover:bg-portfolio-blue-dark text-white px-4 py-2 rounded-lg transition-colors"
           >
-            <option value="all">すべて</option>
-            <option value="paid">有料ユーザー</option>
-            <option value="free">無料ユーザー</option>
-          </select>
-        </div>
-      </div>
+            <Download className="h-5 w-5" />
+            CSV出力
+          </button>
 
-      {/* 顧客リスト */}
-      <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <div className="flex items-center gap-4 flex-1 justify-end">
+            {/* ステータスフィルター */}
+            <div className="relative">
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value as 'all' | 'paid' | 'free')}
+                className="appearance-none bg-white border border-gray-300 rounded-lg px-4 py-2 pr-10 text-gray-700 focus:outline-none focus:ring-2 focus:ring-portfolio-blue"
+              >
+                <option value="all">すべてのステータス</option>
+                <option value="paid">有料ユーザー</option>
+                <option value="free">無料ユーザー</option>
+              </select>
+              <Filter className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+            </div>
+
+            {/* 検索 */}
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="検索..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="pl-10 pr-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-portfolio-blue text-gray-900 w-64"
+              />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+            </div>
+          </div>
+        </div>
+
+        {/* 顧客リスト */}
+        <div className="bg-white rounded-lg border border-gray-200 overflow-x-auto">
+          <table className="w-full table-fixed">
+            <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  ユーザー
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  ステータス
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  登録日
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  購入履歴
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  購入金額
-                </th>
+                <th className="text-left px-6 py-3 text-sm font-medium text-gray-700">ユーザー</th>
+                <th className="w-[100px] text-center px-6 py-3 text-sm font-medium text-gray-700">ステータス</th>
+                <th className="w-[160px] text-center px-6 py-3 text-sm font-medium text-gray-700">登録日</th>
+                <th className="w-[140px] text-center px-6 py-3 text-sm font-medium text-gray-700">購入履歴</th>
+                <th className="w-[120px] text-center px-6 py-3 text-sm font-medium text-gray-700">購入金額</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-200">
               {filteredCustomers.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
-                    該当する顧客が見つかりません
+                    検索結果が見つかりませんでした
                   </td>
                 </tr>
               ) : (
@@ -230,55 +191,60 @@ export default function CustomersClient({ customers }: CustomersClientProps) {
                   const totalAmount = completedPurchases.reduce((sum, p) => sum + p.amount, 0)
 
                   return (
-                    <tr key={customer.id} className="hover:bg-gray-50">
+                    <tr key={customer.id} className="hover:bg-gray-50 transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           {customer.avatar_url ? (
-                            <img
-                              src={customer.avatar_url}
-                              alt=""
-                              className="h-10 w-10 rounded-full object-cover"
-                            />
+                            <div className="relative w-10 h-10 flex-shrink-0">
+                              <Image
+                                src={customer.avatar_url}
+                                alt=""
+                                fill
+                                className="rounded-full object-cover"
+                                sizes="40px"
+                                unoptimized
+                              />
+                            </div>
                           ) : (
-                            <div className="h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center">
-                              <Users className="h-5 w-5 text-gray-500" />
+                            <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
+                              <Users className="h-5 w-5 text-gray-400" />
                             </div>
                           )}
-                          <div>
-                            <p className="text-sm font-medium text-gray-900">
+                          <div className="min-w-0">
+                            <p className="font-medium text-gray-900 truncate">
                               {customer.display_name || '名前未設定'}
                             </p>
-                            <p className="text-sm text-gray-500">{customer.email}</p>
+                            <p className="text-sm text-gray-500 truncate">{customer.email}</p>
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="w-[100px] px-6 py-4 text-center">
                         <span
-                          className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                          className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${
                             customer.has_paid_access
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-gray-100 text-gray-800'
+                              ? 'bg-green-100 text-green-700'
+                              : 'bg-gray-100 text-gray-700'
                           }`}
                         >
                           {customer.has_paid_access ? '有料' : '無料'}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-sm text-gray-500">
+                      <td className="w-[160px] px-6 py-4 text-center text-sm text-gray-600">
                         {format(new Date(customer.created_at), 'yyyy/MM/dd HH:mm', { locale: ja })}
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="w-[140px] px-6 py-4 text-center">
                         {completedPurchases.length > 0 ? (
                           <div className="text-sm">
-                            <p className="text-gray-900">{completedPurchases.length}件</p>
-                            <p className="text-gray-500 text-xs">
-                              最新: {completedPurchases[0]?.content?.title || '不明'}
+                            <p className="text-gray-900 font-medium">{completedPurchases.length}件</p>
+                            <p className="text-gray-500 text-xs truncate">
+                              {completedPurchases[0]?.content?.title || '全コンテンツ'}
                             </p>
                           </div>
                         ) : (
                           <span className="text-sm text-gray-400">-</span>
                         )}
                       </td>
-                      <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                      <td className="w-[120px] px-6 py-4 text-center text-sm font-medium text-gray-900">
                         {totalAmount > 0 ? `¥${totalAmount.toLocaleString()}` : '-'}
                       </td>
                     </tr>
@@ -288,11 +254,6 @@ export default function CustomersClient({ customers }: CustomersClientProps) {
             </tbody>
           </table>
         </div>
-      </div>
-
-      {/* フッター情報 */}
-      <div className="text-sm text-gray-500 text-right">
-        {filteredCustomers.length}件表示（全{customers.length}件中）
       </div>
     </div>
   )
