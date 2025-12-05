@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import dynamic from 'next/dynamic'
 import Sidebar from './Sidebar'
@@ -28,20 +28,13 @@ interface MainLayoutProps {
 }
 
 export default function MainLayout({ children, hideRightSidebar = false, hideContactButton = false, dynamicSidebar }: MainLayoutProps) {
-  const sidebarRef = useRef<HTMLElement>(null)
   const pathname = usePathname()
+  const [sidebarKey, setSidebarKey] = useState(0)
 
-  // クライアントサイドナビゲーション時にstickyポジションを再計算させる
+  // クライアントサイドナビゲーション時にサイドバーを強制的に再マウント
   useEffect(() => {
-    if (sidebarRef.current) {
-      // スタイルを一時的に変更して再計算をトリガー
-      const sidebar = sidebarRef.current
-      sidebar.style.position = 'relative'
-      // 次のフレームでstickyに戻す
-      requestAnimationFrame(() => {
-        sidebar.style.position = ''
-      })
-    }
+    // パス変更時にkeyを更新してReactに再マウントを強制
+    setSidebarKey(prev => prev + 1)
   }, [pathname])
 
   return (
@@ -83,7 +76,7 @@ export default function MainLayout({ children, hideRightSidebar = false, hideCon
             {/* Right Sidebar */}
             {!hideRightSidebar && (
               <aside
-                ref={sidebarRef}
+                key={sidebarKey}
                 className="w-[260px] flex-shrink-0 hidden xl:block self-start sticky top-8"
               >
                 {dynamicSidebar ? (
