@@ -27,6 +27,7 @@ interface Customer {
   has_paid_access: boolean
   created_at: string
   updated_at: string
+  last_sign_in_at: string | null
   purchases: Purchase[]
 }
 
@@ -174,6 +175,7 @@ export default function CustomersClient({ customers }: CustomersClientProps) {
                 <th className="text-left px-6 py-3 text-sm font-medium text-gray-700">ユーザー</th>
                 <th className="w-[100px] text-center px-6 py-3 text-sm font-medium text-gray-700">ステータス</th>
                 <th className="w-[160px] text-center px-6 py-3 text-sm font-medium text-gray-700">登録日</th>
+                <th className="w-[160px] text-center px-6 py-3 text-sm font-medium text-gray-700">最終ログイン</th>
                 <th className="w-[140px] text-center px-6 py-3 text-sm font-medium text-gray-700">購入履歴</th>
                 <th className="w-[120px] text-center px-6 py-3 text-sm font-medium text-gray-700">購入金額</th>
               </tr>
@@ -181,7 +183,7 @@ export default function CustomersClient({ customers }: CustomersClientProps) {
             <tbody className="divide-y divide-gray-200">
               {filteredCustomers.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
+                  <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
                     検索結果が見つかりませんでした
                   </td>
                 </tr>
@@ -231,6 +233,11 @@ export default function CustomersClient({ customers }: CustomersClientProps) {
                       </td>
                       <td className="w-[160px] px-6 py-4 text-center text-sm text-gray-600">
                         {format(new Date(customer.created_at), 'yyyy/MM/dd HH:mm', { locale: ja })}
+                      </td>
+                      <td className="w-[160px] px-6 py-4 text-center text-sm text-gray-600">
+                        {customer.last_sign_in_at
+                          ? format(new Date(customer.last_sign_in_at), 'yyyy/MM/dd HH:mm', { locale: ja })
+                          : '-'}
                       </td>
                       <td className="w-[140px] px-6 py-4 text-center">
                         {completedPurchases.length > 0 ? (
