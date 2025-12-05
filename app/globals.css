@@ -168,12 +168,15 @@ input[type="range"].audio-slider::-moz-range-track {
     @apply bg-background;
     background-color: hsl(var(--background));
     overflow-x: hidden;
+    /* オーバースクロール時のバウンス効果で背景が見えるのを防ぐ */
+    overscroll-behavior-y: none;
   }
 
   body {
     @apply bg-background text-foreground;
     background-color: hsl(var(--background));
     overflow-x: hidden;
+    overscroll-behavior-y: none;
     /* 標準的なレイアウト: fixedヘッダー + スペーサーで対応 */
     padding: 0;
     margin: 0;
