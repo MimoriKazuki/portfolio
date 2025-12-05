@@ -125,10 +125,10 @@ export default function MainLayout({ children, hideRightSidebar = false, hideCon
         </div>
       )}
 
-      {/* Footer background extension for overscroll - fixed behind footer */}
+      {/* Footer background extension for overscroll - fixed behind all content */}
       <div
         className="fixed left-0 right-0 bottom-0 bg-gray-900 pointer-events-none"
-        style={{ height: '100vh', zIndex: 35 }}
+        style={{ height: '100vh', zIndex: -2 }}
         aria-hidden="true"
       />
 
