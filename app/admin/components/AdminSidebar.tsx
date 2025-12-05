@@ -3,7 +3,7 @@
 import { memo } from 'react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { Home, FolderOpen, FileText, Download, User, Mail, LogOut, Bell, BarChart2, Youtube, PlayCircle } from 'lucide-react'
+import { Home, FolderOpen, FileText, Download, Users, Mail, LogOut, Bell, BarChart2, Youtube, PlayCircle } from 'lucide-react'
 import { cn } from '@/app/lib/utils'
 import { createClient } from '@/app/lib/supabase/client'
 import type { User as SupabaseUser } from '@supabase/supabase-js'
@@ -29,6 +29,7 @@ const AdminSidebar = memo(function AdminSidebar({ user }: AdminSidebarProps) {
     { icon: FolderOpen, label: '制作実績', href: '/admin/projects' },
     { icon: Youtube, label: 'YouTube', href: '/admin/youtube-videos' },
     { icon: PlayCircle, label: 'eラーニング', href: '/admin/e-learning' },
+    { icon: Users, label: '顧客管理', href: '/admin/customers' },
     { icon: FileText, label: 'コラム', href: '/admin/columns' },
     { icon: BarChart2, label: 'コラム分析', href: '/admin/analytics/column-goals' },
     { icon: Bell, label: 'お知らせ', href: '/admin/notices' },

@@ -9,6 +9,85 @@ const supabaseAdmin = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 )
 
+// Slack Webhook URL
+const SLACK_WEBHOOK_URL = process.env.SLACK_WEBHOOK_URL || ''
+
+// Slack通知を送信する関数
+async function sendSlackPurchaseNotification(
+  userEmail: string,
+  userName: string | null,
+  amount: number,
+  sessionId: string
+) {
+  if (!SLACK_WEBHOOK_URL) {
+    console.warn('SLACK_WEBHOOK_URL is not set, skipping notification')
+    return
+  }
+
+  const slackMessage = {
+    text: '新しいeラーニング購入がありました',
+    blocks: [
+      {
+        type: 'header',
+        text: {
+          type: 'plain_text',
+          text: '💰 eラーニング購入完了',
+          emoji: true
+        }
+      },
+      {
+        type: 'section',
+        fields: [
+          {
+            type: 'mrkdwn',
+            text: `*購入者:*\n${userName || '名前未設定'}`
+          },
+          {
+            type: 'mrkdwn',
+            text: `*メールアドレス:*\n${userEmail}`
+          },
+          {
+            type: 'mrkdwn',
+            text: `*購入金額:*\n¥${amount.toLocaleString()}`
+          },
+          {
+            type: 'mrkdwn',
+            text: `*商品:*\n全コンテンツアクセス`
+          }
+        ]
+      },
+      {
+        type: 'divider'
+      },
+      {
+        type: 'context',
+        elements: [
+          {
+            type: 'mrkdwn',
+            text: `購入日時: ${new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' })} | Session: ${sessionId.slice(0, 20)}...`
+          }
+        ]
+      }
+    ]
+  }
+
+  try {
+    const response = await fetch(SLACK_WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(slackMessage),
+    })
+
+    if (!response.ok) {
+      console.error('Slack notification failed:', response.statusText)
+    } else {
+      console.log('Slack purchase notification sent successfully')
+    }
+  } catch (error) {
+    console.error('Failed to send Slack notification:', error)
+  }
+}
+
 export async function POST(request: NextRequest) {
   const body = await request.text()
   const signature = request.headers.get('stripe-signature')
@@ -92,6 +171,22 @@ export async function POST(request: NextRequest) {
         // ログのみ、エラーは返さない（has_paid_accessの更新が重要）
         console.warn('Purchase record insert failed, but access was granted')
       }
+    }
+
+    // ユーザー情報を取得してSlack通知を送信
+    const { data: userData } = await supabaseAdmin
+      .from('e_learning_users')
+      .select('email, display_name')
+      .eq('id', userId)
+      .single()
+
+    if (userData) {
+      await sendSlackPurchaseNotification(
+        userData.email,
+        userData.display_name,
+        amount,
+        session.id
+      )
     }
 
     console.log(`E-Learning purchase completed: user=${userId}, session=${session.id}, amount=${amount}`)
