@@ -9,13 +9,7 @@ const Footer = () => {
   const currentYear = new Date().getFullYear()
   
   return (
-    <footer className="bg-gray-900 text-gray-300 relative" role="contentinfo">
-      {/* オーバースクロール時に裏のバナーを隠すための背景拡張 */}
-      <div
-        className="absolute left-0 right-0 bg-gray-900 pointer-events-none"
-        style={{ bottom: '-100vh', height: '100vh' }}
-        aria-hidden="true"
-      />
+    <footer className="bg-gray-900 text-gray-300" role="contentinfo">
       <div className="py-12">
         <div className="flex flex-col lg:flex-row lg:justify-between px-4 sm:px-6 lg:px-8">
           {/* Company Info - Left aligned, flexible width */}

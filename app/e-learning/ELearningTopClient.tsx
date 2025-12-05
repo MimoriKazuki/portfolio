@@ -144,8 +144,8 @@ export default function ELearningTopClient({
           </h2>
         </div>
 
-        {/* 説明文（右寄せ - 左マージンが画面縮小で縮小） */}
-        <div className="pl-0 md:pl-16 lg:pl-32 xl:pl-48 mb-16">
+        {/* 説明文（右寄せ - 左マージンが画面縮小で滑らかに縮小） */}
+        <div className="pl-[clamp(0px,calc((100vw-720px)*0.34),192px)] mb-16">
           <p className="text-gray-600 leading-loose mb-6">
             AI駆動開発に必要な知識を、基礎から応用まで体系的に学べる動画コンテンツを用意しています。実際の開発現場で使える実践的なスキルを、効率よく習得できます。
           </p>
