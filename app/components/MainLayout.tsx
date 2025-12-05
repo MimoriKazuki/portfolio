@@ -75,29 +75,27 @@ export default function MainLayout({ children, hideRightSidebar = false, hideCon
 
         {/* Main Content Container */}
         <div className="flex-1 min-w-0">
-          <div className="h-full overflow-x-visible">
-            <div className="flex items-start gap-8 px-4 sm:px-6 lg:px-8 py-8">
-              <main className="flex-1 min-w-0">
-                {children}
-              </main>
+          <div className="flex items-start gap-8 px-4 sm:px-6 lg:px-8 py-8">
+            <main className="flex-1 min-w-0">
+              {children}
+            </main>
 
-              {/* Right Sidebar */}
-              {!hideRightSidebar && (
-                <aside
-                  ref={sidebarRef}
-                  className="w-[260px] flex-shrink-0 hidden xl:block self-start sticky top-8"
-                >
-                  {dynamicSidebar ? (
-                    <DynamicRightSidebar
-                      enterpriseServiceId={dynamicSidebar.enterpriseServiceId}
-                      individualServiceId={dynamicSidebar.individualServiceId}
-                    />
-                  ) : (
-                    <RightSidebar />
-                  )}
-                </aside>
-              )}
-            </div>
+            {/* Right Sidebar */}
+            {!hideRightSidebar && (
+              <aside
+                ref={sidebarRef}
+                className="w-[260px] flex-shrink-0 hidden xl:block self-start sticky top-8"
+              >
+                {dynamicSidebar ? (
+                  <DynamicRightSidebar
+                    enterpriseServiceId={dynamicSidebar.enterpriseServiceId}
+                    individualServiceId={dynamicSidebar.individualServiceId}
+                  />
+                ) : (
+                  <RightSidebar />
+                )}
+              </aside>
+            )}
           </div>
         </div>
       </div>
