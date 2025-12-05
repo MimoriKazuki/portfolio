@@ -145,13 +145,15 @@ export default function ELearningTopClient({
         </div>
 
         {/* 説明文（右寄せ - 1461px以上で右寄せ固定幅720px、それ以下で左余白が滑らかに縮小） */}
-        <div className="pl-[clamp(0px,calc((100vw-720px)*0.34),192px)] min-[1461px]:pl-0 min-[1461px]:w-[720px] min-[1461px]:ml-auto mb-16">
-          <p className="text-gray-600 leading-loose mb-6">
-            AI駆動開発に必要な知識を、基礎から応用まで体系的に学べる動画コンテンツを用意しています。実際の開発現場で使える実践的なスキルを、効率よく習得できます。
-          </p>
-          <p className="text-gray-600 leading-loose">
-            書籍や断片的な情報を集める手間なく、AI駆動開発に必要なエッセンスを凝縮。すぐに仕事に活かせる知識を、わかりやすく解説しています。
-          </p>
+        <div className="pl-[clamp(0px,calc((100vw-720px)*0.34),192px)] min-[1461px]:pl-0 min-[1461px]:flex min-[1461px]:justify-end mb-16">
+          <div className="max-w-[720px] min-[1461px]:w-[720px]">
+            <p className="text-gray-600 leading-loose mb-6">
+              AI駆動開発に必要な知識を、基礎から応用まで体系的に学べる動画コンテンツを用意しています。実際の開発現場で使える実践的なスキルを、効率よく習得できます。
+            </p>
+            <p className="text-gray-600 leading-loose">
+              書籍や断片的な情報を集める手間なく、AI駆動開発に必要なエッセンスを凝縮。すぐに仕事に活かせる知識を、わかりやすく解説しています。
+            </p>
+          </div>
         </div>
 
         {/* すべてのコンテンツを見るボタン（中央揃え） */}
