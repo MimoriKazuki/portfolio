@@ -127,6 +127,56 @@ export default function ELearningTopClient({
         <p className="text-lg text-gray-500">eラーニング</p>
       </div>
 
+      {/* 説明セクション */}
+      <section
+        className="mb-16"
+        style={{
+          opacity: isVisible ? 1 : 0,
+          transform: isVisible ? 'translateY(0)' : 'translateY(20px)',
+          transition: 'opacity 0.6s ease-out 0.2s, transform 0.6s ease-out 0.2s',
+        }}
+      >
+        {/* セクションラベル */}
+        <div className="flex items-center gap-3 mb-8">
+          <span className="text-blue-600">✦</span>
+          <span className="text-sm font-medium tracking-wider">What is E-Learning</span>
+          <div className="h-px bg-gray-300 w-12" />
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16">
+          {/* 左側: タイトル */}
+          <div>
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold leading-relaxed tracking-tight">
+              実践的なAIスキルを、<br />
+              いつでもどこでも学べる。
+            </h2>
+          </div>
+
+          {/* 右側: 説明文 */}
+          <div className="flex flex-col">
+            <p className="text-gray-600 leading-loose mb-6">
+              AI駆動研究所のeラーニングでは、生成AIを活用した実践的なスキルを動画で学ぶことができます。基礎から応用まで、体系的なカリキュラムで効率的に学習を進められます。
+            </p>
+            <p className="text-gray-600 leading-loose mb-8">
+              プロンプトエンジニアリング、AIライティング、AI動画制作など、今すぐ仕事に活かせるスキルを、経験豊富な講師陣がわかりやすく解説します。
+            </p>
+
+            {/* see more ボタン */}
+            <div className="flex justify-end">
+              <Link
+                href="/e-learning/courses"
+                className="group inline-flex items-center gap-3"
+              >
+                <span className="text-sm font-medium tracking-wider">see more</span>
+                <div className="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center group-hover:bg-blue-700 transition-colors">
+                  <ArrowRight className="w-5 h-5 text-white" />
+                </div>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* おすすめセクション */}
       {featuredContents.length > 0 && (
         <section className="mb-12">
