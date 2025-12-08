@@ -11,24 +11,48 @@ export default function AuthButton() {
   const [loggingOut, setLoggingOut] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
-  const loadingRef = useRef(true)
+  const hasReceivedEvent = useRef(false)
 
   useEffect(() => {
-    const supabase = createClient()
+    console.log('[AuthButton] useEffect started')
     let isMounted = true
+    let supabase: ReturnType<typeof createClient>
 
-    // onAuthStateChangeは登録時にINITIAL_SESSIONイベントを発火する
-    // これにより初期状態の取得と状態変更の監視を1つで行える
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (isMounted) {
-        setUser(session?.user ?? null)
-        loadingRef.current = false
+    try {
+      supabase = createClient()
+      console.log('[AuthButton] Supabase client created')
+    } catch (e) {
+      console.error('[AuthButton] Failed to create Supabase client:', e)
+      setLoading(false)
+      return
+    }
+
+    // 絶対に発動する安全タイムアウト（2秒）
+    // どんな状況でもローディングを終了させる
+    const safetyTimeout = setTimeout(() => {
+      if (isMounted && !hasReceivedEvent.current) {
+        console.warn('[AuthButton] Safety timeout - no auth event received in 2s, forcing loading=false')
         setLoading(false)
+      }
+    }, 2000)
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('[AuthButton] onAuthStateChange fired:', event, 'user:', session?.user?.email ?? 'none')
+      if (isMounted) {
+        hasReceivedEvent.current = true
+        clearTimeout(safetyTimeout)
+        setUser(session?.user ?? null)
+        setLoading(false)
+        console.log('[AuthButton] State updated: loading=false, user=', session?.user?.email ?? 'null')
       }
     })
 
+    console.log('[AuthButton] onAuthStateChange registered')
+
     return () => {
+      console.log('[AuthButton] Cleanup')
       isMounted = false
+      clearTimeout(safetyTimeout)
       subscription.unsubscribe()
     }
   }, [])

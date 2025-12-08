@@ -19,14 +19,32 @@ export default function MobileHeader() {
   const authLoadingRef = useRef(true)
   const pathname = usePathname()
 
-  // onAuthStateChangeは登録時にINITIAL_SESSIONイベントを発火する
-  // これにより初期状態の取得と状態変更の監視を1つで行える
   useEffect(() => {
-    const supabase = createClient()
+    console.log('[MobileHeader] useEffect started')
     let isMounted = true
+    let supabase: ReturnType<typeof createClient>
+
+    try {
+      supabase = createClient()
+    } catch (e) {
+      console.error('[MobileHeader] Failed to create Supabase client:', e)
+      setAuthLoading(false)
+      return
+    }
+
+    // 安全タイムアウト（2秒）
+    const safetyTimeout = setTimeout(() => {
+      if (isMounted && authLoadingRef.current) {
+        console.warn('[MobileHeader] Safety timeout triggered')
+        authLoadingRef.current = false
+        setAuthLoading(false)
+      }
+    }, 2000)
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('[MobileHeader] onAuthStateChange:', event)
       if (isMounted) {
+        clearTimeout(safetyTimeout)
         setUser(session?.user ?? null)
         authLoadingRef.current = false
         setAuthLoading(false)
@@ -35,6 +53,7 @@ export default function MobileHeader() {
 
     return () => {
       isMounted = false
+      clearTimeout(safetyTimeout)
       subscription.unsubscribe()
     }
   }, [])

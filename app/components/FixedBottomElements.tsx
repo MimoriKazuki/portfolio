@@ -28,11 +28,19 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
   const [showPurchaseModal, setShowPurchaseModal] = useState(false)
   const { handleELearningClick } = useELearningRelease()
 
-  // onAuthStateChangeは登録時にINITIAL_SESSIONイベントを発火する
-  // これにより初期状態の取得と状態変更の監視を1つで行える
   useEffect(() => {
-    const supabase = createClient()
     let isMounted = true
+    let hasReceivedEvent = false
+    let supabase: ReturnType<typeof createClient>
+
+    try {
+      supabase = createClient()
+    } catch (e) {
+      console.error('[FixedBottomElements] Failed to create Supabase client:', e)
+      setPaidAccessChecked(true)
+      setLoading(false)
+      return
+    }
 
     // 購入状態を取得するヘルパー関数
     const fetchPaidAccess = async (userId: string): Promise<boolean> => {
@@ -48,9 +56,20 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
       }
     }
 
+    // 安全タイムアウト（2秒）
+    const safetyTimeout = setTimeout(() => {
+      if (isMounted && !hasReceivedEvent) {
+        console.warn('[FixedBottomElements] Safety timeout triggered')
+        setPaidAccessChecked(true)
+        setLoading(false)
+      }
+    }, 2000)
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!isMounted) return
 
+      hasReceivedEvent = true
+      clearTimeout(safetyTimeout)
       setUser(session?.user ?? null)
 
       // ユーザーがログイン済みの場合、購入状態を確認
@@ -68,6 +87,7 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
 
     return () => {
       isMounted = false
+      clearTimeout(safetyTimeout)
       subscription.unsubscribe()
     }
   }, [])

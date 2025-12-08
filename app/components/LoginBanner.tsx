@@ -16,14 +16,31 @@ export default function LoginBanner({ onVisibilityChange }: LoginBannerProps) {
   const [loading, setLoading] = useState(true)
   const { handleELearningClick } = useELearningRelease()
 
-  // onAuthStateChangeは登録時にINITIAL_SESSIONイベントを発火する
-  // これにより初期状態の取得と状態変更の監視を1つで行える
   useEffect(() => {
-    const supabase = createClient()
     let isMounted = true
+    let supabase: ReturnType<typeof createClient>
+    let hasReceivedEvent = false
+
+    try {
+      supabase = createClient()
+    } catch (e) {
+      console.error('[LoginBanner] Failed to create Supabase client:', e)
+      setLoading(false)
+      return
+    }
+
+    // 安全タイムアウト（2秒）
+    const safetyTimeout = setTimeout(() => {
+      if (isMounted && !hasReceivedEvent) {
+        console.warn('[LoginBanner] Safety timeout triggered')
+        setLoading(false)
+      }
+    }, 2000)
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (isMounted) {
+        hasReceivedEvent = true
+        clearTimeout(safetyTimeout)
         setUser(session?.user ?? null)
         setLoading(false)
       }
@@ -31,6 +48,7 @@ export default function LoginBanner({ onVisibilityChange }: LoginBannerProps) {
 
     return () => {
       isMounted = false
+      clearTimeout(safetyTimeout)
       subscription.unsubscribe()
     }
   }, [])
