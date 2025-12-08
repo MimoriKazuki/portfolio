@@ -93,8 +93,11 @@ export default function AuthButton() {
   const handleLogout = async () => {
     setLoggingOut(true)
     setMenuOpen(false)
-    const supabase = createClient()
-    await supabase.auth.signOut()
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' })
+    } catch (e) {
+      console.error('[AuthButton] Logout error:', e)
+    }
     window.location.href = '/'
   }
 
