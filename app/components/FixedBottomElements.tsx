@@ -19,6 +19,7 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
   const bannerRef = useRef<HTMLDivElement>(null)
   const [bannerHeight, setBannerHeight] = useState(0)
   const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState(true)
   const [paidAccessChecked, setPaidAccessChecked] = useState(false)
   const [showFloating, setShowFloating] = useState(false)
   const [showBannerAnim, setShowBannerAnim] = useState(false)
@@ -27,18 +28,10 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
   const [showPurchaseModal, setShowPurchaseModal] = useState(false)
   const { handleELearningClick } = useELearningRelease()
 
-  // 最初からバナーを表示可能に（loading状態なし）
+  // 認証状態の取得
   useEffect(() => {
-    let isMounted = true
-    let supabase: ReturnType<typeof createClient>
-
-    try {
-      supabase = createClient()
-    } catch (e) {
-      console.error('[FixedBottomElements] Failed to create Supabase client:', e)
-      setPaidAccessChecked(true)
-      return
-    }
+    const supabase = createClient()
+    let isInitialLoad = true
 
     // 購入状態を取得するヘルパー関数
     const fetchPaidAccess = async (userId: string): Promise<boolean> => {
@@ -54,25 +47,44 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
       }
     }
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (!isMounted) return
+    const getUser = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        setUser(user)
 
-      setUser(session?.user ?? null)
-
-      // ユーザーがログイン済みの場合、購入状態を確認
-      if (session?.user) {
-        const paidAccess = await fetchPaidAccess(session.user.id)
-        if (isMounted) {
+        // ユーザーがログイン済みの場合、購入状態を確認
+        if (user) {
+          const paidAccess = await fetchPaidAccess(user.id)
           setHasPaidAccess(paidAccess)
         }
+        setPaidAccessChecked(true)
+        setLoading(false)
+        isInitialLoad = false
+      } catch {
+        setUser(null)
+        setPaidAccessChecked(true)
+        setLoading(false)
+        isInitialLoad = false
+      }
+    }
+
+    getUser()
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      // 初期ロード中は無視（getUser()で処理する）
+      if (isInitialLoad) return
+
+      setUser(session?.user ?? null)
+      // 認証状態が変わった時も購入状態を更新
+      if (session?.user) {
+        const paidAccess = await fetchPaidAccess(session.user.id)
+        setHasPaidAccess(paidAccess)
       } else {
         setHasPaidAccess(false)
       }
-      setPaidAccessChecked(true)
     })
 
     return () => {
-      isMounted = false
       subscription.unsubscribe()
     }
   }, [])
@@ -96,7 +108,7 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
   }, [])
 
   // 無料ログインユーザーかどうか（ログイン済みで未購入、購入状態チェック済み）
-  const isFreeUser = paidAccessChecked && user && !hasPaidAccess
+  const isFreeUser = !loading && paidAccessChecked && user && !hasPaidAccess
 
   // 購入促進バナーのアニメーション（isFreeUserが確定してから遅延表示）
   useEffect(() => {
@@ -114,7 +126,7 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
   // バナーの高さを測定（アニメーション前に測定完了）
   useEffect(() => {
     // バナーが表示される場合は高さを事前に設定（デフォルト値）
-    if (!user || isFreeUser) {
+    if (!loading && (!user || isFreeUser)) {
       // 実際の高さを測定、またはデフォルト値を使用
       if (bannerRef.current) {
         setBannerHeight(bannerRef.current.offsetHeight)
@@ -123,23 +135,22 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
         setBannerHeight(70)
       }
     }
-  }, [user, isFreeUser])
+  }, [loading, user, isFreeUser])
 
   // バナーがレンダリングされた後に正確な高さを再測定
   useEffect(() => {
-    if (bannerRef.current && (!user || isFreeUser)) {
+    if (bannerRef.current && !loading && (!user || isFreeUser)) {
       const height = bannerRef.current.offsetHeight
       if (height > 0) {
         setBannerHeight(height)
       }
     }
-  }, [user, isFreeUser, showBannerAnim, showPurchaseBannerAnim])
+  }, [loading, user, isFreeUser, showBannerAnim, showPurchaseBannerAnim])
 
   // バナー表示条件
   const isElearningPage = pathname.startsWith('/e-learning')
   // ログインバナー: 未ログインユーザー向け（eラーニングページではモーダルがあるため非表示）
-  // user=nullの状態で即座に表示（ログイン済みならonAuthStateChangeで更新される）
-  const showLoginBanner = !user && !isElearningPage
+  const showLoginBanner = !loading && paidAccessChecked && !user && !isElearningPage
   // 購入促進バナー: 無料ログインユーザー向け（全ページで表示）
   const showPurchaseBanner = !!isFreeUser
   // いずれかのバナーを表示するか

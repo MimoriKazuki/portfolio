@@ -12,31 +12,29 @@ import { User } from '@supabase/supabase-js'
 export default function MobileHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [user, setUser] = useState<User | null>(null)
+  const [authLoading, setAuthLoading] = useState(true)
   const [loggingOut, setLoggingOut] = useState(false)
   const [authMenuOpen, setAuthMenuOpen] = useState(false)
   const authMenuRef = useRef<HTMLDivElement>(null)
   const pathname = usePathname()
 
-  // 最初からログインボタンを表示、ユーザーが検出されたら更新
+  // 認証状態を取得
   useEffect(() => {
-    let isMounted = true
-    let supabase: ReturnType<typeof createClient>
+    const supabase = createClient()
 
-    try {
-      supabase = createClient()
-    } catch (e) {
-      console.error('[MobileHeader] Failed to create Supabase client:', e)
-      return
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      setUser(user)
+      setAuthLoading(false)
     }
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (isMounted) {
-        setUser(session?.user ?? null)
-      }
+    getUser()
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
     })
 
     return () => {
-      isMounted = false
       subscription.unsubscribe()
     }
   }, [])
@@ -149,7 +147,11 @@ export default function MobileHeader() {
           {/* Right side: Auth Button + Hamburger */}
           <div className="flex items-center gap-2">
             {/* Auth Button */}
-            {user ? (
+            {authLoading ? (
+              <div className="p-2">
+                <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+              </div>
+            ) : user ? (
               <div ref={authMenuRef} className="relative">
                 <button
                   onClick={() => setAuthMenuOpen(!authMenuOpen)}

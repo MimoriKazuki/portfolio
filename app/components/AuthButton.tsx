@@ -6,76 +6,30 @@ import { User } from '@supabase/supabase-js'
 import { LogIn, LogOut, Loader2, User as UserIcon } from 'lucide-react'
 
 export default function AuthButton() {
-  // 最初からログインボタンを表示（loading=false）
-  // ユーザーが検出されたら更新する
   const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState(true)
   const [loggingOut, setLoggingOut] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    let isMounted = true
+    const supabase = createClient()
 
-    // 環境変数の確認
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-    console.log('[AuthButton] Environment check:', {
-      hasUrl: !!supabaseUrl,
-      urlPrefix: supabaseUrl?.substring(0, 30) + '...',
-      hasKey: !!supabaseKey,
-      keyPrefix: supabaseKey?.substring(0, 20) + '...'
-    })
-
-    let supabase: ReturnType<typeof createClient>
-    try {
-      supabase = createClient()
-      console.log('[AuthButton] Supabase client created successfully')
-    } catch (e) {
-      console.error('[AuthButton] Failed to create Supabase client:', e)
-      return
+    // 初期認証状態を取得
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      setUser(user)
+      setLoading(false)
     }
 
-    // getSessionにタイムアウトを追加
-    const checkSession = async () => {
-      console.log('[AuthButton] Starting getSession() with 5s timeout...')
+    getUser()
 
-      const timeoutPromise = new Promise<null>((_, reject) => {
-        setTimeout(() => reject(new Error('getSession timeout after 5s')), 5000)
-      })
-
-      try {
-        const result = await Promise.race([
-          supabase.auth.getSession(),
-          timeoutPromise
-        ]) as { data: { session: any }, error: any }
-
-        console.log('[AuthButton] getSession result:', {
-          hasSession: !!result?.data?.session,
-          user: result?.data?.session?.user?.email ?? 'none',
-          error: result?.error?.message ?? 'none'
-        })
-
-        if (isMounted && result?.data?.session?.user) {
-          setUser(result.data.session.user)
-        }
-      } catch (e) {
-        console.error('[AuthButton] getSession failed:', e)
-      }
-    }
-    checkSession()
-
-    // onAuthStateChangeも設定
-    console.log('[AuthButton] Setting up onAuthStateChange...')
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('[AuthButton] onAuthStateChange:', event, session?.user?.email ?? 'none')
-      if (isMounted) {
-        setUser(session?.user ?? null)
-      }
+    // 認証状態の変更を監視
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
     })
-    console.log('[AuthButton] onAuthStateChange registered')
 
     return () => {
-      isMounted = false
       subscription.unsubscribe()
     }
   }, [])
@@ -124,6 +78,14 @@ export default function AuthButton() {
     const supabase = createClient()
     await supabase.auth.signOut()
     window.location.href = '/'
+  }
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-3">
+        <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
+      </div>
+    )
   }
 
   if (user) {
