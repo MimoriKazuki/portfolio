@@ -53,23 +53,16 @@ export default function AuthButton() {
 
   const handleLogin = async () => {
     const supabase = createClient()
-    const { data, error } = await supabase.auth.signInWithOAuth({
+    await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        // サイドバーからのログインはeラーニングトップに遷移
-        redirectTo: `${window.location.origin}/auth/callback?redirect_to=/e-learning`,
+        redirectTo: `${window.location.origin}/auth/callback?redirect_to=${window.location.pathname}`,
         queryParams: {
           access_type: 'offline',
           prompt: 'consent',
         },
-        skipBrowserRedirect: true, // 自動リダイレクトを無効化
       },
     })
-
-    // 同一タブでリダイレクト
-    if (data?.url && !error) {
-      window.location.href = data.url
-    }
   }
 
   const handleLogout = async () => {

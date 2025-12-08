@@ -1,43 +1,15 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { Menu, X, Mail, LogIn, LogOut, Loader2, User as UserIcon } from 'lucide-react'
+import { Menu, X, Mail } from 'lucide-react'
 import { cn } from '@/app/lib/utils'
-import { createClient } from '@/app/lib/supabase/client'
-import { User } from '@supabase/supabase-js'
 
 export default function MobileHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [user, setUser] = useState<User | null>(null)
-  const [authLoading, setAuthLoading] = useState(true)
-  const [loggingOut, setLoggingOut] = useState(false)
-  const [authMenuOpen, setAuthMenuOpen] = useState(false)
-  const authMenuRef = useRef<HTMLDivElement>(null)
   const pathname = usePathname()
-
-  // 認証状態を取得
-  useEffect(() => {
-    const supabase = createClient()
-
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      setUser(user)
-      setAuthLoading(false)
-    }
-
-    getUser()
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
-    })
-
-    return () => {
-      subscription.unsubscribe()
-    }
-  }, [])
 
   // メニュー展開時にスクロールを無効化
   useEffect(() => {
@@ -67,59 +39,13 @@ export default function MobileHeader() {
     }
   }, [isMenuOpen])
 
-  // 認証メニュー外クリックで閉じる
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (authMenuRef.current && !authMenuRef.current.contains(event.target as Node)) {
-        setAuthMenuOpen(false)
-      }
-    }
-
-    if (authMenuOpen) {
-      document.addEventListener('mousedown', handleClickOutside)
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [authMenuOpen])
-
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen)
-  }
-
-  const handleLogin = async () => {
-    const supabase = createClient()
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback?redirect_to=/e-learning`,
-        queryParams: {
-          access_type: 'offline',
-          prompt: 'consent',
-        },
-        skipBrowserRedirect: true,
-      },
-    })
-
-    if (data?.url && !error) {
-      window.location.href = data.url
-    }
-  }
-
-  const handleLogout = async () => {
-    setLoggingOut(true)
-    setAuthMenuOpen(false)
-    setIsMenuOpen(false)
-    const supabase = createClient()
-    await supabase.auth.signOut()
-    window.location.href = '/'
   }
 
   const menuItems = [
     { href: '/', label: 'トップ' },
     { href: '/services', label: 'サービス' },
-    { href: '/e-learning', label: 'eラーニング' },
     { href: '/projects', label: '制作実績' },
     { href: '/youtube-videos', label: 'YouTube' },
     { href: '/columns', label: 'コラム' },
@@ -144,66 +70,18 @@ export default function MobileHeader() {
             />
           </Link>
 
-          {/* Right side: Auth Button + Hamburger */}
-          <div className="flex items-center gap-2">
-            {/* Auth Button */}
-            {authLoading ? (
-              <div className="p-2">
-                <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
-              </div>
-            ) : user ? (
-              <div ref={authMenuRef} className="relative">
-                <button
-                  onClick={() => setAuthMenuOpen(!authMenuOpen)}
-                  disabled={loggingOut}
-                  className="flex items-center gap-1.5 px-2 py-1.5 text-xs text-gray-600 hover:text-gray-900 transition-colors disabled:opacity-50"
-                >
-                  {loggingOut ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <>
-                      <UserIcon className="h-4 w-4 flex-shrink-0" />
-                      <span className="max-w-[60px] truncate">{user.email}</span>
-                    </>
-                  )}
-                </button>
-
-                {/* ポップアップメニュー */}
-                {authMenuOpen && (
-                  <div className="absolute top-full right-0 mt-1 bg-white border border-gray-200 shadow-lg z-50 min-w-[120px]">
-                    <button
-                      onClick={handleLogout}
-                      className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
-                    >
-                      <LogOut className="h-4 w-4" />
-                      <span>ログアウト</span>
-                    </button>
-                  </div>
-                )}
-              </div>
+          {/* Hamburger Menu Button */}
+          <button
+            onClick={toggleMenu}
+            className="p-2 text-gray-600 hover:text-gray-900 focus:outline-none"
+            aria-label={isMenuOpen ? 'メニューを閉じる' : 'メニューを開く'}
+          >
+            {isMenuOpen ? (
+              <X className="h-6 w-6" />
             ) : (
-              <button
-                onClick={handleLogin}
-                className="flex items-center gap-1.5 px-2 py-1.5 text-xs text-gray-600 hover:text-gray-900 transition-colors"
-              >
-                <LogIn className="h-4 w-4" />
-                <span>ログイン</span>
-              </button>
+              <Menu className="h-6 w-6" />
             )}
-
-            {/* Hamburger Menu Button */}
-            <button
-              onClick={toggleMenu}
-              className="p-2 text-gray-600 hover:text-gray-900 focus:outline-none"
-              aria-label={isMenuOpen ? 'メニューを閉じる' : 'メニューを開く'}
-            >
-              {isMenuOpen ? (
-                <X className="h-6 w-6" />
-              ) : (
-                <Menu className="h-6 w-6" />
-              )}
-            </button>
-          </div>
+          </button>
         </div>
       </header>
 
