@@ -6,8 +6,8 @@ import { User } from '@supabase/supabase-js'
 import { LogIn, LogOut, Loader2, User as UserIcon } from 'lucide-react'
 
 export default function AuthButton() {
-  // ローディング状態を削除 - 初期値はログインボタンを表示
   const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState(true)
   const [loggingOut, setLoggingOut] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
@@ -15,19 +15,21 @@ export default function AuthButton() {
   useEffect(() => {
     const supabase = createClient()
 
-    // getSession()はCookieから読み取るため即時完了する（ネットワーク不要）
-    const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (session?.user) {
-        setUser(session.user)
+    // onAuthStateChangeのINITIAL_SESSIONイベントでセッションを取得
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'INITIAL_SESSION') {
+        // 初期セッション取得完了
+        setUser(session?.user ?? null)
+        setLoading(false)
+      } else if (event === 'SIGNED_IN') {
+        setUser(session?.user ?? null)
+        setLoading(false)
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null)
+        setLoading(false)
+      } else if (event === 'TOKEN_REFRESHED') {
+        setUser(session?.user ?? null)
       }
-    }
-
-    checkSession()
-
-    // 認証状態の変更を監視（ログイン/ログアウト時に発火）
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
     })
 
     return () => {
@@ -72,6 +74,15 @@ export default function AuthButton() {
     const supabase = createClient()
     await supabase.auth.signOut()
     window.location.href = '/'
+  }
+
+  // ローディング中
+  if (loading) {
+    return (
+      <div className="w-full flex items-center justify-center px-4 py-3">
+        <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
+      </div>
+    )
   }
 
   if (user) {

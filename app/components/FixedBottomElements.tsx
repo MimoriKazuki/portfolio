@@ -22,20 +22,19 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
   const [showBannerAnim, setShowBannerAnim] = useState(false)
   const { handleELearningClick } = useELearningRelease()
 
-  // 認証状態の取得（getSession()はCookieから即時読み取り）
+  // 認証状態の取得（onAuthStateChangeで監視）
   useEffect(() => {
     const supabase = createClient()
 
-    const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      setUser(session?.user ?? null)
-      setAuthChecked(true)
-    }
-
-    checkSession()
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'INITIAL_SESSION') {
+        setUser(session?.user ?? null)
+        setAuthChecked(true)
+      } else if (event === 'SIGNED_IN') {
+        setUser(session?.user ?? null)
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null)
+      }
     })
 
     return () => {

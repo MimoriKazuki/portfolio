@@ -19,18 +19,16 @@ export default function LoginBanner({ onVisibilityChange }: LoginBannerProps) {
   useEffect(() => {
     const supabase = createClient()
 
-    // getSession()はCookieから即時読み取り（ネットワーク不要）
-    const checkSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      setUser(session?.user ?? null)
-      setAuthChecked(true)
-    }
-
-    checkSession()
-
-    // 認証状態の変更を監視
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
+    // onAuthStateChangeで認証状態を監視
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'INITIAL_SESSION') {
+        setUser(session?.user ?? null)
+        setAuthChecked(true)
+      } else if (event === 'SIGNED_IN') {
+        setUser(session?.user ?? null)
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null)
+      }
     })
 
     return () => {

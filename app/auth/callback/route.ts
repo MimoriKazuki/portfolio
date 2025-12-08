@@ -1,4 +1,4 @@
-import { createClient } from '@/app/lib/supabase/server'
+import { createServerClient } from '@supabase/ssr'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -32,8 +32,31 @@ export async function GET(request: NextRequest) {
   const origin = requestUrl.origin
   const redirectTo = requestUrl.searchParams.get('redirect_to') || '/e-learning'
 
+  // リダイレクト先URLを先に準備
+  const redirectUrl = `${origin}${redirectTo}`
+
   if (code) {
-    const supabase = await createClient()
+    // Route HandlerではNextResponseにCookieを設定する必要がある
+    // cookies()を使うと、その後のNextResponse.redirect()にCookieが引き継がれない
+    const response = NextResponse.redirect(redirectUrl)
+
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return request.cookies.getAll()
+          },
+          setAll(cookiesToSet) {
+            cookiesToSet.forEach(({ name, value, options }) => {
+              response.cookies.set(name, value, options)
+            })
+          },
+        },
+      }
+    )
+
     const { data, error } = await supabase.auth.exchangeCodeForSession(code)
 
     if (error) {
@@ -79,8 +102,11 @@ export async function GET(request: NextRequest) {
           .eq('id', existingUser.id)
       }
     }
+
+    // Cookieが設定されたresponseオブジェクトを返す（これが重要！）
+    return response
   }
 
-  // リダイレクト先へ遷移
-  return NextResponse.redirect(`${origin}${redirectTo}`)
+  // codeがない場合はそのままリダイレクト
+  return NextResponse.redirect(redirectUrl)
 }
