@@ -1,8 +1,7 @@
 import { createBrowserClient } from '@supabase/ssr'
-import { SupabaseClient } from '@supabase/supabase-js'
 
 // シングルトンインスタンス
-let supabaseInstance: SupabaseClient | null = null
+let supabaseInstance: ReturnType<typeof createBrowserClient> | null = null
 
 export function createClient() {
   // 既にインスタンスがあればそれを返す
