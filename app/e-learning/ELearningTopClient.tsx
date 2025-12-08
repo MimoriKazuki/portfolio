@@ -284,6 +284,7 @@ export default function ELearningTopClient({
         isOpen={showPurchaseModal}
         onClose={() => setShowPurchaseModal(false)}
         contentId="all-access"
+        cancelReturnUrl="/e-learning"
       />
     </div>
   )

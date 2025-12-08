@@ -450,7 +450,7 @@ export default function ELearningDetailClient({
         isOpen={showPurchaseModal}
         onClose={() => setShowPurchaseModal(false)}
         contentId={content.id}
-        cancelReturnUrl={returnUrl}
+        cancelReturnUrl={`/e-learning/${content.id}`}
       />
     </div>
   )

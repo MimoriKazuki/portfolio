@@ -286,6 +286,7 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
         isOpen={showPurchaseModal}
         onClose={() => setShowPurchaseModal(false)}
         contentId="all-access"
+        cancelReturnUrl={pathname}
       />
     </>
   )

@@ -67,11 +67,13 @@ export async function POST(request: NextRequest) {
     // all-access（全コンテンツ購入）の場合はトップページ
     // キャンセル時: cancelReturnUrlがあればそこに戻る（バリデーション付き）
     const successPath = contentId && contentId !== 'all-access' ? `/e-learning/${contentId}` : '/e-learning'
-    // cancelReturnUrlのバリデーション（/e-learningまたは/e-learning/coursesのみ許可）
-    const validCancelUrls = ['/e-learning', '/e-learning/courses']
-    const cancelPath = cancelReturnUrl && validCancelUrls.includes(cancelReturnUrl)
-      ? cancelReturnUrl
-      : '/e-learning'
+    // cancelReturnUrlのバリデーション（サイト内パスのみ許可）
+    // セキュリティ: /で始まり、://を含まない（外部URLを防ぐ）
+    const isValidCancelUrl = cancelReturnUrl &&
+      typeof cancelReturnUrl === 'string' &&
+      cancelReturnUrl.startsWith('/') &&
+      !cancelReturnUrl.includes('://')
+    const cancelPath = isValidCancelUrl ? cancelReturnUrl : '/e-learning'
 
     const stripe = getStripe()
     const session = await stripe.checkout.sessions.create({
