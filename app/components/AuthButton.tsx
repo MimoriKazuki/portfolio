@@ -11,28 +11,60 @@ export default function AuthButton() {
   const [loggingOut, setLoggingOut] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
+  const initializedRef = useRef(false)
 
   useEffect(() => {
-    const supabase = createClient()
+    // 二重実行防止
+    if (initializedRef.current) return
+    initializedRef.current = true
 
-    // onAuthStateChangeのINITIAL_SESSIONイベントでセッションを取得
+    const supabase = createClient()
+    console.log('[AuthButton] Setting up auth listener...')
+
+    // フォールバック: 5秒後に強制的にローディングを終了
+    const fallbackTimer = setTimeout(() => {
+      console.log('[AuthButton] Fallback timer triggered - forcing loading to false')
+      setLoading(false)
+    }, 5000)
+
+    // getSessionを直接呼び出してセッションを確認
+    const checkSession = async () => {
+      try {
+        console.log('[AuthButton] Checking session via getSession()...')
+        const { data: { session }, error } = await supabase.auth.getSession()
+
+        if (error) {
+          console.error('[AuthButton] getSession error:', error)
+        } else {
+          console.log('[AuthButton] getSession result:', session ? `user=${session.user.email}` : 'no session')
+          setUser(session?.user ?? null)
+        }
+
+        clearTimeout(fallbackTimer)
+        setLoading(false)
+      } catch (e) {
+        console.error('[AuthButton] getSession exception:', e)
+        clearTimeout(fallbackTimer)
+        setLoading(false)
+      }
+    }
+
+    // まずgetSessionで即座に確認
+    checkSession()
+
+    // onAuthStateChangeで以降の変更を監視
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'INITIAL_SESSION') {
-        // 初期セッション取得完了
+      console.log('[AuthButton] onAuthStateChange:', event, session?.user?.email || 'no user')
+
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
         setUser(session?.user ?? null)
-        setLoading(false)
-      } else if (event === 'SIGNED_IN') {
-        setUser(session?.user ?? null)
-        setLoading(false)
       } else if (event === 'SIGNED_OUT') {
         setUser(null)
-        setLoading(false)
-      } else if (event === 'TOKEN_REFRESHED') {
-        setUser(session?.user ?? null)
       }
     })
 
     return () => {
+      clearTimeout(fallbackTimer)
       subscription.unsubscribe()
     }
   }, [])
