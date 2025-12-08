@@ -67,9 +67,22 @@ export default function ELearningDetailClient({
   const initialShowModal = !hasPurchased && !content.is_free &&
     !searchParams.get('success') && !searchParams.get('canceled')
   const [showPurchaseModal, setShowPurchaseModal] = useState(initialShowModal)
+  // 初期表示でモーダルが開かれたかどうか（閉じる時の挙動を変えるため）
+  const [isInitialModal, setIsInitialModal] = useState(initialShowModal)
 
   // 戻り先URL（from=coursesの場合は/e-learning/courses、それ以外は/e-learning）
   const returnUrl = searchParams.get('from') === 'courses' ? '/e-learning/courses' : '/e-learning'
+
+  // 購入モーダルを閉じる処理
+  const handleClosePurchaseModal = () => {
+    if (isInitialModal) {
+      // 初期表示のモーダルを閉じる場合は前の画面に戻る
+      window.location.href = returnUrl
+    } else {
+      // ページ内から開いたモーダルは単に閉じる
+      setShowPurchaseModal(false)
+    }
+  }
 
   // URLパラメータからメッセージを設定
   useEffect(() => {
@@ -448,7 +461,7 @@ export default function ELearningDetailClient({
       {/* 購入促進モーダル */}
       <PurchasePromptModal
         isOpen={showPurchaseModal}
-        onClose={() => setShowPurchaseModal(false)}
+        onClose={handleClosePurchaseModal}
         contentId={content.id}
         cancelReturnUrl={`/e-learning/${content.id}`}
       />
