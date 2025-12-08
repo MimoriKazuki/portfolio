@@ -5,7 +5,7 @@ import type { Metadata } from 'next'
 import { Suspense } from 'react'
 
 const baseUrl = 'https://www.landbridge.ai'
-const ogImageUrl = `${baseUrl}/AI_driven_ogpImageimage.png`
+const ogImageUrl = `${baseUrl}/images/brand/AI_driven_ogpImageimage.png`
 
 export const metadata: Metadata = {
   title: 'サービス - AI駆動研究所',

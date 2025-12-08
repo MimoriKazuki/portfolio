@@ -54,7 +54,7 @@ export function generateServiceMetadata(meta: ServicePageMetadata): Metadata {
   }
   
   const serviceSlug = meta.url.split('/services/')[1] || 'default'
-  const ogImageUrl = serviceImageMapping[serviceSlug] || `${baseUrl}/AI_driven_ogpImageimage.png`
+  const ogImageUrl = serviceImageMapping[serviceSlug] || `${baseUrl}/images/brand/AI_driven_ogpImageimage.png`
   
   return {
     title: meta.title,

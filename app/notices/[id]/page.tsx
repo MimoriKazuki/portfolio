@@ -34,7 +34,7 @@ export async function generateMetadata({
   const timestamp = Date.now()
   const imageUrl = notice.thumbnail
     ? `${notice.thumbnail}?t=${timestamp}`
-    : `${baseUrl}/AI_driven_ogpImageimage.png?t=${timestamp}`
+    : `${baseUrl}/images/brand/AI_driven_ogpImageimage.png?t=${timestamp}`
   
   return {
     title: `${notice.title} - AI駆動研究所`,
