@@ -136,35 +136,38 @@ export default function ELearningTopClient({
           transition: 'opacity 0.6s ease-out 0.2s, transform 0.6s ease-out 0.2s',
         }}
       >
-        {/* タイトル（左揃え） */}
-        <div className="mb-8">
-          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold leading-relaxed tracking-tight">
-            AI駆動開発スキルを、<br />
-            いつでもどこでも学べる。
-          </h2>
-        </div>
-
-        {/* 説明文（右寄せ - 1461px以上で右寄せ固定幅720px、それ以下で左余白が滑らかに縮小） */}
-        <div className="w-full pl-[clamp(0px,calc((100vw-720px)*0.34),192px)] textwide:!pl-0 textwide:flex textwide:justify-end mb-16">
-          <div className="max-w-[720px] textwide:w-[720px]">
-            <p className="text-gray-600 leading-loose mb-6">
-              AI駆動開発に必要な知識を、基礎から応用まで体系的に学べる動画コンテンツを用意しています。実際の開発現場で使える実践的なスキルを、効率よく習得できます。
-            </p>
-            <p className="text-gray-600 leading-loose">
-              書籍や断片的な情報を集める手間なく、AI駆動開発に必要なエッセンスを凝縮。すぐに仕事に活かせる知識を、わかりやすく解説しています。
-            </p>
+        {/* 1461px以上では最大幅912pxで中央寄せ、位置関係は固定 */}
+        <div className="textwide:max-w-[912px] textwide:mx-auto">
+          {/* タイトル（左揃え） */}
+          <div className="mb-8">
+            <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold leading-relaxed tracking-tight">
+              AI駆動開発スキルを、<br />
+              いつでもどこでも学べる。
+            </h2>
           </div>
-        </div>
 
-        {/* すべてのコンテンツを見るボタン（中央揃え） */}
-        <div className="flex justify-center">
-          <Link
-            href="/e-learning/courses"
-            className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-blue-600 border border-blue-600 font-light hover:bg-blue-50 transition-colors duration-200 text-base"
-          >
-            すべてのコンテンツを見る
-            <ArrowRight className="size-4" />
-          </Link>
+          {/* 説明文（左余白が滑らかに増加、1461px以上では192px固定） */}
+          <div className="pl-[clamp(0px,calc((100vw-720px)*0.34),192px)] textwide:!pl-[192px] mb-16">
+            <div className="max-w-[720px]">
+              <p className="text-gray-600 leading-loose mb-6">
+                AI駆動開発に必要な知識を、基礎から応用まで体系的に学べる動画コンテンツを用意しています。実際の開発現場で使える実践的なスキルを、効率よく習得できます。
+              </p>
+              <p className="text-gray-600 leading-loose">
+                書籍や断片的な情報を集める手間なく、AI駆動開発に必要なエッセンスを凝縮。すぐに仕事に活かせる知識を、わかりやすく解説しています。
+              </p>
+            </div>
+          </div>
+
+          {/* すべてのコンテンツを見るボタン（中央揃え） */}
+          <div className="flex justify-center">
+            <Link
+              href="/e-learning/courses"
+              className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-white text-blue-600 border border-blue-600 font-light hover:bg-blue-50 transition-colors duration-200 text-base"
+            >
+              すべてのコンテンツを見る
+              <ArrowRight className="size-4" />
+            </Link>
+          </div>
         </div>
       </section>
 
