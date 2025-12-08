@@ -4,12 +4,49 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { Menu, X, Mail } from 'lucide-react'
+import { Menu, X, Mail, LogIn, LogOut, Loader2, User as UserIcon } from 'lucide-react'
 import { cn } from '@/app/lib/utils'
+import { User } from '@supabase/supabase-js'
+import { createClient } from '@/app/lib/supabase/client'
+import { useELearningRelease } from '@/app/contexts/ELearningReleaseContext'
 
 export default function MobileHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [user, setUser] = useState<User | null>(null)
+  const [authLoading, setAuthLoading] = useState(true)
+  const [loggingOut, setLoggingOut] = useState(false)
   const pathname = usePathname()
+  const { handleELearningClick } = useELearningRelease()
+
+  // 認証状態の取得（APIルート経由）
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/auth/user')
+        const data = await response.json()
+        setUser(data.user)
+      } catch (e) {
+        console.error('[MobileHeader] Auth check error:', e)
+      } finally {
+        setAuthLoading(false)
+      }
+    }
+    checkAuth()
+
+    // onAuthStateChangeで以降の変更を監視
+    const supabase = createClient()
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+        setUser(session?.user ?? null)
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null)
+      }
+    })
+
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [])
 
   // メニュー展開時にスクロールを無効化
   useEffect(() => {
@@ -43,10 +80,36 @@ export default function MobileHeader() {
     setIsMenuOpen(!isMenuOpen)
   }
 
+  const handleLogin = async () => {
+    const supabase = createClient()
+    await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback?redirect_to=${window.location.pathname}`,
+        queryParams: {
+          access_type: 'offline',
+          prompt: 'consent',
+        },
+      },
+    })
+  }
+
+  const handleLogout = async () => {
+    setLoggingOut(true)
+    setIsMenuOpen(false)
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' })
+    } catch (e) {
+      console.error('[MobileHeader] Logout error:', e)
+    }
+    window.location.href = '/'
+  }
+
   const menuItems = [
     { href: '/', label: 'トップ' },
     { href: '/services', label: 'サービス' },
     { href: '/projects', label: '制作実績' },
+    { href: '/e-learning', label: 'eラーニング', onClick: handleELearningClick },
     { href: '/youtube-videos', label: 'YouTube' },
     { href: '/columns', label: 'コラム' },
     { href: '/notices', label: 'お知らせ' },
@@ -114,7 +177,12 @@ export default function MobileHeader() {
                       : "text-gray-600 hover:text-gray-900"
                   )}
                   style={isActive ? { fontWeight: 550 } : { fontWeight: 500 }}
-                  onClick={() => setIsMenuOpen(false)}
+                  onClick={(e) => {
+                    if (item.onClick) {
+                      item.onClick(e)
+                    }
+                    setIsMenuOpen(false)
+                  }}
                 >
                   <span>{item.label}</span>
 
@@ -132,8 +200,46 @@ export default function MobileHeader() {
             })}
           </div>
 
+          {/* 認証セクション */}
+          <div className="py-4 border-t border-gray-200">
+            {authLoading ? (
+              <div className="flex items-center justify-center py-3">
+                <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
+              </div>
+            ) : user ? (
+              <div className="space-y-3">
+                {/* ユーザー情報 */}
+                <div className="flex items-center justify-center gap-2 px-4 py-2 text-sm text-gray-600">
+                  <UserIcon className="h-4 w-4 flex-shrink-0 text-gray-500" />
+                  <span className="truncate text-xs">{user.email}</span>
+                </div>
+                {/* ログアウトボタン */}
+                <button
+                  onClick={handleLogout}
+                  disabled={loggingOut}
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors disabled:opacity-50"
+                >
+                  {loggingOut ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <LogOut className="h-4 w-4" />
+                  )}
+                  <span>{loggingOut ? 'ログアウト中...' : 'ログアウト'}</span>
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={handleLogin}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
+              >
+                <LogIn className="h-4 w-4" />
+                <span>ログイン</span>
+              </button>
+            )}
+          </div>
+
           {/* Contact Info */}
-          <div className="py-6 border-t border-gray-200 text-center">
+          <div className="py-4 border-t border-gray-200 text-center">
             <p className="text-xs text-gray-500 mb-2">お問い合わせ</p>
             <a
               href="mailto:info@landbridge.co.jp"
