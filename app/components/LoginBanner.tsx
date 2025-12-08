@@ -13,54 +13,40 @@ interface LoginBannerProps {
 
 export default function LoginBanner({ onVisibilityChange }: LoginBannerProps) {
   const [user, setUser] = useState<User | null>(null)
-  const [loading, setLoading] = useState(true)
   const { handleELearningClick } = useELearningRelease()
 
+  // 最初からバナーを表示、ユーザーが検出されたら非表示に
   useEffect(() => {
     let isMounted = true
     let supabase: ReturnType<typeof createClient>
-    let hasReceivedEvent = false
 
     try {
       supabase = createClient()
     } catch (e) {
       console.error('[LoginBanner] Failed to create Supabase client:', e)
-      setLoading(false)
       return
     }
 
-    // 安全タイムアウト（2秒）
-    const safetyTimeout = setTimeout(() => {
-      if (isMounted && !hasReceivedEvent) {
-        console.warn('[LoginBanner] Safety timeout triggered')
-        setLoading(false)
-      }
-    }, 2000)
-
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (isMounted) {
-        hasReceivedEvent = true
-        clearTimeout(safetyTimeout)
         setUser(session?.user ?? null)
-        setLoading(false)
       }
     })
 
     return () => {
       isMounted = false
-      clearTimeout(safetyTimeout)
       subscription.unsubscribe()
     }
   }, [])
 
   // バナーの表示状態を親コンポーネントに通知
   useEffect(() => {
-    const isVisible = !loading && !user
+    const isVisible = !user
     onVisibilityChange?.(isVisible)
-  }, [loading, user, onVisibilityChange])
+  }, [user, onVisibilityChange])
 
-  // ローディング中またはログイン済みの場合は非表示
-  if (loading || user) {
+  // ログイン済みの場合は非表示
+  if (user) {
     return null
   }
 

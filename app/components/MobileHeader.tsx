@@ -12,15 +12,13 @@ import { User } from '@supabase/supabase-js'
 export default function MobileHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [user, setUser] = useState<User | null>(null)
-  const [authLoading, setAuthLoading] = useState(true)
   const [loggingOut, setLoggingOut] = useState(false)
   const [authMenuOpen, setAuthMenuOpen] = useState(false)
   const authMenuRef = useRef<HTMLDivElement>(null)
-  const authLoadingRef = useRef(true)
   const pathname = usePathname()
 
+  // 最初からログインボタンを表示、ユーザーが検出されたら更新
   useEffect(() => {
-    console.log('[MobileHeader] useEffect started')
     let isMounted = true
     let supabase: ReturnType<typeof createClient>
 
@@ -28,32 +26,17 @@ export default function MobileHeader() {
       supabase = createClient()
     } catch (e) {
       console.error('[MobileHeader] Failed to create Supabase client:', e)
-      setAuthLoading(false)
       return
     }
 
-    // 安全タイムアウト（2秒）
-    const safetyTimeout = setTimeout(() => {
-      if (isMounted && authLoadingRef.current) {
-        console.warn('[MobileHeader] Safety timeout triggered')
-        authLoadingRef.current = false
-        setAuthLoading(false)
-      }
-    }, 2000)
-
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('[MobileHeader] onAuthStateChange:', event)
       if (isMounted) {
-        clearTimeout(safetyTimeout)
         setUser(session?.user ?? null)
-        authLoadingRef.current = false
-        setAuthLoading(false)
       }
     })
 
     return () => {
       isMounted = false
-      clearTimeout(safetyTimeout)
       subscription.unsubscribe()
     }
   }, [])
@@ -166,11 +149,7 @@ export default function MobileHeader() {
           {/* Right side: Auth Button + Hamburger */}
           <div className="flex items-center gap-2">
             {/* Auth Button */}
-            {authLoading ? (
-              <div className="p-2">
-                <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
-              </div>
-            ) : user ? (
+            {user ? (
               <div ref={authMenuRef} className="relative">
                 <button
                   onClick={() => setAuthMenuOpen(!authMenuOpen)}

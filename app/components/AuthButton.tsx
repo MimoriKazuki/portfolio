@@ -6,53 +6,33 @@ import { User } from '@supabase/supabase-js'
 import { LogIn, LogOut, Loader2, User as UserIcon } from 'lucide-react'
 
 export default function AuthButton() {
+  // 最初からログインボタンを表示（loading=false）
+  // ユーザーが検出されたら更新する
   const [user, setUser] = useState<User | null>(null)
-  const [loading, setLoading] = useState(true)
   const [loggingOut, setLoggingOut] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
-  const hasReceivedEvent = useRef(false)
 
   useEffect(() => {
-    console.log('[AuthButton] useEffect started')
     let isMounted = true
     let supabase: ReturnType<typeof createClient>
 
     try {
       supabase = createClient()
-      console.log('[AuthButton] Supabase client created')
     } catch (e) {
       console.error('[AuthButton] Failed to create Supabase client:', e)
-      setLoading(false)
       return
     }
 
-    // 絶対に発動する安全タイムアウト（2秒）
-    // どんな状況でもローディングを終了させる
-    const safetyTimeout = setTimeout(() => {
-      if (isMounted && !hasReceivedEvent.current) {
-        console.warn('[AuthButton] Safety timeout - no auth event received in 2s, forcing loading=false')
-        setLoading(false)
-      }
-    }, 2000)
-
+    // 認証状態の変更を監視（INITIAL_SESSIONが来れば更新、来なくてもログインボタンは表示済み）
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('[AuthButton] onAuthStateChange fired:', event, 'user:', session?.user?.email ?? 'none')
       if (isMounted) {
-        hasReceivedEvent.current = true
-        clearTimeout(safetyTimeout)
         setUser(session?.user ?? null)
-        setLoading(false)
-        console.log('[AuthButton] State updated: loading=false, user=', session?.user?.email ?? 'null')
       }
     })
 
-    console.log('[AuthButton] onAuthStateChange registered')
-
     return () => {
-      console.log('[AuthButton] Cleanup')
       isMounted = false
-      clearTimeout(safetyTimeout)
       subscription.unsubscribe()
     }
   }, [])
@@ -101,14 +81,6 @@ export default function AuthButton() {
     const supabase = createClient()
     await supabase.auth.signOut()
     window.location.href = '/'
-  }
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-3">
-        <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
-      </div>
-    )
   }
 
   if (user) {
