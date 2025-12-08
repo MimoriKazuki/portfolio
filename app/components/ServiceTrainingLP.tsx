@@ -33,6 +33,81 @@ function useScrollAnimation(threshold = 0.1) {
   return { ref, isVisible }
 }
 
+// Hook for tracking which card is active on mobile scroll
+function useMobileActiveCard(itemCount: number) {
+  const [activeIndex, setActiveIndex] = useState<number | null>(null)
+  const [isMobile, setIsMobile] = useState(false)
+  const cardRefs = useRef<(HTMLDivElement | null)[]>([])
+
+  // Initialize refs array
+  useEffect(() => {
+    cardRefs.current = cardRefs.current.slice(0, itemCount)
+  }, [itemCount])
+
+  // Check if mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 639)
+    }
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
+
+  // Intersection Observer for mobile scroll tracking
+  useEffect(() => {
+    if (!isMobile) {
+      setActiveIndex(null)
+      return
+    }
+
+    const observers: IntersectionObserver[] = []
+    const visibilityMap = new Map<number, number>()
+
+    cardRefs.current.forEach((card, index) => {
+      if (!card) return
+
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            visibilityMap.set(index, entry.intersectionRatio)
+          } else {
+            visibilityMap.delete(index)
+          }
+
+          // Find the most visible card
+          let maxRatio = 0
+          let maxIndex: number | null = null
+          visibilityMap.forEach((ratio, idx) => {
+            if (ratio > maxRatio) {
+              maxRatio = ratio
+              maxIndex = idx
+            }
+          })
+          setActiveIndex(maxIndex)
+        },
+        {
+          threshold: [0, 0.25, 0.5, 0.75, 1],
+          rootMargin: '-30% 0px -30% 0px',
+        }
+      )
+
+      observer.observe(card)
+      observers.push(observer)
+    })
+
+    return () => {
+      observers.forEach((observer) => observer.disconnect())
+    }
+  }, [isMobile, itemCount])
+
+  const setCardRef = (index: number) => (el: HTMLDivElement | null) => {
+    cardRefs.current[index] = el
+  }
+
+  return { activeIndex, isMobile, setCardRef }
+}
+
 // Service Overview Item Interface
 interface ServiceOverviewItem {
   title: string
@@ -224,6 +299,9 @@ export default function ServiceTrainingLP({
   const [openFaqs, setOpenFaqs] = useState<Set<number>>(new Set())
   const [heroLoaded, setHeroLoaded] = useState(false)
   const [featuresLoaded, setFeaturesLoaded] = useState(false)
+
+  // Mobile scroll-based card activation for curriculum section
+  const { activeIndex: activeCurriculumIndex, isMobile, setCardRef } = useMobileActiveCard(curriculum.modules.length)
 
   // ヒーローアニメーション開始
   useEffect(() => {
@@ -691,24 +769,44 @@ export default function ServiceTrainingLP({
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {curriculum.modules.map((module, index) => (
-              <div
-                key={index}
-                style={{
-                  opacity: curriculumSection.isVisible ? 1 : 0,
-                  transform: curriculumSection.isVisible ? 'translateY(0)' : 'translateY(40px)',
-                  transition: `opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${0.1 + index * 0.1}s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${0.1 + index * 0.1}s`,
-                }}
-              >
-                <div className="group bg-white hover:bg-[#323232] transition-all duration-300 hover:scale-105 h-full">
-                  <div className="p-6 md:p-8 min-h-[180px] flex flex-col justify-center">
-                    <p className={`text-sm font-medium mb-2 transition-colors duration-300 ${theme === 'green' ? 'text-emerald-600 group-hover:text-emerald-400' : 'text-blue-600 group-hover:text-blue-400'}`}>Module {String(index + 1).padStart(2, '0')}</p>
-                    <h3 className="text-lg font-semibold text-gray-900 group-hover:text-white mb-2 transition-colors duration-300">{module.title}</h3>
-                    <p className="text-gray-600 group-hover:text-gray-300 text-sm leading-relaxed transition-colors duration-300">{module.description}</p>
+            {curriculum.modules.map((module, index) => {
+              const isActiveOnMobile = isMobile && activeCurriculumIndex === index
+              return (
+                <div
+                  key={index}
+                  ref={setCardRef(index)}
+                  style={{
+                    opacity: curriculumSection.isVisible ? 1 : 0,
+                    transform: curriculumSection.isVisible ? 'translateY(0)' : 'translateY(40px)',
+                    transition: `opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${0.1 + index * 0.1}s, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) ${0.1 + index * 0.1}s`,
+                  }}
+                >
+                  <div className={`group transition-all duration-300 h-full ${
+                    isActiveOnMobile
+                      ? 'bg-[#323232] scale-105'
+                      : 'bg-white md:hover:bg-[#323232] md:hover:scale-105'
+                  }`}>
+                    <div className="p-6 md:p-8 min-h-[180px] flex flex-col justify-center">
+                      <p className={`text-sm font-medium mb-2 transition-colors duration-300 ${
+                        isActiveOnMobile
+                          ? (theme === 'green' ? 'text-emerald-400' : 'text-blue-400')
+                          : (theme === 'green' ? 'text-emerald-600 md:group-hover:text-emerald-400' : 'text-blue-600 md:group-hover:text-blue-400')
+                      }`}>Module {String(index + 1).padStart(2, '0')}</p>
+                      <h3 className={`text-lg font-semibold mb-2 transition-colors duration-300 ${
+                        isActiveOnMobile
+                          ? 'text-white'
+                          : 'text-gray-900 md:group-hover:text-white'
+                      }`}>{module.title}</h3>
+                      <p className={`text-sm leading-relaxed transition-colors duration-300 ${
+                        isActiveOnMobile
+                          ? 'text-gray-300'
+                          : 'text-gray-600 md:group-hover:text-gray-300'
+                      }`}>{module.description}</p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         </section>
 
