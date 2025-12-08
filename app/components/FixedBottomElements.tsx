@@ -263,8 +263,8 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
                   src="/images/banner/banner_sm.svg"
                   alt="今だけ半額！50%OFF"
                   width={152}
-                  height={44}
-                  className="h-[36px] sm:h-[44px] w-auto"
+                  height={52}
+                  className="h-[36px] sm:h-[52px] w-auto"
                 />
                 <div className="flex flex-col items-center gap-1">
                   <p className="text-white text-xs sm:text-base font-semibold">
