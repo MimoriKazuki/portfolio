@@ -206,9 +206,9 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
                 <img
                   src="/images/banner/banner_sm.svg"
                   alt="今だけ！有料動画コンテンツ 50%OFF"
-                  className="h-8 sm:h-10 flex-shrink-0"
+                  className="h-[36px] sm:h-[52px] flex-shrink-0"
                 />
-                <div className="flex flex-col items-center gap-0.5">
+                <div className="flex flex-col items-center gap-1">
                   <p className="text-white text-xs sm:text-base font-semibold text-center">
                     全ての有料コンテンツが見放題！
                   </p>
