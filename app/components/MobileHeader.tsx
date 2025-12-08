@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
@@ -14,6 +14,8 @@ export default function MobileHeader() {
   const [user, setUser] = useState<User | null>(null)
   const [authLoading, setAuthLoading] = useState(true)
   const [loggingOut, setLoggingOut] = useState(false)
+  const [authMenuOpen, setAuthMenuOpen] = useState(false)
+  const authMenuRef = useRef<HTMLDivElement>(null)
   const pathname = usePathname()
 
   // 認証状態を取得
@@ -71,6 +73,23 @@ export default function MobileHeader() {
     }
   }, [isMenuOpen])
 
+  // 認証メニュー外クリックで閉じる
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (authMenuRef.current && !authMenuRef.current.contains(event.target as Node)) {
+        setAuthMenuOpen(false)
+      }
+    }
+
+    if (authMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [authMenuOpen])
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen)
   }
@@ -96,6 +115,7 @@ export default function MobileHeader() {
 
   const handleLogout = async () => {
     setLoggingOut(true)
+    setAuthMenuOpen(false)
     setIsMenuOpen(false)
     const supabase = createClient()
     await supabase.auth.signOut()
@@ -138,21 +158,35 @@ export default function MobileHeader() {
                 <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
               </div>
             ) : user ? (
-              <button
-                onClick={handleLogout}
-                disabled={loggingOut}
-                className="flex items-center gap-1.5 px-2 py-1.5 text-xs text-gray-600 hover:text-gray-900 transition-colors disabled:opacity-50"
-              >
-                {loggingOut ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <>
-                    <UserIcon className="h-4 w-4 flex-shrink-0" />
-                    <span className="max-w-[100px] truncate">{user.email}</span>
-                    <LogOut className="h-3.5 w-3.5 flex-shrink-0" />
-                  </>
+              <div ref={authMenuRef} className="relative">
+                <button
+                  onClick={() => setAuthMenuOpen(!authMenuOpen)}
+                  disabled={loggingOut}
+                  className="flex items-center gap-1.5 px-2 py-1.5 text-xs text-gray-600 hover:text-gray-900 transition-colors disabled:opacity-50"
+                >
+                  {loggingOut ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <>
+                      <UserIcon className="h-4 w-4 flex-shrink-0" />
+                      <span className="max-w-[60px] truncate">{user.email}</span>
+                    </>
+                  )}
+                </button>
+
+                {/* ポップアップメニュー */}
+                {authMenuOpen && (
+                  <div className="absolute top-full right-0 mt-1 bg-white border border-gray-200 shadow-lg z-50 min-w-[120px]">
+                    <button
+                      onClick={handleLogout}
+                      className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      <span>ログアウト</span>
+                    </button>
+                  </div>
                 )}
-              </button>
+              </div>
             ) : (
               <button
                 onClick={handleLogin}
