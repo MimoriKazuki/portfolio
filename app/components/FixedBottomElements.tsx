@@ -57,10 +57,16 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
     }
   }, [])
 
+  // バナー表示条件（eラーニングページではモーダルがあるため非表示）
+  const isElearningPage = pathname.startsWith('/e-learning')
+  const showLoginBanner = authChecked && !user && !isElearningPage
+  const showPurchaseBanner = authChecked && user && !hasPaidAccess && !isElearningPage
+  const showBanner = showLoginBanner || showPurchaseBanner
+
   // バナーの高さを測定（アニメーション前に測定完了）
   useEffect(() => {
     // バナーが表示される場合は高さを事前に設定（デフォルト値）
-    if (authChecked && !user) {
+    if (showBanner) {
       // 実際の高さを測定、またはデフォルト値を使用
       if (bannerRef.current) {
         setBannerHeight(bannerRef.current.offsetHeight)
@@ -68,24 +74,20 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
         // デフォルトの高さ（py-3 * 2 + text height）
         setBannerHeight(70)
       }
+    } else {
+      setBannerHeight(0)
     }
-  }, [authChecked, user])
+  }, [showBanner])
 
   // バナーがレンダリングされた後に正確な高さを再測定
   useEffect(() => {
-    if (bannerRef.current && authChecked && !user) {
+    if (bannerRef.current && showBanner) {
       const height = bannerRef.current.offsetHeight
       if (height > 0) {
         setBannerHeight(height)
       }
     }
-  }, [authChecked, user, showBannerAnim])
-
-  // バナー表示条件（eラーニングページではモーダルがあるため非表示）
-  const isElearningPage = pathname.startsWith('/e-learning')
-  const showLoginBanner = authChecked && !user && !isElearningPage
-  const showPurchaseBanner = authChecked && user && !hasPaidAccess && !isElearningPage
-  const showBanner = showLoginBanner || showPurchaseBanner
+  }, [showBanner, showBannerAnim])
 
   // フローティングボタンの表示条件
   const isTopPage = pathname === '/'
