@@ -8,8 +8,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "echo 'Lint disabled'",
-    "analyze": "ANALYZE=true next build",
-    "setup:admin": "tsx scripts/setup-admin.ts"
+    "analyze": "ANALYZE=true next build"
   },
   "dependencies": {
     "@google-analytics/data": "^5.2.0",
