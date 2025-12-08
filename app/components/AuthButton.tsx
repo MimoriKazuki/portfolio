@@ -18,44 +18,25 @@ export default function AuthButton() {
     if (initializedRef.current) return
     initializedRef.current = true
 
-    // シングルトンクライアントを使用
     const supabase = createClient()
-
-    // フォールバック: 3秒後に強制的にローディングを終了
-    const fallbackTimer = setTimeout(() => {
-      console.log('[AuthButton] Fallback timer triggered')
-      setLoading(false)
-    }, 3000)
 
     const initAuth = async () => {
       try {
-        // Cookieの状態をログ出力
-        console.log('[AuthButton] Cookies:', document.cookie.split(';').filter(c => c.trim().startsWith('sb-')).length, 'Supabase cookies found')
-
-        console.log('[AuthButton] Calling getUser()...')
+        console.log('[AuthButton] Fetching user from API...')
         const startTime = Date.now()
 
-        // getSession()の代わりにgetUser()を使用（より信頼性が高い）
-        const { data: { user: authUser }, error } = await supabase.auth.getUser()
+        // サーバーサイドAPIを使用してユーザー情報を取得
+        const response = await fetch('/api/auth/user')
+        const data = await response.json()
 
         const elapsed = Date.now() - startTime
-        console.log(`[AuthButton] getUser completed in ${elapsed}ms`)
+        console.log(`[AuthButton] API response in ${elapsed}ms:`, data.user ? data.user.email : 'null')
 
-        if (error) {
-          console.error('[AuthButton] getUser error:', error.message)
-          // エラーがあってもnullユーザーとして処理（未ログイン状態）
-          setUser(null)
-        } else {
-          console.log('[AuthButton] User:', authUser ? `${authUser.email}` : 'null')
-          setUser(authUser)
-        }
-
-        clearTimeout(fallbackTimer)
+        setUser(data.user)
         setLoading(false)
       } catch (e) {
         console.error('[AuthButton] Init error:', e)
         setUser(null)
-        clearTimeout(fallbackTimer)
         setLoading(false)
       }
     }
@@ -74,7 +55,6 @@ export default function AuthButton() {
     })
 
     return () => {
-      clearTimeout(fallbackTimer)
       subscription.unsubscribe()
     }
   }, [])
