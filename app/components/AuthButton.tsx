@@ -1,17 +1,9 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from '@/app/lib/supabase/client'
 import { User } from '@supabase/supabase-js'
 import { LogIn, LogOut, Loader2, User as UserIcon } from 'lucide-react'
-
-// @supabase/ssrではなく、直接@supabase/supabase-jsを使用
-function getSupabaseClient() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
-}
 
 export default function AuthButton() {
   const [user, setUser] = useState<User | null>(null)
@@ -26,7 +18,9 @@ export default function AuthButton() {
     if (initializedRef.current) return
     initializedRef.current = true
 
-    console.log('[AuthButton] Starting initialization with @supabase/supabase-js...')
+    // シングルトンクライアントを使用
+    const supabase = createClient()
+    console.log('[AuthButton] Using singleton Supabase client')
 
     // フォールバック: 3秒後に強制的にローディングを終了
     const fallbackTimer = setTimeout(() => {
@@ -36,10 +30,6 @@ export default function AuthButton() {
 
     const initAuth = async () => {
       try {
-        console.log('[AuthButton] Creating Supabase client (supabase-js)...')
-        const supabase = getSupabaseClient()
-        console.log('[AuthButton] Supabase client created')
-
         console.log('[AuthButton] Calling getSession()...')
         const startTime = Date.now()
 
@@ -57,20 +47,6 @@ export default function AuthButton() {
 
         clearTimeout(fallbackTimer)
         setLoading(false)
-
-        // onAuthStateChangeで以降の変更を監視
-        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-          console.log('[AuthButton] onAuthStateChange:', event)
-          if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-            setUser(session?.user ?? null)
-          } else if (event === 'SIGNED_OUT') {
-            setUser(null)
-          }
-        })
-
-        return () => {
-          subscription.unsubscribe()
-        }
       } catch (e) {
         console.error('[AuthButton] Init error:', e)
         clearTimeout(fallbackTimer)
@@ -80,8 +56,20 @@ export default function AuthButton() {
 
     initAuth()
 
+    // onAuthStateChangeで以降の変更を監視
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('[AuthButton] onAuthStateChange:', event)
+      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+        setUser(session?.user ?? null)
+        setLoading(false)
+      } else if (event === 'SIGNED_OUT') {
+        setUser(null)
+      }
+    })
+
     return () => {
       clearTimeout(fallbackTimer)
+      subscription.unsubscribe()
     }
   }, [])
 
@@ -103,7 +91,7 @@ export default function AuthButton() {
   }, [menuOpen])
 
   const handleLogin = async () => {
-    const supabase = getSupabaseClient()
+    const supabase = createClient()
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
@@ -119,7 +107,7 @@ export default function AuthButton() {
   const handleLogout = async () => {
     setLoggingOut(true)
     setMenuOpen(false)
-    const supabase = getSupabaseClient()
+    const supabase = createClient()
     await supabase.auth.signOut()
     window.location.href = '/'
   }
