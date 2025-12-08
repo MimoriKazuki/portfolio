@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { User } from '@supabase/supabase-js'
-import { ChevronRight, Mail, FileText } from 'lucide-react'
+import { ChevronRight, Mail, FileText, Sparkles } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useELearningRelease } from '@/app/contexts/ELearningReleaseContext'
@@ -16,18 +16,20 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
   const bannerRef = useRef<HTMLDivElement>(null)
   const [bannerHeight, setBannerHeight] = useState(0)
   const [user, setUser] = useState<User | null>(null)
+  const [hasPaidAccess, setHasPaidAccess] = useState(false)
   const [authChecked, setAuthChecked] = useState(false)
   const [showFloating, setShowFloating] = useState(false)
   const [showBannerAnim, setShowBannerAnim] = useState(false)
   const { handleELearningClick } = useELearningRelease()
 
-  // 認証状態の取得（APIルート経由）
+  // 認証状態と有料アクセス状態の取得（APIルート経由）
   useEffect(() => {
     const checkAuth = async () => {
       try {
         const response = await fetch('/api/auth/user')
         const data = await response.json()
         setUser(data.user)
+        setHasPaidAccess(data.hasPaidAccess ?? false)
         setAuthChecked(true)
       } catch (e) {
         console.error('[FixedBottomElements] Auth check error:', e)
@@ -81,7 +83,9 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
 
   // バナー表示条件（eラーニングページではモーダルがあるため非表示）
   const isElearningPage = pathname.startsWith('/e-learning')
-  const showBanner = authChecked && !user && !isElearningPage
+  const showLoginBanner = authChecked && !user && !isElearningPage
+  const showPurchaseBanner = authChecked && user && !hasPaidAccess && !isElearningPage
+  const showBanner = showLoginBanner || showPurchaseBanner
 
   // フローティングボタンの表示条件
   const isTopPage = pathname === '/'
@@ -139,8 +143,8 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
         </div>
       )}
 
-      {/* ログインバナー */}
-      {showBanner && (
+      {/* ログインバナー（未ログイン時） */}
+      {showLoginBanner && (
         <div
           ref={bannerRef}
           className={`fixed bottom-0 left-0 xl:left-[178px] right-0 z-30 transition-all duration-500 ease-out ${
@@ -161,6 +165,38 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
                 </p>
                 <p className="text-white text-xs sm:text-base font-semibold text-center flex items-center gap-1">
                   無料ログインでまずはお試し
+                  <ChevronRight className="h-4 w-4" />
+                </p>
+              </div>
+            </div>
+          </Link>
+        </div>
+      )}
+
+      {/* 購入促進バナー（ログイン済み・未決済時） */}
+      {showPurchaseBanner && (
+        <div
+          ref={bannerRef}
+          className={`fixed bottom-0 left-0 xl:left-[178px] right-0 z-30 transition-all duration-500 ease-out ${
+            showBannerAnim
+              ? 'opacity-100 translate-y-0'
+              : 'opacity-0 translate-y-full'
+          }`}
+        >
+          <Link
+            href="/e-learning"
+            onClick={handleELearningClick}
+            className="block w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-colors cursor-pointer"
+          >
+            <div className="px-4 sm:px-6 lg:px-8">
+              <div className="flex flex-col items-center justify-center py-3 gap-1">
+                <p className="text-white text-xs sm:text-base font-semibold text-center flex items-center gap-2">
+                  <Sparkles className="h-4 w-4" />
+                  有料プランで全コンテンツにアクセス
+                  <Sparkles className="h-4 w-4" />
+                </p>
+                <p className="text-white text-xs sm:text-base font-semibold text-center flex items-center gap-1">
+                  今すぐアップグレード
                   <ChevronRight className="h-4 w-4" />
                 </p>
               </div>

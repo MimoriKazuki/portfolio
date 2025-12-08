@@ -24,9 +24,18 @@ export async function GET() {
 
   const { data: { user }, error } = await supabase.auth.getUser()
 
-  if (error) {
-    return NextResponse.json({ user: null, error: error.message }, { status: 200 })
+  if (error || !user) {
+    return NextResponse.json({ user: null, hasPaidAccess: false, error: error?.message }, { status: 200 })
   }
 
-  return NextResponse.json({ user }, { status: 200 })
+  // e_learning_usersテーブルから有料アクセス状態を確認
+  const { data: eLearningUser } = await supabase
+    .from('e_learning_users')
+    .select('has_paid_access')
+    .eq('auth_user_id', user.id)
+    .single()
+
+  const hasPaidAccess = eLearningUser?.has_paid_access ?? false
+
+  return NextResponse.json({ user, hasPaidAccess }, { status: 200 })
 }
