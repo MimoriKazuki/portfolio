@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
@@ -12,11 +12,13 @@ import { useELearningRelease } from '@/app/contexts/ELearningReleaseContext'
 
 export default function MobileHeader() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const [authMenuOpen, setAuthMenuOpen] = useState(false)
   const [user, setUser] = useState<User | null>(null)
   const [authLoading, setAuthLoading] = useState(true)
   const [loggingOut, setLoggingOut] = useState(false)
   const pathname = usePathname()
   const { handleELearningClick } = useELearningRelease()
+  const authMenuRef = useRef<HTMLDivElement>(null)
 
   // 認証状態の取得（APIルート経由）
   useEffect(() => {
@@ -96,6 +98,7 @@ export default function MobileHeader() {
 
   const handleLogout = async () => {
     setLoggingOut(true)
+    setAuthMenuOpen(false)
     setIsMenuOpen(false)
     try {
       await fetch('/api/auth/logout', { method: 'POST' })
@@ -104,6 +107,23 @@ export default function MobileHeader() {
     }
     window.location.href = '/'
   }
+
+  // 認証メニュー外クリックで閉じる
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (authMenuRef.current && !authMenuRef.current.contains(event.target as Node)) {
+        setAuthMenuOpen(false)
+      }
+    }
+
+    if (authMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [authMenuOpen])
 
   const menuItems = [
     { href: '/', label: 'トップ' },
@@ -133,18 +153,71 @@ export default function MobileHeader() {
             />
           </Link>
 
-          {/* Hamburger Menu Button */}
-          <button
-            onClick={toggleMenu}
-            className="p-2 text-gray-600 hover:text-gray-900 focus:outline-none"
-            aria-label={isMenuOpen ? 'メニューを閉じる' : 'メニューを開く'}
-          >
-            {isMenuOpen ? (
-              <X className="h-6 w-6" />
+          {/* 右側: 認証ボタン + ハンバーガーメニュー */}
+          <div className="flex items-center gap-2">
+            {/* 認証ボタン */}
+            {authLoading ? (
+              <div className="p-2">
+                <Loader2 className="h-5 w-5 animate-spin text-gray-400" />
+              </div>
+            ) : user ? (
+              <div ref={authMenuRef} className="relative">
+                <button
+                  onClick={() => setAuthMenuOpen(!authMenuOpen)}
+                  disabled={loggingOut}
+                  className="flex items-center gap-1.5 px-2 py-1.5 text-gray-600 hover:text-gray-900 transition-colors disabled:opacity-50"
+                >
+                  {loggingOut ? (
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                  ) : (
+                    <>
+                      <UserIcon className="h-5 w-5 flex-shrink-0" />
+                      <span className="text-xs max-w-[100px] truncate hidden sm:inline">
+                        {user.email}
+                      </span>
+                    </>
+                  )}
+                </button>
+
+                {/* ログアウトポップアップ */}
+                {authMenuOpen && (
+                  <div className="absolute top-full right-0 mt-1 bg-white border border-gray-200 shadow-lg z-50 min-w-[140px]">
+                    <div className="px-3 py-2 border-b border-gray-100 sm:hidden">
+                      <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                    </div>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                    >
+                      <LogOut className="h-4 w-4" />
+                      <span>ログアウト</span>
+                    </button>
+                  </div>
+                )}
+              </div>
             ) : (
-              <Menu className="h-6 w-6" />
+              <button
+                onClick={handleLogin}
+                className="flex items-center gap-1.5 px-2 py-1.5 text-gray-600 hover:text-gray-900 transition-colors"
+              >
+                <LogIn className="h-5 w-5" />
+                <span className="text-xs">ログイン</span>
+              </button>
             )}
-          </button>
+
+            {/* Hamburger Menu Button */}
+            <button
+              onClick={toggleMenu}
+              className="p-2 text-gray-600 hover:text-gray-900 focus:outline-none"
+              aria-label={isMenuOpen ? 'メニューを閉じる' : 'メニューを開く'}
+            >
+              {isMenuOpen ? (
+                <X className="h-6 w-6" />
+              ) : (
+                <Menu className="h-6 w-6" />
+              )}
+            </button>
+          </div>
         </div>
       </header>
 
@@ -198,44 +271,6 @@ export default function MobileHeader() {
                 </Link>
               )
             })}
-          </div>
-
-          {/* 認証セクション */}
-          <div className="py-4 border-t border-gray-200">
-            {authLoading ? (
-              <div className="flex items-center justify-center py-3">
-                <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
-              </div>
-            ) : user ? (
-              <div className="space-y-3">
-                {/* ユーザー情報 */}
-                <div className="flex items-center justify-center gap-2 px-4 py-2 text-sm text-gray-600">
-                  <UserIcon className="h-4 w-4 flex-shrink-0 text-gray-500" />
-                  <span className="truncate text-xs">{user.email}</span>
-                </div>
-                {/* ログアウトボタン */}
-                <button
-                  onClick={handleLogout}
-                  disabled={loggingOut}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors disabled:opacity-50"
-                >
-                  {loggingOut ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <LogOut className="h-4 w-4" />
-                  )}
-                  <span>{loggingOut ? 'ログアウト中...' : 'ログアウト'}</span>
-                </button>
-              </div>
-            ) : (
-              <button
-                onClick={handleLogin}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 text-sm text-gray-600 hover:text-gray-900 hover:bg-gray-50 transition-colors"
-              >
-                <LogIn className="h-4 w-4" />
-                <span>ログイン</span>
-              </button>
-            )}
           </div>
 
           {/* Contact Info */}
