@@ -182,6 +182,9 @@ export default function MobileHeader() {
                 {/* ログアウトポップアップ */}
                 {authMenuOpen && (
                   <div className="absolute top-full right-0 mt-1 bg-white border border-gray-200 shadow-lg z-50 min-w-[140px]">
+                    <div className="px-3 py-2 border-b border-gray-100">
+                      <p className="text-xs text-gray-500 truncate max-w-[160px]">{user.email}</p>
+                    </div>
                     <button
                       onClick={handleLogout}
                       className="w-full flex items-center gap-2 px-3 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
