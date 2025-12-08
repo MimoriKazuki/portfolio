@@ -39,23 +39,31 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
     checkAuth()
   }, [])
 
-  // アニメーション用タイマー
+  // フローティングボタンのアニメーション用タイマー
   useEffect(() => {
     // メインコンテンツ表示後にフローティングボタンを表示（500ms後）
     const floatingTimer = setTimeout(() => {
       setShowFloating(true)
     }, 500)
 
-    // フローティングボタン後にバナーを表示（800ms後）
-    const bannerTimer = setTimeout(() => {
-      setShowBannerAnim(true)
-    }, 800)
-
     return () => {
       clearTimeout(floatingTimer)
-      clearTimeout(bannerTimer)
     }
   }, [])
+
+  // バナーアニメーション用タイマー（認証チェック完了後に開始）
+  useEffect(() => {
+    if (!authChecked) return
+
+    // 認証チェック完了後、少し遅延してバナーをスライドイン
+    const bannerTimer = setTimeout(() => {
+      setShowBannerAnim(true)
+    }, 300)
+
+    return () => {
+      clearTimeout(bannerTimer)
+    }
+  }, [authChecked])
 
   // バナー表示条件（eラーニングページではモーダルがあるため非表示）
   const isElearningPage = pathname.startsWith('/e-learning')
