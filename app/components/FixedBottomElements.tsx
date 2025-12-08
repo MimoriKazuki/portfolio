@@ -6,6 +6,7 @@ import { ChevronRight, Mail, FileText } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useELearningRelease } from '@/app/contexts/ELearningReleaseContext'
+import PurchasePromptModal from '@/app/e-learning/PurchasePromptModal'
 
 interface FixedBottomElementsProps {
   hideContactButton?: boolean
@@ -20,6 +21,7 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
   const [authChecked, setAuthChecked] = useState(false)
   const [showFloating, setShowFloating] = useState(false)
   const [showBannerAnim, setShowBannerAnim] = useState(false)
+  const [showPurchaseModal, setShowPurchaseModal] = useState(false)
   const { handleELearningClick } = useELearningRelease()
 
   // 認証状態と有料アクセス状態の取得（APIルート経由）
@@ -195,9 +197,8 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
               : 'opacity-0 translate-y-full'
           }`}
         >
-          <Link
-            href="/e-learning"
-            onClick={handleELearningClick}
+          <button
+            onClick={() => setShowPurchaseModal(true)}
             className="block w-full bg-amber-500 hover:bg-amber-600 transition-colors cursor-pointer"
           >
             <div className="px-4 sm:px-6 lg:px-8">
@@ -219,9 +220,17 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
                 </div>
               </div>
             </div>
-          </Link>
+          </button>
         </div>
       )}
+
+      {/* 購入モーダル */}
+      <PurchasePromptModal
+        isOpen={showPurchaseModal}
+        onClose={() => setShowPurchaseModal(false)}
+        contentId="all-access"
+        cancelReturnUrl={pathname}
+      />
     </>
   )
 }
