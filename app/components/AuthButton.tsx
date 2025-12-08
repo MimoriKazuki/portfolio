@@ -16,23 +16,14 @@ export default function AuthButton() {
   useEffect(() => {
     const supabase = createClient()
     let isMounted = true
-    let timeoutId: NodeJS.Timeout | null = null
 
-    // 初期認証状態を取得（タイムアウト付き）
-    const getUser = async () => {
-      // 5秒のタイムアウトを設定
-      timeoutId = setTimeout(() => {
-        if (isMounted && loadingRef.current) {
-          console.warn('[AuthButton] getUser timed out after 5 seconds')
-          loadingRef.current = false
-          setLoading(false)
-        }
-      }, 5000)
-
+    // 初期認証状態を取得（getSessionを使用してローカルセッションを即座にチェック）
+    const initAuth = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser()
+        // getSessionはローカルのセッションを即座にチェック（ネットワーク不要）
+        const { data: { session } } = await supabase.auth.getSession()
         if (isMounted) {
-          setUser(user)
+          setUser(session?.user ?? null)
           loadingRef.current = false
           setLoading(false)
         }
@@ -42,14 +33,10 @@ export default function AuthButton() {
           loadingRef.current = false
           setLoading(false)
         }
-      } finally {
-        if (timeoutId) {
-          clearTimeout(timeoutId)
-        }
       }
     }
 
-    getUser()
+    initAuth()
 
     // 認証状態の変更を監視
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -63,9 +50,6 @@ export default function AuthButton() {
 
     return () => {
       isMounted = false
-      if (timeoutId) {
-        clearTimeout(timeoutId)
-      }
       subscription.unsubscribe()
     }
   }, [])

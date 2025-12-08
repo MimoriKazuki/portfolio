@@ -19,26 +19,17 @@ export default function MobileHeader() {
   const authLoadingRef = useRef(true)
   const pathname = usePathname()
 
-  // 認証状態を取得（タイムアウト付き）
+  // 認証状態を取得（getSessionを使用してローカルセッションを即座にチェック）
   useEffect(() => {
     const supabase = createClient()
     let isMounted = true
-    let timeoutId: NodeJS.Timeout | null = null
 
-    const getUser = async () => {
-      // 5秒のタイムアウトを設定
-      timeoutId = setTimeout(() => {
-        if (isMounted && authLoadingRef.current) {
-          console.warn('[MobileHeader] getUser timed out after 5 seconds')
-          authLoadingRef.current = false
-          setAuthLoading(false)
-        }
-      }, 5000)
-
+    const initAuth = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser()
+        // getSessionはローカルのセッションを即座にチェック（ネットワーク不要）
+        const { data: { session } } = await supabase.auth.getSession()
         if (isMounted) {
-          setUser(user)
+          setUser(session?.user ?? null)
           authLoadingRef.current = false
           setAuthLoading(false)
         }
@@ -48,14 +39,10 @@ export default function MobileHeader() {
           authLoadingRef.current = false
           setAuthLoading(false)
         }
-      } finally {
-        if (timeoutId) {
-          clearTimeout(timeoutId)
-        }
       }
     }
 
-    getUser()
+    initAuth()
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (isMounted) {
@@ -67,9 +54,6 @@ export default function MobileHeader() {
 
     return () => {
       isMounted = false
-      if (timeoutId) {
-        clearTimeout(timeoutId)
-      }
       subscription.unsubscribe()
     }
   }, [])
