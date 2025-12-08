@@ -1,7 +1,6 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { createClient } from '@/app/lib/supabase/client'
 import { User } from '@supabase/supabase-js'
 import { ChevronRight } from 'lucide-react'
 import Link from 'next/link'
@@ -16,24 +15,20 @@ export default function LoginBanner({ onVisibilityChange }: LoginBannerProps) {
   const [authChecked, setAuthChecked] = useState(false)
   const { handleELearningClick } = useELearningRelease()
 
+  // 認証状態の取得（APIルート経由）
   useEffect(() => {
-    const supabase = createClient()
-
-    // onAuthStateChangeで認証状態を監視
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'INITIAL_SESSION') {
-        setUser(session?.user ?? null)
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/auth/user')
+        const data = await response.json()
+        setUser(data.user)
         setAuthChecked(true)
-      } else if (event === 'SIGNED_IN') {
-        setUser(session?.user ?? null)
-      } else if (event === 'SIGNED_OUT') {
-        setUser(null)
+      } catch (e) {
+        console.error('[LoginBanner] Auth check error:', e)
+        setAuthChecked(true)
       }
-    })
-
-    return () => {
-      subscription.unsubscribe()
     }
+    checkAuth()
   }, [])
 
   // バナーの表示状態を親コンポーネントに通知
