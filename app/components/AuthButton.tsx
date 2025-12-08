@@ -6,8 +6,8 @@ import { User } from '@supabase/supabase-js'
 import { LogIn, LogOut, Loader2, User as UserIcon } from 'lucide-react'
 
 export default function AuthButton() {
+  // ローディング状態を削除 - 初期値はログインボタンを表示
   const [user, setUser] = useState<User | null>(null)
-  const [loading, setLoading] = useState(true)
   const [loggingOut, setLoggingOut] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
@@ -15,16 +15,17 @@ export default function AuthButton() {
   useEffect(() => {
     const supabase = createClient()
 
-    // 初期認証状態を取得
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      setUser(user)
-      setLoading(false)
+    // getSession()はCookieから読み取るため即時完了する（ネットワーク不要）
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (session?.user) {
+        setUser(session.user)
+      }
     }
 
-    getUser()
+    checkSession()
 
-    // 認証状態の変更を監視
+    // 認証状態の変更を監視（ログイン/ログアウト時に発火）
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
     })
@@ -71,14 +72,6 @@ export default function AuthButton() {
     const supabase = createClient()
     await supabase.auth.signOut()
     window.location.href = '/'
-  }
-
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center py-3">
-        <Loader2 className="h-4 w-4 animate-spin text-gray-400" />
-      </div>
-    )
   }
 
   if (user) {

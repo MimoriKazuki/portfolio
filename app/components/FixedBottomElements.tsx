@@ -17,22 +17,22 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
   const bannerRef = useRef<HTMLDivElement>(null)
   const [bannerHeight, setBannerHeight] = useState(0)
   const [user, setUser] = useState<User | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [authChecked, setAuthChecked] = useState(false)
   const [showFloating, setShowFloating] = useState(false)
   const [showBannerAnim, setShowBannerAnim] = useState(false)
   const { handleELearningClick } = useELearningRelease()
 
-  // 認証状態の取得
+  // 認証状態の取得（getSession()はCookieから即時読み取り）
   useEffect(() => {
     const supabase = createClient()
 
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      setUser(user)
-      setLoading(false)
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      setUser(session?.user ?? null)
+      setAuthChecked(true)
     }
 
-    getUser()
+    checkSession()
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null)
@@ -64,7 +64,7 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
   // バナーの高さを測定（アニメーション前に測定完了）
   useEffect(() => {
     // バナーが表示される場合は高さを事前に設定（デフォルト値）
-    if (!loading && !user) {
+    if (authChecked && !user) {
       // 実際の高さを測定、またはデフォルト値を使用
       if (bannerRef.current) {
         setBannerHeight(bannerRef.current.offsetHeight)
@@ -73,21 +73,21 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
         setBannerHeight(70)
       }
     }
-  }, [loading, user])
+  }, [authChecked, user])
 
   // バナーがレンダリングされた後に正確な高さを再測定
   useEffect(() => {
-    if (bannerRef.current && !loading && !user) {
+    if (bannerRef.current && authChecked && !user) {
       const height = bannerRef.current.offsetHeight
       if (height > 0) {
         setBannerHeight(height)
       }
     }
-  }, [loading, user, showBannerAnim])
+  }, [authChecked, user, showBannerAnim])
 
   // バナー表示条件（eラーニングページではモーダルがあるため非表示）
   const isElearningPage = pathname.startsWith('/e-learning')
-  const showBanner = !loading && !user && !isElearningPage
+  const showBanner = authChecked && !user && !isElearningPage
 
   // フローティングボタンの表示条件
   const isTopPage = pathname === '/'

@@ -13,20 +13,20 @@ interface LoginBannerProps {
 
 export default function LoginBanner({ onVisibilityChange }: LoginBannerProps) {
   const [user, setUser] = useState<User | null>(null)
-  const [loading, setLoading] = useState(true)
+  const [authChecked, setAuthChecked] = useState(false)
   const { handleELearningClick } = useELearningRelease()
 
   useEffect(() => {
     const supabase = createClient()
 
-    // 初期認証状態を取得
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      setUser(user)
-      setLoading(false)
+    // getSession()はCookieから即時読み取り（ネットワーク不要）
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      setUser(session?.user ?? null)
+      setAuthChecked(true)
     }
 
-    getUser()
+    checkSession()
 
     // 認証状態の変更を監視
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
@@ -40,12 +40,12 @@ export default function LoginBanner({ onVisibilityChange }: LoginBannerProps) {
 
   // バナーの表示状態を親コンポーネントに通知
   useEffect(() => {
-    const isVisible = !loading && !user
+    const isVisible = authChecked && !user
     onVisibilityChange?.(isVisible)
-  }, [loading, user, onVisibilityChange])
+  }, [authChecked, user, onVisibilityChange])
 
-  // ローディング中またはログイン済みの場合は非表示
-  if (loading || user) {
+  // 認証未チェックまたはログイン済みの場合は非表示
+  if (!authChecked || user) {
     return null
   }
 
