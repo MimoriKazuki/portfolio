@@ -1,3 +1,36 @@
+# 認証問題の根本原因と修正（2025-12-08）
+
+## 根本原因
+callback route (`app/auth/callback/route.ts`) でのCookie処理に問題があった：
+- `cookies()` を使って `cookieStore.set()` でCookieを設定していた
+- その後、新しい `NextResponse.redirect()` を作成して返していた
+- **新しいレスポンスオブジェクトには設定したCookieが含まれていなかった**
+- これによりブラウザにセッションCookieが渡らず、`onAuthStateChange`の`INITIAL_SESSION`イベントが発火しなかった
+
+## 修正内容
+1. `NextResponse.redirect()` を先に作成
+2. `createServerClient` の `setAll` で `response.cookies.set()` を使用
+3. Cookieが設定されたresponseオブジェクトを返す
+
+## 正しいRoute HandlerでのCookie設定パターン
+```typescript
+const response = NextResponse.redirect(redirectUrl)
+const supabase = createServerClient(URL, KEY, {
+  cookies: {
+    getAll() { return request.cookies.getAll() },
+    setAll(cookiesToSet) {
+      cookiesToSet.forEach(({ name, value, options }) => {
+        response.cookies.set(name, value, options)  // ← responseに設定
+      })
+    },
+  },
+})
+await supabase.auth.exchangeCodeForSession(code)
+return response  // ← Cookieが設定されたresponseを返す
+```
+
+---
+
 # 956909cへのリバートで失われた機能
 
 ## リバート日時

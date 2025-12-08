@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { createClient } from '@/app/lib/supabase/client'
+import { createBrowserClient } from '@supabase/ssr'
 import { User } from '@supabase/supabase-js'
 import { LogIn, LogOut, Loader2, User as UserIcon } from 'lucide-react'
 
@@ -18,54 +18,80 @@ export default function AuthButton() {
     if (initializedRef.current) return
     initializedRef.current = true
 
-    const supabase = createClient()
-    console.log('[AuthButton] Setting up auth listener...')
+    console.log('[AuthButton] Starting initialization...')
+    console.log('[AuthButton] ENV URL:', process.env.NEXT_PUBLIC_SUPABASE_URL ? 'SET' : 'MISSING')
+    console.log('[AuthButton] ENV KEY:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'SET' : 'MISSING')
 
-    // フォールバック: 5秒後に強制的にローディングを終了
+    // フォールバック: 3秒後に強制的にローディングを終了
     const fallbackTimer = setTimeout(() => {
-      console.log('[AuthButton] Fallback timer triggered - forcing loading to false')
+      console.log('[AuthButton] Fallback timer triggered')
       setLoading(false)
-    }, 5000)
+    }, 3000)
 
-    // getSessionを直接呼び出してセッションを確認
-    const checkSession = async () => {
+    const initAuth = async () => {
       try {
-        console.log('[AuthButton] Checking session via getSession()...')
-        const { data: { session }, error } = await supabase.auth.getSession()
+        console.log('[AuthButton] Creating Supabase client...')
+        const supabase = createBrowserClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+        )
+        console.log('[AuthButton] Supabase client created')
 
-        if (error) {
-          console.error('[AuthButton] getSession error:', error)
-        } else {
-          console.log('[AuthButton] getSession result:', session ? `user=${session.user.email}` : 'no session')
-          setUser(session?.user ?? null)
+        console.log('[AuthButton] Calling getSession()...')
+        const startTime = Date.now()
+
+        // タイムアウト付きでgetSessionを呼び出す
+        const sessionPromise = supabase.auth.getSession()
+        const timeoutPromise = new Promise((_, reject) =>
+          setTimeout(() => reject(new Error('getSession timeout')), 2000)
+        )
+
+        try {
+          const { data: { session }, error } = await Promise.race([
+            sessionPromise,
+            timeoutPromise
+          ]) as Awaited<typeof sessionPromise>
+
+          const elapsed = Date.now() - startTime
+          console.log(`[AuthButton] getSession completed in ${elapsed}ms`)
+
+          if (error) {
+            console.error('[AuthButton] getSession error:', error)
+          } else {
+            console.log('[AuthButton] Session:', session ? `user=${session.user.email}` : 'null')
+            setUser(session?.user ?? null)
+          }
+        } catch (timeoutErr) {
+          console.error('[AuthButton] getSession timed out after 2s')
         }
 
         clearTimeout(fallbackTimer)
         setLoading(false)
+
+        // onAuthStateChangeで以降の変更を監視
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+          console.log('[AuthButton] onAuthStateChange:', event)
+          if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+            setUser(session?.user ?? null)
+          } else if (event === 'SIGNED_OUT') {
+            setUser(null)
+          }
+        })
+
+        return () => {
+          subscription.unsubscribe()
+        }
       } catch (e) {
-        console.error('[AuthButton] getSession exception:', e)
+        console.error('[AuthButton] Init error:', e)
         clearTimeout(fallbackTimer)
         setLoading(false)
       }
     }
 
-    // まずgetSessionで即座に確認
-    checkSession()
-
-    // onAuthStateChangeで以降の変更を監視
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('[AuthButton] onAuthStateChange:', event, session?.user?.email || 'no user')
-
-      if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-        setUser(session?.user ?? null)
-      } else if (event === 'SIGNED_OUT') {
-        setUser(null)
-      }
-    })
+    initAuth()
 
     return () => {
       clearTimeout(fallbackTimer)
-      subscription.unsubscribe()
     }
   }, [])
 
@@ -87,7 +113,10 @@ export default function AuthButton() {
   }, [menuOpen])
 
   const handleLogin = async () => {
-    const supabase = createClient()
+    const supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
@@ -103,7 +132,10 @@ export default function AuthButton() {
   const handleLogout = async () => {
     setLoggingOut(true)
     setMenuOpen(false)
-    const supabase = createClient()
+    const supabase = createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
     await supabase.auth.signOut()
     window.location.href = '/'
   }
