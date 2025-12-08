@@ -18,6 +18,21 @@ export default function AuthButton() {
     if (initializedRef.current) return
     initializedRef.current = true
 
+    // 不要なPKCEデータをクリーンアップ（URLにcodeがない場合のみ）
+    if (typeof window !== 'undefined' && !window.location.search.includes('code=')) {
+      try {
+        const keysToCheck = Object.keys(localStorage).filter(key =>
+          key.includes('pkce') || key.includes('code_verifier')
+        )
+        if (keysToCheck.length > 0) {
+          console.log('[AuthButton] Cleaning up stale PKCE data:', keysToCheck)
+          keysToCheck.forEach(key => localStorage.removeItem(key))
+        }
+      } catch (e) {
+        console.log('[AuthButton] localStorage cleanup error:', e)
+      }
+    }
+
     // シングルトンクライアントを使用
     const supabase = createClient()
     console.log('[AuthButton] Using singleton Supabase client')

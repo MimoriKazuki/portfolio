@@ -16,7 +16,7 @@ export function createClient() {
   console.log(`[Supabase Client] Creating new instance #${instanceCount}`)
   console.log('[Supabase Client] URL:', process.env.NEXT_PUBLIC_SUPABASE_URL?.substring(0, 30) + '...')
 
-  // なければ新規作成
+  // @supabase/ssr のブラウザクライアントを使用
   supabaseInstance = createBrowserClient<Database>(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
