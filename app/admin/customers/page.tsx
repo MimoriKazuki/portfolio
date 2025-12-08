@@ -71,5 +71,27 @@ export default async function AdminCustomersPage() {
   // 登録日の新しい順にソート
   customers.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
 
-  return <CustomersClient customers={customers} />
+  // 契約企業を取得（紐づくユーザーも含む）
+  const { data: corporateCustomers, error: corporateError } = await supabaseAdmin
+    .from('e_learning_corporate_customers')
+    .select(`
+      *,
+      users:e_learning_corporate_users (
+        id,
+        email,
+        created_at
+      )
+    `)
+    .order('created_at', { ascending: false })
+
+  if (corporateError) {
+    console.error('Error fetching corporate customers:', corporateError)
+  }
+
+  return (
+    <CustomersClient
+      customers={customers}
+      corporateCustomers={corporateCustomers || []}
+    />
+  )
 }

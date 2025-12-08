@@ -15,41 +15,64 @@ export default function AuthButton() {
 
   useEffect(() => {
     let isMounted = true
-    let supabase: ReturnType<typeof createClient>
 
+    // 環境変数の確認
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    console.log('[AuthButton] Environment check:', {
+      hasUrl: !!supabaseUrl,
+      urlPrefix: supabaseUrl?.substring(0, 30) + '...',
+      hasKey: !!supabaseKey,
+      keyPrefix: supabaseKey?.substring(0, 20) + '...'
+    })
+
+    let supabase: ReturnType<typeof createClient>
     try {
       supabase = createClient()
+      console.log('[AuthButton] Supabase client created successfully')
     } catch (e) {
       console.error('[AuthButton] Failed to create Supabase client:', e)
       return
     }
 
-    // 1. 最初にgetSessionでセッションを直接確認（onAuthStateChangeのバックアップ）
+    // getSessionにタイムアウトを追加
     const checkSession = async () => {
+      console.log('[AuthButton] Starting getSession() with 5s timeout...')
+
+      const timeoutPromise = new Promise<null>((_, reject) => {
+        setTimeout(() => reject(new Error('getSession timeout after 5s')), 5000)
+      })
+
       try {
-        console.log('[AuthButton] Checking session with getSession()...')
-        const { data: { session }, error } = await supabase.auth.getSession()
+        const result = await Promise.race([
+          supabase.auth.getSession(),
+          timeoutPromise
+        ]) as { data: { session: any }, error: any }
+
         console.log('[AuthButton] getSession result:', {
-          hasSession: !!session,
-          user: session?.user?.email ?? 'none',
-          error: error?.message ?? 'none'
+          hasSession: !!result?.data?.session,
+          user: result?.data?.session?.user?.email ?? 'none',
+          error: result?.error?.message ?? 'none'
         })
-        if (isMounted && session?.user) {
-          setUser(session.user)
+
+        if (isMounted && result?.data?.session?.user) {
+          setUser(result.data.session.user)
         }
       } catch (e) {
-        console.error('[AuthButton] getSession error:', e)
+        console.error('[AuthButton] getSession failed:', e)
       }
     }
     checkSession()
 
-    // 2. onAuthStateChangeも設定（状態変化を監視）
+    // onAuthStateChangeも設定
+    console.log('[AuthButton] Setting up onAuthStateChange...')
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       console.log('[AuthButton] onAuthStateChange:', event, session?.user?.email ?? 'none')
       if (isMounted) {
         setUser(session?.user ?? null)
       }
     })
+    console.log('[AuthButton] onAuthStateChange registered')
 
     return () => {
       isMounted = false
