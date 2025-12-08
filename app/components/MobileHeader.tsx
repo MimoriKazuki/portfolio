@@ -16,25 +16,60 @@ export default function MobileHeader() {
   const [loggingOut, setLoggingOut] = useState(false)
   const [authMenuOpen, setAuthMenuOpen] = useState(false)
   const authMenuRef = useRef<HTMLDivElement>(null)
+  const authLoadingRef = useRef(true)
   const pathname = usePathname()
 
-  // 認証状態を取得
+  // 認証状態を取得（タイムアウト付き）
   useEffect(() => {
     const supabase = createClient()
+    let isMounted = true
+    let timeoutId: NodeJS.Timeout | null = null
 
     const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      setUser(user)
-      setAuthLoading(false)
+      // 5秒のタイムアウトを設定
+      timeoutId = setTimeout(() => {
+        if (isMounted && authLoadingRef.current) {
+          console.warn('[MobileHeader] getUser timed out after 5 seconds')
+          authLoadingRef.current = false
+          setAuthLoading(false)
+        }
+      }, 5000)
+
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (isMounted) {
+          setUser(user)
+          authLoadingRef.current = false
+          setAuthLoading(false)
+        }
+      } catch {
+        if (isMounted) {
+          setUser(null)
+          authLoadingRef.current = false
+          setAuthLoading(false)
+        }
+      } finally {
+        if (timeoutId) {
+          clearTimeout(timeoutId)
+        }
+      }
     }
 
     getUser()
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
+      if (isMounted) {
+        setUser(session?.user ?? null)
+        authLoadingRef.current = false
+        setAuthLoading(false)
+      }
     })
 
     return () => {
+      isMounted = false
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
       subscription.unsubscribe()
     }
   }, [])

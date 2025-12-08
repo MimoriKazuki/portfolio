@@ -11,25 +11,61 @@ export default function AuthButton() {
   const [loggingOut, setLoggingOut] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
+  const loadingRef = useRef(true)
 
   useEffect(() => {
     const supabase = createClient()
+    let isMounted = true
+    let timeoutId: NodeJS.Timeout | null = null
 
-    // 初期認証状態を取得
+    // 初期認証状態を取得（タイムアウト付き）
     const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      setUser(user)
-      setLoading(false)
+      // 5秒のタイムアウトを設定
+      timeoutId = setTimeout(() => {
+        if (isMounted && loadingRef.current) {
+          console.warn('[AuthButton] getUser timed out after 5 seconds')
+          loadingRef.current = false
+          setLoading(false)
+        }
+      }, 5000)
+
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (isMounted) {
+          setUser(user)
+          loadingRef.current = false
+          setLoading(false)
+        }
+      } catch {
+        if (isMounted) {
+          setUser(null)
+          loadingRef.current = false
+          setLoading(false)
+        }
+      } finally {
+        if (timeoutId) {
+          clearTimeout(timeoutId)
+        }
+      }
     }
 
     getUser()
 
     // 認証状態の変更を監視
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
+      if (isMounted) {
+        setUser(session?.user ?? null)
+        // 認証状態変更時もloadingをfalseに
+        loadingRef.current = false
+        setLoading(false)
+      }
     })
 
     return () => {
+      isMounted = false
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
       subscription.unsubscribe()
     }
   }, [])

@@ -28,10 +28,13 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
   const [showPurchaseModal, setShowPurchaseModal] = useState(false)
   const { handleELearningClick } = useELearningRelease()
 
-  // 認証状態の取得
+  // 認証状態の取得（タイムアウト付き）
   useEffect(() => {
     const supabase = createClient()
+    let isMounted = true
     let isInitialLoad = true
+    let timeoutId: NodeJS.Timeout | null = null
+    const loadingRef = { current: true }
 
     // 購入状態を取得するヘルパー関数
     const fetchPaidAccess = async (userId: string): Promise<boolean> => {
@@ -48,23 +51,45 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
     }
 
     const getUser = async () => {
+      // 5秒のタイムアウトを設定
+      timeoutId = setTimeout(() => {
+        if (isMounted && loadingRef.current) {
+          console.warn('[FixedBottomElements] getUser timed out after 5 seconds')
+          loadingRef.current = false
+          setPaidAccessChecked(true)
+          setLoading(false)
+        }
+      }, 5000)
+
       try {
         const { data: { user } } = await supabase.auth.getUser()
-        setUser(user)
+        if (isMounted) {
+          setUser(user)
 
-        // ユーザーがログイン済みの場合、購入状態を確認
-        if (user) {
-          const paidAccess = await fetchPaidAccess(user.id)
-          setHasPaidAccess(paidAccess)
+          // ユーザーがログイン済みの場合、購入状態を確認
+          if (user) {
+            const paidAccess = await fetchPaidAccess(user.id)
+            if (isMounted) {
+              setHasPaidAccess(paidAccess)
+            }
+          }
+          loadingRef.current = false
+          setPaidAccessChecked(true)
+          setLoading(false)
+          isInitialLoad = false
         }
-        setPaidAccessChecked(true)
-        setLoading(false)
-        isInitialLoad = false
       } catch {
-        setUser(null)
-        setPaidAccessChecked(true)
-        setLoading(false)
-        isInitialLoad = false
+        if (isMounted) {
+          setUser(null)
+          loadingRef.current = false
+          setPaidAccessChecked(true)
+          setLoading(false)
+          isInitialLoad = false
+        }
+      } finally {
+        if (timeoutId) {
+          clearTimeout(timeoutId)
+        }
       }
     }
 
@@ -73,18 +98,25 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       // 初期ロード中は無視（getUser()で処理する）
       if (isInitialLoad) return
+      if (!isMounted) return
 
       setUser(session?.user ?? null)
       // 認証状態が変わった時も購入状態を更新
       if (session?.user) {
         const paidAccess = await fetchPaidAccess(session.user.id)
-        setHasPaidAccess(paidAccess)
+        if (isMounted) {
+          setHasPaidAccess(paidAccess)
+        }
       } else {
         setHasPaidAccess(false)
       }
     })
 
     return () => {
+      isMounted = false
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+      }
       subscription.unsubscribe()
     }
   }, [])
