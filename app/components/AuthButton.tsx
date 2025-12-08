@@ -53,7 +53,7 @@ export default function AuthButton() {
 
   const handleLogin = async () => {
     const supabase = createClient()
-    await supabase.auth.signInWithOAuth({
+    const { data, error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
         // サイドバーからのログインはeラーニングトップに遷移
@@ -62,8 +62,14 @@ export default function AuthButton() {
           access_type: 'offline',
           prompt: 'consent',
         },
+        skipBrowserRedirect: true, // 自動リダイレクトを無効化
       },
     })
+
+    // 同一タブでリダイレクト
+    if (data?.url && !error) {
+      window.location.href = data.url
+    }
   }
 
   const handleLogout = async () => {

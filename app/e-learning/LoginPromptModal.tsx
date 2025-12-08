@@ -32,7 +32,7 @@ export default function LoginPromptModal({ isOpen, onClose }: LoginPromptModalPr
     try {
       const supabase = createClient()
 
-      const { error } = await supabase.auth.signInWithOAuth({
+      const { data, error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
           redirectTo: `${window.location.origin}/auth/callback?redirect_to=/e-learning`,
@@ -40,6 +40,7 @@ export default function LoginPromptModal({ isOpen, onClose }: LoginPromptModalPr
             access_type: 'offline',
             prompt: 'consent',
           },
+          skipBrowserRedirect: true, // 自動リダイレクトを無効化
         },
       })
 
@@ -47,6 +48,12 @@ export default function LoginPromptModal({ isOpen, onClose }: LoginPromptModalPr
         console.error('Google login error:', error)
         setError('ログインに失敗しました。もう一度お試しください。')
         setLoading(false)
+        return
+      }
+
+      // 同一タブでリダイレクト
+      if (data?.url) {
+        window.location.href = data.url
       }
     } catch (err) {
       console.error('Unexpected error:', err)
