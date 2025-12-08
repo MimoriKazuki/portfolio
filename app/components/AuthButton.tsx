@@ -18,24 +18,8 @@ export default function AuthButton() {
     if (initializedRef.current) return
     initializedRef.current = true
 
-    // 不要なPKCEデータをクリーンアップ（URLにcodeがない場合のみ）
-    if (typeof window !== 'undefined' && !window.location.search.includes('code=')) {
-      try {
-        const keysToCheck = Object.keys(localStorage).filter(key =>
-          key.includes('pkce') || key.includes('code_verifier')
-        )
-        if (keysToCheck.length > 0) {
-          console.log('[AuthButton] Cleaning up stale PKCE data:', keysToCheck)
-          keysToCheck.forEach(key => localStorage.removeItem(key))
-        }
-      } catch (e) {
-        console.log('[AuthButton] localStorage cleanup error:', e)
-      }
-    }
-
     // シングルトンクライアントを使用
     const supabase = createClient()
-    console.log('[AuthButton] Using singleton Supabase client')
 
     // フォールバック: 3秒後に強制的にローディングを終了
     const fallbackTimer = setTimeout(() => {
@@ -45,49 +29,32 @@ export default function AuthButton() {
 
     const initAuth = async () => {
       try {
-        console.log('[AuthButton] Calling getSession()...')
+        // Cookieの状態をログ出力
+        console.log('[AuthButton] Cookies:', document.cookie.split(';').filter(c => c.trim().startsWith('sb-')).length, 'Supabase cookies found')
+
+        console.log('[AuthButton] Calling getUser()...')
         const startTime = Date.now()
 
-        // タイムアウト付きでgetSession()を呼び出す
-        const timeoutPromise = new Promise<never>((_, reject) => {
-          setTimeout(() => reject(new Error('getSession timeout')), 2000)
-        })
-
-        const sessionPromise = supabase.auth.getSession()
-
-        const result = await Promise.race([sessionPromise, timeoutPromise])
-        const { data: { session }, error } = result
+        // getSession()の代わりにgetUser()を使用（より信頼性が高い）
+        const { data: { user: authUser }, error } = await supabase.auth.getUser()
 
         const elapsed = Date.now() - startTime
-        console.log(`[AuthButton] getSession completed in ${elapsed}ms`)
+        console.log(`[AuthButton] getUser completed in ${elapsed}ms`)
 
         if (error) {
-          console.error('[AuthButton] getSession error:', error)
+          console.error('[AuthButton] getUser error:', error.message)
+          // エラーがあってもnullユーザーとして処理（未ログイン状態）
+          setUser(null)
         } else {
-          console.log('[AuthButton] Session:', session ? `user=${session.user.email}` : 'null')
-          setUser(session?.user ?? null)
+          console.log('[AuthButton] User:', authUser ? `${authUser.email}` : 'null')
+          setUser(authUser)
         }
 
         clearTimeout(fallbackTimer)
         setLoading(false)
       } catch (e) {
         console.error('[AuthButton] Init error:', e)
-        // タイムアウトした場合、localStorageから直接セッション確認を試みる
-        console.log('[AuthButton] Trying localStorage fallback...')
-        try {
-          const storageKey = `sb-${process.env.NEXT_PUBLIC_SUPABASE_URL?.replace('https://', '').split('.')[0]}-auth-token`
-          const storedSession = localStorage.getItem(storageKey)
-          console.log('[AuthButton] localStorage check:', storedSession ? 'found' : 'not found')
-          if (storedSession) {
-            const parsed = JSON.parse(storedSession)
-            if (parsed?.user) {
-              console.log('[AuthButton] Using localStorage session')
-              setUser(parsed.user)
-            }
-          }
-        } catch (storageError) {
-          console.error('[AuthButton] localStorage fallback error:', storageError)
-        }
+        setUser(null)
         clearTimeout(fallbackTimer)
         setLoading(false)
       }
