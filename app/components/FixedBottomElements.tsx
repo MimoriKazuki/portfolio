@@ -65,10 +65,12 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
     }
   }, [authChecked])
 
-  // バナー表示条件（eラーニングページではモーダルがあるため非表示）
+  // バナー表示条件
   const isElearningPage = pathname.startsWith('/e-learning')
+  // ログインバナーはeラーニングページでは非表示（モーダルがあるため）
   const showLoginBanner = authChecked && !user && !isElearningPage
-  const showPurchaseBanner = authChecked && user && !hasPaidAccess && !isElearningPage
+  // 購入促進バナーはeラーニングページでも表示
+  const showPurchaseBanner = authChecked && user && !hasPaidAccess
   const showBanner = showLoginBanner || showPurchaseBanner
 
   // バナーの高さを測定（アニメーション前に測定完了）
@@ -206,7 +208,7 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
                   alt="今だけ！有料動画コンテンツ 50%OFF"
                   className="h-8 sm:h-10 flex-shrink-0"
                 />
-                <div className="flex flex-col sm:flex-row items-center gap-0.5 sm:gap-2">
+                <div className="flex flex-col items-center gap-0.5">
                   <p className="text-white text-xs sm:text-base font-semibold text-center">
                     全ての有料コンテンツが見放題！
                   </p>
