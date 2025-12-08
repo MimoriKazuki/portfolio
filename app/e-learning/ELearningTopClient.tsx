@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { Play, PlayCircle, Lock, ArrowRight, Bookmark } from 'lucide-react'
 import { ELearningContent, ELearningCategory } from '@/app/types'
 import LoginPromptModal from './LoginPromptModal'
+import PurchasePromptModal from './PurchasePromptModal'
 
 interface ELearningTopClientProps {
   featuredContents: ELearningContent[]
@@ -13,6 +14,7 @@ interface ELearningTopClientProps {
   contentsByCategory: Record<string, ELearningContent[]>
   isLoggedIn: boolean
   userBookmarks?: string[]
+  hasPaidAccess?: boolean
 }
 
 // コンテンツカードコンポーネント
@@ -97,9 +99,14 @@ export default function ELearningTopClient({
   contentsByCategory,
   isLoggedIn,
   userBookmarks = [],
+  hasPaidAccess = false,
 }: ELearningTopClientProps) {
   const [isVisible, setIsVisible] = useState(false)
   const [showLoginModal, setShowLoginModal] = useState(false)
+  const [showPurchaseModal, setShowPurchaseModal] = useState(false)
+
+  // 無料ログインユーザーかどうか（ログイン済みで未購入）
+  const isFreeUser = isLoggedIn && !hasPaidAccess
 
   useEffect(() => {
     setIsVisible(true)
@@ -110,6 +117,10 @@ export default function ELearningTopClient({
 
   const handleCardClick = () => {
     setShowLoginModal(true)
+  }
+
+  const handlePurchaseBannerClick = () => {
+    setShowPurchaseModal(true)
   }
 
   return (
@@ -170,6 +181,25 @@ export default function ELearningTopClient({
           </div>
         </div>
       </section>
+
+      {/* 無料ユーザー向け購入促進バナー（大） */}
+      {isFreeUser && (
+        <section className="mb-12 flex justify-center">
+          <button
+            onClick={handlePurchaseBannerClick}
+            className="block w-full max-w-[800px] transition-opacity hover:opacity-80 duration-200"
+          >
+            <Image
+              src="/images/banner/banner_lg.svg"
+              alt="有料コンテンツ見放題 - 今だけ半額！"
+              width={800}
+              height={300}
+              className="w-full h-auto"
+              priority
+            />
+          </button>
+        </section>
+      )}
 
       {/* おすすめセクション */}
       {featuredContents.length > 0 && (
@@ -247,6 +277,13 @@ export default function ELearningTopClient({
       <LoginPromptModal
         isOpen={showLoginModal}
         onClose={() => setShowLoginModal(false)}
+      />
+
+      {/* 購入モーダル */}
+      <PurchasePromptModal
+        isOpen={showPurchaseModal}
+        onClose={() => setShowPurchaseModal(false)}
+        contentId="all-access"
       />
     </div>
   )

@@ -5,8 +5,10 @@ import { createClient } from '@/app/lib/supabase/client'
 import { User } from '@supabase/supabase-js'
 import { ChevronRight, Mail, FileText } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import { useELearningRelease } from '@/app/contexts/ELearningReleaseContext'
+import PurchasePromptModal from '@/app/e-learning/PurchasePromptModal'
 
 interface FixedBottomElementsProps {
   hideContactButton?: boolean
@@ -18,24 +20,68 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
   const [bannerHeight, setBannerHeight] = useState(0)
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(true)
+  const [paidAccessChecked, setPaidAccessChecked] = useState(false)
   const [showFloating, setShowFloating] = useState(false)
   const [showBannerAnim, setShowBannerAnim] = useState(false)
+  const [showPurchaseBannerAnim, setShowPurchaseBannerAnim] = useState(false)
+  const [hasPaidAccess, setHasPaidAccess] = useState(false)
+  const [showPurchaseModal, setShowPurchaseModal] = useState(false)
   const { handleELearningClick } = useELearningRelease()
 
   // 認証状態の取得
   useEffect(() => {
     const supabase = createClient()
+    let isInitialLoad = true
+
+    // 購入状態を取得するヘルパー関数
+    const fetchPaidAccess = async (userId: string): Promise<boolean> => {
+      try {
+        const { data: eLearningUser } = await supabase
+          .from('e_learning_users')
+          .select('has_paid_access')
+          .eq('auth_user_id', userId)
+          .maybeSingle()
+        return eLearningUser?.has_paid_access ?? false
+      } catch {
+        return false
+      }
+    }
 
     const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      setUser(user)
-      setLoading(false)
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        setUser(user)
+
+        // ユーザーがログイン済みの場合、購入状態を確認
+        if (user) {
+          const paidAccess = await fetchPaidAccess(user.id)
+          setHasPaidAccess(paidAccess)
+        }
+        setPaidAccessChecked(true)
+        setLoading(false)
+        isInitialLoad = false
+      } catch {
+        setUser(null)
+        setPaidAccessChecked(true)
+        setLoading(false)
+        isInitialLoad = false
+      }
     }
 
     getUser()
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      // 初期ロード中は無視（getUser()で処理する）
+      if (isInitialLoad) return
+
       setUser(session?.user ?? null)
+      // 認証状態が変わった時も購入状態を更新
+      if (session?.user) {
+        const paidAccess = await fetchPaidAccess(session.user.id)
+        setHasPaidAccess(paidAccess)
+      } else {
+        setHasPaidAccess(false)
+      }
     })
 
     return () => {
@@ -61,10 +107,26 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
     }
   }, [])
 
+  // 無料ログインユーザーかどうか（ログイン済みで未購入、購入状態チェック済み）
+  const isFreeUser = !loading && paidAccessChecked && user && !hasPaidAccess
+
+  // 購入促進バナーのアニメーション（isFreeUserが確定してから遅延表示）
+  useEffect(() => {
+    if (isFreeUser) {
+      // 少し遅延させてから下から滑らかに表示（認証チェック後なので短めに）
+      const timer = setTimeout(() => {
+        setShowPurchaseBannerAnim(true)
+      }, 100)
+      return () => clearTimeout(timer)
+    } else {
+      setShowPurchaseBannerAnim(false)
+    }
+  }, [isFreeUser])
+
   // バナーの高さを測定（アニメーション前に測定完了）
   useEffect(() => {
     // バナーが表示される場合は高さを事前に設定（デフォルト値）
-    if (!loading && !user) {
+    if (!loading && (!user || isFreeUser)) {
       // 実際の高さを測定、またはデフォルト値を使用
       if (bannerRef.current) {
         setBannerHeight(bannerRef.current.offsetHeight)
@@ -73,21 +135,26 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
         setBannerHeight(70)
       }
     }
-  }, [loading, user])
+  }, [loading, user, isFreeUser])
 
   // バナーがレンダリングされた後に正確な高さを再測定
   useEffect(() => {
-    if (bannerRef.current && !loading && !user) {
+    if (bannerRef.current && !loading && (!user || isFreeUser)) {
       const height = bannerRef.current.offsetHeight
       if (height > 0) {
         setBannerHeight(height)
       }
     }
-  }, [loading, user, showBannerAnim])
+  }, [loading, user, isFreeUser, showBannerAnim, showPurchaseBannerAnim])
 
-  // バナー表示条件（eラーニングページではモーダルがあるため非表示）
+  // バナー表示条件
   const isElearningPage = pathname.startsWith('/e-learning')
-  const showBanner = !loading && !user && !isElearningPage
+  // ログインバナー: 未ログインユーザー向け（eラーニングページではモーダルがあるため非表示）
+  const showLoginBanner = !loading && paidAccessChecked && !user && !isElearningPage
+  // 購入促進バナー: 無料ログインユーザー向け（全ページで表示）
+  const showPurchaseBanner = !!isFreeUser
+  // いずれかのバナーを表示するか
+  const showBanner = showLoginBanner || showPurchaseBanner
 
   // フローティングボタンの表示条件
   const isTopPage = pathname === '/'
@@ -102,8 +169,9 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
     return null
   }
 
-  // フローティングボタンの bottom 位置（バナー高さ + 16px余白）
-  const floatingBottom = showBanner ? bannerHeight + 16 : 24
+  // フローティングボタンの bottom 位置（バナーがアニメーション表示中の時のみ高さを加算）
+  const bannerAnimating = (showLoginBanner && showBannerAnim) || (showPurchaseBanner && showPurchaseBannerAnim)
+  const floatingBottom = bannerAnimating ? bannerHeight + 16 : 24
 
   return (
     <>
@@ -145,8 +213,8 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
         </div>
       )}
 
-      {/* ログインバナー */}
-      {showBanner && (
+      {/* ログインバナー（未ログインユーザー向け） */}
+      {showLoginBanner && (
         <div
           ref={bannerRef}
           className={`fixed bottom-0 left-0 xl:left-[178px] right-0 z-30 transition-all duration-500 ease-out ${
@@ -174,6 +242,51 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
           </Link>
         </div>
       )}
+
+      {/* 購入促進バナー（無料ログインユーザー向け） */}
+      {showPurchaseBanner && (
+        <div
+          ref={bannerRef}
+          className={`fixed bottom-0 left-0 xl:left-[178px] right-0 z-30 transition-all duration-500 ease-out ${
+            showPurchaseBannerAnim
+              ? 'opacity-100 translate-y-0'
+              : 'opacity-0 translate-y-full'
+          }`}
+        >
+          <button
+            onClick={() => setShowPurchaseModal(true)}
+            className="block w-full bg-amber-500 hover:bg-amber-600 transition-colors cursor-pointer"
+          >
+            <div className="px-4 sm:px-6 lg:px-8">
+              <div className="flex items-center justify-center py-3 gap-3">
+                <Image
+                  src="/images/banner/banner_sm.svg"
+                  alt="今だけ半額！50%OFF"
+                  width={152}
+                  height={44}
+                  className="h-[36px] sm:h-[44px] w-auto"
+                />
+                <div className="flex flex-col items-center gap-1">
+                  <p className="text-white text-xs sm:text-base font-semibold">
+                    全ての有料コンテンツが見放題！
+                  </p>
+                  <p className="text-white text-xs sm:text-base font-semibold flex items-center gap-1">
+                    今すぐ購入する
+                    <ChevronRight className="h-4 w-4" />
+                  </p>
+                </div>
+              </div>
+            </div>
+          </button>
+        </div>
+      )}
+
+      {/* 購入モーダル */}
+      <PurchasePromptModal
+        isOpen={showPurchaseModal}
+        onClose={() => setShowPurchaseModal(false)}
+        contentId="all-access"
+      />
     </>
   )
 }

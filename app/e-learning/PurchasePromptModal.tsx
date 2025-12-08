@@ -102,7 +102,7 @@ export default function PurchasePromptModal({ isOpen, onClose, contentId, cancel
               )}
 
               <button
-                onClick={() => window.history.back()}
+                onClick={onClose}
                 className="inline-flex items-center justify-center w-full px-8 py-4 bg-white text-gray-700 font-medium border border-gray-300 transition-colors duration-200 hover:bg-gray-50"
               >
                 戻る

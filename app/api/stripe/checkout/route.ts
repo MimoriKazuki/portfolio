@@ -63,9 +63,10 @@ export async function POST(request: NextRequest) {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.landbridge.ai'
 
     // リダイレクト先URL
-    // 成功時: コンテンツIDがあればそのページ、なければ一覧ページ
+    // 成功時: コンテンツIDがあればそのページ、なければトップページ
+    // all-access（全コンテンツ購入）の場合はトップページ
     // キャンセル時: cancelReturnUrlがあればそこに戻る（バリデーション付き）
-    const successPath = contentId ? `/e-learning/${contentId}` : '/e-learning'
+    const successPath = contentId && contentId !== 'all-access' ? `/e-learning/${contentId}` : '/e-learning'
     // cancelReturnUrlのバリデーション（/e-learningまたは/e-learning/coursesのみ許可）
     const validCancelUrls = ['/e-learning', '/e-learning/courses']
     const cancelPath = cancelReturnUrl && validCancelUrls.includes(cancelReturnUrl)

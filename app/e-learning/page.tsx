@@ -14,7 +14,8 @@ export const metadata: Metadata = {
   },
 }
 
-export const revalidate = 60
+// ユーザー認証状態に依存するため動的レンダリング
+export const dynamic = 'force-dynamic'
 
 async function getCategories(): Promise<ELearningCategory[]> {
   const supabase = createStaticClient()
@@ -95,6 +96,17 @@ async function getUserBookmarks(userId: string) {
   return bookmarks?.map(b => b.content_id) || []
 }
 
+async function getUserPaidAccess(userId: string) {
+  const supabase = await createClient()
+  const { data: eLearningUser } = await supabase
+    .from('e_learning_users')
+    .select('has_paid_access')
+    .eq('auth_user_id', userId)
+    .maybeSingle()
+
+  return eLearningUser?.has_paid_access ?? false
+}
+
 export default async function ELearningPage() {
   const [categories, featuredContents, { user }] = await Promise.all([
     getCategories(),
@@ -105,8 +117,9 @@ export default async function ELearningPage() {
   const categoryIds = categories.map(c => c.id)
   const contentsByCategory = await getContentsByCategory(categoryIds)
 
-  // ログインユーザーのブックマークを取得
+  // ログインユーザーのブックマークと購入状態を取得
   const userBookmarks = user ? await getUserBookmarks(user.id) : []
+  const hasPaidAccess = user ? await getUserPaidAccess(user.id) : false
 
   return (
     <MainLayout>
@@ -117,6 +130,7 @@ export default async function ELearningPage() {
           contentsByCategory={contentsByCategory}
           isLoggedIn={!!user}
           userBookmarks={userBookmarks}
+          hasPaidAccess={hasPaidAccess}
         />
       </div>
     </MainLayout>
