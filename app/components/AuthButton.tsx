@@ -17,9 +17,15 @@ export default function AuthButton() {
 
     // 初期認証状態を取得
     const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      setUser(user)
-      setLoading(false)
+      try {
+        const { data: { user } } = await supabase.auth.getUser()
+        setUser(user)
+      } catch (error) {
+        console.error('Failed to get user:', error)
+        setUser(null)
+      } finally {
+        setLoading(false)
+      }
     }
 
     getUser()
