@@ -23,20 +23,9 @@ export default function MobileHeader() {
     const supabase = createClient()
 
     const getUser = async () => {
-      try {
-        const { data: { user }, error } = await supabase.auth.getUser()
-        if (error) {
-          console.error('Failed to get user:', error)
-          setUser(null)
-        } else {
-          setUser(user)
-        }
-      } catch (error) {
-        console.error('Unexpected error getting user:', error)
-        setUser(null)
-      } finally {
-        setAuthLoading(false)
-      }
+      const { data: { user } } = await supabase.auth.getUser()
+      setUser(user)
+      setAuthLoading(false)
     }
 
     getUser()
