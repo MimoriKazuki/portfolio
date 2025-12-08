@@ -24,8 +24,28 @@ export default function AuthButton() {
       return
     }
 
-    // 認証状態の変更を監視（INITIAL_SESSIONが来れば更新、来なくてもログインボタンは表示済み）
+    // 1. 最初にgetSessionでセッションを直接確認（onAuthStateChangeのバックアップ）
+    const checkSession = async () => {
+      try {
+        console.log('[AuthButton] Checking session with getSession()...')
+        const { data: { session }, error } = await supabase.auth.getSession()
+        console.log('[AuthButton] getSession result:', {
+          hasSession: !!session,
+          user: session?.user?.email ?? 'none',
+          error: error?.message ?? 'none'
+        })
+        if (isMounted && session?.user) {
+          setUser(session.user)
+        }
+      } catch (e) {
+        console.error('[AuthButton] getSession error:', e)
+      }
+    }
+    checkSession()
+
+    // 2. onAuthStateChangeも設定（状態変化を監視）
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('[AuthButton] onAuthStateChange:', event, session?.user?.email ?? 'none')
       if (isMounted) {
         setUser(session?.user ?? null)
       }
