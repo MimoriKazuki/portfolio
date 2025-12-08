@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { User } from '@supabase/supabase-js'
-import { ChevronRight, Mail, FileText, Sparkles } from 'lucide-react'
+import { ChevronRight, Mail, FileText } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useELearningRelease } from '@/app/contexts/ELearningReleaseContext'
@@ -186,19 +186,25 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
           <Link
             href="/e-learning"
             onClick={handleELearningClick}
-            className="block w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 transition-colors cursor-pointer"
+            className="block w-full bg-amber-500 hover:bg-amber-600 transition-colors cursor-pointer"
           >
             <div className="px-4 sm:px-6 lg:px-8">
-              <div className="flex flex-col items-center justify-center py-3 gap-1">
-                <p className="text-white text-xs sm:text-base font-semibold text-center flex items-center gap-2">
-                  <Sparkles className="h-4 w-4" />
-                  有料プランで全コンテンツにアクセス
-                  <Sparkles className="h-4 w-4" />
-                </p>
-                <p className="text-white text-xs sm:text-base font-semibold text-center flex items-center gap-1">
-                  今すぐアップグレード
-                  <ChevronRight className="h-4 w-4" />
-                </p>
+              <div className="flex items-center justify-center py-3 gap-3 sm:gap-4">
+                {/* 50%OFF バッジ（SVG） */}
+                <img
+                  src="/images/banner/banner_sm.svg"
+                  alt="今だけ！有料動画コンテンツ 50%OFF"
+                  className="h-8 sm:h-10 flex-shrink-0"
+                />
+                <div className="flex flex-col sm:flex-row items-center gap-0.5 sm:gap-2">
+                  <p className="text-white text-xs sm:text-base font-semibold text-center">
+                    全ての有料コンテンツが見放題！
+                  </p>
+                  <p className="text-white text-xs sm:text-base font-semibold text-center flex items-center gap-1">
+                    今すぐ購入する
+                    <ChevronRight className="h-4 w-4" />
+                  </p>
+                </div>
               </div>
             </div>
           </Link>
