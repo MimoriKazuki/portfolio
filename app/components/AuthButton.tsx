@@ -1,9 +1,17 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
-import { createBrowserClient } from '@supabase/ssr'
+import { createClient } from '@supabase/supabase-js'
 import { User } from '@supabase/supabase-js'
 import { LogIn, LogOut, Loader2, User as UserIcon } from 'lucide-react'
+
+// @supabase/ssrではなく、直接@supabase/supabase-jsを使用
+function getSupabaseClient() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+  )
+}
 
 export default function AuthButton() {
   const [user, setUser] = useState<User | null>(null)
@@ -18,9 +26,7 @@ export default function AuthButton() {
     if (initializedRef.current) return
     initializedRef.current = true
 
-    console.log('[AuthButton] Starting initialization...')
-    console.log('[AuthButton] ENV URL:', process.env.NEXT_PUBLIC_SUPABASE_URL ? 'SET' : 'MISSING')
-    console.log('[AuthButton] ENV KEY:', process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? 'SET' : 'MISSING')
+    console.log('[AuthButton] Starting initialization with @supabase/supabase-js...')
 
     // フォールバック: 3秒後に強制的にローディングを終了
     const fallbackTimer = setTimeout(() => {
@@ -30,39 +36,23 @@ export default function AuthButton() {
 
     const initAuth = async () => {
       try {
-        console.log('[AuthButton] Creating Supabase client...')
-        const supabase = createBrowserClient(
-          process.env.NEXT_PUBLIC_SUPABASE_URL!,
-          process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-        )
+        console.log('[AuthButton] Creating Supabase client (supabase-js)...')
+        const supabase = getSupabaseClient()
         console.log('[AuthButton] Supabase client created')
 
         console.log('[AuthButton] Calling getSession()...')
         const startTime = Date.now()
 
-        // タイムアウト付きでgetSessionを呼び出す
-        const sessionPromise = supabase.auth.getSession()
-        const timeoutPromise = new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('getSession timeout')), 2000)
-        )
+        const { data: { session }, error } = await supabase.auth.getSession()
 
-        try {
-          const { data: { session }, error } = await Promise.race([
-            sessionPromise,
-            timeoutPromise
-          ]) as Awaited<typeof sessionPromise>
+        const elapsed = Date.now() - startTime
+        console.log(`[AuthButton] getSession completed in ${elapsed}ms`)
 
-          const elapsed = Date.now() - startTime
-          console.log(`[AuthButton] getSession completed in ${elapsed}ms`)
-
-          if (error) {
-            console.error('[AuthButton] getSession error:', error)
-          } else {
-            console.log('[AuthButton] Session:', session ? `user=${session.user.email}` : 'null')
-            setUser(session?.user ?? null)
-          }
-        } catch (timeoutErr) {
-          console.error('[AuthButton] getSession timed out after 2s')
+        if (error) {
+          console.error('[AuthButton] getSession error:', error)
+        } else {
+          console.log('[AuthButton] Session:', session ? `user=${session.user.email}` : 'null')
+          setUser(session?.user ?? null)
         }
 
         clearTimeout(fallbackTimer)
@@ -113,10 +103,7 @@ export default function AuthButton() {
   }, [menuOpen])
 
   const handleLogin = async () => {
-    const supabase = createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    )
+    const supabase = getSupabaseClient()
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
@@ -132,10 +119,7 @@ export default function AuthButton() {
   const handleLogout = async () => {
     setLoggingOut(true)
     setMenuOpen(false)
-    const supabase = createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    )
+    const supabase = getSupabaseClient()
     await supabase.auth.signOut()
     window.location.href = '/'
   }
