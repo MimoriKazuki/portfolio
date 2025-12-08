@@ -65,3 +65,15 @@ return response  // ← Cookieが設定されたresponseを返す
 2. AuthButtonの`skipBrowserRedirect: true`を追加してテスト
 3. FixedBottomElementsの購入バナー機能を追加してテスト
 4. 最後にMobileHeaderの認証機能を追加してテスト
+
+---
+
+# 再実装完了状況（2025-12-09更新）
+
+## 完了済み
+1. **FixedBottomElements** - 購入促進バナー機能（APIルート `/api/auth/user` 経由）
+2. **MobileHeader** - 認証機能（ログイン/ログアウト、メール表示）
+3. **MobileHeader** - eラーニングメニュー追加
+
+## 未対応（対応不要と判断）
+- AuthButtonの`skipBrowserRedirect: true` - 現状問題なく動作中
