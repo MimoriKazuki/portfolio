@@ -17,32 +17,11 @@ export default function AuthButton() {
     const supabase = createClient()
     let isMounted = true
 
-    // 初期認証状態を取得（getSessionを使用してローカルセッションを即座にチェック）
-    const initAuth = async () => {
-      try {
-        // getSessionはローカルのセッションを即座にチェック（ネットワーク不要）
-        const { data: { session } } = await supabase.auth.getSession()
-        if (isMounted) {
-          setUser(session?.user ?? null)
-          loadingRef.current = false
-          setLoading(false)
-        }
-      } catch {
-        if (isMounted) {
-          setUser(null)
-          loadingRef.current = false
-          setLoading(false)
-        }
-      }
-    }
-
-    initAuth()
-
-    // 認証状態の変更を監視
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    // onAuthStateChangeは登録時にINITIAL_SESSIONイベントを発火する
+    // これにより初期状態の取得と状態変更の監視を1つで行える
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (isMounted) {
         setUser(session?.user ?? null)
-        // 認証状態変更時もloadingをfalseに
         loadingRef.current = false
         setLoading(false)
       }

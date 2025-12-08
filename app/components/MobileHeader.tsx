@@ -19,32 +19,13 @@ export default function MobileHeader() {
   const authLoadingRef = useRef(true)
   const pathname = usePathname()
 
-  // 認証状態を取得（getSessionを使用してローカルセッションを即座にチェック）
+  // onAuthStateChangeは登録時にINITIAL_SESSIONイベントを発火する
+  // これにより初期状態の取得と状態変更の監視を1つで行える
   useEffect(() => {
     const supabase = createClient()
     let isMounted = true
 
-    const initAuth = async () => {
-      try {
-        // getSessionはローカルのセッションを即座にチェック（ネットワーク不要）
-        const { data: { session } } = await supabase.auth.getSession()
-        if (isMounted) {
-          setUser(session?.user ?? null)
-          authLoadingRef.current = false
-          setAuthLoading(false)
-        }
-      } catch {
-        if (isMounted) {
-          setUser(null)
-          authLoadingRef.current = false
-          setAuthLoading(false)
-        }
-      }
-    }
-
-    initAuth()
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (isMounted) {
         setUser(session?.user ?? null)
         authLoadingRef.current = false

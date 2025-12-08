@@ -28,11 +28,11 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
   const [showPurchaseModal, setShowPurchaseModal] = useState(false)
   const { handleELearningClick } = useELearningRelease()
 
-  // 認証状態の取得（getSessionを使用してローカルセッションを即座にチェック）
+  // onAuthStateChangeは登録時にINITIAL_SESSIONイベントを発火する
+  // これにより初期状態の取得と状態変更の監視を1つで行える
   useEffect(() => {
     const supabase = createClient()
     let isMounted = true
-    let isInitialLoad = true
 
     // 購入状態を取得するヘルパー関数
     const fetchPaidAccess = async (userId: string): Promise<boolean> => {
@@ -48,43 +48,12 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
       }
     }
 
-    const initAuth = async () => {
-      try {
-        // getSessionはローカルのセッションを即座にチェック（ネットワーク不要）
-        const { data: { session } } = await supabase.auth.getSession()
-        if (isMounted) {
-          setUser(session?.user ?? null)
-
-          // ユーザーがログイン済みの場合、購入状態を確認
-          if (session?.user) {
-            const paidAccess = await fetchPaidAccess(session.user.id)
-            if (isMounted) {
-              setHasPaidAccess(paidAccess)
-            }
-          }
-          setPaidAccessChecked(true)
-          setLoading(false)
-          isInitialLoad = false
-        }
-      } catch {
-        if (isMounted) {
-          setUser(null)
-          setPaidAccessChecked(true)
-          setLoading(false)
-          isInitialLoad = false
-        }
-      }
-    }
-
-    initAuth()
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      // 初期ロード中は無視（initAuth()で処理する）
-      if (isInitialLoad) return
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!isMounted) return
 
       setUser(session?.user ?? null)
-      // 認証状態が変わった時も購入状態を更新
+
+      // ユーザーがログイン済みの場合、購入状態を確認
       if (session?.user) {
         const paidAccess = await fetchPaidAccess(session.user.id)
         if (isMounted) {
@@ -93,6 +62,8 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
       } else {
         setHasPaidAccess(false)
       }
+      setPaidAccessChecked(true)
+      setLoading(false)
     })
 
     return () => {
