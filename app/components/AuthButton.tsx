@@ -33,7 +33,15 @@ export default function AuthButton() {
         console.log('[AuthButton] Calling getSession()...')
         const startTime = Date.now()
 
-        const { data: { session }, error } = await supabase.auth.getSession()
+        // タイムアウト付きでgetSession()を呼び出す
+        const timeoutPromise = new Promise<never>((_, reject) => {
+          setTimeout(() => reject(new Error('getSession timeout')), 2000)
+        })
+
+        const sessionPromise = supabase.auth.getSession()
+
+        const result = await Promise.race([sessionPromise, timeoutPromise])
+        const { data: { session }, error } = result
 
         const elapsed = Date.now() - startTime
         console.log(`[AuthButton] getSession completed in ${elapsed}ms`)
@@ -49,6 +57,22 @@ export default function AuthButton() {
         setLoading(false)
       } catch (e) {
         console.error('[AuthButton] Init error:', e)
+        // タイムアウトした場合、localStorageから直接セッション確認を試みる
+        console.log('[AuthButton] Trying localStorage fallback...')
+        try {
+          const storageKey = `sb-${process.env.NEXT_PUBLIC_SUPABASE_URL?.replace('https://', '').split('.')[0]}-auth-token`
+          const storedSession = localStorage.getItem(storageKey)
+          console.log('[AuthButton] localStorage check:', storedSession ? 'found' : 'not found')
+          if (storedSession) {
+            const parsed = JSON.parse(storedSession)
+            if (parsed?.user) {
+              console.log('[AuthButton] Using localStorage session')
+              setUser(parsed.user)
+            }
+          }
+        } catch (storageError) {
+          console.error('[AuthButton] localStorage fallback error:', storageError)
+        }
         clearTimeout(fallbackTimer)
         setLoading(false)
       }
