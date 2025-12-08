@@ -18,22 +18,35 @@ export default function LoginBanner({ onVisibilityChange }: LoginBannerProps) {
 
   useEffect(() => {
     const supabase = createClient()
+    let isMounted = true
 
-    // 初期認証状態を取得
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      setUser(user)
-      setLoading(false)
+    // 初期認証状態を取得（getSessionを使用）
+    const initAuth = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession()
+        if (isMounted) {
+          setUser(session?.user ?? null)
+          setLoading(false)
+        }
+      } catch {
+        if (isMounted) {
+          setUser(null)
+          setLoading(false)
+        }
+      }
     }
 
-    getUser()
+    initAuth()
 
     // 認証状態の変更を監視
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
+      if (isMounted) {
+        setUser(session?.user ?? null)
+      }
     })
 
     return () => {
+      isMounted = false
       subscription.unsubscribe()
     }
   }, [])
