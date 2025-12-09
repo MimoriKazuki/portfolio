@@ -137,11 +137,13 @@ export default function ELearningCoursesClient({
     if (selectedCategory === 'featured') {
       return contents.filter(c => c.is_featured)
     }
-    if (selectedCategory === 'bookmarks') {
-      return contents.filter(c => bookmarks.includes(c.id))
-    }
     return contents.filter(c => c.category?.slug === selectedCategory)
-  }, [contents, selectedCategory, bookmarks])
+  }, [contents, selectedCategory])
+
+  // ブックマークされたコンテンツ
+  const bookmarkedContents = useMemo(() => {
+    return contents.filter(c => bookmarks.includes(c.id))
+  }, [contents, bookmarks])
 
   // カテゴリ変更（replaceで履歴を上書きし、戻るボタンで前のタブに戻らないようにする）
   const handleCategoryChange = (categorySlug: string) => {
@@ -215,29 +217,37 @@ export default function ELearningCoursesClient({
               {category.name}
             </button>
           ))}
-          {isLoggedIn && (
-            <button
-              onClick={() => handleCategoryChange('bookmarks')}
-              className={`px-4 py-3 text-sm font-medium whitespace-nowrap border-b-2 transition-colors flex items-center gap-1 ${
-                selectedCategory === 'bookmarks'
-                  ? 'border-portfolio-blue text-portfolio-blue'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-              }`}
-            >
-              <Bookmark className="h-4 w-4" />
-              ブックマーク
-            </button>
-          )}
         </div>
       </div>
+
+      {/* ブックマークセクション */}
+      {isLoggedIn && bookmarkedContents.length > 0 && (
+        <div className="mb-8">
+          <div className="flex items-center gap-2 mb-4">
+            <Bookmark className="h-5 w-5 text-yellow-500" fill="currentColor" />
+            <h2 className="text-lg font-semibold text-gray-900">ブックマーク</h2>
+            <span className="text-sm text-gray-500">({bookmarkedContents.length})</span>
+          </div>
+          <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide">
+            {bookmarkedContents.map((content) => (
+              <div key={content.id} className="flex-shrink-0 w-[280px]">
+                <CourseCard
+                  content={content}
+                  isLoggedIn={isLoggedIn}
+                  isBookmarked={true}
+                  onCardClick={handleCardClick}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* コンテンツグリッド */}
       {filteredContents.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20">
           <p className="text-lg text-gray-500">
-            {selectedCategory === 'bookmarks'
-              ? 'ブックマークしたコースはありません'
-              : selectedCategory === 'featured'
+            {selectedCategory === 'featured'
               ? 'おすすめのコースはありません'
               : 'コンテンツは準備中です'}
           </p>
