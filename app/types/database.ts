@@ -218,6 +218,50 @@ export interface Database {
           last_synced_at?: string
         }
       }
+      documents: {
+        Row: {
+          id: string
+          title: string
+          description: string | null
+          thumbnail: string | null
+          file_url: string | null
+          category: string | null
+          tags: string[] | null
+          is_active: boolean
+          is_featured: boolean
+          download_count: number
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          title: string
+          description?: string | null
+          thumbnail?: string | null
+          file_url?: string | null
+          category?: string | null
+          tags?: string[] | null
+          is_active?: boolean
+          is_featured?: boolean
+          download_count?: number
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          title?: string
+          description?: string | null
+          thumbnail?: string | null
+          file_url?: string | null
+          category?: string | null
+          tags?: string[] | null
+          is_active?: boolean
+          is_featured?: boolean
+          download_count?: number
+          created_at?: string
+          updated_at?: string
+        }
+      }
     }
     Views: {
       [_ in never]: never

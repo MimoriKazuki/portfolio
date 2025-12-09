@@ -35,7 +35,7 @@ const RightSidebar = () => {
       const supabase = createClient()
 
       // Fetch documents - 注目優先、最新順、1つまで
-      const { data: documentsData } = await supabase
+      const { data: documentsData, error } = await supabase
         .from('documents')
         .select('*')
         .eq('is_active', true)
@@ -43,7 +43,14 @@ const RightSidebar = () => {
         .order('created_at', { ascending: false })
         .limit(1)
 
-      if (documentsData) setDocuments(documentsData)
+      if (error) {
+        console.error('[RightSidebar] Failed to fetch documents:', error)
+      }
+
+      if (documentsData) {
+        console.log('[RightSidebar] Documents loaded:', documentsData.length)
+        setDocuments(documentsData)
+      }
     }
 
     fetchData()
