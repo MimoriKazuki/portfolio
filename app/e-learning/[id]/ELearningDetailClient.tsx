@@ -82,28 +82,33 @@ export default function ELearningDetailClient({
   // ブックマーク切り替え
   const handleBookmarkToggle = async () => {
     setIsBookmarkLoading(true)
+    console.log('[Bookmark] Toggle start:', { userId: user.id, contentId: content.id, currentState: isBookmarked })
     try {
       if (isBookmarked) {
         // ブックマーク削除
-        const { error } = await supabase
+        const { error, data } = await supabase
           .from('e_learning_bookmarks')
           .delete()
           .eq('user_id', user.id)
           .eq('content_id', content.id)
+          .select()
 
+        console.log('[Bookmark] Delete result:', { error, data })
         if (error) throw error
         setIsBookmarked(false)
       } else {
         // ブックマーク追加
-        const { error } = await supabase
+        const { error, data } = await supabase
           .from('e_learning_bookmarks')
           .insert({ user_id: user.id, content_id: content.id })
+          .select()
 
+        console.log('[Bookmark] Insert result:', { error, data })
         if (error) throw error
         setIsBookmarked(true)
       }
     } catch (error) {
-      console.error('Error toggling bookmark:', error)
+      console.error('[Bookmark] Error toggling bookmark:', error)
     } finally {
       setIsBookmarkLoading(false)
     }

@@ -88,11 +88,12 @@ async function getCurrentUser() {
 
 async function getUserBookmarks(userId: string) {
   const supabase = await createClient()
-  const { data: bookmarks } = await supabase
+  const { data: bookmarks, error } = await supabase
     .from('e_learning_bookmarks')
     .select('content_id')
     .eq('user_id', userId)
 
+  console.log('[ELearning Page] Fetching bookmarks for user:', userId, 'result:', { bookmarks, error })
   return bookmarks?.map(b => b.content_id) || []
 }
 
