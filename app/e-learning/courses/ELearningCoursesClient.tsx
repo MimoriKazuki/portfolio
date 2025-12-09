@@ -115,6 +115,7 @@ export default function ELearningCoursesClient({
   const [showLoginModal, setShowLoginModal] = useState(false)
   const [selectedCategory, setSelectedCategory] = useState(initialCategory)
   const [bookmarks] = useState<string[]>(initialBookmarks)
+  const [showBookmarksOnly, setShowBookmarksOnly] = useState(false)
 
   useEffect(() => {
     setIsVisible(true)
@@ -131,19 +132,27 @@ export default function ELearningCoursesClient({
 
   // フィルタリングされたコンテンツ
   const filteredContents = useMemo(() => {
-    if (selectedCategory === 'all') {
-      return contents
-    }
-    if (selectedCategory === 'featured') {
-      return contents.filter(c => c.is_featured)
-    }
-    return contents.filter(c => c.category?.slug === selectedCategory)
-  }, [contents, selectedCategory])
+    let result = contents
 
-  // ブックマークされたコンテンツ
-  const bookmarkedContents = useMemo(() => {
-    return contents.filter(c => bookmarks.includes(c.id))
-  }, [contents, bookmarks])
+    // カテゴリフィルター
+    if (selectedCategory === 'featured') {
+      result = result.filter(c => c.is_featured)
+    } else if (selectedCategory !== 'all') {
+      result = result.filter(c => c.category?.slug === selectedCategory)
+    }
+
+    // ブックマークフィルター
+    if (showBookmarksOnly) {
+      result = result.filter(c => bookmarks.includes(c.id))
+    }
+
+    return result
+  }, [contents, selectedCategory, showBookmarksOnly, bookmarks])
+
+  // ブックマーク数
+  const bookmarkCount = useMemo(() => {
+    return bookmarks.length
+  }, [bookmarks])
 
   // カテゴリ変更（replaceで履歴を上書きし、戻るボタンで前のタブに戻らないようにする）
   const handleCategoryChange = (categorySlug: string) => {
@@ -220,26 +229,30 @@ export default function ELearningCoursesClient({
         </div>
       </div>
 
-      {/* ブックマークセクション */}
-      {isLoggedIn && bookmarkedContents.length > 0 && (
-        <div className="mb-8">
-          <div className="flex items-center gap-2 mb-4">
-            <Bookmark className="h-5 w-5 text-yellow-500" fill="currentColor" />
-            <h2 className="text-lg font-semibold text-gray-900">ブックマーク</h2>
-            <span className="text-sm text-gray-500">({bookmarkedContents.length})</span>
-          </div>
-          <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-hide">
-            {bookmarkedContents.map((content) => (
-              <div key={content.id} className="flex-shrink-0 w-[280px]">
-                <CourseCard
-                  content={content}
-                  isLoggedIn={isLoggedIn}
-                  isBookmarked={true}
-                  onCardClick={handleCardClick}
-                />
-              </div>
-            ))}
-          </div>
+      {/* ブックマークフィルターボタン */}
+      {isLoggedIn && bookmarkCount > 0 && (
+        <div className="mb-6">
+          <button
+            onClick={() => setShowBookmarksOnly(!showBookmarksOnly)}
+            className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all border ${
+              showBookmarksOnly
+                ? 'bg-yellow-50 border-yellow-300 text-yellow-700 hover:bg-yellow-100'
+                : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+            }`}
+          >
+            <Bookmark
+              className="h-4 w-4"
+              fill={showBookmarksOnly ? 'currentColor' : 'none'}
+            />
+            ブックマークで絞り込み
+            <span className={`px-1.5 py-0.5 rounded-full text-xs ${
+              showBookmarksOnly
+                ? 'bg-yellow-200 text-yellow-800'
+                : 'bg-gray-100 text-gray-500'
+            }`}>
+              {bookmarkCount}
+            </span>
+          </button>
         </div>
       )}
 
@@ -247,7 +260,9 @@ export default function ELearningCoursesClient({
       {filteredContents.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20">
           <p className="text-lg text-gray-500">
-            {selectedCategory === 'featured'
+            {showBookmarksOnly
+              ? 'ブックマークしたコースはありません'
+              : selectedCategory === 'featured'
               ? 'おすすめのコースはありません'
               : 'コンテンツは準備中です'}
           </p>
