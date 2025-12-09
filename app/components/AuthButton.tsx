@@ -81,7 +81,8 @@ export default function AuthButton() {
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback?redirect_to=${window.location.pathname}`,
+        // ログイン後は常にeラーニングトップへ遷移
+        redirectTo: `${window.location.origin}/auth/callback?redirect_to=/e-learning`,
         queryParams: {
           access_type: 'offline',
           prompt: 'consent',
