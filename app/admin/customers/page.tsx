@@ -1,12 +1,8 @@
 import { createClient as createServerClient } from '@supabase/supabase-js'
-import { createClient } from '@/app/lib/supabase/server'
 import CustomersClient from './CustomersClient'
 
 export default async function AdminCustomersPage() {
-  // 通常のサーバークライアント（e_learning_usersアクセス用）
-  const supabase = await createClient()
-
-  // Admin用クライアント（auth.usersアクセス用）
+  // Admin用クライアント（auth.usersアクセス用、RLSバイパス）
   const supabaseAdmin = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -23,7 +19,8 @@ export default async function AdminCustomersPage() {
   }
 
   // eラーニングユーザーデータを取得（購入履歴も含む）
-  const { data: eLearningUsers, error: usersError } = await supabase
+  // 注意: supabaseAdminを使用（RLSをバイパス）- 管理画面では全ユーザーデータが必要
+  const { data: eLearningUsers, error: usersError } = await supabaseAdmin
     .from('e_learning_users')
     .select(`
       *,
