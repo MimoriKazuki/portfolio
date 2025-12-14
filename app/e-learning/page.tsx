@@ -108,6 +108,14 @@ async function getUserPaidAccess(userId: string) {
   return eLearningUser?.has_paid_access ?? false
 }
 
+async function updateLastAccessedAt(userId: string) {
+  const supabase = await createClient()
+  await supabase
+    .from('e_learning_users')
+    .update({ last_accessed_at: new Date().toISOString() })
+    .eq('auth_user_id', userId)
+}
+
 export default async function ELearningPage() {
   const [categories, featuredContents, { user }] = await Promise.all([
     getCategories(),
@@ -121,6 +129,11 @@ export default async function ELearningPage() {
   // ログインユーザーのブックマークと購入状態を取得
   const userBookmarks = user ? await getUserBookmarks(user.id) : []
   const hasPaidAccess = user ? await getUserPaidAccess(user.id) : false
+
+  // 最終アクセス日時を更新（非同期で実行、エラーは無視）
+  if (user) {
+    updateLastAccessedAt(user.id).catch(() => {})
+  }
 
   return (
     <MainLayout>

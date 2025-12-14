@@ -141,6 +141,14 @@ export default async function ELearningDetailPage({ params }: PageProps) {
     .eq('content_id', content.id)
     .single()
 
+  // 最終アクセス日時を更新（非同期で実行、エラーは無視）
+  supabase
+    .from('e_learning_users')
+    .update({ last_accessed_at: new Date().toISOString() })
+    .eq('auth_user_id', user.id)
+    .then(() => {})
+    .catch(() => {})
+
   return (
     <MainLayout>
       <ELearningDetailClient

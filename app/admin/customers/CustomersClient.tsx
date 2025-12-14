@@ -27,7 +27,7 @@ interface Customer {
   has_paid_access: boolean
   created_at: string
   updated_at: string
-  last_sign_in_at: string | null
+  last_accessed_at: string | null
   purchases: Purchase[]
 }
 
@@ -315,7 +315,7 @@ export default function CustomersClient({ customers: initialCustomers, corporate
 
   // CSV出力（個人）
   const handleExportCSV = () => {
-    const headers = ['メールアドレス', '表示名', 'ステータス', '登録日', '最終ログイン', '購入日']
+    const headers = ['メールアドレス', '表示名', 'ステータス', '登録日', '最終アクセス', '購入日']
     const rows = filteredCustomers.map((customer) => {
       const completedPurchases = customer.purchases.filter((p) => p.status === 'completed')
       const latestPurchaseDate = completedPurchases.length > 0
@@ -327,8 +327,8 @@ export default function CustomersClient({ customers: initialCustomers, corporate
         customer.display_name || '',
         customer.has_paid_access ? '有料' : '無料',
         format(new Date(customer.created_at), 'yyyy/MM/dd HH:mm', { locale: ja }),
-        customer.last_sign_in_at
-          ? format(new Date(customer.last_sign_in_at), 'yyyy/MM/dd HH:mm', { locale: ja })
+        customer.last_accessed_at
+          ? format(new Date(customer.last_accessed_at), 'yyyy/MM/dd HH:mm', { locale: ja })
           : '',
         latestPurchaseDate
           ? format(new Date(latestPurchaseDate), 'yyyy/MM/dd HH:mm', { locale: ja })
@@ -519,7 +519,7 @@ export default function CustomersClient({ customers: initialCustomers, corporate
                   <th className="text-left px-6 py-3 text-sm font-medium text-gray-700">ユーザー</th>
                   <th className="w-[120px] text-center px-6 py-3 text-sm font-medium text-gray-700">ステータス</th>
                   <th className="w-[160px] text-center px-6 py-3 text-sm font-medium text-gray-700">登録日</th>
-                  <th className="w-[160px] text-center px-6 py-3 text-sm font-medium text-gray-700">最終ログイン</th>
+                  <th className="w-[160px] text-center px-6 py-3 text-sm font-medium text-gray-700">最終アクセス</th>
                   <th className="w-[160px] text-center px-6 py-3 text-sm font-medium text-gray-700">購入日</th>
                 </tr>
               </thead>
@@ -583,8 +583,8 @@ export default function CustomersClient({ customers: initialCustomers, corporate
                           {format(new Date(customer.created_at), 'yyyy/MM/dd HH:mm', { locale: ja })}
                         </td>
                         <td className="w-[160px] px-6 py-4 text-center text-sm text-gray-600">
-                          {customer.last_sign_in_at
-                            ? format(new Date(customer.last_sign_in_at), 'yyyy/MM/dd HH:mm', { locale: ja })
+                          {customer.last_accessed_at
+                            ? format(new Date(customer.last_accessed_at), 'yyyy/MM/dd HH:mm', { locale: ja })
                             : '-'}
                         </td>
                         <td className="w-[160px] px-6 py-4 text-center text-sm text-gray-600">

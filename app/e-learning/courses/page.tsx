@@ -73,12 +73,25 @@ async function getCurrentUserAndBookmarks() {
   }
 }
 
+async function updateLastAccessedAt(userId: string) {
+  const supabase = await createClient()
+  await supabase
+    .from('e_learning_users')
+    .update({ last_accessed_at: new Date().toISOString() })
+    .eq('auth_user_id', userId)
+}
+
 export default async function ELearningCoursesPage() {
   const [categories, contents, { user, bookmarks }] = await Promise.all([
     getCategories(),
     getContents(),
     getCurrentUserAndBookmarks(),
   ])
+
+  // 最終アクセス日時を更新（非同期で実行、エラーは無視）
+  if (user) {
+    updateLastAccessedAt(user.id).catch(() => {})
+  }
 
   return (
     <MainLayout>

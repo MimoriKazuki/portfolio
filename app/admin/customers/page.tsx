@@ -60,7 +60,7 @@ export default async function AdminCustomersPage() {
       has_paid_access: eLearningUser?.has_paid_access ?? false,
       created_at: authUser.created_at,
       updated_at: eLearningUser?.updated_at || authUser.updated_at || authUser.created_at,
-      last_sign_in_at: authUser.last_sign_in_at || null,
+      last_accessed_at: eLearningUser?.last_accessed_at || null,
       purchases: eLearningUser?.purchases || [],
     }
   })
