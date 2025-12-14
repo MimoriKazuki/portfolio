@@ -315,12 +315,12 @@ export default function CustomersClient({ customers: initialCustomers, corporate
 
   // CSV出力（個人）
   const handleExportCSV = () => {
-    const headers = ['メールアドレス', '表示名', 'ステータス', '登録日', '最終ログイン', '購入金額合計', '購入回数']
+    const headers = ['メールアドレス', '表示名', 'ステータス', '登録日', '最終ログイン', '購入日']
     const rows = filteredCustomers.map((customer) => {
-      const totalPurchaseAmount = customer.purchases
-        .filter((p) => p.status === 'completed')
-        .reduce((sum, p) => sum + p.amount, 0)
-      const purchaseCount = customer.purchases.filter((p) => p.status === 'completed').length
+      const completedPurchases = customer.purchases.filter((p) => p.status === 'completed')
+      const latestPurchaseDate = completedPurchases.length > 0
+        ? completedPurchases.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0].created_at
+        : null
 
       return [
         customer.email,
@@ -330,8 +330,9 @@ export default function CustomersClient({ customers: initialCustomers, corporate
         customer.last_sign_in_at
           ? format(new Date(customer.last_sign_in_at), 'yyyy/MM/dd HH:mm', { locale: ja })
           : '',
-        totalPurchaseAmount.toLocaleString(),
-        purchaseCount.toString(),
+        latestPurchaseDate
+          ? format(new Date(latestPurchaseDate), 'yyyy/MM/dd HH:mm', { locale: ja })
+          : '',
       ]
     })
 
@@ -519,21 +520,23 @@ export default function CustomersClient({ customers: initialCustomers, corporate
                   <th className="w-[120px] text-center px-6 py-3 text-sm font-medium text-gray-700">ステータス</th>
                   <th className="w-[160px] text-center px-6 py-3 text-sm font-medium text-gray-700">登録日</th>
                   <th className="w-[160px] text-center px-6 py-3 text-sm font-medium text-gray-700">最終ログイン</th>
-                  <th className="w-[140px] text-center px-6 py-3 text-sm font-medium text-gray-700">購入履歴</th>
-                  <th className="w-[120px] text-center px-6 py-3 text-sm font-medium text-gray-700">購入金額</th>
+                  <th className="w-[160px] text-center px-6 py-3 text-sm font-medium text-gray-700">購入日</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {filteredCustomers.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
+                    <td colSpan={5} className="px-6 py-12 text-center text-gray-500">
                       検索結果が見つかりませんでした
                     </td>
                   </tr>
                 ) : (
                   filteredCustomers.map((customer) => {
                     const completedPurchases = customer.purchases.filter((p) => p.status === 'completed')
-                    const totalAmount = completedPurchases.reduce((sum, p) => sum + p.amount, 0)
+                    // 最新の購入日を取得
+                    const latestPurchaseDate = completedPurchases.length > 0
+                      ? completedPurchases.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())[0].created_at
+                      : null
 
                     return (
                       <tr key={customer.id} className="hover:bg-gray-50 transition-colors">
@@ -584,20 +587,10 @@ export default function CustomersClient({ customers: initialCustomers, corporate
                             ? format(new Date(customer.last_sign_in_at), 'yyyy/MM/dd HH:mm', { locale: ja })
                             : '-'}
                         </td>
-                        <td className="w-[140px] px-6 py-4 text-center">
-                          {completedPurchases.length > 0 ? (
-                            <div className="text-sm">
-                              <p className="text-gray-900 font-medium">{completedPurchases.length}件</p>
-                              <p className="text-gray-500 text-xs truncate">
-                                {completedPurchases[0]?.content?.title || '全コンテンツ'}
-                              </p>
-                            </div>
-                          ) : (
-                            <span className="text-sm text-gray-400">-</span>
-                          )}
-                        </td>
-                        <td className="w-[120px] px-6 py-4 text-center text-sm font-medium text-gray-900">
-                          {totalAmount > 0 ? `¥${totalAmount.toLocaleString()}` : '-'}
+                        <td className="w-[160px] px-6 py-4 text-center text-sm text-gray-600">
+                          {latestPurchaseDate
+                            ? format(new Date(latestPurchaseDate), 'yyyy/MM/dd HH:mm', { locale: ja })
+                            : '-'}
                         </td>
                       </tr>
                     )
