@@ -1,5 +1,6 @@
 import { createStaticClient } from '@/app/lib/supabase/static'
 import { createClient } from '@/app/lib/supabase/server'
+import { createClient as createServerClient } from '@supabase/supabase-js'
 import MainLayout from '@/app/components/MainLayout'
 import ELearningCoursesClient from './ELearningCoursesClient'
 import { ELearningContent, ELearningCategory } from '@/app/types'
@@ -74,8 +75,12 @@ async function getCurrentUserAndBookmarks() {
 }
 
 async function updateLastAccessedAt(userId: string) {
-  const supabase = await createClient()
-  await supabase
+  // RLSをバイパスしてアクセス日時を更新（service_role_key使用）
+  const supabaseAdmin = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+  await supabaseAdmin
     .from('e_learning_users')
     .update({ last_accessed_at: new Date().toISOString() })
     .eq('auth_user_id', userId)

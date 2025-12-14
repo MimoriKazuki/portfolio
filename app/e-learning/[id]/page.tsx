@@ -1,5 +1,6 @@
 import { createClient } from '@/app/lib/supabase/server'
 import { createStaticClient } from '@/app/lib/supabase/static'
+import { createClient as createServerClient } from '@supabase/supabase-js'
 import { ELearningContent } from '@/app/types'
 import { notFound, redirect } from 'next/navigation'
 import MainLayout from '@/app/components/MainLayout'
@@ -141,8 +142,12 @@ export default async function ELearningDetailPage({ params }: PageProps) {
     .eq('content_id', content.id)
     .single()
 
-  // 最終アクセス日時を更新（非同期で実行、エラーは無視）
-  supabase
+  // 最終アクセス日時を更新（RLSをバイパス、非同期で実行）
+  const supabaseAdmin = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  )
+  supabaseAdmin
     .from('e_learning_users')
     .update({ last_accessed_at: new Date().toISOString() })
     .eq('auth_user_id', user.id)
