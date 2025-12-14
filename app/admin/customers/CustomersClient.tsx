@@ -59,6 +59,12 @@ interface CustomersClientProps {
 
 type TabType = 'individual' | 'corporate'
 
+// テストアカウント（統計カウントから除外）
+const TEST_ACCOUNTS = [
+  'sales@landbridge.co.jp',
+  'tamogami@landbridge.co.jp',
+]
+
 export default function CustomersClient({ customers: initialCustomers, corporateCustomers: initialCorporate }: CustomersClientProps) {
   const [customers, setCustomers] = useState(initialCustomers)
   const [corporateCustomers, setCorporateCustomers] = useState(initialCorporate)
@@ -118,13 +124,14 @@ export default function CustomersClient({ customers: initialCustomers, corporate
     })
   }, [corporateCustomers, searchQuery, corporateStatusFilter])
 
-  // 統計情報
+  // 統計情報（テストアカウントを除外）
   const stats = useMemo(() => {
-    const total = customers.length
-    const paid = customers.filter((c) => c.has_paid_access).length
+    const realCustomers = customers.filter((c) => !TEST_ACCOUNTS.includes(c.email))
+    const total = realCustomers.length
+    const paid = realCustomers.filter((c) => c.has_paid_access).length
     const free = total - paid
     const corporate = corporateCustomers.filter((c) => c.contract_status === 'active').length
-    const totalRevenue = customers.reduce((sum, c) => {
+    const totalRevenue = realCustomers.reduce((sum, c) => {
       return sum + c.purchases.reduce((pSum, p) => pSum + (p.status === 'completed' ? p.amount : 0), 0)
     }, 0)
     return { total, paid, free, corporate, totalRevenue }
@@ -561,6 +568,9 @@ export default function CustomersClient({ customers: initialCustomers, corporate
                             <div className="min-w-0">
                               <p className="font-medium text-gray-900 truncate">
                                 {customer.display_name || '名前未設定'}
+                                {TEST_ACCOUNTS.includes(customer.email) && (
+                                  <span className="text-gray-400 text-xs ml-1">（テスト用）</span>
+                                )}
                               </p>
                               <p className="text-sm text-gray-500 truncate">{customer.email}</p>
                             </div>
