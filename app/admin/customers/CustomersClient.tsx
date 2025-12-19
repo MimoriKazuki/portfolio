@@ -2,9 +2,18 @@
 
 import { useState, useMemo } from 'react'
 import { Search, Download, Users, Filter, Building2, Plus, Pencil, Trash2, X } from 'lucide-react'
-import { format } from 'date-fns'
+import { format, subDays, startOfDay, eachDayOfInterval } from 'date-fns'
 import { ja } from 'date-fns/locale'
 import Image from 'next/image'
+import {
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer
+} from 'recharts'
 
 interface Purchase {
   id: string
@@ -58,6 +67,8 @@ interface CustomersClientProps {
 }
 
 type TabType = 'individual' | 'corporate'
+type ChartPeriod = 7 | 14 | 30 | 90
+type ChartElement = 'all' | 'registration' | 'lastAccess' | 'purchase'
 
 // テストアカウント（統計カウントから除外）
 const TEST_ACCOUNTS = [
@@ -71,6 +82,8 @@ export default function CustomersClient({ customers: initialCustomers, corporate
   const [activeTab, setActiveTab] = useState<TabType>('individual')
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<'all' | 'paid' | 'free'>('all')
+  const [chartPeriod, setChartPeriod] = useState<ChartPeriod>(14)
+  const [chartElement, setChartElement] = useState<ChartElement>('all')
   const [corporateStatusFilter, setCorporateStatusFilter] = useState<'all' | 'active' | 'expired' | 'pending'>('all')
   const [updatingStatus, setUpdatingStatus] = useState<string | null>(null)
   const [showCorporateModal, setShowCorporateModal] = useState(false)
@@ -136,6 +149,71 @@ export default function CustomersClient({ customers: initialCustomers, corporate
     }, 0)
     return { total, paid, free, corporate, totalRevenue }
   }, [customers, corporateCustomers])
+
+  // グラフ用データ（日別集計）
+  const chartData = useMemo(() => {
+    const realCustomers = customers.filter((c) => !TEST_ACCOUNTS.includes(c.email))
+    const today = startOfDay(new Date())
+    const startDate = subDays(today, chartPeriod - 1)
+
+    // 期間内の全日付を生成
+    const dateRange = eachDayOfInterval({ start: startDate, end: today })
+
+    // 日別のカウント用マップ
+    const registrationCounts: Record<string, number> = {}
+    const lastAccessCounts: Record<string, Set<string>> = {} // ユーザーIDのSetでユニークカウント
+    const purchaseCounts: Record<string, number> = {}
+
+    // 初期化
+    dateRange.forEach((date) => {
+      const dateKey = format(date, 'yyyy-MM-dd')
+      registrationCounts[dateKey] = 0
+      lastAccessCounts[dateKey] = new Set()
+      purchaseCounts[dateKey] = 0
+    })
+
+    // 登録日をカウント
+    realCustomers.forEach((customer) => {
+      const dateKey = format(new Date(customer.created_at), 'yyyy-MM-dd')
+      if (registrationCounts[dateKey] !== undefined) {
+        registrationCounts[dateKey]++
+      }
+    })
+
+    // 最終アクセス日をカウント（同一ユーザーの同一日は1件としてカウント）
+    realCustomers.forEach((customer) => {
+      if (customer.last_accessed_at) {
+        const dateKey = format(new Date(customer.last_accessed_at), 'yyyy-MM-dd')
+        if (lastAccessCounts[dateKey]) {
+          lastAccessCounts[dateKey].add(customer.id)
+        }
+      }
+    })
+
+    // 購入日をカウント（完了したものだけ）
+    realCustomers.forEach((customer) => {
+      customer.purchases
+        .filter((p) => p.status === 'completed')
+        .forEach((purchase) => {
+          const dateKey = format(new Date(purchase.created_at), 'yyyy-MM-dd')
+          if (purchaseCounts[dateKey] !== undefined) {
+            purchaseCounts[dateKey]++
+          }
+        })
+    })
+
+    // グラフ用データに変換
+    return dateRange.map((date) => {
+      const dateKey = format(date, 'yyyy-MM-dd')
+      return {
+        date: format(date, 'M/d', { locale: ja }),
+        fullDate: dateKey,
+        登録: registrationCounts[dateKey],
+        アクセス: lastAccessCounts[dateKey].size,
+        購入: purchaseCounts[dateKey],
+      }
+    })
+  }, [customers, chartPeriod])
 
   // ステータス変更確認モーダルを開く
   const openStatusConfirmModal = (customer: Customer) => {
@@ -416,6 +494,118 @@ export default function CustomersClient({ customers: initialCustomers, corporate
           <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
             <div className="text-3xl font-bold text-purple-600">¥{stats.totalRevenue.toLocaleString()}</div>
             <div className="text-sm text-gray-600">総売上</div>
+          </div>
+        </div>
+
+        {/* 日別推移グラフ */}
+        <div className="bg-white rounded-lg border border-gray-200 shadow-sm p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+            <h2 className="text-lg font-semibold text-gray-900">日別推移</h2>
+            <div className="flex flex-wrap gap-2">
+              {/* 表示要素切り替え */}
+              <div className="flex bg-gray-100 rounded-lg p-1">
+                {[
+                  { value: 'all', label: 'すべて' },
+                  { value: 'registration', label: '登録' },
+                  { value: 'lastAccess', label: 'アクセス' },
+                  { value: 'purchase', label: '購入' },
+                ].map((option) => (
+                  <button
+                    key={option.value}
+                    onClick={() => setChartElement(option.value as ChartElement)}
+                    className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+                      chartElement === option.value
+                        ? 'bg-white text-gray-900 shadow-sm'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+              {/* 期間切り替え */}
+              <div className="flex bg-gray-100 rounded-lg p-1">
+                {[
+                  { value: 7, label: '7日' },
+                  { value: 14, label: '14日' },
+                  { value: 30, label: '30日' },
+                  { value: 90, label: '90日' },
+                ].map((option) => (
+                  <button
+                    key={option.value}
+                    onClick={() => setChartPeriod(option.value as ChartPeriod)}
+                    className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+                      chartPeriod === option.value
+                        ? 'bg-white text-gray-900 shadow-sm'
+                        : 'text-gray-600 hover:text-gray-900'
+                    }`}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className="h-[300px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                <XAxis
+                  dataKey="date"
+                  tick={{ fontSize: 12, fill: '#6b7280' }}
+                  tickLine={false}
+                  axisLine={{ stroke: '#e5e7eb' }}
+                  interval={chartPeriod <= 14 ? 0 : chartPeriod <= 30 ? 2 : 6}
+                />
+                <YAxis
+                  tick={{ fontSize: 12, fill: '#6b7280' }}
+                  tickLine={false}
+                  axisLine={{ stroke: '#e5e7eb' }}
+                  allowDecimals={false}
+                />
+                <Tooltip
+                  contentStyle={{
+                    backgroundColor: 'white',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '8px',
+                    boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)',
+                  }}
+                  labelStyle={{ fontWeight: 600, marginBottom: 4 }}
+                  formatter={(value: number, name: string) => [value, name]}
+                  labelFormatter={(label) => `${label}`}
+                />
+                                {(chartElement === 'all' || chartElement === 'registration') && (
+                  <Bar dataKey="登録" fill="#3b82f6" radius={[2, 2, 0, 0]} />
+                )}
+                {(chartElement === 'all' || chartElement === 'lastAccess') && (
+                  <Bar dataKey="アクセス" fill="#22c55e" radius={[2, 2, 0, 0]} />
+                )}
+                {(chartElement === 'all' || chartElement === 'purchase') && (
+                  <Bar dataKey="購入" fill="#a855f7" radius={[2, 2, 0, 0]} />
+                )}
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          {/* カスタムレジェンド */}
+          <div className="flex justify-center gap-6 pt-4">
+            {(chartElement === 'all' || chartElement === 'registration') && (
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#3b82f6' }} />
+                <span className="text-sm text-gray-600">登録</span>
+              </div>
+            )}
+            {(chartElement === 'all' || chartElement === 'lastAccess') && (
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#22c55e' }} />
+                <span className="text-sm text-gray-600">アクセス</span>
+              </div>
+            )}
+            {(chartElement === 'all' || chartElement === 'purchase') && (
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: '#a855f7' }} />
+                <span className="text-sm text-gray-600">購入</span>
+              </div>
+            )}
           </div>
         </div>
 
