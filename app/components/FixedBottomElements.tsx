@@ -22,7 +22,35 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
   const [showFloating, setShowFloating] = useState(false)
   const [showBannerAnim, setShowBannerAnim] = useState(false)
   const [showPurchaseModal, setShowPurchaseModal] = useState(false)
+  const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0 })
   const { handleELearningClick } = useELearningRelease()
+
+  // セール終了日（12月31日 23:59:59）
+  const saleEndDate = new Date('2025-12-31T23:59:59')
+
+  // カウントダウンの計算
+  useEffect(() => {
+    const calculateCountdown = () => {
+      const now = new Date()
+      const diff = saleEndDate.getTime() - now.getTime()
+
+      if (diff <= 0) {
+        setCountdown({ days: 0, hours: 0, minutes: 0 })
+        return
+      }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
+
+      setCountdown({ days, hours, minutes })
+    }
+
+    calculateCountdown()
+    const interval = setInterval(calculateCountdown, 60000) // 1分ごとに更新
+
+    return () => clearInterval(interval)
+  }, [])
 
   // 認証状態と有料アクセス状態の取得（APIルート経由）
   useEffect(() => {
@@ -173,14 +201,28 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
             className="block w-full bg-amber-500 hover:bg-amber-600 transition-colors cursor-pointer"
           >
             <div className="px-4 sm:px-6 lg:px-8">
-              <div className="flex flex-col items-center justify-center py-3 gap-1">
-                <p className="text-white text-xs sm:text-base font-semibold text-center">
-                  AI駆動開発特化型のeラーニングサービスを開始しました。
-                </p>
-                <p className="text-white text-xs sm:text-base font-semibold text-center flex items-center gap-1">
-                  無料ログインでまずはお試し
-                  <ChevronRight className="h-4 w-4" />
-                </p>
+              <div className="flex items-center justify-center py-3 gap-3 sm:gap-4">
+                {/* カウントダウン */}
+                <div className="flex items-center gap-1 sm:gap-2 bg-white/20 rounded-lg px-2 sm:px-3 py-1.5 flex-shrink-0">
+                  <span className="text-white text-[10px] sm:text-xs font-medium">半額セール終了まで</span>
+                  <div className="flex items-center gap-0.5 sm:gap-1 text-white font-bold text-xs sm:text-sm">
+                    <span>{countdown.days}</span>
+                    <span className="text-[10px] sm:text-xs font-normal">日</span>
+                    <span>{countdown.hours}</span>
+                    <span className="text-[10px] sm:text-xs font-normal">時間</span>
+                    <span>{countdown.minutes}</span>
+                    <span className="text-[10px] sm:text-xs font-normal">分</span>
+                  </div>
+                </div>
+                <div className="flex flex-col items-center gap-0.5">
+                  <p className="text-white text-xs sm:text-base font-semibold text-center">
+                    eラーニングサービス 50%OFFセール中！
+                  </p>
+                  <p className="text-white text-xs sm:text-base font-semibold text-center flex items-center gap-1">
+                    無料ログインでまずはお試し
+                    <ChevronRight className="h-4 w-4" />
+                  </p>
+                </div>
               </div>
             </div>
           </Link>
@@ -203,15 +245,21 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
           >
             <div className="px-4 sm:px-6 lg:px-8">
               <div className="flex items-center justify-center py-3 gap-3 sm:gap-4">
-                {/* 50%OFF バッジ（SVG） */}
-                <img
-                  src="/images/banner/banner_sm.svg"
-                  alt="今だけ！有料動画コンテンツ 50%OFF"
-                  className="h-[36px] sm:h-[52px] flex-shrink-0"
-                />
-                <div className="flex flex-col items-center gap-1">
+                {/* カウントダウン */}
+                <div className="flex items-center gap-1 sm:gap-2 bg-white/20 rounded-lg px-2 sm:px-3 py-1.5 flex-shrink-0">
+                  <span className="text-white text-[10px] sm:text-xs font-medium">半額セール終了まで</span>
+                  <div className="flex items-center gap-0.5 sm:gap-1 text-white font-bold text-xs sm:text-sm">
+                    <span>{countdown.days}</span>
+                    <span className="text-[10px] sm:text-xs font-normal">日</span>
+                    <span>{countdown.hours}</span>
+                    <span className="text-[10px] sm:text-xs font-normal">時間</span>
+                    <span>{countdown.minutes}</span>
+                    <span className="text-[10px] sm:text-xs font-normal">分</span>
+                  </div>
+                </div>
+                <div className="flex flex-col items-center gap-0.5">
                   <p className="text-white text-xs sm:text-base font-semibold text-center">
-                    全ての有料コンテンツが見放題！
+                    全ての有料コンテンツが50%OFF！
                   </p>
                   <p className="text-white text-xs sm:text-base font-semibold text-center flex items-center gap-1">
                     今すぐ購入する
