@@ -212,18 +212,20 @@ export default async function ColumnDetailPage({ params }: PageProps) {
             </div>
             {column.category && (
               <span className={`bg-white text-xs px-3 py-1 border font-medium ${
-                {
+                ({
                   'ai-tools': 'border-emerald-200 text-emerald-700',
                   'industry': 'border-blue-200 text-blue-700',
-                  'topics-news': 'border-purple-200 text-purple-700'
-                }[column.category] || 'border-gray-200 text-gray-700'
+                  'topics-news': 'border-purple-200 text-purple-700',
+                  'ai-driven-dev': 'border-orange-200 text-orange-700'
+                } as Record<string, string>)[column.category] || 'border-gray-200 text-gray-700'
               }`}>
                 {
-                  {
+                  ({
                     'ai-tools': '生成AIツール',
                     'industry': '業界別',
-                    'topics-news': 'トピック・ニュース'
-                  }[column.category] || column.category
+                    'topics-news': 'トピック・ニュース',
+                    'ai-driven-dev': 'AI駆動開発'
+                  } as Record<string, string>)[column.category] || column.category
                 }
               </span>
             )}

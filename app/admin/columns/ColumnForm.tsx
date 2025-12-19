@@ -24,7 +24,7 @@ interface ColumnFormData {
   author?: string
   thumbnail?: string
   audio_url?: string
-  category: 'ai-tools' | 'industry' | 'topics-news'
+  category: 'ai-tools' | 'industry' | 'topics-news' | 'ai-driven-dev'
   enterprise_service: string
   individual_service: string
 }
@@ -321,6 +321,7 @@ export default function ColumnForm({ initialData, columnId }: ColumnFormProps) {
                 <option value="ai-tools">生成AIツール</option>
                 <option value="industry">業界別</option>
                 <option value="topics-news">トピック・ニュース</option>
+                <option value="ai-driven-dev">AI駆動開発</option>
               </select>
               <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
                 <svg className="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">

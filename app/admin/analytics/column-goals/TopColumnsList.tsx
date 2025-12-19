@@ -16,16 +16,18 @@ interface TopColumnsListProps {
 }
 
 export default function TopColumnsList({ topPages, columns = [] }: TopColumnsListProps) {
-  const categoryColors = {
+  const categoryColors: Record<string, string> = {
     'ai-tools': 'bg-emerald-100 text-emerald-700',
     'industry': 'bg-blue-100 text-blue-700',
-    'topics-news': 'bg-purple-100 text-purple-700'
+    'topics-news': 'bg-purple-100 text-purple-700',
+    'ai-driven-dev': 'bg-orange-100 text-orange-700'
   }
 
-  const categoryLabels = {
+  const categoryLabels: Record<string, string> = {
     'ai-tools': '生成AIツール',
     'industry': '業界別',
-    'topics-news': 'トピック・ニュース'
+    'topics-news': 'トピック・ニュース',
+    'ai-driven-dev': 'AI駆動開発'
   }
 
   // 秒数を分:秒形式に変換

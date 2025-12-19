@@ -11,6 +11,7 @@ const categories = [
   { id: 'ai-tools', label: '生成AIツール' },
   { id: 'industry', label: '業界別' },
   { id: 'topics-news', label: 'トピック・ニュース' },
+  { id: 'ai-driven-dev', label: 'AI駆動開発' },
 ]
 
 interface ColumnsClientProps {
@@ -52,16 +53,18 @@ export default function ColumnsClient({ columns }: ColumnsClientProps) {
       : columns.filter(column => column.category === activeCategory)
   }, [activeCategory, columns])
 
-  const categoryColors = {
+  const categoryColors: Record<string, string> = {
     'ai-tools': 'border-emerald-200 text-emerald-700',
     'industry': 'border-blue-200 text-blue-700',
-    'topics-news': 'border-purple-200 text-purple-700'
+    'topics-news': 'border-purple-200 text-purple-700',
+    'ai-driven-dev': 'border-orange-200 text-orange-700'
   }
 
-  const categoryLabels = {
+  const categoryLabels: Record<string, string> = {
     'ai-tools': '生成AIツール',
     'industry': '業界別',
-    'topics-news': 'トピック・ニュース'
+    'topics-news': 'トピック・ニュース',
+    'ai-driven-dev': 'AI駆動開発'
   }
     
   return (

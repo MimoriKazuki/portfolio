@@ -53,7 +53,7 @@ export interface Column {
   is_published: boolean
   is_featured?: boolean
   view_count?: number
-  category?: 'ai-tools' | 'industry' | 'topics-news'
+  category?: 'ai-tools' | 'industry' | 'topics-news' | 'ai-driven-dev'
   created_at: string
   updated_at: string
   enterprise_service?: string

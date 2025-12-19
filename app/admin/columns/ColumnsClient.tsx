@@ -16,7 +16,7 @@ interface Column {
   view_count: number
   thumbnail?: string
   audio_url?: string
-  category?: 'ai-tools' | 'industry' | 'topics-news'
+  category?: 'ai-tools' | 'industry' | 'topics-news' | 'ai-driven-dev'
 }
 
 interface ColumnsClientProps {
@@ -28,16 +28,18 @@ export default function ColumnsClient({ columns }: ColumnsClientProps) {
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [categoryFilter, setCategoryFilter] = useState<string>('all')
 
-  const categoryColors = {
+  const categoryColors: Record<string, string> = {
     'ai-tools': 'bg-emerald-100 text-emerald-700',
     'industry': 'bg-blue-100 text-blue-700',
-    'topics-news': 'bg-purple-100 text-purple-700'
+    'topics-news': 'bg-purple-100 text-purple-700',
+    'ai-driven-dev': 'bg-orange-100 text-orange-700'
   }
 
-  const categoryLabels = {
+  const categoryLabels: Record<string, string> = {
     'ai-tools': '生成AIツール',
     'industry': '業界別',
-    'topics-news': 'トピック・ニュース'
+    'topics-news': 'トピック・ニュース',
+    'ai-driven-dev': 'AI駆動開発'
   }
 
   const filteredColumns = useMemo(() => {
@@ -76,7 +78,7 @@ export default function ColumnsClient({ columns }: ColumnsClientProps) {
       ) : (
         <div className="space-y-6">
           {/* Stats Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
               <div className="text-3xl font-bold text-portfolio-blue">{columns.length}</div>
               <div className="text-sm text-gray-600">総コラム数</div>
@@ -98,6 +100,12 @@ export default function ColumnsClient({ columns }: ColumnsClientProps) {
                 {columns.filter(c => c.category === 'topics-news').length}
               </div>
               <div className="text-sm text-gray-600">トピック・ニュース</div>
+            </div>
+            <div className="bg-white rounded-lg p-6 border border-gray-200 shadow-sm">
+              <div className="text-3xl font-bold text-orange-600">
+                {columns.filter(c => c.category === 'ai-driven-dev').length}
+              </div>
+              <div className="text-sm text-gray-600">AI駆動開発</div>
             </div>
           </div>
 
@@ -123,6 +131,7 @@ export default function ColumnsClient({ columns }: ColumnsClientProps) {
                   <option value="ai-tools">生成AIツール</option>
                   <option value="industry">業界別</option>
                   <option value="topics-news">トピック・ニュース</option>
+                  <option value="ai-driven-dev">AI駆動開発</option>
                 </select>
                 <Filter className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
               </div>
