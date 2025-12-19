@@ -255,11 +255,16 @@ export default function ELearningDetailClient({
           <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 pb-4 border-b border-gray-200">
             {/* 左側 - メタ情報 */}
             <div className="flex flex-col gap-2">
-              {/* カテゴリバッジ */}
-              <div className="flex flex-wrap items-center gap-4">
+              {/* カテゴリバッジ・無料バッジ */}
+              <div className="flex flex-wrap items-center gap-2">
                 {content.category && (
                   <span className="bg-white text-xs px-3 py-1 border border-gray-200 text-gray-700 font-medium">
                     {content.category.name}
+                  </span>
+                )}
+                {content.is_free && (
+                  <span className="bg-white text-xs px-3 py-1 border border-green-200 text-green-700 font-medium">
+                    無料
                   </span>
                 )}
               </div>

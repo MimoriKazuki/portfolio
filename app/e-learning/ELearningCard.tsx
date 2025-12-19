@@ -62,13 +62,13 @@ export default function ELearningCard({ content, onCardClick, isLoggedIn }: ELea
         {/* テキスト群 */}
         <div className="pt-4 flex-1 flex flex-col">
           {/* タイトル */}
-          <h2 className="font-semibold text-gray-900 mb-2 line-clamp-1 group-hover:text-blue-600 transition-colors">
+          <h2 className="font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
             {content.title}
           </h2>
 
           {/* 説明文 */}
           <div className="flex-1">
-            <p className="text-gray-600 text-sm line-clamp-2 mb-4">
+            <p className="text-gray-600 text-sm line-clamp-3 mb-4">
               {content.description || ''}
             </p>
           </div>

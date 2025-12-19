@@ -59,7 +59,7 @@ function ContentCard({
           )}
           {/* 無料バッジ */}
           {content.is_free && (
-            <div className="absolute top-2 left-2 bg-white text-xs px-3 py-1 border border-green-200 text-green-700 font-medium">
+            <div className="absolute top-2 left-2 bg-white text-xs px-3 py-1 border border-green-200 text-green-700 font-medium transition-opacity duration-300 group-hover:opacity-0">
               無料
             </div>
           )}
@@ -81,12 +81,22 @@ function ContentCard({
           </div>
         </div>
         <div className="pt-4 flex-1 flex flex-col">
-          <h3 className="font-semibold text-gray-900 mb-2 line-clamp-1 group-hover:text-blue-600 transition-colors">
+          <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
             {content.title}
           </h3>
-          <p className="text-gray-600 text-sm line-clamp-2 flex-1">
+          <p className="text-gray-600 text-sm line-clamp-3 mb-3 flex-1">
             {content.description || ''}
           </p>
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-gray-500">
+              {new Date(content.created_at).toLocaleDateString('ja-JP')}
+            </span>
+            {content.category && (
+              <span className="bg-white text-xs px-3 py-1 border border-gray-200 text-gray-700 font-medium">
+                {content.category.name}
+              </span>
+            )}
+          </div>
         </div>
       </article>
     </Link>
