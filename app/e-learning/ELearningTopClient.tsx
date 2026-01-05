@@ -129,10 +129,6 @@ export default function ELearningTopClient({
     setShowLoginModal(true)
   }
 
-  const handlePurchaseBannerClick = () => {
-    setShowPurchaseModal(true)
-  }
-
   return (
     <div className="w-full pt-8 max-mid:pt-0 min-h-screen">
       {/* ヘッダー */}
@@ -191,25 +187,6 @@ export default function ELearningTopClient({
           </div>
         </div>
       </section>
-
-      {/* 無料ユーザー向け購入促進バナー（大） */}
-      {isFreeUser && (
-        <section className="mb-12 flex justify-center">
-          <button
-            onClick={handlePurchaseBannerClick}
-            className="block w-full max-w-[800px] transition-opacity hover:opacity-80 duration-200"
-          >
-            <Image
-              src="/images/banner/banner_lg.svg"
-              alt="有料コンテンツ見放題 - 買い切りで視聴可能"
-              width={800}
-              height={300}
-              className="w-full h-auto"
-              priority
-            />
-          </button>
-        </section>
-      )}
 
       {/* おすすめセクション */}
       {featuredContents.length > 0 && (
