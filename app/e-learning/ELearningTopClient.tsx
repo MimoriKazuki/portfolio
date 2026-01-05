@@ -201,7 +201,7 @@ export default function ELearningTopClient({
           >
             <Image
               src="/images/banner/banner_lg.svg"
-              alt="有料コンテンツ見放題 - 今だけ半額！"
+              alt="有料コンテンツ見放題 - 買い切りで視聴可能"
               width={800}
               height={300}
               className="w-full h-auto"

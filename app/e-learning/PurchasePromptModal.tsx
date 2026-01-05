@@ -73,7 +73,7 @@ export default function PurchasePromptModal({ isOpen, onClose, contentId, cancel
             </p>
 
             <p className="text-gray-600 mb-8 leading-relaxed">
-              <span className="text-2xl font-bold text-gray-900">¥4,980</span>
+              <span className="text-2xl font-bold text-gray-900">¥9,800</span>
               <span className="text-sm text-gray-500 ml-2">（税込・買い切り）</span>
             </p>
 
