@@ -25,7 +25,7 @@ export default function ContactCompletionModal({ isOpen, onClose, type = 'contac
     
     return () => {
       document.removeEventListener('keydown', handleEscape)
-      document.body.style.overflow = 'unset'
+      document.body.style.overflow = ''
     }
   }, [isOpen, onClose])
 

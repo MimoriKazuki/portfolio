@@ -19,7 +19,7 @@ export default function LoginPromptModal({ isOpen, onClose }: LoginPromptModalPr
     }
 
     return () => {
-      document.body.style.overflow = 'unset'
+      document.body.style.overflow = ''
     }
   }, [isOpen])
 

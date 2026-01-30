@@ -20,7 +20,7 @@ export default function PurchasePromptModal({ isOpen, onClose, contentId, cancel
     }
 
     return () => {
-      document.body.style.overflow = 'unset'
+      document.body.style.overflow = ''
     }
   }, [isOpen])
 

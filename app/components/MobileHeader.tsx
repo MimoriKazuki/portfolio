@@ -20,6 +20,14 @@ export default function MobileHeader() {
   const { handleELearningClick } = useELearningRelease()
   const authMenuRef = useRef<HTMLDivElement>(null)
 
+  // ページ遷移時にbodyスタイルを確実にリセット（モーダル等のクリーンアップ漏れ対策）
+  useEffect(() => {
+    document.body.style.overflow = ''
+    document.body.style.position = ''
+    document.body.style.top = ''
+    document.body.style.width = ''
+  }, [pathname])
+
   // 認証状態の取得（APIルート経由）
   useEffect(() => {
     const checkAuth = async () => {
