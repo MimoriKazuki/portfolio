@@ -175,8 +175,10 @@ input[type="range"].audio-slider::-moz-range-track {
   body {
     @apply bg-background text-foreground;
     background-color: hsl(var(--background));
-    overflow-x: hidden;
-    overscroll-behavior-y: none;
+    /* overflow-x: hidden はhtml要素のみに設定（bodyにも設定するとbodyが
+       独立したスクロールコンテナになり、モーダル等のoverflow操作後に
+       マウスホイール/トラックパッドのスクロールがviewportに伝播しなくなる） */
+    /* overscroll-behavior-y: none はhtml要素のみに設定 */
     /* 標準的なレイアウト: fixedヘッダー + スペーサーで対応 */
     padding: 0;
     margin: 0;
