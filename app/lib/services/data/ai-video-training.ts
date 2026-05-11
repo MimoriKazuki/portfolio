@@ -3,8 +3,8 @@ import { generateOtherTrainingProgramsData } from '../training-programs'
 
 export const AI_VIDEO_TRAINING_METADATA: ServicePageMetadata = {
   title: 'AI動画生成研修 - AI駆動研究所',
-  description: 'AI駆動研究所のAI動画生成研修。Sora、Gemini、Higgsfieldなど最新のAI動画生成ツールを活用して、マーケティング動画やプレゼンテーション動画を効率的に制作する技術を学びます。',
-  keywords: ['LandBridge', 'AI動画生成研修', 'AI動画', '動画制作', 'マーケティング動画', 'プレゼン動画', 'Sora', 'Gemini', 'Higgsfield', '企業研修', 'AI活用'],
+  description: 'AI駆動研究所のAI動画生成研修。ClaudeとHiggsfieldを組み合わせた最新のAI動画生成ワークフローで、マーケティング動画やプレゼンテーション動画を効率的に制作する技術を学びます。',
+  keywords: ['LandBridge', 'AI動画生成研修', 'AI動画', '動画制作', 'マーケティング動画', 'プレゼン動画', 'Claude', 'Higgsfield', '企業研修', 'AI活用'],
   url: 'https://www.landbridge.ai/services/ai-video-training'
 }
 
@@ -148,7 +148,7 @@ export const AI_VIDEO_TRAINING_DATA: ServiceData = {
       },
       {
         title: "実践的制作技術",
-        description: "Sora、Gemini、Higgsfield等の最新AI動画生成ツールを使った実践的な制作手法を学習。シーン設定からカメラワーク、音声同期まで、プロレベルの動画制作技術を身につけます",
+        description: "ClaudeとHiggsfieldを組み合わせた実践的な制作手法を学習。シナリオ設計からシーン構築、カメラワーク、音声同期まで、プロレベルの動画制作技術を身につけます",
         image: "/images/services/detail/1485846234645-video.jpg"
       },
       {
@@ -205,7 +205,7 @@ export const AI_VIDEO_TRAINING_DATA: ServiceData = {
       },
       {
         question: "どのようなAI動画生成ツールを使用しますか？",
-        answer: "ChatGPTのSora、Gemini、Higgsfield等の最新AI動画生成ツールを使用します。受講者のニーズに応じて、最適なツールの組み合わせをご提案いたします。"
+        answer: "ClaudeとHiggsfieldを軸とした最新のAI動画生成ワークフローを使用します。受講者のニーズに応じて、最適な組み合わせと制作プロセスをご提案いたします。"
       },
       {
         question: "企業のブランドイメージに合った動画は作れますか？",

@@ -3,8 +3,8 @@ import { generateOtherTrainingProgramsData } from '../training-programs'
 
 export const AI_SHORT_VIDEO_TRAINING_METADATA: ServicePageMetadata = {
   title: 'AIショート動画研修 - AI駆動研究所',
-  description: 'AI駆動研究所のAIショート動画研修。Sora、Runway、Pika、ElevenLabs、CapCut等を活用してSNS向け縦動画をAIで量産し、マーケティング・広報の発信力を加速します。',
-  keywords: ['LandBridge', 'AIショート動画研修', 'ショート動画', '縦動画', 'SNSマーケティング', 'Sora', 'Runway', 'Pika', 'ElevenLabs', 'CapCut', '企業研修'],
+  description: 'AI駆動研究所のAIショート動画研修。ClaudeとHiggsfieldを組み合わせたAIワークフローでSNS向け縦動画を量産し、マーケティング・広報の発信力を加速します。',
+  keywords: ['LandBridge', 'AIショート動画研修', 'ショート動画', '縦動画', 'SNSマーケティング', 'Claude', 'Higgsfield', '企業研修', 'AI活用'],
   url: 'https://www.landbridge.ai/services/ai-short-video-training'
 }
 
@@ -25,12 +25,12 @@ export const AI_SHORT_VIDEO_TRAINING_DATA: ServiceData = {
   serviceOverview: {
     title: "AIショート動画研修の特徴",
     subtitle: "TikTok、Instagram Reels、YouTube ShortsをはじめとするSNS縦動画は、企業の情報発信における主戦場となっています。当研修では、最新のAI動画生成・音声合成・編集ツールを組み合わせて、SNSで成果を出すショート動画を継続的に量産する技術を習得していただけます。",
-    descriptionTop: "Sora・Runway・Pika等のAI動画生成ツールに加え、ElevenLabsによる音声合成、CapCutによる仕上げ編集までを一気通貫で学ぶ実践型の専門研修プログラムです。動画制作未経験のSNS担当者でも、構成設計から投稿運用までを自走できるようになります。",
+    descriptionTop: "ClaudeとHiggsfieldを軸とした最新のAI動画生成ワークフローに加え、AI音声合成・編集自動化までを一気通貫で学ぶ実践型の専門研修プログラムです。動画制作未経験のSNS担当者でも、構成設計から投稿運用までを自走できるようになります。",
     tools: [
       { name: "Claude", logo: "claude" },
       { name: "Higgsfield", logo: "higgsfield" }
     ],
-    descriptionBottom: "ショート動画特有の構成（冒頭2秒のフック、テンポの良いカット割り、字幕設計）の基本から、AIによる素材生成、音声合成、CapCutでの仕上げ編集、SNS各プラットフォームへの最適化までをカバー。研修後はAIを軸とした制作フローを社内で確立し、これまで外注や担当者の手作業に依存していたショート動画を、必要なときに必要な本数だけ自走で量産できるようになります。",
+    descriptionBottom: "ショート動画特有の構成（冒頭2秒のフック、テンポの良いカット割り、字幕設計）の基本から、AIによる素材生成、AI音声合成、AI編集ツールでの仕上げ、SNS各プラットフォームへの最適化までをカバー。研修後はAIを軸とした制作フローを社内で確立し、これまで外注や担当者の手作業に依存していたショート動画を、必要なときに必要な本数だけ自走で量産できるようになります。",
     featureImage: "/images/services/features/ai-short-video-training-feature.jpg",
     items: [
       {
@@ -45,7 +45,7 @@ export const AI_SHORT_VIDEO_TRAINING_DATA: ServiceData = {
       },
       {
         title: "音声・編集自動化",
-        description: "ElevenLabsによる音声合成、CapCutによる編集自動化で仕上げ工程を大幅短縮します",
+        description: "AI音声合成とAI編集ツールで仕上げ工程を大幅短縮します",
         image: "/images/services/detail/1574717024653-camera.jpg"
       }
     ]
@@ -129,11 +129,11 @@ export const AI_SHORT_VIDEO_TRAINING_DATA: ServiceData = {
       },
       {
         category: "音声統一",
-        achievement: "ElevenLabsによる音声合成で、ブランドに合った音声品質を安定供給"
+        achievement: "AI音声合成により、ブランドに合った音声品質を安定供給"
       },
       {
         category: "編集自動化",
-        achievement: "CapCut活用と編集テンプレ化により、属人化を解消し編集スピードを大幅向上"
+        achievement: "AI編集ツール活用と編集テンプレ化により、属人化を解消し編集スピードを大幅向上"
       }
     ]
   },
@@ -143,7 +143,7 @@ export const AI_SHORT_VIDEO_TRAINING_DATA: ServiceData = {
     modules: [
       {
         title: "ショート動画基礎と最新AIツール",
-        description: "TikTok・Reels・Shortsそれぞれの特性、SNSアルゴリズムの基本、ショート動画市場の動向を整理。Sora・Runway・Pikaなど主要AI動画生成ツールの位置付けと使い分けを体系的に習得します",
+        description: "TikTok・Reels・Shortsそれぞれの特性、SNSアルゴリズムの基本、ショート動画市場の動向を整理。ClaudeとHiggsfieldを中心とした主要なAI動画生成ワークフローの位置付けと使い分けを体系的に習得します",
         image: "/images/services/detail/1551836022-marketing.jpg"
       },
       {
@@ -153,7 +153,7 @@ export const AI_SHORT_VIDEO_TRAINING_DATA: ServiceData = {
       },
       {
         title: "動画生成と編集ワーク",
-        description: "AI動画生成ツールでの素材作成、ElevenLabsを使った音声合成、CapCutでのカット編集・字幕・BGM挿入までをハンズオン形式で実践。1本のショート動画を完成させるフローを身につけます",
+        description: "AI動画生成ツールでの素材作成、AI音声合成によるナレーション制作、AI編集ツールでのカット編集・字幕・BGM挿入までをハンズオン形式で実践。1本のショート動画を完成させるフローを身につけます",
         image: "/images/services/detail/1574717024653-camera.jpg"
       },
       {
@@ -213,7 +213,7 @@ export const AI_SHORT_VIDEO_TRAINING_DATA: ServiceData = {
       },
       {
         question: "BGMやナレーションはどう対応しますか？",
-        answer: "ElevenLabsによる音声合成、ロイヤリティフリー音源の活用、商用利用ライセンスの確認方法など、音声・音楽周りを安全に運用するための実務知識まで含めて指導いたします。"
+        answer: "AI音声合成によるナレーション制作、ロイヤリティフリー音源の活用、商用利用ライセンスの確認方法など、音声・音楽周りを安全に運用するための実務知識まで含めて指導いたします。"
       },
       {
         question: "研修後、どれくらいの本数を量産できるようになりますか？",

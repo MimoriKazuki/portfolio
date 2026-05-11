@@ -153,7 +153,7 @@ export const AI_ANIMATION_TRAINING_DATA: ServiceData = {
       },
       {
         title: "音声・リップシンクと演出",
-        description: "ElevenLabs等の声優AIによるボイス制作、リップシンクの自動化、BGM・SE設計、演出意図に合わせた音響設計までをハンズオンで学習。アニメ作品としての完成度を引き上げる技術を習得します",
+        description: "声優AIによるボイス制作、リップシンクの自動化、BGM・SE設計、演出意図に合わせた音響設計までをハンズオンで学習。アニメ作品としての完成度を引き上げる技術を習得します",
         image: "/images/services/detail/1574717024653-camera.jpg"
       },
       {
