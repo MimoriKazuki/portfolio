@@ -98,20 +98,20 @@ const Footer = () => {
                     <ul className="space-y-2 text-sm">
                       <li>
                         <Link
-                          href="/services/comprehensive-ai-training"
-                          className="hover:text-white transition-colors"
-                          title="生成AI総合研修"
-                        >
-                          生成AI総合研修
-                        </Link>
-                      </li>
-                      <li>
-                        <Link
                           href="/services/ai-coding-training"
                           className="hover:text-white transition-colors"
                           title="AIコーディング研修"
                         >
                           AIコーディング研修
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          href="/services/claude-training"
+                          className="hover:text-white transition-colors"
+                          title="Claude研修"
+                        >
+                          Claude研修
                         </Link>
                       </li>
                       <li>
@@ -130,6 +130,24 @@ const Footer = () => {
                           title="AI動画生成研修"
                         >
                           AI動画生成研修
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          href="/services/ai-short-video-training"
+                          className="hover:text-white transition-colors"
+                          title="AIショート動画研修"
+                        >
+                          AIショート動画研修
+                        </Link>
+                      </li>
+                      <li>
+                        <Link
+                          href="/services/ai-animation-training"
+                          className="hover:text-white transition-colors"
+                          title="AIアニメ制作研修"
+                        >
+                          AIアニメ制作研修
                         </Link>
                       </li>
                     </ul>
