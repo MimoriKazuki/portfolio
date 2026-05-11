@@ -43,4 +43,12 @@ dist-ssr
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-.mcp.json
+
+# Serena (LSP-based code analysis tool / IDE state)
+.serena/
+
+# Claude Code local state
+.claude/scheduled_tasks.lock
+
+# Supabase CLI local temp
+supabase/.temp/
