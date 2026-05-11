@@ -27,9 +27,7 @@ export const CLAUDE_TRAINING_DATA: ServiceData = {
     subtitle: "Claudeは単なるチャット型AIではなく、CoWorkによる共同作業、Claude in Chromeによるブラウザ操作、Claude Designによる成果物制作など、業務領域を横断して使える総合プラットフォームへと進化しています。当研修では、Claudeの主要機能を体系的に学び、貴社の日常業務に組み込んで成果に直結させる実践技術を習得していただきます。",
     descriptionTop: "Claudeの基礎から最新機能まで、業務で実際に活用できる形で体系的に習得する専門研修プログラムです。文章作成・要約・分析といった基本機能に加え、CoWork、Claude in Chrome、Claude Designなどの応用機能を、開発者・非開発者を問わず使いこなせるようになります。",
     tools: [
-      { name: "Claude", logo: "claude" },
-      { name: "Claude Code", logo: "claudecode" },
-      { name: "Claude Design", logo: "claudedesign" }
+      { name: "Claude全般", logo: "claude" }
     ],
     descriptionBottom: "プロンプト設計の基礎から、Projects・Artifacts機能の使い分け、CoWorkによる共同編集、Claude in Chromeを使ったブラウザ上の作業自動化、Claude Designによるドキュメント・スライド制作まで、Claudeを業務全般で使い倒すノウハウを実例ベースで学習。研修後は、調査・資料作成・分析・コミュニケーションなど幅広い業務でClaudeを起点とした生産性向上を実現できます。",
     featureImage: "/images/services/features/claude-training-feature.jpg",
