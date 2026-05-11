@@ -151,8 +151,7 @@ export default async function ELearningDetailPage({ params }: PageProps) {
     .from('e_learning_users')
     .update({ last_accessed_at: new Date().toISOString() })
     .eq('auth_user_id', user.id)
-    .then(() => {})
-    .catch(() => {})
+    .then(() => {}, () => {})
 
   return (
     <MainLayout>
