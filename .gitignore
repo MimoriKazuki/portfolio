@@ -52,3 +52,7 @@ next-env.d.ts
 
 # Supabase CLI local temp
 supabase/.temp/
+
+# 機密情報を含む参考SQL（デフォルトパスワード平文記載のため公開しない）
+supabase/create-admin-user.sql
+supabase/create-correct-admin-user.sql
