@@ -9,20 +9,20 @@ import {
 // 期待する並び順・ID一覧（コミット32fbe99 の仕様）
 // -------------------------------------------------------
 const EXPECTED_IDS_IN_ORDER = [
-  'ai-coding',
+  'ai-coding-training',
   'claude-training',
   'ai-organization-os',
-  'ai-video',
+  'ai-video-training',
   'ai-short-video-training',
   'ai-animation-training',
   'individual-coaching',
 ]
 
 const EXPECTED_ENTERPRISE_IDS = [
-  'ai-coding',
+  'ai-coding-training',
   'claude-training',
   'ai-organization-os',
-  'ai-video',
+  'ai-video-training',
   'ai-short-video-training',
   'ai-animation-training',
 ]
@@ -99,15 +99,15 @@ describe('getOtherTrainingPrograms', () => {
   })
 
   it('各 enterprise ID を渡したとき enterprise 以外の ID が除外対象にならない', () => {
-    const result = getOtherTrainingPrograms('ai-coding')
+    const result = getOtherTrainingPrograms('ai-coding-training')
     const ids = result.map(p => p.id)
     expect(ids).toContain('individual-coaching')
   })
 
   it('返り値の並び順は元配列の順序を維持する', () => {
-    const result = getOtherTrainingPrograms('ai-coding')
+    const result = getOtherTrainingPrograms('ai-coding-training')
     const ids = result.map(p => p.id)
-    const expected = EXPECTED_IDS_IN_ORDER.filter(id => id !== 'ai-coding')
+    const expected = EXPECTED_IDS_IN_ORDER.filter(id => id !== 'ai-coding-training')
     expect(ids).toEqual(expected)
   })
 })
