@@ -27,9 +27,8 @@ export const AI_ANIMATION_TRAINING_DATA: ServiceData = {
     subtitle: "従来、アニメ制作は長期間・大規模・高コストが当たり前の領域でした。AIによるキャラクター生成・シーン生成・リップシンク・音声合成の進化により、企画から完成までの全工程が抜本的に見直されつつあります。当研修では、AIを駆使したアニメ制作の全プロセスを体系的に習得し、貴社のクリエイティブ制作を一段引き上げる技術をお伝えします。",
     descriptionTop: "AIアニメ制作の最新動向を踏まえ、キャラクター生成・シーン生成・リップシンク・音声合成・統合編集まで、アニメ制作の全工程をAIで効率化する専門研修プログラムです。制作期間を大幅に短縮しながら、企画意図に忠実な作品を仕上げる実践的なスキルを習得していただきます。",
     tools: [
-      { name: "Sora", logo: "sora" },
-      { name: "Runway", logo: "runway" },
-      { name: "ElevenLabs", logo: "elevenlabs" }
+      { name: "Claude", logo: "claude" },
+      { name: "Higgsfield", logo: "higgsfield" }
     ],
     descriptionBottom: "キャラクターのビジュアル生成からシーン構築、リップシンク、声優AIによるボイス制作、編集ソフトでの統合作業まで、AIアニメ制作の全工程をハンズオンで習得。広告・販促アニメ、教育コンテンツ、社内向けアニメ動画など、様々な用途に対応した制作技術を学習します。研修後は外部スタジオへの依存を減らしつつ、企画から完成まで自社主導で進められる体制を構築できます。",
     featureImage: "/images/services/features/ai-animation-training-feature.jpg",

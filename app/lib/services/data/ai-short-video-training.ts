@@ -27,9 +27,8 @@ export const AI_SHORT_VIDEO_TRAINING_DATA: ServiceData = {
     subtitle: "TikTok、Instagram Reels、YouTube ShortsをはじめとするSNS縦動画は、企業の情報発信における主戦場となっています。当研修では、最新のAI動画生成・音声合成・編集ツールを組み合わせて、SNSで成果を出すショート動画を継続的に量産する技術を習得していただけます。",
     descriptionTop: "Sora・Runway・Pika等のAI動画生成ツールに加え、ElevenLabsによる音声合成、CapCutによる仕上げ編集までを一気通貫で学ぶ実践型の専門研修プログラムです。動画制作未経験のSNS担当者でも、構成設計から投稿運用までを自走できるようになります。",
     tools: [
-      { name: "Sora", logo: "sora" },
-      { name: "Runway", logo: "runway" },
-      { name: "ElevenLabs", logo: "elevenlabs" }
+      { name: "Claude", logo: "claude" },
+      { name: "Higgsfield", logo: "higgsfield" }
     ],
     descriptionBottom: "ショート動画特有の構成（冒頭2秒のフック、テンポの良いカット割り、字幕設計）の基本から、AIによる素材生成、音声合成、CapCutでの仕上げ編集、SNS各プラットフォームへの最適化までをカバー。研修後はAIを軸とした制作フローを社内で確立し、これまで外注や担当者の手作業に依存していたショート動画を、必要なときに必要な本数だけ自走で量産できるようになります。",
     featureImage: "/images/services/features/ai-short-video-training-feature.jpg",
