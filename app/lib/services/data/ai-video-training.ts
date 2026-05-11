@@ -223,7 +223,7 @@ export const AI_VIDEO_TRAINING_DATA: ServiceData = {
     ]
   },
   
-  otherTrainingPrograms: generateOtherTrainingProgramsData("ai-video"),
+  otherTrainingPrograms: generateOtherTrainingProgramsData("ai-video-training"),
   
   finalCTA: {
     title: "動画制作革新の第一歩を踏み出しませんか？",

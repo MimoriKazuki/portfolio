@@ -5,7 +5,7 @@ import type { OtherTrainingProgram } from '@/app/lib/types/service'
  */
 export const ALL_TRAINING_PROGRAMS: OtherTrainingProgram[] = [
   {
-    id: "ai-coding",
+    id: "ai-coding-training",
     title: "AIコーディング研修",
     description: "GitHub Copilot、Claude Code等を活用したAI支援プログラミング技術を習得し、開発効率を飛躍的に向上させます。",
     href: "/services/ai-coding-training",
@@ -32,7 +32,7 @@ export const ALL_TRAINING_PROGRAMS: OtherTrainingProgram[] = [
     category: "enterprise"
   },
   {
-    id: "ai-video",
+    id: "ai-video-training",
     title: "AI動画生成研修",
     description: "Sora、Gemini、Higgsfield等のAI動画生成ツールを活用して、マーケティング動画やプレゼン動画を効率的に制作する技術を学びます。",
     href: "/services/ai-video-training",
