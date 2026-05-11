@@ -10,6 +10,7 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY!
 const adminEmail = process.env.ADMIN_EMAIL!
 
 if (!supabaseUrl || !supabaseServiceKey || !adminEmail) {
+  // ADMIN_DEFAULT_PASSWORD は実行時に個別チェック（オプション扱い）
   console.error('必要な環境変数が設定されていません')
   process.exit(1)
 }
@@ -33,8 +34,14 @@ async function setupAdmin() {
       return
     }
     
-    // デフォルトパスワード
-    const defaultPassword = 'Lb@123456'
+    // デフォルトパスワード（環境変数から取得）
+    const defaultPassword = process.env.ADMIN_DEFAULT_PASSWORD
+
+    if (!defaultPassword) {
+      console.error('ADMIN_DEFAULT_PASSWORD 環境変数を設定してください')
+      console.error('例: ADMIN_DEFAULT_PASSWORD=YourStrongPassword npx tsx scripts/setup-admin.ts')
+      process.exit(1)
+    }
     
     // ユーザーを作成
     const { data, error } = await supabase.auth.admin.createUser({
