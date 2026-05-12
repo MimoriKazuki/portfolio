@@ -111,3 +111,29 @@ ALTER TABLE e_learning_purchases
     FOREIGN KEY (user_id) REFERENCES e_learning_users(id) ON DELETE RESTRICT,
   ADD CONSTRAINT e_learning_purchases_content_id_fkey
     FOREIGN KEY (content_id) REFERENCES e_learning_contents(id) ON DELETE RESTRICT;
+
+-- -----------------------------------------------------------------------------
+-- 8. RLS ポリシー整合性の確認（schema-rationale.md §C1 e_learning_purchases）
+-- -----------------------------------------------------------------------------
+-- レビュー指摘②対応：既存 RLS の整合性を本ファイルで確認・担保する。
+--
+-- 既存マイグレーション（20251203093613_create_e_learning_tables.sql）の調査結果：
+--   1. ALTER TABLE e_learning_purchases ENABLE ROW LEVEL SECURITY 済
+--   2. "Users can view own purchases" (FOR SELECT) ポリシーのみ定義済
+--      USING: user_id IN (SELECT id FROM e_learning_users WHERE auth_user_id = auth.uid())
+--   3. INSERT / UPDATE / DELETE ポリシーは未定義
+--
+-- PostgreSQL の RLS 仕様：
+--   - RLS 有効化済 + 該当操作のポリシー未定義
+--     ⇒ anon / authenticated は該当操作を実行できない（service_role はバイパス）
+--
+-- schema-rationale.md §C1 マトリクスとの整合：
+--   - anon          : SELECT/INSERT/UPDATE/DELETE 全て不可 ✅
+--   - authenticated : SELECT 自己のみ可・INSERT/UPDATE/DELETE 不可 ✅
+--   - service_role  : 全可（RLS バイパス・Stripe Webhook で INSERT/UPDATE 実行） ✅
+--
+-- ⇒ 結論：既存 RLS は schema-rationale.md §C1 と完全に整合。本ファイルでの修正は不要。
+--    course_id 追加・FK 変更後も既存 SELECT ポリシーの USING 条件は不変のため動作影響なし。
+--
+-- 後続の Phase 2 Step 2 以降で Stripe Webhook 経由の INSERT を実装する際は、
+-- service_role キー（SUPABASE_SERVICE_ROLE_KEY）を使用すること（schema-rationale.md §C1 §Tx-1）。

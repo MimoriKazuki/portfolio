@@ -67,6 +67,9 @@ CREATE POLICY "Users can insert own progress"
     )
   );
 
+-- UPDATE ポリシーは schema-rationale.md §C1 で自己レコードのみ可と定義済。
+-- 通常運用では「視聴完了は最初の値を保持・上書きしない」（INSERT 時 UNIQUE 違反を冪等で無視する）が、
+-- 運用上の修正用途（誤記録された completed_at の修正等）に備えて UPDATE 権限を残す。
 CREATE POLICY "Users can update own progress"
   ON e_learning_progress FOR UPDATE
   USING (

@@ -17,13 +17,20 @@
 -- 既存3件の user_id は auth.users.id が入っているため、e_learning_users.auth_user_id とマッピングして
 -- 対応する e_learning_users.id に書き換える。
 --
--- 適用前の事前確認：
+-- 適用前の事前確認（必須）：
 --   - SELECT COUNT(*) FROM e_learning_bookmarks; → CLAUDE.md 記載の 3 件と一致するか確認
 --   - 全 user_id が e_learning_users.auth_user_id に存在することを確認：
 --     SELECT b.id FROM e_learning_bookmarks b
 --      LEFT JOIN e_learning_users u ON u.auth_user_id = b.user_id
 --      WHERE u.id IS NULL;
 --     → 0 件であること（残っていれば該当 e_learning_users レコードを先に作成する必要あり）
+--
+-- レビュー指摘④対応：未マッピングレコードのリスク明示
+--   - 下の UPDATE は対応する e_learning_users が無い user_id を **サイレントにスキップ** する。
+--   - スキップされたレコードは元の user_id（=auth.users.id）が残ったままになる。
+--   - その状態で後続「2. FK 参照先変更」を実行すると、新 FK が e_learning_users(id) を参照する
+--     ため、外部キー違反でマイグレーション自体が失敗する。
+--   - したがって事前確認で「未マッピング 0 件」を必ず保証してから本マイグレーションを適用すること。
 UPDATE e_learning_bookmarks
    SET user_id = u.id
   FROM e_learning_users u

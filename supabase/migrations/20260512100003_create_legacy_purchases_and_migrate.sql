@@ -32,7 +32,7 @@ CREATE INDEX idx_e_learning_legacy_purchases_user_id ON e_learning_legacy_purcha
 CREATE UNIQUE INDEX idx_e_learning_legacy_purchases_stripe_session_id
   ON e_learning_legacy_purchases(stripe_session_id) WHERE stripe_session_id IS NOT NULL;
 
-COMMENT ON TABLE  e_learning_legacy_purchases                     IS 'L3 確定：旧仕様（全コンテンツ買い切り）の購入履歴退避テーブル。物理削除不可・税務観点';
+COMMENT ON TABLE  e_learning_legacy_purchases                     IS 'L3 確定：旧仕様（全コンテンツ買い切り）の購入履歴退避テーブル。物理削除不可・税務観点。INSERT 後に更新しない運用のため updated_at は持たない';
 COMMENT ON COLUMN e_learning_legacy_purchases.content_id          IS '元 content_id（NULL=全コンテンツ買い切りの歴史的レコード）';
 COMMENT ON COLUMN e_learning_legacy_purchases.original_created_at IS '元購入完了日時（移行元の created_at）';
 COMMENT ON COLUMN e_learning_legacy_purchases.migrated_at         IS 'L3 退避日時';
@@ -83,11 +83,16 @@ BEGIN;
 
   -- Step 2: 該当ユーザーに has_full_access=true を付与（M5 安全順序 Step2）
   --         updated_at も同時に更新
+  -- レビュー指摘①対応：UPDATE 範囲を「今回退避対象のみ」に厳密に絞る。
+  --   - e_learning_legacy_purchases 全体を参照すると、将来このテーブルに別経路で
+  --     レコードが追加された場合に意図しないユーザーへ付与されるリスクがある。
+  --   - Step 3 の DELETE より前に実行しているため、元 e_learning_purchases の
+  --     content_id IS NULL 条件で「今回退避対象6名」を一意に特定できる。
   UPDATE e_learning_users
      SET has_full_access = true,
          updated_at      = timezone('utc'::text, now())
    WHERE id IN (
-     SELECT user_id FROM e_learning_legacy_purchases
+     SELECT user_id FROM e_learning_purchases WHERE content_id IS NULL
    );
 
   -- Step 3: 元 e_learning_purchases から該当6件を DELETE
