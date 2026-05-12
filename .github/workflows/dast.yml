@@ -1,0 +1,35 @@
+name: Security Scan (DAST)
+
+# トリガー：stg への push・手動実行
+# STG_URL が未設定の間はスキャンをスキップ（エラーにならない）
+#
+# 【初回セットアップ手順】
+# stg環境のURLが確定したら以下を1回だけ設定する：
+# GitHub → リポジトリ → Settings → Secrets and variables → Variables
+# → New repository variable → Name: STG_URL / Value: https://stg.example.com
+on:
+  push:
+    branches:
+      - stg
+  workflow_dispatch:
+
+jobs:
+  zap-scan:
+    name: OWASP ZAP DAST
+    runs-on: ubuntu-latest
+    # STG_URL が設定されていない場合はスキップ
+    if: vars.STG_URL != ''
+    steps:
+      - name: ZAP Baseline Scan
+        uses: zaproxy/action-baseline@v0.12.0
+        with:
+          target: ${{ vars.STG_URL }}
+          rules_file_name: '.zap/rules.tsv'
+          cmd_options: '-a'
+
+      - name: Upload ZAP Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zap-report
+          path: report_html.html

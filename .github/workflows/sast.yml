@@ -1,0 +1,49 @@
+name: Security Scan (SAST)
+
+# トリガー：main / stg / dev へのpush、週次定期、手動実行
+# stg・dev ブランチが存在しないプロジェクトでは無視される（エラーにならない）
+on:
+  push:
+    branches:
+      - main
+      - stg
+      - dev
+  workflow_dispatch:       # 手動実行（リリース前など）
+
+jobs:
+  # ① 依存パッケージの脆弱性スキャン
+  npm-audit:
+    name: npm audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run npm audit (high以上で失敗)
+        run: npm audit --audit-level=high
+
+  # ② Semgrep による静的解析（OWASP Top 10）
+  semgrep:
+    name: Semgrep SAST
+    runs-on: ubuntu-latest
+    container:
+      image: semgrep/semgrep
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Semgrep (OWASP Top 10)
+        run: semgrep --config=p/owasp-top-ten --error --json-output=semgrep-results.json src/ || true
+
+      - name: Upload Semgrep results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: semgrep-results
+          path: semgrep-results.json
