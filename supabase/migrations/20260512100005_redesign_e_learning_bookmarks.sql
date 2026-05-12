@@ -12,7 +12,15 @@
 -- =============================================================================
 
 -- -----------------------------------------------------------------------------
--- 1. user_id マッピング更新（auth.users.id → e_learning_users.id）
+-- 1. 既存 FK 削除（auth.users 参照を先に外す）— FB-DB-05 順序修正
+-- -----------------------------------------------------------------------------
+-- 既存 FK が auth.users(id) を参照している間に user_id 値を e_learning_users.id に
+-- 書き換えると FK 違反になるため、UPDATE より前に DROP する。
+ALTER TABLE e_learning_bookmarks
+  DROP CONSTRAINT IF EXISTS e_learning_bookmarks_user_id_fkey;
+
+-- -----------------------------------------------------------------------------
+-- 2. user_id マッピング更新（auth.users.id → e_learning_users.id）
 -- -----------------------------------------------------------------------------
 -- 既存3件の user_id は auth.users.id が入っているため、e_learning_users.auth_user_id とマッピングして
 -- 対応する e_learning_users.id に書き換える。
@@ -28,7 +36,7 @@
 -- レビュー指摘④対応：未マッピングレコードのリスク明示
 --   - 下の UPDATE は対応する e_learning_users が無い user_id を **サイレントにスキップ** する。
 --   - スキップされたレコードは元の user_id（=auth.users.id）が残ったままになる。
---   - その状態で後続「2. FK 参照先変更」を実行すると、新 FK が e_learning_users(id) を参照する
+--   - その状態で後続「3. 新 FK 追加」を実行すると、新 FK が e_learning_users(id) を参照する
 --     ため、外部キー違反でマイグレーション自体が失敗する。
 --   - したがって事前確認で「未マッピング 0 件」を必ず保証してから本マイグレーションを適用すること。
 UPDATE e_learning_bookmarks
@@ -37,17 +45,14 @@ UPDATE e_learning_bookmarks
  WHERE e_learning_bookmarks.user_id = u.auth_user_id;
 
 -- -----------------------------------------------------------------------------
--- 2. FK 参照先変更（auth.users → e_learning_users）
+-- 3. 新 FK 追加（→ e_learning_users）
 -- -----------------------------------------------------------------------------
-ALTER TABLE e_learning_bookmarks
-  DROP CONSTRAINT IF EXISTS e_learning_bookmarks_user_id_fkey;
-
 ALTER TABLE e_learning_bookmarks
   ADD CONSTRAINT e_learning_bookmarks_user_id_fkey
     FOREIGN KEY (user_id) REFERENCES e_learning_users(id) ON DELETE CASCADE;
 
 -- -----------------------------------------------------------------------------
--- 3. course_id 追加（M4 確定）
+-- 4. course_id 追加（M4 確定）
 -- -----------------------------------------------------------------------------
 ALTER TABLE e_learning_bookmarks
   ADD COLUMN IF NOT EXISTS course_id uuid NULL REFERENCES e_learning_courses(id) ON DELETE CASCADE;
@@ -55,14 +60,14 @@ ALTER TABLE e_learning_bookmarks
 COMMENT ON COLUMN e_learning_bookmarks.course_id IS 'M4 確定：コースFK（コースもブックマーク対象・content_id と排他）';
 
 -- -----------------------------------------------------------------------------
--- 4. content_id を NULL 許容に変更（M4：course か content か排他）
+-- 5. content_id を NULL 許容に変更（M4：course か content か排他）
 -- -----------------------------------------------------------------------------
 -- 既存スキーマでは content_id NOT NULL だが、course_id 追加に伴い NULL 許容に変更
 ALTER TABLE e_learning_bookmarks
   ALTER COLUMN content_id DROP NOT NULL;
 
 -- -----------------------------------------------------------------------------
--- 5. UNIQUE 再設計
+-- 6. UNIQUE 再設計
 -- -----------------------------------------------------------------------------
 -- 既存 UNIQUE(user_id, content_id) を DROP → 部分 UNIQUE 2 本に分割
 ALTER TABLE e_learning_bookmarks
@@ -75,7 +80,7 @@ CREATE UNIQUE INDEX e_learning_bookmarks_user_content_partial_key
   ON e_learning_bookmarks(user_id, content_id) WHERE content_id IS NOT NULL;
 
 -- -----------------------------------------------------------------------------
--- 6. 排他 CHECK 制約（M4：course or content 排他）
+-- 7. 排他 CHECK 制約（M4：course or content 排他）
 -- -----------------------------------------------------------------------------
 ALTER TABLE e_learning_bookmarks
   ADD CONSTRAINT e_learning_bookmarks_target_exclusive_chk
@@ -85,13 +90,13 @@ ALTER TABLE e_learning_bookmarks
   );
 
 -- -----------------------------------------------------------------------------
--- 7. インデックス追加（FK 用）
+-- 8. インデックス追加（FK 用）
 -- -----------------------------------------------------------------------------
 CREATE INDEX IF NOT EXISTS idx_e_learning_bookmarks_course_id ON e_learning_bookmarks(course_id);
 -- 既存 idx_e_learning_bookmarks_user_id / _content_id は維持
 
 -- -----------------------------------------------------------------------------
--- 8. RLS ポリシー書き換え（user_id 参照先変更に追従）
+-- 9. RLS ポリシー書き換え（user_id 参照先変更に追従）
 -- -----------------------------------------------------------------------------
 -- 旧：USING (auth.uid() = user_id)  ※ user_id が auth.users.id 前提
 -- 新：USING (user_id IN (SELECT id FROM e_learning_users WHERE auth_user_id = auth.uid()))
