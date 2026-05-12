@@ -86,6 +86,7 @@
 | LessonSidebar | レッスンリスト（章＋動画） | B005 | アコーディオン + 現在動画ハイライト + クリック遷移 | 新規 |
 | VideoTabs | 視聴画面下部タブ | B005 / B007 | 概要 / 資料 / 関連 | 新規 |
 | RelatedCoursesSection | 関連コース | B004 / B005 | グリッド | 新規 |
+| RelatedContentsSection | 関連単体動画 | B007 / B005 視聴画面下部「関連」タブ | グリッド | 新規 |
 | NextLessonCTA | 次レッスン誘導 | B005 動画末尾 | 「次のレッスンへ」ボタン + カウントダウン（任意） | 新規 |
 | PurchasePromptModal | 購入確認モーダル | B004 / B007 | コース／単体動画 / 価格 / Stripe Checkout 遷移 | 既存改修（`PurchasePromptModal.tsx`・コース対応） |
 | LoginPromptModal | ログイン誘導モーダル | LP/B*（未ログイン時） | ログインボタン + キャンセル | 既存（`LoginPromptModal.tsx`） |
@@ -97,29 +98,30 @@
 | AdminPageHeader | 管理ヘッダー | C\* | タイトル + アクション群 | 新規 |
 | AdminDataTable | 管理一覧テーブル | C\* | ソート / ページング / 一括選択 | 既存改修 |
 | AdminFilterBar | 管理フィルタ | C\* | 検索 + Select + 日付範囲 | 新規 |
-| CurriculumEditor | コース章＋動画 DnD 編集 | C006 / C007 | 章追加 / 章 DnD / 章内動画追加 / 動画 DnD / `is_free` トグル | 新規（dnd-kit 等推奨） |
+| CurriculumEditor | コース章＋動画 DnD 編集 | C006 / C007 / C008 | 章追加 / 章 DnD / 章内動画追加 / 動画 DnD / `is_free` トグル（C008 はカリキュラム編集タブとして CurriculumEditor を直接利用） | 新規（dnd-kit 等推奨） |
 | MaterialEditor | 資料アップロード／並び替え | C\* | ファイルアップロード + 順序入替 | 新規 |
 | StripePriceField | Stripe Price ID 入力＋プレビュー | C006 / C007 / C002 / C003 | テキスト + 検証ヘルパ（任意） | 新規 |
 | HasFullAccessSwitch | フルアクセス切替 | C010 | Switch + 確認ダイアログ | 新規 |
-| CheckoutCompleteCard | 購入完了表示 | B009 | アイコン + 見出し + CTA | 新規 |
+| CheckoutCompleteCard | 購入完了表示（B009 の `pollingStatus = 'confirmed'` 状態のみを担当・waiting / timeout は `CheckoutPollingStatus` が担当） | B009 | アイコン + 見出し + 「視聴開始」CTA（コース or 動画詳細へ） | 新規 |
+| CheckoutPollingStatus | B009 ポーリング状態管理 UI（`pollingStatus` に応じて表示切替）：waiting＝Spinner+「決済反映処理中です」、confirmed＝`CheckoutCompleteCard` を内包、timeout＝エラーメッセージ + サポート連絡導線 | B009 | Spinner（atom）+ `CheckoutCompleteCard` の状態バリエーション内包 | 新規 |
 
 ## templates（ページ骨格）
 
 `page-templates.md` を参照。本リストでは候補のみ列挙。
 
-| コンポーネント | 用途 | スロット |
-|--------------|------|---------|
+| コンポーネント | 用途 | スロット | 流用可否 |
+|--------------|------|---------|---------|
 | BaseLayout | 全画面共通骨格 | Header / Sidebar / main / Footer | 既存（`MainLayout.tsx`） |
-| LPTemplate | LP | Hero / Value / CourseShowcase / ContentShowcase / Testimonial / Stats / FAQ / Contact | 新規 |
+| LPTemplate | LP | Hero / Value / CourseShowcase / ContentShowcase / Testimonial / Stats / FAQ / Contact | 新規（`AITrainingLP.tsx` / `ServiceTrainingLP.tsx` のあしらいを流用） |
 | MediaListTemplate | コース・単体動画一覧 | Header + FilterBar + Grid + Pagination | 新規 |
 | CourseDetailTemplate | コース詳細 | Hero + Curriculum + Materials + Related | 新規 |
-| VideoPlayerTemplate | 視聴画面 | Player + Tabs + LessonSidebar | 新規 |
-| AuthTemplate | ログイン | カード中央配置 | 新規 |
+| VideoPlayerTemplate | 視聴画面 | Player + Tabs + LessonSidebar | 新規（`ELearningDetailClient` の動画埋め込み判定を流用） |
+| AuthTemplate | ログイン | カード中央配置 | 既存改修（`app/auth/login/` の構造を流用・`returnTo` クエリ対応を追加） |
 | MyPageTemplate | マイページ | MyPageSidebar + section slot | 新規 |
 | InfoPageTemplate | 購入完了／キャンセル | 中央カード | 新規 |
-| AdminListTemplate | 管理一覧 | AdminPageHeader + FilterBar + DataTable | 新規 |
-| AdminFormTemplate | 管理フォーム | AdminFormHeader + Tabs + FormSection × N | 新規 |
-| ErrorTemplate | 404 / 5xx | カード中央配置 | 既存（`not-found.tsx`） |
+| AdminListTemplate | 管理一覧 | AdminPageHeader + FilterBar + DataTable | 新規（既存 `/admin/customers` 等の一覧構造を踏襲） |
+| AdminFormTemplate | 管理フォーム | AdminFormHeader + Tabs + FormSection × N | 新規（既存 `/admin/e-learning/[id]/edit` の構造を踏襲） |
+| ErrorTemplate | 404 / 5xx | カード中央配置 | 既存（`not-found.tsx` / `error.tsx`） |
 
 ---
 
@@ -127,9 +129,9 @@
 
 - atoms：18 個
 - molecules：14 個
-- organisms：31 個
+- organisms：33 個（RelatedContentsSection / CheckoutPollingStatus 追加）
 - templates：11 個
-- **合計：74 個**
+- **合計：76 個**
 
 ---
 
@@ -142,9 +144,9 @@
 3. **基本 molecules**：FormField / FormSection / SearchField / Select / Tabs / Accordion / Toast / Dialog / Pagination / EmptyState / PriceTag
 4. **データ表示系 organisms**：CourseCard / ContentCard / MediaGrid / MediaFilterBar / BookmarkButton
 5. **画面 templates**：MediaListTemplate / CourseDetailTemplate / AuthTemplate（既存改修）/ MyPageTemplate
-6. **視聴系 organisms / templates**：VideoPlayer（既存切り出し）/ LessonSidebar / VideoTabs / CourseCurriculum / VideoPlayerTemplate / NextLessonCTA / RelatedCoursesSection
+6. **視聴系 organisms / templates**：VideoPlayer（既存切り出し）/ LessonSidebar / VideoTabs / CourseCurriculum / VideoPlayerTemplate / NextLessonCTA / RelatedCoursesSection / RelatedContentsSection
 7. **LP 系 organisms / templates**：HeroSection / ValuePropsSection / CourseShowcase / ContentShowcase / TestimonialSection / StatsSection / FAQAccordion / ContactSection / LPTemplate
-8. **購入導線**：PurchasePromptModal（改修）/ CheckoutCompleteCard / InfoPageTemplate / PurchaseHistoryList
+8. **購入導線**：PurchasePromptModal（改修）/ CheckoutCompleteCard / CheckoutPollingStatus / InfoPageTemplate / PurchaseHistoryList
 9. **管理系**：AdminPageHeader / AdminDataTable（既存改修）/ AdminFilterBar / AdminListTemplate / AdminFormTemplate / CurriculumEditor / MaterialEditor / StripePriceField / HasFullAccessSwitch
 
 ---

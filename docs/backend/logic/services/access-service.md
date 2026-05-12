@@ -45,12 +45,17 @@
 
 ### `canViewCourseVideo(userId, courseVideoId)` の判定
 
+**§視聴権限の優先順位（① has_full_access → ② コース購入済 → ③ 単体購入済 → ④ is_free → ⑤ 不可）と同一順序を必ず維持する**。`is_free` を購入済より先に判定すると、購入済ユーザーが無料動画にアクセスしたときに `'free_*'` 系の reason になり「購入実績」が見えなくなるため、購入済判定を必ず先に置く。
+
+> **※ コース内動画は個別購入の対象外（コース単位購入のみ）**：本判定では §視聴権限の優先順位の「③ 単体購入済」は適用しない（コース内動画 = `e_learning_course_videos` には個別の `stripe_price_id` がなく、購入レコードは親コース単位でのみ作成される）。よって `canViewCourseVideo` の判定順序は実質的に「① has_full_access → ② コース購入済 → ③ コース全体 is_free → ④ 動画個別 is_free → ⑤ 不可」となる。共通の §優先順位とは番号がずれるが、これは「コース内動画には単体購入の概念がない」という業務制約に由来する正規の差分である。
+
 ```
 1. user.has_full_access == true → allowed = true, reason = 'full_access'
-2. video.is_free == true        → allowed = true, reason = 'free_course_video'
-3. video.chapter.course の購入レコード（status=completed）が user_id にある
+2. video.chapter.course の購入レコード（status=completed）が user_id にある
                                 → allowed = true, reason = 'course_purchased'
-4. コース全体が is_free == true（コース全体無料）→ allowed = true, reason = 'free_course'
+3. コース全体が is_free == true（コース直下 is_free フラグ）
+                                → allowed = true, reason = 'free_course'
+4. video.is_free == true        → allowed = true, reason = 'free_course_video'
 5. それ以外                      → allowed = false, reason = 'not_purchased'
 ```
 
@@ -64,11 +69,13 @@ services 層でクエリを最小化：1 リクエストで複数動画を判定
 
 ### `canViewContent(userId, contentId)` の判定
 
+**§視聴権限の優先順位と同一順序を維持する**：購入済判定を `is_free` より先に置くことで、購入済ユーザーには `'content_purchased'` を返す。
+
 ```
 1. user.has_full_access == true → allowed = true, reason = 'full_access'
-2. content.is_free == true      → allowed = true, reason = 'free_content'
-3. PurchaseRepository.existsCompleted(userId, 'content', contentId) == true
+2. PurchaseRepository.existsCompleted(userId, 'content', contentId) == true
                                 → allowed = true, reason = 'content_purchased'
+3. content.is_free == true      → allowed = true, reason = 'free_content'
 4. それ以外                      → allowed = false, reason = 'not_purchased'
 ```
 

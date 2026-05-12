@@ -59,7 +59,7 @@
 | B008 | 購入確認モーダル／チェックアウト遷移 | （B004／B007 内モーダル → Stripe Checkout 外部） | 必要 | （モーダル + 外部リダイレクト） | 価格確認 → Stripe Checkout（mode: payment）へ遷移 | `e_learning_courses` / `e_learning_contents` / `e_learning_purchases` | 既存 PurchasePromptModal を再利用・改修 |
 | B009 | 購入完了画面 | `/e-learning/checkout/complete?session_id=...` | 必要 | InfoPageTemplate | Stripe Session 確認・購入動画／コースへの導線・**Webhook 未反映時はスピナー「決済反映処理中です」を表示し、`GET /api/me/access` を最大 10 回・2 秒間隔でポーリング** → 反映後に該当コース／単体動画への導線を表示／**タイムアウト時はエラー「反映が遅れています。サポートまでお問い合わせください」**＋ Slack 通知（BE 側 access-service が発火・反映遅延を運用に通知） | `e_learning_purchases` | 新規 |
 | B010 | 購入キャンセル画面 | `/e-learning/checkout/cancel` | 必要 | InfoPageTemplate | キャンセル表示・コース／動画詳細へ戻る導線 | - | 新規 |
-| B011 | マイページ：購入履歴 | `/e-learning/mypage/purchases` | 必要 | MyPageTemplate | 購入済コース／単体動画一覧・購入日・領収書（Stripe）リンク | `e_learning_purchases` / `e_learning_courses` / `e_learning_contents` | 新規 |
+| B011 | マイページ：購入履歴 | `/e-learning/mypage/purchases` | 必要 | MyPageTemplate | 購入済コース／単体動画一覧・購入日・領収書（Stripe）リンク／**`has_full_access = true` ユーザーには専用バナーを表示**（詳細は本ファイル「B011 マイページ購入履歴の表示仕様（補足）」） | `e_learning_purchases` / `e_learning_courses` / `e_learning_contents` / `e_learning_users.has_full_access` | 新規 |
 | B012 | マイページ：ブックマーク | `/e-learning/mypage/bookmarks` | 必要 | MyPageTemplate | ブックマーク済コース／単体動画一覧・解除 | `e_learning_bookmarks` / `e_learning_courses` / `e_learning_contents` | 既存改修（コース対応） |
 | B013 | マイページ：視聴履歴 | `/e-learning/mypage/progress` | 必要 | MyPageTemplate | 視聴完了済コース／単体動画一覧・進捗率 | `e_learning_progress` / `e_learning_course_videos` / `e_learning_contents` | 新規 |
 | B014 | マイページ：プロフィール | `/e-learning/mypage` | 必要 | MyPageTemplate | 表示名・アバター確認（読み取り中心。OAuth 由来のため編集は最小限）・退会導線（成功時は LP（B001）にリダイレクト＋セッション破棄） | `e_learning_users` | 新規 |
@@ -101,6 +101,10 @@
                                                     │ ※ 検証ルール：同一オリジン・パスのみ・空値や外部 URL は無効
                                                     ▼
 [ログイン済] ─────────────────────────────────▶ [B002 会員ホーム /e-learning/home]
+    │                                                  │
+    │                                                  ├─ コースカード（直接）─▶ [B004 コース詳細 /e-learning/courses/[slug]]
+    │                                                  ├─ 単体動画カード（直接）─▶ [B007 単体動画詳細／視聴 /e-learning/[id]]
+    │                                                  │   ※ B002 会員ホームのカードクリックは詳細画面へ直接遷移（B003/B006 一覧を経由しない）
     │                                                  │
     │                                                  ├─ コースタブ ─▶ [B003 コース一覧 /e-learning/courses]
     │                                                  │                       │
@@ -230,6 +234,28 @@ Stripe Checkout から `success_url` で到達した時点で、Webhook（`check
 |---------|------|
 | 初期 fetch（Server）：`e_learning_purchases` by `stripe_session_id` | 即時反映確認 |
 | ポーリング（Client）：`GET /api/me/access?session_id=...` | Webhook 未反映時の再確認 |
+
+---
+
+## B011 マイページ購入履歴の表示仕様（補足）
+
+`GET /api/me/purchases` は `e_learning_purchases`（新スキーマ）のみを返し、`e_learning_legacy_purchases`（旧6件・税務目的の読み取り専用）は含めない。
+このため、旧プラン購入者（`has_full_access = true` の旧6名等）が B011 を開くと、購入履歴がゼロ件になり「全コンテンツ視聴可能なのに購入履歴が空」という UX ギャップが生じる。
+
+### 表示分岐ルール
+
+| ユーザー状態 | B011 の主表示 |
+|------------|-------------|
+| `has_full_access = false` ＆ 購入履歴あり | 通常の購入履歴一覧 |
+| `has_full_access = false` ＆ 購入履歴ゼロ | 空状態（EmptyState）：「まだ購入はありません」＋ B002 会員ホームへの導線 |
+| **`has_full_access = true` ＆ 購入履歴ゼロ** | **専用バナー（FullAccessBanner）**：「**全コンテンツ視聴権限を取得済みです**（旧プランで永続アクセス権付与）。最新コース・単体動画はホームからご覧ください。」＋ B002 会員ホームへの導線 |
+| `has_full_access = true` ＆ 購入履歴あり | 通常の購入履歴一覧 + 上部に同バナーを併記（永続アクセス権の説明） |
+
+### 補足
+
+- **legacy_purchases（旧6件）の参照は管理画面 C011 のみ**（読み取り専用・税務目的）。B011 では決して表示しない（旧購入者は新スキーマに移行されておらず、`has_full_access = true` で全体アクセスを保証）
+- バナー文言は最終的に design-plan-mate 側の文言レビューを経て調整可能
+- BE 側で `has_full_access` を `GET /api/me`（または `GET /api/me/access`）から取得して B011 ページ Server Component で参照
 
 ---
 

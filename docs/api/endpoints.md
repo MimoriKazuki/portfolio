@@ -114,21 +114,66 @@
 - レスポンス（200）：`{ "data": { "ok": true } }`
 - エラー：401 UNAUTHORIZED
 
+### POST /api/me/withdraw
+- 概要：退会（`e_learning_users.deleted_at` セット ＋ 個人情報マスキング ＋ Supabase セッション破棄）
+- 認証：auth
+- リクエスト：なし（body 不要）
+- 処理フロー：
+  1. controllers で `auth.getUser` から `userId` 取得
+  2. `user-service.withdraw(userId)` を呼ぶ（`deleted_at`／`display_name=NULL`／`avatar_url=NULL`／`is_active=false` を単一 UPDATE。email は L1 確定により保持＝マスキングしない）
+  3. 成功後 `supabase.auth.signOut()` で Cookie をクリア（services 内では呼ばない・Controller の責務）
+- レスポンス（200）：`{ "data": { "ok": true } }`
+- 業務ルール：
+  - 既に `deleted_at IS NOT NULL` のユーザーが呼んでも成功扱い（冪等・200 OK）
+  - 購入履歴・進捗・ブックマーク等は保持（user-service.withdraw の責務範囲）
+  - 再ログイン時は `user-service.syncFromAuth` 側で `deleted_at = null` に戻し履歴を引き継ぐ
+- エラー：401 UNAUTHORIZED、500 INTERNAL_ERROR
+
 ### GET /api/me/access
 - 概要：自分のアクセス権限サマリ（フルアクセス・購入済みコース/動画 ID 配列）
 - 認証：auth
+- クエリパラメータ：
+  - `session_id?: string`（任意・Stripe Checkout Session ID）
+    - 用途：B009「決済完了ページ」からのポーリングで、特定の Stripe Checkout Session に対応する購入レコードの反映状況を確認するため
+    - 動作：通常レスポンスに加え、`session_status` フィールドを返す（後述）
+    - 形式：`cs_` プレフィクスを持つ varchar(255) 想定。形式が極端に不正（空文字・極端な長さ）なら 400 VALIDATION_ERROR、それ以外は DB 検索の結果で判定
 - レスポンス（200）：
   ```json
   {
     "data": {
       "has_full_access": false,
       "purchased_course_ids": ["uuid1", "uuid2"],
-      "purchased_content_ids": ["uuid3"]
+      "purchased_content_ids": ["uuid3"],
+      "session_status": {
+        "session_id": "cs_xxx",
+        "reflected": true,
+        "purchase": {
+          "id": "uuid",
+          "target_type": "course",
+          "target_id": "uuid",
+          "status": "completed"
+        }
+      }
     }
   }
   ```
-- エラー：401 UNAUTHORIZED
-- 備考：FE がコース一覧／動画詳細で「購入済み」表示を出すための一括取得 API。
+- `session_status` の挙動：
+  - `session_id` クエリ未指定 → `session_status` フィールドは返さない（オブジェクトキー自体を省略）
+  - `session_id` 指定かつ `e_learning_purchases.stripe_session_id` に該当レコードが**当該ユーザーで**見つかる：
+    - `reflected = true`、`purchase` に当該レコードの要約（`id` / `target_type` / `target_id` / `status`）をセット
+    - FE は `reflected=true` を確認した時点でポーリングを終了し、コース／単体動画詳細へリダイレクト可
+  - `session_id` 指定だが該当レコードが**まだ存在しない**（Webhook 未到達）：
+    - `reflected = false`、`purchase = null`
+    - FE はリトライ（既存 2 秒間隔・最大 N=10 回方針）
+  - `session_id` が**他人の購入レコードに該当**する場合：他人レコードを覗かせないため `reflected = false` を返す（404 にはしない・存在隠蔽）
+- 取得元：
+  - `has_full_access`：`e_learning_users.has_full_access`（`user_id` = ログインユーザーの `e_learning_users.id`）
+  - `purchased_course_ids`：`e_learning_purchases` のうち `user_id = :me AND status='completed' AND course_id IS NOT NULL` を集約した `course_id` 配列（重複排除）
+  - `purchased_content_ids`：同上で `content_id IS NOT NULL` を集約した `content_id` 配列（重複排除）
+  - `refunded` 状態のレコードは除外（access-service の判定優先順位と整合）
+  - `e_learning_legacy_purchases` は本 API では参照しない（has_full_access に吸収済のため）
+- エラー：400 VALIDATION_ERROR（`session_id` 形式不正）、401 UNAUTHORIZED
+- 備考：FE がコース一覧／動画詳細で「購入済み」表示を出すための一括取得 API。キャッシュせず常に DB 最新値を返す（決済完了直後ポーリングに利用されるため）
 
 ### （未公開）GET /api/me/progress（B013 視聴履歴）
 - **Phase 1 では公開しない**。FE 設計の B013「視聴履歴ページ」用データ取得は **Supabase 直クエリ（Server Component）で対応**：
@@ -157,6 +202,7 @@
   }
   ```
 - 取得条件：`is_active = true AND deleted_at IS NULL`、`display_order ASC, name ASC`
+- **ページング対象外・全件返却**：カテゴリは数十件規模で増減せず、FE 側でフィルタ UI に全件展開する必要があるため。件数が運用上の上限（例：100 件）を超えた場合は Phase 2 以降でページングまたはサーバ側フィルタ拡張を検討
 - エラー：なし（空配列を返す）
 
 ### GET /api/landing/summary
@@ -181,7 +227,8 @@
 
 ### GET /api/courses
 - 概要：公開コース一覧（コース一覧ページ `/e-learning/courses` の主データ）
-- 認証：**auth**（ログイン必須。Udemy 同様・gate1-confirmed-decisions §2 案A確定。未ログインは 401 → `/auth/login?returnTo=/e-learning/courses` へリダイレクト）
+- 認証：**auth**（詳細・責務分離は `docs/backend/logic/controllers/README.md` §「未認証時の方針（明文化）」を **唯一の正**とする。本ファイルでは「ログイン必須・401 JSON を返す」一行のみとし、内訳は controllers 側に集約）
+- 関連：未ログイン UI 経路（`/auth/login?returnTo=...` リダイレクト）は `middleware.ts` の担当領域・API Route は JSON のみ
 - クエリパラメータ：
   - `category_id`：UUID（任意）
   - `q`：タイトル部分一致（任意）
@@ -251,7 +298,8 @@
 - 取得条件：`is_published = true AND deleted_at IS NULL`
 - 備考：
   - `viewer.has_access` は §0 の優先順位で算出（未ログインは null）
-  - `access_reason`：`full_access` / `purchased` / `free_course` / `not_purchased` / `unauthenticated`
+  - `access_reason`：`full_access` / `course_purchased` / `content_purchased` / `free_course` / `free_course_video` / `free_content` / `not_purchased` / `unauthenticated`（`docs/backend/logic/services/access-service.md` の `AccessReason` 型と一致。`free_course` = コース全体が無料、`free_course_video` = 個別のコース内動画が `is_free` のときに使う・意味が異なるため両方を保持）
+  - **`video_count` / `total_duration`**：レスポンスのトップ階層には**載せない**。`chapters[].videos[]` を全て返すので、FE 側で `chapters.flatMap(c => c.videos).length` および `duration` の合算で算出する（一覧 `GET /api/courses` 側ではトップ階層に持つ理由＝サマリ表示用なので、用途を分離する）
 - エラー：404 NOT_FOUND
 
 ### GET /api/courses/:slug/videos/:videoId
@@ -297,7 +345,11 @@
 ### GET /api/contents
 - 概要：単体動画一覧
 - 認証：public
-- クエリパラメータ：`category_id`、`q`、`is_featured`、`page`、`per_page`、`sort`
+- クエリパラメータ：`category_id`、`q`、`is_featured`、`exclude_id`、`page`、`per_page`、`sort`
+  - `exclude_id`：UUID（任意・指定された単体動画 ID を結果から除外）
+    - 用途：B007「単体動画詳細画面」の `RelatedContentsSection` が `GET /api/contents?category_id={現動画の category_id}&exclude_id={現動画 ID}` で「同カテゴリの関連動画（自分自身を除く）」を取得するため
+    - 動作：他の絞り込み条件（`category_id` / `q` / `is_featured`）と AND で合成。`exclude_id` の単体動画が存在しない場合でも 400 にはせず、単純に除外条件として無視（結果は通常通り）
+    - 形式が UUID として不正な場合は 400 VALIDATION_ERROR
 - レスポンス（200）：
   ```json
   {
@@ -429,8 +481,8 @@
 - 認証：service（`Stripe-Signature` ヘッダで署名検証）
 - リクエスト：Stripe Event Object（生 body 必須）
 - 処理対象イベント：
-  - `checkout.session.completed`：購入レコード作成（status=`completed`）
-  - `charge.refunded`：購入レコードを `refunded` に更新（`refunded_at` をセット）
+  - `checkout.session.completed`：購入レコード作成（status=`completed`、`refunded_at = NULL`）
+  - `charge.refunded`：購入レコードを `status='refunded'` に更新。**同時に `refunded_at = to_timestamp(charge.created)`（Stripe Charge object の `created` Unix epoch 秒を timestamptz に変換）を必ずセット**。DB 側 CHECK 制約 `(status='refunded' AND refunded_at IS NOT NULL) OR (status<>'refunded' AND refunded_at IS NULL)` を満たすため、`status` と `refunded_at` は **同一 UPDATE 文で**セットすること
 - 冪等性：`stripe_session_id`（UNIQUE）／`stripe_payment_intent_id` を一意キーに重複処理を防止
 - レスポンス（200）：`{ "received": true }`
 - エラー時の HTTP ステータス方針：
@@ -488,9 +540,10 @@
   ```
 - エラー：401 UNAUTHORIZED
 
-### POST /api/bookmarks
+### POST /api/me/bookmarks
 - 概要：ブックマーク追加（コース or 単体動画。コース内動画はブックマーク不可）
 - 認証：auth
+- パス：**`/api/me/bookmarks` に統一**（一覧 `GET /api/me/bookmarks` と揃え、`/api/me/**` 配下を「自分自身に紐付くリソース」名前空間として一貫させる）
 - リクエスト：
   ```json
   { "target_type": "course", "target_id": "uuid" }
@@ -502,9 +555,10 @@
 - レスポンス（201）：`{ "data": { "id": "uuid", "created_at": "..." } }`
 - エラー：400 VALIDATION_ERROR、401 UNAUTHORIZED、404 NOT_FOUND、409 ALREADY_EXISTS
 
-### DELETE /api/bookmarks/:id
+### DELETE /api/me/bookmarks/:id
 - 概要：ブックマーク削除
 - 認証：auth
+- パス：**`/api/me/bookmarks/:id` に統一**（一覧／追加と同名前空間に揃える）
 - レスポンス（200）：`{ "data": { "ok": true } }`
 - ガード：自分のブックマークでない場合 404 NOT_FOUND（403 を返さず存在隠蔽）
 - エラー：401 UNAUTHORIZED、404 NOT_FOUND
@@ -635,6 +689,9 @@
 
 #### DELETE /api/admin/courses/:courseId/chapters/:chapterId（章削除）
 - 副作用：章配下の動画は CASCADE で削除（schema.dbml 参照）
+- 備考（カスケード影響）：
+  - 章削除に伴い `e_learning_course_videos` が CASCADE 削除され、さらに `e_learning_progress` の当該 `course_video_id` 行も CASCADE で削除される
+  - **購入済みコースの視聴権限への影響なし**：購入レコード（`e_learning_purchases`）は `course_id` 単位で保持され、章・動画削除では失効しない。FE では「視聴済み動画が削除された」状態を `progress` 行欠落として扱う（再受講時は新しい動画構成で再進捗）
 - レスポンス（200）：`{ "data": { "ok": true } }`
 - エラー：403 FORBIDDEN、404 NOT_FOUND
 
@@ -737,7 +794,7 @@
   - `is_free`：必須 / boolean（デフォルト false）
   - `price`：`is_free=true` のとき NULL 必須 / `is_free=false` のとき必須・正の整数
   - `stripe_price_id`：`is_free=true` のとき NULL 必須 / `is_free=false` のとき必須・varchar(64)・UNIQUE
-  - `display_order`：必須 / integer / 0 以上（デフォルト 0）
+  - `display_order`：必須 / integer / 0 以上（デフォルト 0）。**単体動画の `display_order` は UNIQUE 制約なし**（業務上、同一順序値の重複を許容＝表示順は単なるソートヒントとして扱う・schema.dbml と整合）
   - `is_published`：必須 / boolean（既存運用と整合・デフォルト true）
   - `is_featured`：必須 / boolean（デフォルト false）
 - 業務ルール：
@@ -774,7 +831,15 @@
 - エラー：400 VALIDATION_ERROR、403 FORBIDDEN、404 NOT_FOUND、409 DUPLICATE_STRIPE_PRICE_ID
 
 #### DELETE /api/admin/contents/:id（論理削除）
-- 業務ルール：H-1 のコース DELETE と同等（二重削除は冪等・購入者ありでも論理削除可・`purchased_user_count` を返す）
+- 効果：`deleted_at = now()` をセット（物理削除しない・H-1 のコース DELETE と同等）
+- 業務ルール：
+  - **二重削除**：既に `deleted_at IS NOT NULL` の単体動画を再度 DELETE → 200 OK / `data.already_deleted = true`（冪等）
+  - **購入者あり**：`status = 'completed'` の購入が 1 件以上ある場合でも論理削除は許容（既購入者の視聴権限は権利判定側で維持・単体動画は新規表示から外れる）。FE 側で確認ダイアログを出すため、レスポンスに `purchased_user_count` を含める
+- レスポンス（200）：
+  ```json
+  { "data": { "ok": true, "already_deleted": false, "purchased_user_count": 0 } }
+  ```
+- エラー：403 FORBIDDEN、404 NOT_FOUND（単体動画不在）
 
 ### H-4. カテゴリ管理
 
@@ -832,6 +897,7 @@
   - `is_active=false`：一時非表示（再表示可能）
   - `deleted_at IS NOT NULL`：廃止確定（DELETE 経由のみ）
   - 両者は併用可（schema.dbml L4 確定）
+  - **廃止解除（`deleted_at = null` 指定）のバリデーション制限なし**：解除時の必須項目チェック・所属コース整合チェック等は行わない（カテゴリは独立性が高く、解除後の `slug`／`name` 重複は別途 UNIQUE 制約で守られる）。解除直後の表示は `is_active` の現在値に依存する（解除しても `is_active=false` のままなら一覧非表示）
 - レスポンス（200）：更新後のカテゴリ
 - エラー：400 VALIDATION_ERROR、403 FORBIDDEN、404 NOT_FOUND、409 DUPLICATE_SLUG
 
@@ -927,6 +993,7 @@
   ```
 
 #### PATCH /api/admin/users/:id
+- 認証：**admin**（`auth.users` に存在＝管理者）
 - リクエスト：
   ```json
   { "has_full_access": true }
@@ -934,6 +1001,7 @@
 - 業務ルール：
   - **冪等**：既に `has_full_access = true` のユーザーに `true` を再セット → 200 OK / `data.changed = false`（409 を返さない・運用の利便性優先）
   - 同様に false → false も冪等
+  - **自身の `has_full_access` 変更可**：運用上、管理者自身も「フルアクセス会員」として登録される（弊社メンバー扱い）ため、対象 `:id` が認証ユーザー自身であっても許可する。自己変更も Slack 通知の対象に含める
 - レスポンス（200）：
   ```json
   { "data": { "id": "uuid", "has_full_access": true, "changed": true } }
@@ -997,6 +1065,41 @@
 
 > 返金実行は Stripe Dashboard 側で行う想定（Phase 1）。Webhook `charge.refunded` を受けて自動で `e_learning_purchases.status` を更新する設計。
 
+#### GET /api/admin/legacy-purchases（旧購入レコード閲覧・読み取り専用）
+- 概要：M5 安全順序の Step 1 で `e_learning_legacy_purchases` に退避した旧購入 6 件の閲覧専用 API。読み取りのみ（INSERT/UPDATE/DELETE は提供しない・移行スクリプトのみ書き込み権限を持つ）
+- 認証：admin
+- クエリパラメータ：
+  - `user_id`：UUID（任意・特定ユーザーの旧購入レコードに絞り込み）
+  - `page`：1 始まり（デフォルト 1）
+  - `per_page`：デフォルト 20 / 上限 100
+  - `sort`：`-original_created_at`（デフォルト）/ `original_created_at` / `-migrated_at`
+- レスポンス（200）：
+  ```json
+  {
+    "data": [
+      {
+        "id": "uuid",
+        "user_id": "uuid",
+        "content_id": null,
+        "stripe_session_id": "cs_xxx",
+        "amount": 198000,
+        "status": "completed",
+        "original_created_at": "2024-03-15T10:00:00Z",
+        "migrated_at": "2026-05-12T00:00:00Z",
+        "note": "全コンテンツ買い切り旧仕様（has_full_access=true に吸収済）"
+      }
+    ],
+    "meta": { "page": 1, "per_page": 20, "total": 6 }
+  }
+  ```
+- 取得元：`e_learning_legacy_purchases`（`e_learning_purchases` ではない）
+- 備考：
+  - `content_id = NULL` のレコードは「旧 全コンテンツ買い切り仕様」を表す（M5 確定）
+  - 本 API では `e_learning_purchases`（新ルールの購入）は **含めない**（新ルール側は `GET /api/admin/purchases` を使用）
+  - `e_learning_users.has_full_access = true` への吸収は移行スクリプトで実施済のため、本 API で操作はしない（参照のみ）
+  - **legacy_purchases は Phase 1 では返金未対応**：旧 6 名は `has_full_access = true` に吸収済のため、業務上「旧購入レコードに対する返金処理」は発生しない。よって本 API は返金関連フィールド（`refunded_at`）を意図的に**返さない**（仮に DB 側にカラムが残存していても API 層で投影しない）。DB 側のカラム実在有無・退避方針の詳細は `docs/backend/database/schema-rationale.md` を参照
+- エラー：401 UNAUTHORIZED、403 FORBIDDEN、400 VALIDATION_ERROR（`user_id` の UUID 不正等）
+
 ### H-8. ダッシュボード集計（Phase 1 スコープ外・削除）
 
 > **N10 ディレクター判断（2026-05-12）**：管理者ダッシュボードは既存（GA4 ベース）のまま継続。Eラーニング専用集計画面は Phase 1 では作らない。
@@ -1031,6 +1134,9 @@
 
 ## 認証要件マトリクス
 
+> **※ admin 系エンドポイントの 401 UNAUTHORIZED は本マトリクスで一括定義のため、各 admin エンドポイント解説の「エラー」欄では原則として 401 を省略する**（マトリクスで「未ログイン: 401」を一律宣言済）。auth 系（`/api/me/**` 等）の 401 についても同様に本マトリクスを正とし、個別欄での重複記載は省略可。`403 FORBIDDEN` などコンテキスト依存のエラーは各エンドポイントで個別に列挙する。
+
+
 | エンドポイント群 | 未ログイン | ログイン済 | 管理者 |
 |----------------|-----------|-----------|-------|
 | LP `/api/landing/summary` / カテゴリ `/api/categories` | ✓ | ✓ | ✓ |
@@ -1038,7 +1144,7 @@
 | コース詳細 `GET /api/courses/:slug` / 単体動画一覧 `GET /api/contents` / 単体動画詳細 `GET /api/contents/:id` | ✓ | ✓（viewer 情報も返却） | ✓ |
 | 視聴用 `/play` `/videos/:videoId` `/complete` | -（401） | ✓（権限要・403 あり） | ✓ |
 | 資料 GET `/courses/:slug/materials` `/contents/:id/materials` | -（401） | ✓（権限要・403 あり） | ✓ |
-| `/api/me/**` | -（401） | ✓ | ✓ |
+| `/api/me/**`（access / purchases / bookmarks GET・POST・DELETE / withdraw 含む） | -（401） | ✓ | ✓ |
 | `/api/checkout` | -（401） | ✓ | ✓ |
 | `/api/stripe/webhook` | service（署名検証） | service（署名検証） | service（署名検証） |
 | `/api/admin/**` | -（401） | -（401） | ✓ |

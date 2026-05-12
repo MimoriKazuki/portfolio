@@ -23,7 +23,7 @@
 |---------|------|
 | `syncFromAuth(authUser)` | OAuth コールバック時に呼ぶ。冪等な upsert |
 | `getMe(authUser)` | GET /api/auth/user の本体 |
-| `recordLastAccess(userId)` | ダッシュボード集計用に `last_accessed_at` を更新（任意・呼ぶ箇所は middleware か明示的なAPI） |
+| `recordLastAccess(userId)` | ダッシュボード集計用に `last_accessed_at` を更新（**Phase 1 では呼び出さない・後述参照**） |
 | `withdraw(userId)` | 退会処理：`deleted_at` セット ＋ 個人情報マスキング（FE 退会フローから呼ばれる） |
 
 ### `syncFromAuth(authUser)`
@@ -50,6 +50,13 @@
 - Supabase Auth の `signOut()` は本サービス内では呼ばない（責務分離）。FE の退会フロー Controller 層で `withdraw(userId)` 成功後に `supabase.auth.signOut()` を実行し、Cookie をクリアする
 - `e_learning_purchases` / `e_learning_progress` / `e_learning_bookmarks` 等のデータは保持（個人特定性が低い・購入履歴は税務観点でも保持必須）
 - `auth.users` 本体の削除は Phase 1 では行わない（Supabase 側に保持・再登録時に同一 `auth.users.id` が再利用される運用）
+
+### `recordLastAccess(userId)` の Phase 1 取扱
+
+- **Phase 1 では本メソッドを呼び出さない**（middleware・API Route いずれからも呼ばない）
+- 理由：ダッシュボード集計（E ラーニング専用）は N10 ディレクター判断により Phase 1 スコープ外（既存 GA4 ベース管理画面を継続）。`last_accessed_at` の更新需要が現時点では存在しない
+- DB 側：`e_learning_users.last_accessed_at` カラム自体は既存スキーマに残存（schema.dbml）。NULL 許容のため未更新でも整合性に影響なし
+- Phase 2 以降で「呼び出しタイミング・更新頻度（毎リクエスト／1 日 1 回 等）」を確定する。現段階では仕様未確定として進める
 
 ### NG
 

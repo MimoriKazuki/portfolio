@@ -30,22 +30,27 @@ Eラーニング刷新スコープ（Phase 1）の各画面・コンポーネン
 | ファイル | 内容 |
 |---------|------|
 | `INDEX.md`（本書） | 方針・全体像 |
+| `design-direction.md` | デザイン方針（DG-A：要件・目的・NG／DG-B：コンセプト・方針マトリクス） |
 | `tokens/colors.md` | カラートークン（CSS 変数 + Tailwind マッピング） |
 | `tokens/typography.md` | フォント・サイズ・行間・重み |
 | `tokens/spacing.md` | スペーシング（Tailwind の 4px ベース） |
+| `tokens/radius.md` | ボーダーラジウス（角丸） |
+| `tokens/shadows.md` | シャドウ（影） |
 | `layout/grid.md` | グリッド・コンテナ |
 | `layout/breakpoints.md` | ブレークポイント定義 |
 | `ng-patterns.md` | NG パターン（やってはいけないこと） |
 | `components/` | Phase 2 以降で design-mate が作成（個別コンポーネント仕様） |
 
-### 3. ブランドの「らしさ」（既存実装から抽出）
+### 3. ブランドの「らしさ」（既存実装から抽出・要点）
 
-- **色**：青系プライマリ（HSL `221.2 83.2%`）＋無彩色トーンのグレースケール
-- **角丸**：`--radius: 0.75rem`（12px）を基準。`rounded-lg / -md / -sm` で派生
-- **タイポ**：欧文 `acumin-pro`（Adobe Fonts）＋和文 `Noto Sans JP`。見出しは `font-bold` / `font-semibold` / `font-medium`、本文 `font-normal`、ボタン `font-light`（300）
-- **影**：`shadow-md`〜`shadow-lg` の柔らかいシャドウ。`hover:shadow-lg` でカード浮き上がり
+要点のみ列挙。**方針言語化・参考サイト・ムードボード・印象キーワード・方針マトリクスは `design-direction.md` を参照**。
+
+- **色**：青系プライマリ（HSL `221.2 83.2%`）＋無彩色トーンのグレースケール → 詳細：`tokens/colors.md`
+- **角丸**：`--radius: 0.75rem`（12px）基準 → 詳細：`tokens/radius.md`
+- **タイポ**：欧文 `acumin-pro` ＋和文 `Noto Sans JP`。ボタンのみ weight 300 → 詳細：`tokens/typography.md`
+- **影**：`shadow-md` 既定・`hover:shadow-lg` 浮き上がり → 詳細：`tokens/shadows.md`
 - **モーション**：`fade-in` / `scale-in` / `ripple` の控えめなアニメ（既存 `tailwind.config.ts` 定義）
-- **カード装飾**：境界線ベース（`border-2 border-transparent hover:border-gray-200`）＋シャドウベース（`shadow-md hover:shadow-lg`）の 2 系統を混在運用。Eラーニング系は既存 `ELearningCard` の「枠線ベース・p-4・rounded」を継承
+- **カード装飾**：境界線ベース＋シャドウベースの 2 系統を混在運用。Eラーニング系は既存 `ELearningCard` の「枠線ベース・p-4・rounded」を継承
 - **キービジュアル**：既存 LP（`AITrainingLP` / `ServiceTrainingLP`）はスクロール連動アニメ・グラデーション背景・大きめの数字・アイコン併記が特徴
 - **アクセントカラー**：`portfolio.blue`（`#3b82f6` 系）+ `portfolio.gray` 系（既存定義）。Tailwind カスタム色として保持
 

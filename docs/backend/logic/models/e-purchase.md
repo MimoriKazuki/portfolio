@@ -40,9 +40,15 @@
 | `stripe_session_id` | string \| null |  | 部分 UNIQUE |
 | `amount` | number | ✓ | |
 | `status` | string | ✓ | |
+| `refunded_at` | string \| null |  | 構造的整合のため保持（EPurchase と同形）。Phase 1 では legacy_purchases に対する返金処理は実装しないため値は移行時点のスナップショットを保持（通常 NULL） |
 | `original_created_at` | string | ✓ | 元購入完了日時 |
 | `migrated_at` | string | ✓ | 退避日時 |
 | `note` | string \| null |  | 業務メモ |
+
+> **legacy_purchases に対する返金処理の取扱（Phase 1 確定）**
+> - 既存 6 件は移行と同時に `e_learning_users.has_full_access = true` を付与してフルアクセス権に吸収済（M5 安全順序）。よって運用上「legacy_purchases に対して返金処理を実行する」業務は発生しない
+> - **Phase 1 では Webhook も含めて `e_learning_legacy_purchases` を書き換えない**（読み取り専用）
+> - データ構造としては `refunded_at` を保持するが、これは将来仕様変更時の整合維持・税務照合のためであり Phase 1 でのアプリ層更新経路は存在しない
 
 ### 不変条件（EPurchase）
 

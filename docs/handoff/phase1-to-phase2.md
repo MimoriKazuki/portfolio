@@ -215,7 +215,71 @@ Phase 2 で起動するメート（`/team-phase2`）：
 
 - [x] plan-lead 自己チェック完了（2026-05-12）
 - [x] consistency-checker 通過（同日）
-- [ ] Kosuke 承認：（Phase 2 着手前にお願いします）
+- [x] **新定義 reviewer 再チェック完了**（2026-05-12・下記参照）
+- [x] **Kosuke 承認**（2026-05-12・案A・案A・案A の3回承認で Phase 2 移行確定）
+
+---
+
+## Phase 1 完了後の新定義 reviewer 再チェック履歴
+
+Phase 1 完了後、reviewer 定義ファイルおよびテンプレートが更新されたため、新定義での再チェックを実施した。
+ディレクター方針「Phase 1 で全部潰す」に従い、全件修正してから Phase 2 移行とした。
+
+### 第一弾（新定義 reviewer 初回・4本並列実行）
+
+| reviewer | 必須 | 軽微 | 新観点 | 計 |
+|---------|------|------|-------|-----|
+| db-design-reviewer | 5 | 4 | 7 | 16 |
+| api-design-reviewer | 5 | 8 | - | 13 |
+| logic-coverage-checker | 3 | 3 | - | 6 |
+| screen-coverage-checker | 3 | 4 | 3 | 10 |
+| **計** | **16** | **19** | **10** | **45** |
+
+主な追加観点（旧定義からの差分）：
+- DB §15 トランザクション境界 / §16 同時実行制御 / §17 文字列正規化 / §C1 RLS / §C2 PII
+- design-plan-mate 担当範囲：design-direction.md / tokens/radius.md / tokens/shadows.md の新規作成
+- access-service の判定順序逆転バグ（is_free が購入済より先になっていた）
+- POST /api/me/withdraw エンドポイント欠落
+
+### 第二弾（メート修正 → reviewer 再実行）
+
+- db-plan-mate / be-plan-mate / fe-plan-mate / design-plan-mate が全 45 件を修正
+- 4 reviewer 再実行：api 軽微1・db 軽微2・logic 0・screen 0
+- consistency-checker 第2回：必須5・軽微6（計11件）
+
+### 第三弾（メート修正 → consistency-checker 再実行）
+
+- 4メートが 14 件全件修正（うち 1 件はディレクター承認案件＝legacy_purchases 返金未対応方針）
+- consistency-checker 第3回：必須0・軽微0（前回分）/ 新規軽微2
+
+### 第四弾（最終1行修正）
+
+- be-plan-mate：auth/flow.md §C の `/e-learning/[id]` 認証要件「不要 → 必須」（前セッション修正の取りこぼし）
+- fe-plan-mate / plan-lead：api-client/endpoints.md の参照パス3箇所修正
+
+→ **累計58件の指摘を4サイクルで全件解消・指摘ゼロで Phase 2 移行確定**
+
+### 新定義反映で追加された主要 docs / セクション
+
+**新規作成された docs**：
+- `docs/frontend/design-system/design-direction.md`（DG-A/B 方針言語化・既存実装ベース・Kosuke 承認済 2026-05-12）
+- `docs/frontend/design-system/tokens/radius.md`（角丸トークン）
+- `docs/frontend/design-system/tokens/shadows.md`（シャドウトークン）
+
+**追加された主要セクション**：
+- `schema-rationale.md`：RLS ポリシー設計マトリクス（§C1）・PII 保護方針（§C2）・文字列正規化ルール（§17）・トランザクション境界一覧（§15）・楽観ロック方針（§16）・返金ポリシー（legacy_purchases）
+- `logical-design.md`：全テーブル属性表に「PII区分 / 正規化 / 同時編集対応」列追加
+- `endpoints.md`：POST /api/me/withdraw 追加・GET /api/me/access の session_id 仕様化・GET /api/contents の exclude_id 追加・legacy-purchases 詳細セクション追加・401 列挙統一注記
+- `access-service.md`：canViewCourseVideo に「コース内動画は単体購入対象外」注記追加・AccessReason 型に free_course_video 含む
+- `screens.md`：B011 に FullAccessBanner 表示仕様追記
+- `component-candidates.md`：templates 流用可否列追加・organisms に RelatedContentsSection / CheckoutPollingStatus 追加（合計33個）
+- `stores.md`：B009 ポーリング状態管理（pollingCount / pollingStatus / lastError）追記
+
+### ディレクター承認の3つの判断（2026-05-12）
+
+1. **legacy_purchases の refunded_at**：DB 追加せず、API レスポンスから削除・返金ポリシー「Phase 1 では未対応」を明記（案A 採用）
+2. **design-direction.md 印象キーワード**：「プロフェッショナル / スマート / 信頼感 / 集中・ノイズなし」を**既存実装からの抽出結果として承認**
+3. **Phase 2 移行最終判定**：全 reviewer 指摘ゼロ確認後、Phase 2 移行確定
 
 ---
 
@@ -227,6 +291,8 @@ c4247db docs(phase1): Phase 1 BE/FE 設計完了（指摘ゼロでクリア）
 c89d443 docs(phase1): Phase 1 Gate 4 物理設計完了（指摘ゼロでクリア）
 5fb4b83 docs(phase1): Phase 1 Gate 3 論理設計完了
 a8e86dd docs(phase1): Phase 1 Gate 1-2 完了 + 既存スキーマ同期
+bb7f072 docs(phase1): Phase 1 完全完了 — WBS + ハンドオフドキュメント作成
 ```
 
-このコミット履歴の後に、本 WBS（`docs/wbs/phase2.md`）と本ハンドオフドキュメントが追加コミットされる予定。
+上記の後、新定義 reviewer 再チェック対応で追加コミットされる：
+- 新定義 reviewer 4サイクル修正（55件以上の追記・新規docs3件・第二弾〜第四弾の累積）

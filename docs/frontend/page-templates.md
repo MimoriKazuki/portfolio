@@ -87,7 +87,7 @@
   - 動画末尾到達 → progress レコード作成（視聴完了）／次レッスン誘導 UI 表示
   - スマホ時：左サイドはボトムシート／タブ折りたたみ（DR1：スマホ視聴必須の指針）
   - 視聴ロックなし（確定事項 §3）：全レッスンは順序非依存でクリック可
-- 推奨 organism：`VideoPlayer` / `LessonSidebar` / `VideoTabs`（概要・資料・関連）
+- 推奨 organism：`VideoPlayer` / `LessonSidebar` / `VideoTabs`（概要・資料・関連）／関連タブ内：B005 は `RelatedCoursesSection`、B007 は `RelatedContentsSection`
 
 ## 5. AuthTemplate（認証画面）
 

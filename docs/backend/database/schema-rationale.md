@@ -103,6 +103,57 @@
   ```
 - 通常の UNIQUE 制約では `(user_id, NULL)` 行が複数許容されてしまうため
 
+### 同時実行制御（楽観ロックの採用方針）
+
+- **全更新系操作で楽観ロック（`updated_at` 比較）を採用**
+- 採用範囲：コース・章・コース内動画・単体動画・カテゴリ等の管理画面編集処理
+- 実装パターン：UPDATE 文の WHERE 句に `updated_at = $前回取得した値` を含め、更新行数 0 件を競合検出として扱う
+- **悲観ロック（`SELECT ... FOR UPDATE`）は採用しない**
+- 採用理由：
+  1. 管理者1人運用前提（実運用上、同時編集の頻度がほぼゼロ）
+  2. Supabase / PostgREST 経由の更新で悲観ロックを扱うのは煩雑
+  3. UI 側で「最終更新日時が変わっています、再読み込みしてください」と明示する方が UX として明瞭
+
+### 文字列正規化ルール（§17）
+
+UNIQUE 制約対象カラム・検索キーカラムの正規化方針：
+
+| カラム | 正規化ルール | 実施層 | 重複検出 |
+|--------|------------|-------|---------|
+| `e_learning_users.email` | Supabase Auth 由来（小文字化済み）をそのままコピー。DB 側での追加正規化処理は不要 | DB 側不要 / Auth で完了 | `LOWER(email) = LOWER($1)` で照合（再登録引継ぎクエリ） |
+| `e_learning_categories.slug` | 小文字英数字とハイフンのみ `^[a-z0-9-]+$`・前後空白なし | アプリ層で `slug.trim().toLowerCase()` 適用後 INSERT | UNIQUE 制約は格納値どおり。アプリ層で重複チェック時も `LOWER(slug)` ベース |
+| `e_learning_courses.slug` | 同上 | 同上 | 同上 |
+| `e_learning_contents.stripe_price_id` | Stripe API 返却値（`price_xxxxx`）をそのまま使用 | アプリ層正規化不要 | Stripe 側で一意性とフォーマット保証 |
+| `e_learning_courses.stripe_price_id` | 同上 | 同上 | 同上 |
+| `e_learning_purchases.stripe_session_id` | Stripe API 返却値（`cs_xxxxx`）をそのまま使用 | アプリ層正規化不要 | Stripe 側で一意性とフォーマット保証 |
+| `e_learning_purchases.stripe_payment_intent_id` | Stripe API 返却値（`pi_xxxxx`）をそのまま使用 | アプリ層正規化不要 | Stripe 側で一意性とフォーマット保証 |
+| `e_learning_corporate_users.email` | アプリ層で `email.trim().toLowerCase()` 適用後 INSERT | アプリ層 | UNIQUE 制約 `(corporate_customer_id, email)` は格納値どおり |
+
+補足：
+- Stripe ID 群は API 返却値をそのまま使うため、DB 側での正規化処理（trim・大文字小文字変換）は不要
+- ローカル管理する slug 群（categories / courses）は URL の一部となるため、サーバ側で必ず正規化してから保存
+
+### PII 保護方針（§C2）
+
+Phase 1 で扱う個人識別情報（PII）と保護方針：
+
+| カラム | PII 区分 | 保護方式 | 退会時の扱い |
+|--------|---------|---------|------------|
+| `e_learning_users.email` | 中（連絡先） | 平文 + RLS（自己レコードのみ参照） | **保持**（再登録引継ぎ用・L1 確定） |
+| `e_learning_users.display_name` | 低（表示名） | 平文 + RLS | **NULL に更新**（マスキング） |
+| `e_learning_users.avatar_url` | 低（画像URL） | 平文 + RLS | **NULL に更新**（マスキング） |
+| `e_learning_corporate_customers.contact_email` | 中（連絡先） | 平文 + RLS（authenticated のみ参照） | Phase 1 では運用なし（0件継続） |
+| `e_learning_corporate_customers.contact_phone` | 中（連絡先） | 平文 + RLS（authenticated のみ参照） | 同上 |
+| `e_learning_corporate_customers.contact_person` | 低（担当者名） | 平文 + RLS（authenticated のみ参照） | 同上 |
+| `e_learning_corporate_users.email` | 中（連絡先） | 平文 + RLS（authenticated のみ参照） | 同上 |
+
+方針詳細：
+- **pgcrypto は使用しない**：Phase 1 ではアプリ層 + Supabase RLS によるアクセス制御で十分（暗号化が必要になるレベルの機微情報は扱わない）
+- **退会後のマスキング**：`users.email` は再登録引継ぎ要件（L1 確定）のため保持するが、`display_name` / `avatar_url` は NULL 更新で個人特定性を低減
+- **購入レコードとの分離**：退会処理で `e_learning_purchases.user_id` は触らない（税務観点・領収書再発行・永続保持）。RESTRICT FK 設計により、退会済ユーザーレコードも論理削除のみで物理削除はされない
+- **GDPR 適用外**：日本国内向け BtoC のため適用外。個人情報保護法に基づく開示請求・削除請求は管理者対応（運用フロー）
+- **企業契約（corporate_*）**：Phase 1 では 0 件継続のため運用フローは未定義。Phase 2 以降で本格運用する際に「契約満了後の削除タイミング」「個人情報保護法対応フロー」を別途定義する
+
 ---
 
 ## テーブル：e_learning_users
@@ -138,6 +189,21 @@
 | 制約名 | カラム | 根拠 |
 |--------|-------|------|
 | e_learning_users_auth_user_id_key | auth_user_id | Supabase Auth との 1:1（既存通り） |
+
+### 【email カラムに UNIQUE 制約を設けない理由】（§18-3）
+
+- **email は UNIQUE 制約を設けない**。一意性は **Supabase Auth の `auth.users.email`** で保証され、`e_learning_users.email` は Auth の値を同期したコピーである
+- DB レベルで二重に UNIQUE 制約を設けると、Auth 側でメール変更があった際の同期処理で一時的に重複が発生するリスクがある
+- 再登録引継ぎ処理（L1 確定）では `LOWER(email) = LOWER($1)` で照合する。`deleted_at IS NOT NULL` のレコードに対して同一メールでの再登録時は、INSERT ではなく既存レコードの `deleted_at=NULL` 復活処理を行う
+- Supabase Auth はメール登録時に **小文字変換済み** の値を保持するため、DB 側での追加正規化処理（trim・lower）は不要
+
+### 文字列正規化ルール
+
+| カラム | 正規化方針 |
+|--------|----------|
+| email | Supabase Auth 由来（小文字化済み）の値を変更せず保持。DB 側での追加正規化処理は不要 |
+| display_name | OAuth 由来の自由テキスト。正規化なし（ユーザー入力をそのまま保持） |
+| avatar_url | OAuth 由来の URL。正規化なし |
 
 ### 外部キー制約
 
@@ -295,6 +361,14 @@ ALTER TABLE e_learning_contents
 ALTER TABLE e_learning_contents
   ADD CONSTRAINT e_learning_contents_stripe_price_id_key UNIQUE (stripe_price_id);
 ```
+
+### view_count の同時実行制御（非原子的加算の許容）
+
+- `view_count` は **参考値**（再生回数の概算）として扱う。**正確性よりパフォーマンスを優先**する
+- 競合更新は許容：`UPDATE e_learning_contents SET view_count = view_count + 1 WHERE id = ?` を **そのまま** 発行し、稀に発生する競合（同一ミリ秒の同時加算で +1 が +1 にしかならない）は業務的に許容する
+- 楽観ロック（`updated_at` 比較）は **適用しない**。管理画面の編集系操作とは要求性質が異なるため
+- 将来「再生回数を正確に保ちたい」要件が出た場合：RPC 関数（`SECURITY DEFINER` + `SELECT ... FOR UPDATE` または PostgreSQL の `UPDATE ... RETURNING` で原子的加算）に切り出して RLS 越しでも安全に実行できるようにする。Phase 1 では実装しない
+- 同様の方針を `e_learning_course_videos.view_count`（L5 確定）にも適用する
 
 ---
 
@@ -752,6 +826,13 @@ CREATE UNIQUE INDEX idx_e_learning_legacy_purchases_stripe_session_id
   WHERE stripe_session_id IS NOT NULL;
 ```
 
+### 返金ポリシー（Phase 1 確定）
+
+- 本テーブルは Phase 1 では **返金未対応**（ディレクター方針 2026-05-12）
+- 既存6名は `has_full_access=true` に吸収済のため、業務上返金が発生しないことを前提とする
+- **`refunded_at` カラムは DB に追加しない**（API レスポンスからも削除する：be-plan-mate 側で対応）
+- 将来万一返金対応が必要になった場合は Phase 2 以降の `schema-changes` として個別対応（カラム追加・該当ユーザーの `has_full_access` 剥奪・課税仕訳の付替えを一括設計）
+
 ---
 
 ## テーブル：e_learning_bookmarks
@@ -962,6 +1043,15 @@ CHECK (contract_status IN ('active', 'expired', 'pending'))
 |--------|-------|------|
 | e_learning_corporate_users_customer_email_key | (corporate_customer_id, email) | 1法人内で同一メール禁止（既存） |
 
+### 文字列正規化ルール（§18-4）
+
+- `email`：**アプリ層で `email.trim().toLowerCase()` を適用してから INSERT** する
+- 採用理由：
+  1. このテーブルの email は Supabase Auth とは独立（契約企業の社員メール登録）。Auth 由来の小文字化保証がない
+  2. 大文字小文字違いの同一メールが UNIQUE 制約を回避して二重登録されるリスクを防止
+- 検索・突合時も `LOWER(email)` で比較する（弊社メンバー判定での企業ドメイン照合などで使用）
+- DB レベルでの CHECK 制約は設けない（管理画面で 1 経路のみの入力のため、アプリ層のみで担保）
+
 ### 外部キー制約
 
 | カラム | 参照先 | ON DELETE | ON UPDATE | 根拠 |
@@ -1065,6 +1155,191 @@ CHECK (contract_status IN ('active', 'expired', 'pending'))
 
 ---
 
+## RLS ポリシー設計マトリクス（§C1）
+
+Supabase + PostgREST 採用のため、全 `e_learning_*` テーブルに RLS を設計する。既存テーブルの RLS は `supabase/migrations/20251203_*.sql` / `20251204_*.sql` / `20251208_*.sql` から転記し、Phase 1 で追加する新規5テーブル（courses / course_chapters / course_videos / legacy_purchases / progress）の RLS を本書で確定する。
+
+※ Phase 1 新規5テーブル（`e_learning_courses` / `e_learning_course_chapters` / `e_learning_course_videos` / `e_learning_legacy_purchases` / `e_learning_progress`）について、Phase 2 マイグレーション時に `ALTER TABLE ... ENABLE ROW LEVEL SECURITY` を明示的に有効化する。schema.dbml は DBML 文法上 `ENABLE ROW LEVEL SECURITY` を直接表現しないため、本セクションを正規参照点とする。
+
+### ロール定義（Supabase）
+
+- **anon**：未ログイン訪問者（JWT なし）
+- **authenticated**：Supabase Auth でログイン済みのユーザー（一般ユーザー + 管理者を含む）。管理者判定は「auth.users にログイン済セッションが存在＝管理者」というシンプル設計のため、本プロジェクトでは authenticated に「一般 e_learning_users」と「管理者」が混在する
+- **service_role**：サーバ側処理（Stripe Webhook 等）専用。RLS をバイパスする
+
+### service_role の運用ルール
+
+- **Stripe Webhook 処理（Route Handler `/api/stripe/webhook`）でのみ使用**
+- フロントエンドからは絶対に使わない（NEXT_PUBLIC_* に露出させない）
+- 環境変数 `SUPABASE_SERVICE_ROLE_KEY` はサーバサイドのみ参照可
+- 主な用途：
+  1. `e_learning_purchases` への INSERT（Stripe Checkout 完了通知）
+  2. `e_learning_purchases` の status 更新（charge.refunded 受信時）
+  3. legacy 退避処理・has_full_access 付与処理（マイグレーション時のみ）
+
+### RLS マトリクス（テーブル × ロール × 操作）
+
+#### e_learning_users
+
+| ロール | SELECT | INSERT | UPDATE | DELETE | USING / WITH CHECK 条件 |
+|--------|--------|--------|--------|--------|------------------------|
+| anon | 不可 | 不可 | 不可 | 不可 | （ポリシーなし） |
+| authenticated | 自己レコードのみ可 | 自己レコードのみ可 | 自己レコードのみ可 | 不可 | `auth.uid() = auth_user_id`（既存 3 ポリシー：`Users can view own profile` / `Users can update own profile` / `Users can create own profile`） |
+| service_role | 全可 | 全可 | 全可 | 全可 | RLS バイパス（マイグレーション・退会処理で使用） |
+
+#### e_learning_categories
+
+| ロール | SELECT | INSERT | UPDATE | DELETE | USING / WITH CHECK 条件 |
+|--------|--------|--------|--------|--------|------------------------|
+| anon | `is_active = true` のみ可 | 不可 | 不可 | 不可 | `USING (is_active = true)`（既存：`Allow public read access to categories`） |
+| authenticated | 全可 | 全可 | 全可 | 全可 | `USING (auth.role() = 'authenticated')`（既存：`Authenticated users can manage categories`・管理者前提） |
+| service_role | 全可 | 全可 | 全可 | 全可 | RLS バイパス |
+
+#### e_learning_contents
+
+| ロール | SELECT | INSERT | UPDATE | DELETE | USING / WITH CHECK 条件 |
+|--------|--------|--------|--------|--------|------------------------|
+| anon | `is_published = true` のみ可 | 不可 | 不可 | 不可 | `USING (is_published = true)`（既存：`Allow public read access to published contents`） |
+| authenticated | 全可 | 全可 | 全可 | 全可 | `USING (auth.role() = 'authenticated')`（既存：`Authenticated users can manage contents`・管理者前提） |
+| service_role | 全可 | 全可 | 全可 | 全可 | RLS バイパス |
+
+#### e_learning_materials
+
+| ロール | SELECT | INSERT | UPDATE | DELETE | USING / WITH CHECK 条件 |
+|--------|--------|--------|--------|--------|------------------------|
+| anon | 全可 | 不可 | 不可 | 不可 | `USING (true)`（既存：`Allow public read access to materials`・PDF 配布は公開前提） |
+| authenticated | 全可 | 全可 | 全可 | 全可 | `USING (auth.role() = 'authenticated')`（既存：`Authenticated users can manage materials`） |
+| service_role | 全可 | 全可 | 全可 | 全可 | RLS バイパス |
+
+#### e_learning_purchases
+
+| ロール | SELECT | INSERT | UPDATE | DELETE | USING / WITH CHECK 条件 |
+|--------|--------|--------|--------|--------|------------------------|
+| anon | 不可 | 不可 | 不可 | 不可 | （ポリシーなし） |
+| authenticated | 自己レコードのみ可 | 不可 | 不可 | 不可 | `USING (user_id IN (SELECT id FROM e_learning_users WHERE auth_user_id = auth.uid()))`（既存：`Users can view own purchases`） |
+| service_role | 全可 | 全可 | 全可 | 全可 | **Stripe Webhook で INSERT / UPDATE を実行**（authenticated に書き込み権限を与えない設計） |
+
+#### e_learning_bookmarks
+
+| ロール | SELECT | INSERT | UPDATE | DELETE | USING / WITH CHECK 条件 |
+|--------|--------|--------|--------|--------|------------------------|
+| anon | 不可 | 不可 | 不可 | 不可 | （ポリシーなし） |
+| authenticated | 自己レコードのみ可 | 自己レコードのみ可 | 不可 | 自己レコードのみ可 | 既存：`auth.uid() = user_id`（※ 既存スキーマでは user_id が auth.users.id だが、Phase 1 で `e_learning_users.id` に変更後は `user_id IN (SELECT id FROM e_learning_users WHERE auth_user_id = auth.uid())` に書き換える） |
+| service_role | 全可 | 全可 | 全可 | 全可 | RLS バイパス |
+
+#### e_learning_corporate_customers
+
+| ロール | SELECT | INSERT | UPDATE | DELETE | USING / WITH CHECK 条件 |
+|--------|--------|--------|--------|--------|------------------------|
+| anon | 不可 | 不可 | 不可 | 不可 | （ポリシーなし） |
+| authenticated | 全可 | 全可 | 全可 | 全可 | `USING (true)`（既存：管理画面操作前提・Phase 1 では 0 件継続） |
+| service_role | 全可 | 全可 | 全可 | 全可 | RLS バイパス |
+
+#### e_learning_corporate_users
+
+| ロール | SELECT | INSERT | UPDATE | DELETE | USING / WITH CHECK 条件 |
+|--------|--------|--------|--------|--------|------------------------|
+| anon | 不可 | 不可 | 不可 | 不可 | （ポリシーなし） |
+| authenticated | 全可 | 全可 | 全可 | 全可 | `USING (true)`（既存：`Allow authenticated users to manage corporate users`・Phase 1 では 0 件継続） |
+| service_role | 全可 | 全可 | 全可 | 全可 | RLS バイパス |
+
+#### e_learning_courses（新規・§C1-2）
+
+| ロール | SELECT | INSERT | UPDATE | DELETE | USING / WITH CHECK 条件 |
+|--------|--------|--------|--------|--------|------------------------|
+| anon | `is_published = true AND deleted_at IS NULL` のみ可 | 不可 | 不可 | 不可 | `USING (is_published = true AND deleted_at IS NULL)` |
+| authenticated | 全可 | 全可 | 全可 | 全可 | `USING (auth.role() = 'authenticated')`（管理画面操作） |
+| service_role | 全可 | 全可 | 全可 | 全可 | RLS バイパス |
+
+#### e_learning_course_chapters（新規・§C1-2）
+
+| ロール | SELECT | INSERT | UPDATE | DELETE | USING / WITH CHECK 条件 |
+|--------|--------|--------|--------|--------|------------------------|
+| anon | 公開コースの章のみ可 | 不可 | 不可 | 不可 | `USING (course_id IN (SELECT id FROM e_learning_courses WHERE is_published = true AND deleted_at IS NULL))` |
+| authenticated | 全可 | 全可 | 全可 | 全可 | `USING (auth.role() = 'authenticated')` |
+| service_role | 全可 | 全可 | 全可 | 全可 | RLS バイパス |
+
+#### e_learning_course_videos（新規・§C1-2）
+
+| ロール | SELECT | INSERT | UPDATE | DELETE | USING / WITH CHECK 条件 |
+|--------|--------|--------|--------|--------|------------------------|
+| anon | 公開コースの動画のみ可（メタ情報まで・実際の `video_url` は購入者のみ視聴可：アプリ層判定） | 不可 | 不可 | 不可 | `USING (chapter_id IN (SELECT id FROM e_learning_course_chapters WHERE course_id IN (SELECT id FROM e_learning_courses WHERE is_published = true AND deleted_at IS NULL)))` |
+| authenticated | 全可 | 全可 | 全可 | 全可 | `USING (auth.role() = 'authenticated')` |
+| service_role | 全可 | 全可 | 全可 | 全可 | RLS バイパス |
+
+補足：視聴可否（コース購入済 or `has_full_access=true` or `is_free=true` か）の最終判定は、フロント／API 層で `e_learning_purchases` / `e_learning_users.has_full_access` / `course_videos.is_free` を組み合わせて判断する。RLS では「メタ情報の閲覧可否」までを担保し、実コンテンツ（`video_url`）の保護はアプリ層の責務とする。
+
+#### e_learning_legacy_purchases（新規・§C1-2）
+
+| ロール | SELECT | INSERT | UPDATE | DELETE | USING / WITH CHECK 条件 |
+|--------|--------|--------|--------|--------|------------------------|
+| anon | 不可 | 不可 | 不可 | 不可 | （ポリシーなし） |
+| authenticated | 自己レコードのみ可 | 不可 | 不可 | 不可 | `USING (user_id IN (SELECT id FROM e_learning_users WHERE auth_user_id = auth.uid()))` |
+| service_role | 全可 | 全可 | 全可 | 全可 | **マイグレーション時の退避処理でのみ INSERT**。退避完了後は基本的に書き込み発生せず |
+
+#### e_learning_progress（新規・§C1-2）
+
+| ロール | SELECT | INSERT | UPDATE | DELETE | USING / WITH CHECK 条件 |
+|--------|--------|--------|--------|--------|------------------------|
+| anon | 不可 | 不可 | 不可 | 不可 | （ポリシーなし） |
+| authenticated | 自己レコードのみ可 | 自己レコードのみ可 | 自己レコードのみ可 | 自己レコードのみ可 | `USING (user_id IN (SELECT id FROM e_learning_users WHERE auth_user_id = auth.uid()))` / `WITH CHECK (user_id IN (SELECT id FROM e_learning_users WHERE auth_user_id = auth.uid()))` |
+| service_role | 全可 | 全可 | 全可 | 全可 | RLS バイパス |
+
+### RLS 実装時の留意点（Phase 2 dev-mate 申し送り）
+
+- 新規5テーブルの RLS は `ENABLE ROW LEVEL SECURITY` を有効化したうえで、上記マトリクス通りに `CREATE POLICY` を発行する
+- 既存テーブルの RLS は変更しない（破壊的変更回避）
+- `bookmarks` の `user_id` 参照先変更（auth.users → e_learning_users）に合わせて、RLS USING 条件を `auth.uid() = user_id` から `user_id IN (SELECT id FROM e_learning_users WHERE auth_user_id = auth.uid())` に書き換えるマイグレーションを追加する
+- 全 RLS は `db-design-reviewer` / `security-review` で再度チェックする
+
+---
+
+## トランザクション境界一覧（§15）
+
+DB 設計上、複数テーブルにまたがる更新を行う3操作の Tx 境界を明示する。Phase 2 で be-plan-mate / dev-mate が実装する際の指針とする。
+
+### Tx-1：Stripe Webhook 受信時の購入レコード INSERT
+
+| 項目 | 内容 |
+|------|------|
+| 契機 | `checkout.session.completed` Webhook 受信（`/api/stripe/webhook` Route Handler） |
+| 実行ロール | service_role |
+| Tx 範囲 | `e_learning_purchases` への INSERT 1 件（**単独 Tx**） |
+| 冪等性保証 | `stripe_session_id` の UNIQUE 制約。Webhook 再送で UNIQUE 違反が出たら **200 OK を返す**（冪等処理。エラーログには WARN 出力） |
+| 失敗時挙動 | 400/500 を返すと Stripe が指数バックオフで再送するため、業務的に成功扱いできるエラー（UNIQUE 違反）は 200 で吸収。それ以外（DB ダウン等）は 500 を返して再送に任せる |
+| 楽観ロック | 適用なし（INSERT 1 件のみ） |
+
+### Tx-2：legacy_purchases 退避処理（マイグレーション時の3ステップ）
+
+| 項目 | 内容 |
+|------|------|
+| 契機 | Phase 2 マイグレーション実行時に1回限り |
+| 実行ロール | service_role（マイグレーション専用） |
+| Tx 範囲 | **3ステップを全て同一 Tx 内で実行** |
+| ステップ詳細 | (1) `INSERT INTO e_learning_legacy_purchases SELECT ... FROM e_learning_purchases WHERE content_id IS NULL` → (2) `UPDATE e_learning_users SET has_full_access=true WHERE id IN (...)` → (3) `DELETE FROM e_learning_purchases WHERE content_id IS NULL` |
+| 失敗時挙動 | **途中失敗で全ロールバック**（部分的な退避が残ると後続の CHECK 制約追加が失敗するため、原子的に実行する） |
+| 楽観ロック | 適用なし（マイグレーションは単独実行・並行更新なし） |
+
+### Tx-3：退会処理（ユーザー削除）
+
+| 項目 | 内容 |
+|------|------|
+| 契機 | 管理画面または本人による退会申請 |
+| 実行ロール | authenticated（本人退会）または service_role（管理者代行・運用フロー次第） |
+| Tx 範囲 | `e_learning_users.deleted_at` 設定 + `display_name=NULL` + `avatar_url=NULL` の3カラム更新を **同一 Tx で実行** |
+| 触らない対象 | **`e_learning_purchases` は touch しない**（税務観点・RESTRICT FK で物理削除も不可）。`email` も保持（再登録引継ぎ用・L1 確定） |
+| 失敗時挙動 | 全ロールバック。途中で `deleted_at` だけ立って display_name が残るなどの中途半端な状態を避ける |
+| 楽観ロック | 適用する（`WHERE id = $1 AND updated_at = $前回取得値`） |
+
+### 補足：その他の単発操作
+
+- ブックマーク作成・削除：単発 INSERT / DELETE。Tx 不要
+- 進捗記録：単発 INSERT（UNIQUE 違反は冪等処理）。Tx 不要
+- コース章・動画の編集：単発 UPDATE + 楽観ロック。Tx 不要
+- カテゴリ・コース・単体動画の論理削除：単発 UPDATE（`SET deleted_at = now()`）。Tx 不要
+
+---
+
 ## db-design-reviewer チェック項目（自己確認）
 
 提出前に @db-design-reviewer を起動する前の自己チェック：
@@ -1081,6 +1356,11 @@ CHECK (contract_status IN ('active', 'expired', 'pending'))
 - [x] 10. timestamptz 統一：timestamp without time zone は使っていない
 - [x] 11. varchar(桁指定なし) 不使用：全 varchar に桁数指定
 - [x] 12. PostgreSQL ENUM 不使用：status / contract_status は varchar(n) + CHECK
+- [x] 13. RLS マトリクス完備：全 e_learning_* テーブル × anon / authenticated / service_role × CRUD を記述（§C1）
+- [x] 14. PII 保護方針明記：平文 + RLS、退会時マスキング対象を明示（§C2）
+- [x] 15. 文字列正規化ルール明記：slug / email / Stripe ID 群の正規化方針を表で整理（§17）
+- [x] 16. トランザクション境界明示：Stripe Webhook / legacy 退避 / 退会処理の Tx 範囲を表で整理
+- [x] 17. 同時実行制御：楽観ロック方針（updated_at 比較）と view_count 非原子的加算許容の差別化を明記
 
 ---
 

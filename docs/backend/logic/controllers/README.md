@@ -99,6 +99,7 @@ const event = stripe.webhooks.constructEvent(body, signature, STRIPE_WEBHOOK_SEC
 |---------|------|---------|----------|
 | GET | `/api/auth/user` | 必須 | `user-service.getMe` |
 | POST | `/api/auth/logout` | 必須 | `supabase.auth.signOut()` |
+| POST | `/api/me/withdraw` | 必須 | `user-service.withdraw(userId)` ＋ Controller 内で `supabase.auth.signOut()` |
 | GET | `/api/me/access` | 必須 | `access-service.getViewerAccess` |
 | GET | `/api/me/purchases` | 必須 | `admin-purchase-service.listForUser`（自分のみ） |
 | GET | `/api/me/bookmarks` | 必須 | `bookmark-service.list` |
@@ -120,10 +121,13 @@ const event = stripe.webhooks.constructEvent(body, signature, STRIPE_WEBHOOK_SEC
 | POST | `/api/contents/:id/complete` | 必須 | 401 | `progress-service.markContentCompleted` |
 | GET | `/api/contents/:id/materials` | 必須 + 権限要 | 401 / 403 | `material-service.listForContent` |
 
-**未認証時の方針（明文化）**：
+**未認証時の方針（明文化・公開系認証要件の唯一の正）**：
+
+> 本セクションは「公開系エンドポイントの認証要件・未認証時の挙動」の単一情報源（SSOT）。`docs/api/endpoints.md` 側は本セクションへのクロスリファレンスのみで、認証要件の文言を二重管理しない。
+
 - `GET /api/landing/summary`：誰でも閲覧可。個人情報・viewer 情報を含まない集計のみ
 - `GET /api/courses/[slug]` / `GET /api/contents/[id]`：未ログインでも詳細を閲覧可（章一覧・無料サンプル動画の存在を見せる）。viewer.is_authenticated=false で返す。視聴 API はログイン強制
-- **`GET /api/courses`**：**ログイン必須**。コース一覧ページ `/e-learning/courses` は Udemy 同様の方針（gate1-confirmed-decisions §2 案A確定）で未ログインなら 401 → `/auth/login?returnTo=/e-learning/courses` へリダイレクト
+- **`GET /api/courses`**：**ログイン必須**。コース一覧ページ `/e-learning/courses` は Udemy 同様の方針（gate1-confirmed-decisions §2 案A確定）で未ログインなら 401 → `/auth/login?returnTo=/e-learning/courses` へリダイレクト（API Route 自身は 401 JSON のみを返し、リダイレクトは `middleware.ts` ＋ Server Component 側が担う）
 - `GET /api/contents`：未ログインでも一覧を閲覧可（カード型 UI で「ログインして購入」ボタンが出せる）
 
 ### 購入・ブックマーク
@@ -131,8 +135,8 @@ const event = stripe.webhooks.constructEvent(body, signature, STRIPE_WEBHOOK_SEC
 | メソッド | パス | 認証要否 | 呼び出し先 |
 |---------|------|---------|----------|
 | POST | `/api/checkout` | 必須 | `checkout-service.startCheckout` |
-| POST | `/api/bookmarks` | 必須 | `bookmark-service.add` |
-| DELETE | `/api/bookmarks/:id` | 必須 | `bookmark-service.remove` |
+| POST | `/api/me/bookmarks` | 必須 | `bookmark-service.add` |
+| DELETE | `/api/me/bookmarks/:id` | 必須 | `bookmark-service.remove` |
 
 ### Stripe Webhook
 

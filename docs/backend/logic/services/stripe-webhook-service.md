@@ -60,11 +60,12 @@ Stripe Webhook を受信して DB を反映するサービス。Service Role Key
 
 1. `event.data.object` = Charge object
 2. `payment_intent` を取得
-3. `PurchaseRepository.markRefunded(paymentIntentId)`：
-   - status='refunded'、refunded_at=now() に更新
+3. `charge.created`（Unix epoch 秒）を `to_timestamp(...)` で timestamptz に変換した値 = `refundedAt` を算出
+4. `PurchaseRepository.markRefunded(paymentIntentId, refundedAt)`：
+   - **`status='refunded'` と `refunded_at = refundedAt` を同一 UPDATE 文でセット**（DB 側 CHECK 制約 `(status='refunded' AND refunded_at IS NOT NULL)` を満たすため必須・分割 UPDATE 禁止）
    - 対象が見つからない場合：Slack 通知し 200 OK 終了（順序逆転対策）
-   - 既に refunded：更新せず 200 OK（冪等）
-4. Slack 通知（返金完了）を送る
+   - 既に refunded：更新せず 200 OK（冪等）。`refunded_at` も既存値を保持（最初の返金時刻を信頼）
+5. Slack 通知（返金完了）を送る
 
 ### 署名検証
 

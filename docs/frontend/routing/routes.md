@@ -94,7 +94,23 @@ N10 確定により、以下は **Phase 1 で新規追加しない**：
 
 - `/e-learning/courses` は既存・既存実装はリスト枠のみ → コース対応に再構築（B003）
 - `/e-learning/[id]` は既存・既存実装は単体動画詳細 → 改修（B007）
-- 新規追加ルート：`/e-learning/home`、`/e-learning/videos`、`/e-learning/courses/[slug]`、`/e-learning/courses/[slug]/videos/[videoId]`、`/e-learning/checkout/{complete,cancel}`、`/e-learning/mypage/{,purchases,bookmarks,progress}`、`/admin/e-learning/{courses,courses/new,courses/[id]/edit,purchases,users,legacy-purchases}`
+- 新規追加ルート：
+  - `/e-learning/home`
+  - `/e-learning/videos`
+  - `/e-learning/courses/[slug]`
+  - `/e-learning/courses/[slug]/videos/[videoId]`
+  - `/e-learning/checkout/complete`
+  - `/e-learning/checkout/cancel`
+  - `/e-learning/mypage`
+  - `/e-learning/mypage/purchases`
+  - `/e-learning/mypage/bookmarks`
+  - `/e-learning/mypage/progress`
+  - `/admin/e-learning/courses`
+  - `/admin/e-learning/courses/new`
+  - `/admin/e-learning/courses/[id]/edit`
+  - `/admin/e-learning/purchases`
+  - `/admin/e-learning/users`
+  - `/admin/e-learning/legacy-purchases`
 
 ### middleware 改修ポイント
 
