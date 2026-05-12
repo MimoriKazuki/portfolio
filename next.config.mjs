@@ -2,6 +2,7 @@ import withBundleAnalyzer from '@next/bundle-analyzer'
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  serverExternalPackages: ['@google-analytics/data', '@grpc/grpc-js', 'google-gax'],
   eslint: {
     ignoreDuringBuilds: true,
   },
