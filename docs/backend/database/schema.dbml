@@ -1,0 +1,469 @@
+// =============================================================================
+// schema.dbml — Phase 1 物理設計（Gate 4）
+//
+// プロジェクト：AI駆動研究所 ポートフォリオ／メディアサイト
+// 対象：Eラーニング機能（コース＋単体動画の買い切り販売モデル）
+// 既存稼働中のため、既存スキーマからの差分として記述
+// 既存マイグレーション：supabase/migrations/20251203〜20251214_*.sql
+//
+// 規約：
+//   - PK：UUID（gen_random_uuid()）統一
+//   - timestamp：必ず timestamptz
+//   - varchar：必ず桁数指定 / 自由テキストは text
+//   - PostgreSQL ENUM は不使用 → text + CHECK で表現
+//   - 命名：snake_case、e_learning_* プレフィックス（既存命名規則踏襲）
+// =============================================================================
+
+Project portfolio_e_learning {
+  database_type: 'PostgreSQL'
+  Note: '''
+  AI駆動研究所 Eラーニング Phase 1 刷新スキーマ。
+  サブスク廃止・買い切りのみ（コース／単体動画）。
+  既存テーブルは追加方向のみで拡張。
+  '''
+}
+
+// =============================================================================
+// 1. e_learning_users — Eラーニング利用者（既存／拡張）
+// =============================================================================
+
+Table e_learning_users {
+  id                uuid          [pk, default: `gen_random_uuid()`, note: '内部識別子（既存）']
+  auth_user_id      uuid          [not null, unique, note: 'Supabase Auth の auth.users.id（既存・1:1）']
+  email             varchar(255)  [not null, note: 'メールアドレス（RFC 5321 上限 254、+1 余裕）']
+  display_name      text          [null,     note: '表示名（OAuth 由来・自由テキスト）']
+  avatar_url        text          [null,     note: 'アバター画像URL（自由テキスト）']
+  is_active         boolean       [not null, default: true,  note: 'アクティブ状態（既存）']
+  has_full_access   boolean       [not null, default: false, note: '全動画視聴可フラグ（Phase 1 追加・旧 has_paid_access 後継）']
+  last_accessed_at  timestamptz   [null,     note: '最終アクセス日時（既存）']
+  created_at        timestamptz   [not null, default: `timezone('utc'::text, now())`, note: '作成日時（既存）']
+  updated_at        timestamptz   [not null, default: `timezone('utc'::text, now())`, note: '更新日時（既存）']
+  deleted_at        timestamptz   [null,     note: '論理削除日時（Phase 1 追加）']
+
+  indexes {
+    auth_user_id [unique, name: 'e_learning_users_auth_user_id_key']
+    email        [name: 'idx_e_learning_users_email']
+    deleted_at   [name: 'idx_e_learning_users_active', note: '部分インデックス WHERE deleted_at IS NULL はマイグレーション側で別途定義']
+  }
+
+  Note: '''
+  Phase 1 変更点：
+  - has_full_access カラム追加（NOT NULL DEFAULT false）
+  - deleted_at カラム追加（NULL 許容・退会時設定）
+  - has_paid_access は M5 安全順序の最終ステップで削除
+  '''
+}
+
+// =============================================================================
+// 2. e_learning_categories — コンテンツのカテゴリ（既存／拡張）
+// =============================================================================
+
+Table e_learning_categories {
+  id            uuid          [pk, default: `gen_random_uuid()`, note: '内部識別子（既存）']
+  name          varchar(100)  [not null, note: 'カテゴリ名（既存運用上 100 字あれば十分）']
+  slug          varchar(100)  [not null, unique, note: 'URL 用識別子（既存）']
+  description   text          [null,     note: '説明（自由テキスト）']
+  display_order integer       [not null, default: 0, note: '表示順序（既存）']
+  is_active     boolean       [not null, default: true, note: 'アクティブ状態（既存・一時非表示用）']
+  created_at    timestamptz   [not null, default: `timezone('utc'::text, now())`, note: '作成日時（既存）']
+  updated_at    timestamptz   [not null, default: `timezone('utc'::text, now())`, note: '更新日時（既存）']
+  deleted_at    timestamptz   [null,     note: '論理削除日時（L4 確定・Phase 1 追加・廃止用）']
+
+  indexes {
+    slug [unique, name: 'e_learning_categories_slug_key']
+    display_order [name: 'idx_e_learning_categories_display_order']
+  }
+
+  Note: '''
+  L4 確定：
+  - is_active（一時非表示）と deleted_at（廃止）を併用
+  - 既存 6 件は deleted_at = NULL のまま継続
+  '''
+}
+
+// =============================================================================
+// 3. e_learning_contents — 単体動画（既存／拡張）
+// =============================================================================
+
+Table e_learning_contents {
+  id              uuid          [pk, default: `gen_random_uuid()`, note: '内部識別子（既存）']
+  title           varchar(200)  [not null, note: 'タイトル（既存運用上 200 字あれば十分）']
+  description     text          [null,     note: '説明（自由テキスト）']
+  thumbnail_url   text          [null,     note: 'サムネイル画像URL（自由テキスト）']
+  video_url       text          [not null, note: '動画URL（自由テキスト・既存）']
+  duration        varchar(20)   [null,     note: '動画長表示文字列（既存・例：10:30）']
+  category_id     uuid          [null,     ref: > e_learning_categories.id, note: 'カテゴリFK（任意・既存）']
+  is_free         boolean       [not null, default: false, note: '無料公開フラグ（既存）']
+  price           integer       [null,     note: '価格（円・既存・NULL=無料）']
+  stripe_price_id varchar(64)   [null,     unique, note: 'Stripe Price ID（price_xxx 形式・通常 27 文字程度、+α 余裕）']
+  display_order   integer       [not null, default: 0, note: '表示順序（既存）']
+  is_published    boolean       [not null, default: true,  note: '公開状態（既存）']
+  is_featured     boolean       [not null, default: false, note: '注目フラグ（既存）']
+  view_count      integer       [not null, default: 0, note: '累計視聴数（既存）']
+  created_at      timestamptz   [not null, default: `timezone('utc'::text, now())`, note: '作成日時（既存）']
+  updated_at      timestamptz   [not null, default: `timezone('utc'::text, now())`, note: '更新日時（既存）']
+  deleted_at      timestamptz   [null,     note: '論理削除日時（Phase 1 追加）']
+
+  indexes {
+    stripe_price_id [unique, name: 'e_learning_contents_stripe_price_id_key']
+    category_id     [name: 'idx_e_learning_contents_category_id']
+    is_published    [name: 'idx_e_learning_contents_is_published']
+  }
+
+  Note: '''
+  Phase 1 変更点：
+  - deleted_at カラム追加
+  - stripe_price_id を UNIQUE に（既存はインデックスのみ・物理マイグレーション時に追加）
+  既存 15 件はそのまま単体動画として継続。コースには入れない。
+  '''
+}
+
+// =============================================================================
+// 4. e_learning_courses — コース（新規）
+// =============================================================================
+
+Table e_learning_courses {
+  id              uuid          [pk, default: `gen_random_uuid()`, note: '内部識別子']
+  title           varchar(200)  [not null, note: 'コースタイトル']
+  slug            varchar(100)  [not null, unique, note: 'URL 用識別子']
+  description     text          [null,     note: '説明（自由テキスト）']
+  thumbnail_url   text          [null,     note: 'サムネイル画像URL']
+  category_id     uuid          [not null, ref: > e_learning_categories.id, note: 'カテゴリFK（M2：必須）']
+  is_free         boolean       [not null, default: false, note: '無料公開フラグ']
+  price           integer       [null,     note: '価格（円・NULL=無料）']
+  stripe_price_id varchar(64)   [null,     unique, note: 'Stripe Price ID']
+  display_order   integer       [not null, default: 0, note: '表示順序']
+  is_published    boolean       [not null, default: false, note: '公開状態（新規作成時は非公開）']
+  is_featured     boolean       [not null, default: false, note: '注目フラグ']
+  created_at      timestamptz   [not null, default: `timezone('utc'::text, now())`, note: '作成日時']
+  updated_at      timestamptz   [not null, default: `timezone('utc'::text, now())`, note: '更新日時']
+  deleted_at      timestamptz   [null,     note: '論理削除日時']
+
+  indexes {
+    slug            [unique, name: 'e_learning_courses_slug_key']
+    stripe_price_id [unique, name: 'e_learning_courses_stripe_price_id_key']
+    category_id     [name: 'idx_e_learning_courses_category_id']
+    is_published    [name: 'idx_e_learning_courses_is_published']
+  }
+
+  Note: '''
+  M2 確定：category_id NOT NULL（コースは必ず1カテゴリに所属）。
+  価格・stripe_price_id は単体動画と同じ運用（無料コースは両者 NULL）。
+  '''
+}
+
+// =============================================================================
+// 5. e_learning_course_chapters — 章（新規）
+// =============================================================================
+
+Table e_learning_course_chapters {
+  id            uuid          [pk, default: `gen_random_uuid()`, note: '内部識別子']
+  course_id     uuid          [not null, ref: > e_learning_courses.id, note: '所属コースFK']
+  title         varchar(200)  [not null, note: '章タイトル']
+  description   text          [null,     note: '章説明（自由テキスト）']
+  display_order integer       [not null, note: 'コース内での順序（同一コース内一意）']
+  created_at    timestamptz   [not null, default: `timezone('utc'::text, now())`, note: '作成日時']
+  updated_at    timestamptz   [not null, default: `timezone('utc'::text, now())`, note: '更新日時']
+
+  indexes {
+    (course_id, display_order) [unique, name: 'e_learning_course_chapters_course_order_key']
+    course_id [name: 'idx_e_learning_course_chapters_course_id']
+  }
+
+  Note: '''
+  章自体に deleted_at は持たない。親コース論理削除に追従。
+  (course_id, display_order) UNIQUE で章順序の重複を防止。
+  ON DELETE CASCADE（コース削除時に章も削除）。
+  '''
+}
+
+// =============================================================================
+// 6. e_learning_course_videos — コース内動画（新規）
+// =============================================================================
+
+Table e_learning_course_videos {
+  id            uuid          [pk, default: `gen_random_uuid()`, note: '内部識別子']
+  chapter_id    uuid          [not null, ref: > e_learning_course_chapters.id, note: '所属章FK']
+  title         varchar(200)  [not null, note: '動画タイトル']
+  description   text          [null,     note: '動画説明（自由テキスト）']
+  thumbnail_url text          [null,     note: 'サムネイル画像URL']
+  video_url     text          [not null, note: '動画URL']
+  duration      varchar(20)   [null,     note: '動画長表示文字列']
+  is_free       boolean       [not null, default: false, note: 'コース未購入者にも視聴可フラグ']
+  display_order integer       [not null, note: '章内での順序（同一章内一意）']
+  view_count    integer       [not null, default: 0, note: '累計視聴数（L5 確定）']
+  created_at    timestamptz   [not null, default: `timezone('utc'::text, now())`, note: '作成日時']
+  updated_at    timestamptz   [not null, default: `timezone('utc'::text, now())`, note: '更新日時']
+
+  indexes {
+    (chapter_id, display_order) [unique, name: 'e_learning_course_videos_chapter_order_key']
+    chapter_id [name: 'idx_e_learning_course_videos_chapter_id']
+    is_free    [name: 'idx_e_learning_course_videos_is_free']
+  }
+
+  Note: '''
+  コース内動画は販売単位ではない（個別購入不可・M4 確定でブックマーク対象外・M1 確定で個別資料も持たない）。
+  ON DELETE CASCADE（章削除時に動画も削除）。
+  L5：view_count を追加（単体動画との対称性）。
+  '''
+}
+
+// =============================================================================
+// 7. e_learning_materials — PDF資料（既存／拡張）
+// =============================================================================
+
+Table e_learning_materials {
+  id            uuid          [pk, default: `gen_random_uuid()`, note: '内部識別子（既存）']
+  content_id    uuid          [null, ref: > e_learning_contents.id, note: '所属単体動画FK（既存）']
+  course_id     uuid          [null, ref: > e_learning_courses.id, note: '所属コースFK（M1 確定・Phase 1 追加）']
+  title         varchar(200)  [not null, note: '資料タイトル（既存）']
+  file_url      text          [not null, note: 'ファイルURL（既存・自由テキスト）']
+  file_size     integer       [null,     note: 'ファイルサイズ（バイト・既存）']
+  display_order integer       [not null, default: 0, note: '表示順序（既存）']
+  created_at    timestamptz   [not null, default: `timezone('utc'::text, now())`, note: '作成日時（既存）']
+  updated_at    timestamptz   [not null, default: `timezone('utc'::text, now())`, note: '更新日時（Phase 1 追加・既存スキーマ要確認）']
+
+  indexes {
+    content_id [name: 'idx_e_learning_materials_content_id']
+    course_id  [name: 'idx_e_learning_materials_course_id']
+    (content_id, display_order) [unique, name: 'idx_e_learning_materials_content_order', note: 'M6 確定：同一動画内 display_order 重複防止（部分UNIQUE WHERE content_id IS NOT NULL + DEFERRABLE INITIALLY DEFERRED で順序入替時の一時重複を許容。詳細SQLは schema-rationale.md）']
+    (course_id, display_order)  [unique, name: 'idx_e_learning_materials_course_order',  note: 'M6 確定：同一コース内 display_order 重複防止（部分UNIQUE WHERE course_id IS NOT NULL + DEFERRABLE INITIALLY DEFERRED）']
+  }
+
+  Note: '''
+  M1 確定：
+  - course_id 追加（既存7件は content_id IS NOT NULL のまま継続）
+  - 排他的 CHECK 制約：CHECK ((content_id IS NOT NULL AND course_id IS NULL) OR (content_id IS NULL AND course_id IS NOT NULL))
+  - 1動画・1コースに複数資料 OK（zip 一括ダウンロードは FE 側）
+  - コース内動画には資料を紐付けない
+  M6 確定：display_order の重複防止に部分 UNIQUE 2本を追加（DEFERRABLE INITIALLY DEFERRED）。
+  既存スキーマで updated_at が無い場合は Phase 1 で追加。
+  '''
+}
+
+// =============================================================================
+// 8. e_learning_purchases — 購入レコード（既存／拡張・新ルール厳格）
+// =============================================================================
+
+Table e_learning_purchases {
+  id                       uuid          [pk, default: `gen_random_uuid()`, note: '内部識別子（既存）']
+  user_id                  uuid          [not null, ref: > e_learning_users.id, note: '購入ユーザーFK（既存）']
+  course_id                uuid          [null, ref: > e_learning_courses.id, note: '購入対象コースFK（Phase 1 追加）']
+  content_id               uuid          [null, ref: > e_learning_contents.id, note: '購入対象単体動画FK（既存）']
+  stripe_session_id        varchar(255)  [not null, unique, note: 'Stripe Checkout Session ID（cs_xxx 形式・80〜90 文字程度）']
+  stripe_payment_intent_id varchar(255)  [null, note: 'Stripe Payment Intent ID（返金照合用・Phase 1 追加・設計負債4）']
+  amount                   integer       [not null, note: '支払金額（円・税込・購入時点固定）']
+  status                   varchar(20)   [not null, default: 'completed', note: '購入ステータス（L2：completed/refunded の2区分）']
+  refunded_at              timestamptz   [null, note: '返金日時（status=refunded のとき NOT NULL・Phase 1 追加）']
+  created_at               timestamptz   [not null, default: `timezone('utc'::text, now())`, note: '購入完了日時（既存）']
+  updated_at               timestamptz   [not null, default: `timezone('utc'::text, now())`, note: '更新日時（既存・なければ追加）']
+
+  indexes {
+    stripe_session_id [unique, name: 'e_learning_purchases_stripe_session_id_key']
+    user_id           [name: 'idx_e_learning_purchases_user_id']
+    course_id         [name: 'idx_e_learning_purchases_course_id']
+    content_id        [name: 'idx_e_learning_purchases_content_id']
+    status            [name: 'idx_e_learning_purchases_status']
+    // 部分 UNIQUE 2本（マイグレーション側で CREATE UNIQUE INDEX ... WHERE で定義）
+    (user_id, course_id)  [unique, name: 'e_learning_purchases_user_course_partial_key', note: 'WHERE course_id IS NOT NULL（部分 UNIQUE）']
+    (user_id, content_id) [unique, name: 'e_learning_purchases_user_content_partial_key', note: 'WHERE content_id IS NOT NULL（部分 UNIQUE）']
+  }
+
+  Note: '''
+  L3 確定：本テーブルは「新ルール厳格」。
+  - 排他的 CHECK 制約：CHECK ((course_id IS NOT NULL AND content_id IS NULL) OR (course_id IS NULL AND content_id IS NOT NULL))
+  - L2：status は CHECK (status IN ('completed', 'refunded')) で表現（text + CHECK）
+  - 既存 UNIQUE(user_id, content_id) は削除し、部分 UNIQUE 2本に分割
+  - 既存6件は e_learning_legacy_purchases に退避してから本テーブルから削除
+  - 物理削除不可（税務観点）・FK は ON DELETE RESTRICT
+  '''
+}
+
+// =============================================================================
+// 9. e_learning_legacy_purchases — 既存購入6件退避テーブル（新規／L3 確定）
+// =============================================================================
+
+Table e_learning_legacy_purchases {
+  id                uuid          [pk, default: `gen_random_uuid()`, note: '内部識別子（元 e_learning_purchases.id を引き継ぐ）']
+  user_id           uuid          [not null, ref: > e_learning_users.id, note: '購入ユーザーFK（元レコード由来）']
+  content_id        uuid          [null, ref: > e_learning_contents.id, note: '元 content_id（NULL=全コンテンツ買い切りの歴史的レコード）']
+  stripe_session_id varchar(255)  [null, note: '元 Stripe Session ID（不明な場合は NULL）']
+  amount            integer       [not null, note: '元支払金額（円）']
+  status            varchar(20)   [not null, default: 'completed', note: '元購入ステータス']
+  original_created_at timestamptz [not null, note: '元購入完了日時（移行元の created_at）']
+  migrated_at       timestamptz   [not null, default: `timezone('utc'::text, now())`, note: 'L3 退避日時']
+  note              text          [null, note: 'M3／L3 の業務的メモ（例：全コンテンツ買い切り旧仕様）']
+
+  indexes {
+    user_id [name: 'idx_e_learning_legacy_purchases_user_id']
+    stripe_session_id [unique, name: 'idx_e_learning_legacy_purchases_stripe_session_id', note: 'M6 確定：歴史的レコードの Stripe Session ID 重複防止（部分UNIQUE WHERE stripe_session_id IS NOT NULL。詳細SQLは schema-rationale.md）']
+  }
+
+  Note: '''
+  L3 確定：既存6件をこのテーブルに退避（物理削除しない・税務観点）。
+  - 移行手順：
+    1. e_learning_legacy_purchases に既存6件を INSERT（id・user_id・content_id・amount・status・created_at をコピー）
+    2. 該当6名の e_learning_users.has_full_access を true に更新
+    3. e_learning_purchases から該当6件を DELETE
+  - 本テーブルは新ルールの CHECK 制約を持たない（歴史的レコードを許容）
+  - 物理削除不可
+  M6 確定：stripe_session_id に部分 UNIQUE を追加（NULL 除外）。
+  '''
+}
+
+// =============================================================================
+// 10. e_learning_bookmarks — ブックマーク（既存／拡張）
+// =============================================================================
+
+Table e_learning_bookmarks {
+  id         uuid        [pk, default: `gen_random_uuid()`, note: '内部識別子（既存）']
+  user_id    uuid        [not null, ref: > e_learning_users.id, note: 'ユーザーFK（参照先を e_learning_users.id に変更・設計負債1）']
+  course_id  uuid        [null, ref: > e_learning_courses.id, note: 'コースFK（M4 確定・Phase 1 追加）']
+  content_id uuid        [null, ref: > e_learning_contents.id, note: '単体動画FK（既存）']
+  created_at timestamptz [not null, default: `now()`, note: '作成日時（既存）']
+
+  indexes {
+    user_id    [name: 'idx_e_learning_bookmarks_user_id']
+    course_id  [name: 'idx_e_learning_bookmarks_course_id']
+    content_id [name: 'idx_e_learning_bookmarks_content_id']
+    (user_id, course_id)  [unique, name: 'e_learning_bookmarks_user_course_partial_key', note: 'WHERE course_id IS NOT NULL']
+    (user_id, content_id) [unique, name: 'e_learning_bookmarks_user_content_partial_key', note: 'WHERE content_id IS NOT NULL']
+  }
+
+  Note: '''
+  M4 確定：
+  - course_id 追加（コースもブックマーク対象）
+  - コース内動画はブックマーク対象外
+  - user_id FK を auth.users.id から e_learning_users.id に変更（設計負債1）
+  - 既存3件は user_id の参照先変更時に auth_user_id → e_learning_users.id へマッピングで UPDATE
+  排他的 CHECK 制約：CHECK ((course_id IS NOT NULL AND content_id IS NULL) OR (course_id IS NULL AND content_id IS NOT NULL))
+  ON DELETE CASCADE（個人データのため）
+  '''
+}
+
+// =============================================================================
+// 11. e_learning_progress — 視聴進捗（新規）
+// =============================================================================
+
+Table e_learning_progress {
+  id              uuid        [pk, default: `gen_random_uuid()`, note: '内部識別子']
+  user_id         uuid        [not null, ref: > e_learning_users.id, note: 'ユーザーFK']
+  course_video_id uuid        [null, ref: > e_learning_course_videos.id, note: 'コース内動画FK']
+  content_id      uuid        [null, ref: > e_learning_contents.id, note: '単体動画FK']
+  completed_at    timestamptz [not null, default: `timezone('utc'::text, now())`, note: '視聴完了日時（N6・N7 確定：完了フラグ相当）']
+  created_at      timestamptz [not null, default: `timezone('utc'::text, now())`, note: '作成日時']
+  updated_at      timestamptz [not null, default: `timezone('utc'::text, now())`, note: '更新日時']
+
+  indexes {
+    user_id         [name: 'idx_e_learning_progress_user_id']
+    course_video_id [name: 'idx_e_learning_progress_course_video_id']
+    content_id      [name: 'idx_e_learning_progress_content_id']
+    (user_id, course_video_id) [unique, name: 'e_learning_progress_user_course_video_partial_key', note: 'WHERE course_video_id IS NOT NULL']
+    (user_id, content_id)      [unique, name: 'e_learning_progress_user_content_partial_key', note: 'WHERE content_id IS NOT NULL']
+  }
+
+  Note: '''
+  N6・N7 確定：進捗は「視聴完了の事実」のみを保持（再生位置・秒数は持たない）。
+  進捗レコードが存在する＝視聴完了。コース完了判定は所属動画の進捗集計で末尾到達を判定。
+  排他的 CHECK 制約：CHECK ((course_video_id IS NOT NULL AND content_id IS NULL) OR (course_video_id IS NULL AND content_id IS NOT NULL))
+  同一動画の再視聴は最初の completed_at を保持（上書きしない）。
+  ON DELETE CASCADE（個人データ）
+  '''
+}
+
+// =============================================================================
+// 12. e_learning_corporate_customers — 法人契約企業（既存・将来用）
+// =============================================================================
+
+Table e_learning_corporate_customers {
+  id                   uuid          [pk, default: `gen_random_uuid()`, note: '内部識別子（既存）']
+  company_name         text          [not null, note: '企業名（既存・自由テキスト）']
+  contact_person       text          [null, note: '連絡担当者（既存・自由テキスト）']
+  contact_email        text          [null, note: '連絡先メール（既存・自由テキスト）']
+  contact_phone        text          [null, note: '連絡先電話（既存・自由テキスト）']
+  contract_status      text          [not null, default: 'active', note: '契約ステータス（既存・active/expired/pending・CHECK 制約あり）']
+  contract_start_date  date          [null, note: '契約開始日（既存）']
+  contract_end_date    date          [null, note: '契約終了日（既存）']
+  notes                text          [null, note: 'メモ（既存・自由テキスト）']
+  created_at           timestamptz   [not null, default: `timezone('utc'::text, now())`, note: '作成日時（既存）']
+  updated_at           timestamptz   [not null, default: `timezone('utc'::text, now())`, note: '更新日時（既存）']
+
+  Note: '''
+  既存スキーマを維持（Phase 1 では破壊的変更しない）。
+  contract_status は text + CHECK (contract_status IN ('active', 'expired', 'pending'))（既存通り）。
+  Phase 1 では参照しない（0件継続）。
+  '''
+}
+
+// =============================================================================
+// 13. e_learning_corporate_users — 法人契約ユーザーメール（既存・将来用）
+// =============================================================================
+
+Table e_learning_corporate_users {
+  id                    uuid        [pk, default: `gen_random_uuid()`, note: '内部識別子（既存）']
+  corporate_customer_id uuid        [not null, ref: > e_learning_corporate_customers.id, note: '所属法人FK（既存）']
+  email                 text        [not null, note: 'メールアドレス（既存・自由テキスト）']
+  created_at            timestamptz [not null, default: `timezone('utc'::text, now())`, note: '作成日時（既存）']
+
+  indexes {
+    (corporate_customer_id, email) [unique, name: 'e_learning_corporate_users_customer_email_key']
+    email [name: 'idx_e_learning_corporate_users_email']
+  }
+
+  Note: '''
+  既存スキーマを維持。Phase 1 では変更しない。
+  Phase 1 では参照しない（0件継続）。
+  '''
+}
+
+// =============================================================================
+// 参照関係まとめ（ON DELETE 方針）
+// =============================================================================
+//
+// Ref: e_learning_users.auth_user_id  > auth.users.id              [ON DELETE CASCADE]
+// Ref: e_learning_contents.category_id > e_learning_categories.id  [ON DELETE SET NULL]
+// Ref: e_learning_courses.category_id  > e_learning_categories.id  [ON DELETE RESTRICT]   // M2：必須
+// Ref: e_learning_course_chapters.course_id > e_learning_courses.id [ON DELETE CASCADE]
+// Ref: e_learning_course_videos.chapter_id > e_learning_course_chapters.id [ON DELETE CASCADE]
+// Ref: e_learning_materials.content_id > e_learning_contents.id    [ON DELETE CASCADE]
+// Ref: e_learning_materials.course_id  > e_learning_courses.id     [ON DELETE CASCADE]
+// Ref: e_learning_purchases.user_id    > e_learning_users.id       [ON DELETE RESTRICT]   // 購入履歴保護
+// Ref: e_learning_purchases.course_id  > e_learning_courses.id     [ON DELETE RESTRICT]
+// Ref: e_learning_purchases.content_id > e_learning_contents.id    [ON DELETE RESTRICT]
+// Ref: e_learning_legacy_purchases.user_id    > e_learning_users.id   [ON DELETE RESTRICT]
+// Ref: e_learning_legacy_purchases.content_id > e_learning_contents.id [ON DELETE RESTRICT]
+// Ref: e_learning_bookmarks.user_id    > e_learning_users.id       [ON DELETE CASCADE]
+// Ref: e_learning_bookmarks.course_id  > e_learning_courses.id     [ON DELETE CASCADE]
+// Ref: e_learning_bookmarks.content_id > e_learning_contents.id    [ON DELETE CASCADE]
+// Ref: e_learning_progress.user_id         > e_learning_users.id           [ON DELETE CASCADE]
+// Ref: e_learning_progress.course_video_id > e_learning_course_videos.id   [ON DELETE CASCADE]
+// Ref: e_learning_progress.content_id      > e_learning_contents.id        [ON DELETE CASCADE]
+//
+// ※ DBML の inline ref は ON DELETE 指定不可のため、各 Ref の方針はマイグレーション側で明示する。
+// ※ schema-rationale.md にも全 FK の ON DELETE / ON UPDATE 根拠を記載する。
+
+// =============================================================================
+// CHECK 制約まとめ（マイグレーション側で明示）
+// =============================================================================
+//
+// e_learning_materials:
+//   CHECK ((content_id IS NOT NULL AND course_id IS NULL)
+//       OR (content_id IS NULL AND course_id IS NOT NULL))
+//
+// e_learning_purchases:
+//   CHECK ((course_id IS NOT NULL AND content_id IS NULL)
+//       OR (course_id IS NULL AND content_id IS NOT NULL))
+//   CHECK (status IN ('completed', 'refunded'))
+//   CHECK ((status = 'refunded' AND refunded_at IS NOT NULL)
+//       OR (status <> 'refunded' AND refunded_at IS NULL))
+//
+// e_learning_bookmarks:
+//   CHECK ((course_id IS NOT NULL AND content_id IS NULL)
+//       OR (course_id IS NULL AND content_id IS NOT NULL))
+//
+// e_learning_progress:
+//   CHECK ((course_video_id IS NOT NULL AND content_id IS NULL)
+//       OR (course_video_id IS NULL AND content_id IS NOT NULL))
+//
+// e_learning_corporate_customers:
+//   CHECK (contract_status IN ('active', 'expired', 'pending'))  // 既存
