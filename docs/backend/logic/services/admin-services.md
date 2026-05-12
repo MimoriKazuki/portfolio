@@ -18,7 +18,7 @@
 | `admin-material-service` | 資料の追加・更新・削除（排他的 FK 整合チェック） |
 | `admin-user-service` | ユーザー一覧・詳細・has_full_access 切替 |
 | `admin-purchase-service` | 購入履歴の閲覧（読み取りのみ） |
-| `admin-dashboard-service` | 売上・購入件数・進捗集計（読み取りのみ） |
+| ~~`admin-dashboard-service`~~ | ~~売上・購入件数・進捗集計（読み取りのみ）~~ — **N10 確定・Phase 1 スコープ外**（既存 GA4 ベース管理画面を継続） |
 
 ---
 

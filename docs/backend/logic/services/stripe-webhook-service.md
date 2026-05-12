@@ -41,6 +41,7 @@ Stripe Webhook を受信して DB を反映するサービス。Service Role Key
 3. `metadata` から `user_id` / `target_type` / `target_id` を取り出す
    - 欠落していれば Slack 通知し 200 OK で終了（DB には書かない）
 4. `payment_intent` を取得（id 文字列）
+   - 補足：`session.payment_intent` は `mode: 'payment'` では **string 型（PaymentIntent ID）でそのまま返る**。PaymentIntents API を別途呼び出す必要はない（Stripe SDK v20 で確認済）。`expand: ['payment_intent']` を指定した場合のみ Object 型になる
 5. `PurchaseRepository.insertFromWebhook` を呼ぶ：
    - 入力：
      ```

@@ -83,9 +83,11 @@ stripe.checkout.sessions.create({
 
 ### success_url / cancel_url の決定
 
-- `success_url`：
-  - course の場合：`${BASE_URL}/e-learning/courses/${course.slug}?status=success`
-  - content の場合：`${BASE_URL}/e-learning/${content.id}?status=success`
+- `success_url`：**FE 設計 B009「決済完了ページ」へ統一**
+  - 形式：`${BASE_URL}/e-learning/checkout/complete?session_id={CHECKOUT_SESSION_ID}`
+  - Stripe の `{CHECKOUT_SESSION_ID}` プレースホルダ機能を使用（Stripe Session 作成時にそのまま記述・Stripe が確定 session.id に置換）
+  - `/e-learning/checkout/complete` ページ側で `session_id` を読み取り、`GET /api/me/access` をポーリングして購入反映を待機する（詳細は access-service.md §「購入完了直後の視聴権限確認フロー」）
+  - 反映確認後、コース／単体動画詳細へリダイレクト（target_type と target_id は完了ページ側で metadata から復元）
 - `cancel_url`：`${BASE_URL}${cancel_return_url || '/e-learning'}`
 
 ### 既存実装からの差分

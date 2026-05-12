@@ -130,6 +130,15 @@
 - エラー：401 UNAUTHORIZED
 - 備考：FE がコース一覧／動画詳細で「購入済み」表示を出すための一括取得 API。
 
+### （未公開）GET /api/me/progress（B013 視聴履歴）
+- **Phase 1 では公開しない**。FE 設計の B013「視聴履歴ページ」用データ取得は **Supabase 直クエリ（Server Component）で対応**：
+  - 対応テーブル：`e_learning_progress`（必要に応じて `e_learning_course_videos` / `e_learning_contents` を JOIN）
+  - 取得位置：FE 側の Server Component / Server Action（`createClient()` で RLS 経由のユーザーセッションを使用）
+  - **Route Handler（`/api/me/progress`）は Phase 1 では作成しない**
+  - 集計（完了率・コース完了判定）は services 層の `progress-service` の SQL ロジックを Server Component から RPC 経由で呼べるよう Phase 2 で整理可
+- 理由：個人別の進捗データは外部からの再利用想定がなく、Server Component 直クエリで FE と密結合させた方がコード量が少なく性能も良い
+- 注意：レンダリングを跨ぐ複数 FE コンポーネントが進捗データを共有する場合のみ、Phase 2 以降で本 API を公開する
+
 ---
 
 ## カテゴリ B：公開系（LP・カテゴリ・公開コンテンツ）
@@ -171,8 +180,8 @@
 ## カテゴリ C：コース（一覧・詳細・章/動画）
 
 ### GET /api/courses
-- 概要：公開コース一覧
-- 認証：public（is_free と非ログインでも閲覧可）
+- 概要：公開コース一覧（コース一覧ページ `/e-learning/courses` の主データ）
+- 認証：**auth**（ログイン必須。Udemy 同様・gate1-confirmed-decisions §2 案A確定。未ログインは 401 → `/auth/login?returnTo=/e-learning/courses` へリダイレクト）
 - クエリパラメータ：
   - `category_id`：UUID（任意）
   - `q`：タイトル部分一致（任意）
@@ -409,7 +418,9 @@
     target_id:   <uuid>
     user_id:     <e_learning_users.id>
     ```
-  - `success_url`：購入種別に応じてリダイレクト（コース：`/e-learning/courses/:slug`、単体：`/e-learning/:id`）
+  - `success_url`：**FE 設計 B009「決済完了ページ」へ統一**：`${BASE_URL}/e-learning/checkout/complete?session_id={CHECKOUT_SESSION_ID}`
+    - Stripe の `{CHECKOUT_SESSION_ID}` プレースホルダ機能で確定 session.id に置換
+    - 完了ページ側で `GET /api/me/access` をポーリングして購入反映を待機・確認後にコース／単体動画詳細へリダイレクト（詳細は `docs/backend/logic/services/access-service.md` §「購入完了直後の視聴権限確認フロー」）
   - `cancel_url`：`cancel_return_url`（無効なら `/e-learning`）
 - エラー：400 VALIDATION_ERROR、401 UNAUTHORIZED、404 NOT_FOUND、409 ALREADY_PURCHASED / ALREADY_FULL_ACCESS、502 STRIPE_API_ERROR
 
@@ -485,7 +496,7 @@
   { "target_type": "course", "target_id": "uuid" }
   ```
 - バリデーション：
-  - `target_type ∈ {course, content}`
+  - `target_type ∈ {course, content}`（**`course_video` は M4 確定により不可**＝コース内動画はブックマーク対象外）
   - 対象は `is_published = true AND deleted_at IS NULL`
   - 既にブックマーク済みなら 409 ALREADY_EXISTS（部分 UNIQUE 制約と整合）
 - レスポンス（201）：`{ "data": { "id": "uuid", "created_at": "..." } }`
@@ -1012,7 +1023,7 @@
 | e_learning_purchases           | E / H-7 ✓ | H-7 ✓ | (Stripe Webhook 経由) | (Webhook 経由・status のみ) | -    | 物理削除不可 |
 | e_learning_legacy_purchases    | H-7 ✓ | -    | (移行スクリプトのみ) | -    | -    | 閲覧のみ |
 | e_learning_bookmarks           | F ✓ | -    | F ✓ | -    | F ✓ | 個人データ |
-| e_learning_progress            | (集計 API 経由) | -    | C / D「complete」✓ | -    | -    | 完了マーキングのみ |
+| e_learning_progress            | -（B013 視聴履歴は FE Server Component の Supabase 直クエリで対応・`/api/me/progress` 非公開） | -    | C / D「complete」✓ | -    | -    | 完了マーキングのみ・Route Handler は POST `/complete` のみ |
 | e_learning_corporate_customers | -    | -    | -    | -    | -    | Phase 1 スコープ外（0件継続） |
 | e_learning_corporate_users     | -    | -    | -    | -    | -    | 同上 |
 
@@ -1022,7 +1033,9 @@
 
 | エンドポイント群 | 未ログイン | ログイン済 | 管理者 |
 |----------------|-----------|-----------|-------|
-| LP / カテゴリ / 公開コース・単体動画一覧・詳細（B/C/D の GET） | ✓ | ✓（viewer 情報も返却） | ✓ |
+| LP `/api/landing/summary` / カテゴリ `/api/categories` | ✓ | ✓ | ✓ |
+| **コース一覧 `GET /api/courses`** | **-（401）** | ✓ | ✓ |
+| コース詳細 `GET /api/courses/:slug` / 単体動画一覧 `GET /api/contents` / 単体動画詳細 `GET /api/contents/:id` | ✓ | ✓（viewer 情報も返却） | ✓ |
 | 視聴用 `/play` `/videos/:videoId` `/complete` | -（401） | ✓（権限要・403 あり） | ✓ |
 | 資料 GET `/courses/:slug/materials` `/contents/:id/materials` | -（401） | ✓（権限要・403 あり） | ✓ |
 | `/api/me/**` | -（401） | ✓ | ✓ |
@@ -1030,7 +1043,7 @@
 | `/api/stripe/webhook` | service（署名検証） | service（署名検証） | service（署名検証） |
 | `/api/admin/**` | -（401） | -（401） | ✓ |
 
-詳細な未認証時の挙動は `docs/backend/logic/controllers/README.md` の「未認証時の方針（明文化）」を参照。
+詳細な未認証時の挙動は `docs/backend/logic/controllers/README.md` の「未認証時の方針（明文化）」を参照。コース一覧のログイン必須は gate1-confirmed-decisions §2（案A確定）と整合。
 
 ---
 

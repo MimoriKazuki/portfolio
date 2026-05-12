@@ -57,7 +57,7 @@
 | B006 | 単体動画一覧 | `/e-learning/videos` | 必要 | MediaListTemplate | カテゴリ別フィルタ・無料／有料フィルタ | `e_learning_contents` / `e_learning_categories` / `e_learning_bookmarks` | 新規（既存 B002 から単体動画特化部分を切り出し） |
 | B007 | 単体動画詳細／視聴 | `/e-learning/[id]` | 必要（視聴権限要） | VideoPlayerTemplate（単一動画） | 動画再生・概要・資料 DL・購入 CTA（未購入時）・ブックマーク | `e_learning_contents` / `e_learning_materials` / `e_learning_purchases` / `e_learning_progress` / `e_learning_bookmarks` | 既存改修（購入導線をコース対応のロジックに整合させる） |
 | B008 | 購入確認モーダル／チェックアウト遷移 | （B004／B007 内モーダル → Stripe Checkout 外部） | 必要 | （モーダル + 外部リダイレクト） | 価格確認 → Stripe Checkout（mode: payment）へ遷移 | `e_learning_courses` / `e_learning_contents` / `e_learning_purchases` | 既存 PurchasePromptModal を再利用・改修 |
-| B009 | 購入完了画面 | `/e-learning/checkout/complete?session_id=...` | 必要 | InfoPageTemplate | Stripe Session 確認・購入動画／コースへの導線 | `e_learning_purchases` | 新規 |
+| B009 | 購入完了画面 | `/e-learning/checkout/complete?session_id=...` | 必要 | InfoPageTemplate | Stripe Session 確認・購入動画／コースへの導線・**Webhook 未反映時はスピナー「決済反映処理中です」を表示し、`GET /api/me/access` を最大 10 回・2 秒間隔でポーリング** → 反映後に該当コース／単体動画への導線を表示／**タイムアウト時はエラー「反映が遅れています。サポートまでお問い合わせください」**＋ Slack 通知（BE 側 access-service が発火・反映遅延を運用に通知） | `e_learning_purchases` | 新規 |
 | B010 | 購入キャンセル画面 | `/e-learning/checkout/cancel` | 必要 | InfoPageTemplate | キャンセル表示・コース／動画詳細へ戻る導線 | - | 新規 |
 | B011 | マイページ：購入履歴 | `/e-learning/mypage/purchases` | 必要 | MyPageTemplate | 購入済コース／単体動画一覧・購入日・領収書（Stripe）リンク | `e_learning_purchases` / `e_learning_courses` / `e_learning_contents` | 新規 |
 | B012 | マイページ：ブックマーク | `/e-learning/mypage/bookmarks` | 必要 | MyPageTemplate | ブックマーク済コース／単体動画一覧・解除 | `e_learning_bookmarks` / `e_learning_courses` / `e_learning_contents` | 既存改修（コース対応） |
@@ -78,7 +78,7 @@
 | C008 | コース カリキュラム編集（章・動画 DnD） | C006／C007 内のタブ | 管理者 | （C006／C007 のサブ画面） | 章追加・章名編集・章順序入替（DnD）・章内動画追加・動画順序入替（DnD）・`is_free` 切替 | `e_learning_course_chapters` / `e_learning_course_videos` | 新規 |
 | C009 | 購入履歴 | `/admin/e-learning/purchases` | 管理者 | AdminListTemplate | 期間／ユーザー／コース／単体動画／ステータス（completed/refunded）絞り込み・CSV エクスポート（Phase 1 任意） | `e_learning_purchases` / `e_learning_users` / `e_learning_courses` / `e_learning_contents` | 新規 |
 | C010 | フルアクセスユーザー管理 | `/admin/e-learning/users` | 管理者 | AdminListTemplate | ユーザー一覧・検索・`has_full_access` 手動切替 | `e_learning_users` | 新規 |
-| C011 | レガシー購入レコード閲覧（L3） | `/admin/e-learning/legacy-purchases` | 管理者 | AdminListTemplate | `e_learning_legacy_purchases` の参照のみ（編集不可・税務目的） | `e_learning_legacy_purchases` / `e_learning_users` | 新規（読み取り専用） |
+| C011 | レガシー購入レコード閲覧（L3） | `/admin/e-learning/legacy-purchases` | 管理者 | AdminListTemplate | `e_learning_legacy_purchases` の参照のみ（編集不可・税務目的）・**行クリック挙動：インラインモーダル or 行展開のみ（詳細画面遷移なし）。一覧表示で税務確認に十分** | `e_learning_legacy_purchases` / `e_learning_users` | 新規（読み取り専用） |
 
 ### D. その他（既存維持）
 
@@ -206,6 +206,30 @@ DB エンティティに対する画面網羅性。
 | ローディング | データ取得中 | スケルトン（既存 `app/components/skeletons/` を流用） |
 | 空状態 | 公開コースゼロ等 | 「まだコースがありません」+ 単体動画タブへの導線 |
 | 視聴権限なし | 直アクセス | コース詳細／単体動画詳細へ戻し、購入確認モーダルを開く |
+
+---
+
+## B009 購入完了画面の Webhook 反映待ち UI 仕様（補足）
+
+Stripe Checkout から `success_url` で到達した時点で、Webhook（`checkout.session.completed`）の処理が完了していないケースがある。FE は以下の手順で視聴権限の反映を確認する。
+
+1. ページ初期表示で `session_id` クエリを取得し、Server で `e_learning_purchases` を `stripe_session_id` で検索
+2. 該当購入レコードが見つかれば、購入対象（コース／単体動画）への導線を即時表示
+3. 未反映（レコード未作成）の場合、クライアント側で「決済反映処理中です」スピナーと進捗テキストを表示
+4. **リトライ仕様：`GET /api/me/access?session_id=...` を 2 秒間隔で最大 10 回ポーリング**
+   - 反映確認できた時点でポーリング停止 → 対象コース／単体動画への導線を表示
+   - 10 回（合計 20 秒）反映確認できなければタイムアウト
+5. **タイムアウト時の表示**：「反映が遅れています。サポートまでお問い合わせください」＋お問い合わせ導線
+6. **Slack 通知連動**：タイムアウト時は BE 側 `access-service`（Phase 2 で実装予定）が運用向け Slack へ反映遅延を自動通知。FE 側からの追加通知は不要
+
+詳細仕様の参照：`docs/backend/logic/services/access-service.md` 「購入完了直後の視聴権限確認フロー」（be-plan-mate 担当）。
+
+### B009 と関連エンドポイント
+
+| 呼び出し | 用途 |
+|---------|------|
+| 初期 fetch（Server）：`e_learning_purchases` by `stripe_session_id` | 即時反映確認 |
+| ポーリング（Client）：`GET /api/me/access?session_id=...` | Webhook 未反映時の再確認 |
 
 ---
 

@@ -109,7 +109,7 @@ const event = stripe.webhooks.constructEvent(body, signature, STRIPE_WEBHOOK_SEC
 |---------|------|---------|--------------|----------|
 | GET | `/api/categories` | **不要** | 200・全件返却 | `category-service.listActive` |
 | GET | `/api/landing/summary` | **不要** | 200・集計返却（個人情報は含まない） | `landing-service.getSummary` |
-| GET | `/api/courses` | **不要** | 200・viewer 情報は含めない | `course-service.listPublished` |
+| GET | `/api/courses` | **必須** | 401（`/auth/login?returnTo=...` へ） | `course-service.listPublished` |
 | GET | `/api/courses/:slug` | **任意** | 200・`viewer.is_authenticated=false` で返却 | `course-service.getPublishedBySlug(slug, userId?)` |
 | GET | `/api/courses/:slug/videos/:videoId` | 必須 | 401 | `course-service.getCourseVideo` |
 | POST | `/api/courses/:slug/videos/:videoId/complete` | 必須 | 401 | `progress-service.markCourseVideoCompleted` |
@@ -123,7 +123,8 @@ const event = stripe.webhooks.constructEvent(body, signature, STRIPE_WEBHOOK_SEC
 **未認証時の方針（明文化）**：
 - `GET /api/landing/summary`：誰でも閲覧可。個人情報・viewer 情報を含まない集計のみ
 - `GET /api/courses/[slug]` / `GET /api/contents/[id]`：未ログインでも詳細を閲覧可（章一覧・無料サンプル動画の存在を見せる）。viewer.is_authenticated=false で返す。視聴 API はログイン強制
-- `GET /api/courses` / `GET /api/contents`：未ログインでも一覧を閲覧可（カード型 UI で「ログインして購入」ボタンが出せる）
+- **`GET /api/courses`**：**ログイン必須**。コース一覧ページ `/e-learning/courses` は Udemy 同様の方針（gate1-confirmed-decisions §2 案A確定）で未ログインなら 401 → `/auth/login?returnTo=/e-learning/courses` へリダイレクト
+- `GET /api/contents`：未ログインでも一覧を閲覧可（カード型 UI で「ログインして購入」ボタンが出せる）
 
 ### 購入・ブックマーク
 

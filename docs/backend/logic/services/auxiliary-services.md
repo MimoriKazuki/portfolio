@@ -24,6 +24,7 @@
 | `syncFromAuth(authUser)` | OAuth コールバック時に呼ぶ。冪等な upsert |
 | `getMe(authUser)` | GET /api/auth/user の本体 |
 | `recordLastAccess(userId)` | ダッシュボード集計用に `last_accessed_at` を更新（任意・呼ぶ箇所は middleware か明示的なAPI） |
+| `withdraw(userId)` | 退会処理：`deleted_at` セット ＋ 個人情報マスキング（FE 退会フローから呼ばれる） |
 
 ### `syncFromAuth(authUser)`
 
@@ -33,10 +34,29 @@
 4. `deleted_at` がセット済（退会済）の場合：再活性化として `deleted_at = null` に戻し、has_full_access は維持（L1 確定：再登録で履歴引継）
 5. 戻り値：EUser
 
+### `withdraw(userId)`
+
+1. `UserRepository.findById(userId)` で対象を取得（無ければ NOT_FOUND）
+2. 既に `deleted_at IS NOT NULL` ならそのまま成功扱い（冪等）
+3. 単一 UPDATE で以下をセット：
+   - `deleted_at = now()`
+   - `display_name = NULL`（L1 マスキング方針）
+   - `avatar_url = NULL`（L1 マスキング方針）
+   - `is_active = false`
+4. `email` は **マスキングしない**（L1 確定：同一メール再登録時の履歴引継のため保持）
+5. 戻り値：`Promise<{ ok: true }>`
+
+備考：
+- Supabase Auth の `signOut()` は本サービス内では呼ばない（責務分離）。FE の退会フロー Controller 層で `withdraw(userId)` 成功後に `supabase.auth.signOut()` を実行し、Cookie をクリアする
+- `e_learning_purchases` / `e_learning_progress` / `e_learning_bookmarks` 等のデータは保持（個人特定性が低い・購入履歴は税務観点でも保持必須）
+- `auth.users` 本体の削除は Phase 1 では行わない（Supabase 側に保持・再登録時に同一 `auth.users.id` が再利用される運用）
+
 ### NG
 
 - `has_full_access` を syncFromAuth で変更しない（管理画面手動切替のみ）
 - ロール判定（管理者かどうか）を user-service で行わない（auth.users 存在チェックは middleware / controllers）
+- `withdraw` 内で `email` をマスキングしない（L1 確定：再登録時の履歴引継のため email 保持必須）
+- `withdraw` 内で Supabase Auth の signOut を呼ばない（Controller 層の責務）
 
 ---
 
