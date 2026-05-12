@@ -179,12 +179,60 @@ Eラーニング機能の大幅刷新：
 - [x] **LP 必須セクション** → 全8セクション採用（ヒーロー／バリュー訴求／コース一覧／単体動画一覧／受講生の声／実績数値／FAQ／お問い合わせ）（N9）
 - [x] **LP メイン CTA** → 「コースを見る」（N9・候補A）
 
-**Gate 3 までに確定（次点質問・未確定）：**
-- 退会時データ保持ポリシー
+**Gate 2 完了時に確定（2026-05-12）：**
+- [x] **コースとカテゴリの関係** → 必須（コースは必ず1つのカテゴリに所属）（M2・案A）
+- [x] **コース内動画のブックマーク対応** → コースと単体動画にブックマーク可、コース内動画は不可（M4）
+- [x] **既存 `has_paid_access` カラムの扱い** → 廃止し `has_full_access` に統合（M5・案A）
+
+**Gate 3 着手前に確定（2026-05-12）：**
+
+- [x] **M1：PDF資料の所有先**
+  - 単体動画もコースも**複数資料を持てる**（単体動画の「1動画1資料」制限を撤廃）
+  - 複数資料がある場合は **zip 一括ダウンロード**（Teams 同様の動作）
+  - **コース内動画個別**には資料を紐付けない（コース単位で資料エリア）
+  - テーブル設計：`e_learning_materials` を拡張し `content_id`（単体動画 FK）と `course_id`（コース FK）の排他的 N:1（片方のみ NOT NULL の CHECK 制約）
+
+- [x] **M3：既存購入レコード6件の扱い**
+  - **物理削除しない**（税務観点・安全優先）
+  - 実装は M5 と統合した安全な順序で進める：
+    1. `has_full_access` カラム追加（DEFAULT false）
+    2. 既存6名（`has_paid_access=true`）に `has_full_access=true` を一括付与
+    3. アプリケーションコードを `has_full_access` 参照に切り替え
+    4. 動作検証
+    5. `has_paid_access` カラム削除
+
+**Gate 3 完了時に確定（2026-05-12）：**
+
+- [x] **L1：退会時データ保持ポリシー**
+  - 同一メールで再登録時 → **過去購入履歴・進捗を引き継ぐ**（メール一致で同一人物扱い）
+  - email カラムはマスキングせず保持（再登録マッチングのため）
+  - display_name / avatar_url のマスキング詳細は Gate 4 で db-plan-mate が提案
+
+- [x] **L2：`purchases.status` の取り得る値**
+  - **`completed` / `refunded` の2区分**（案C）
+  - Stripe Webhook で受信するのは `checkout.session.completed`（→ completed）と `charge.refunded`（→ refunded）のみ
+  - 将来サブスク等を導入する際に追加
+
+- [x] **L3：既存購入6件の CHECK 制約閾値日時**
+  - **既存6件を `e_learning_legacy_purchases` 別テーブルに退避**（案C）
+  - 本テーブル `e_learning_purchases` は新ルール（course_id / content_id 排他）の厳格 CHECK 制約適用
+  - 退避用テーブルは「特殊な歴史的レコード」として保持・FK は緩く
+
+- [x] **L4：`e_learning_categories` の論理削除追加**
+  - **`deleted_at TIMESTAMPTZ` を追加**（案B・共通方針に合わせる）
+  - 既存 `is_active` も維持
+  - 運用：「使ってないカテゴリは `is_active=false`」「廃止確定なら `deleted_at` 設定」で使い分け
+
+- [x] **L5：コース内動画への `view_count`**
+  - **追加する**（案A）
+  - 管理者画面でコース内動画の人気度を集計
+
+**Gate 4 までに確定（未確定）：**
 - 動画プレーヤー（既存実装の継続可否）
 - 返金ポリシー
 - 法的表記の提示タイミング
 - メール通知シナリオ
+- 退会時のマスキング対象カラム詳細（display_name / avatar_url の扱い）
 
 ### 後回し（Gate 3-4 で）
 
