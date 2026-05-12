@@ -6,7 +6,7 @@
 
 | カテゴリ | ファイル | 略称 | 📋未着手 | 🔧対応中 | ✅完了 | ⏸保留 | ➖対応不要 |
 |---------|---------|------|---------|---------|-------|-------|----------|
-| 共通・全体 | [system-wide.md](system-wide.md) | SYS | 0 | 0 | 0 | 0 | 0 |
+| 共通・全体 | [system-wide.md](system-wide.md) | SYS | 0 | 1 | 0 | 0 | 0 |
 | 認証関連（A001-A002） | [auth.md](auth.md) | AUTH | 0 | 0 | 0 | 0 | 0 |
 | Eラーニング 公開／会員（B001-B011） | [elearning-public.md](elearning-public.md) | ELN | 0 | 0 | 0 | 0 | 0 |
 | Eラーニング 管理（C001-C011） | [elearning-admin.md](elearning-admin.md) | ADM | 0 | 0 | 0 | 0 | 0 |
