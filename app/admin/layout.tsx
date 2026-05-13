@@ -8,16 +8,12 @@ export default async function AdminLayout({
   children: React.ReactNode
 }) {
   const supabase = await createClient()
-  
+
   const {
     data: { user },
-    error
   } = await supabase.auth.getUser()
 
-  console.log('Admin layout auth check:', { user: user?.email, error })
-
   if (!user) {
-    console.log('No user found, redirecting to /auth/login')
     redirect('/auth/login?returnTo=' + encodeURIComponent('/admin'))
   }
 
