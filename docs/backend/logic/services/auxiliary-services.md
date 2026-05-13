@@ -60,8 +60,10 @@
 
 ### NG
 
-- `has_full_access` を syncFromAuth で変更しない（管理画面手動切替のみ）
-- ロール判定（管理者かどうか）を user-service で行わない（auth.users 存在チェックは middleware / controllers）
+- `has_full_access` を syncFromAuth で**勝手に下げない**（一度 true になったユーザーを syncFromAuth で false に戻す変更は禁止・退会／管理画面手動切替のみが減算経路）
+  - ただし「企業ユーザー昇格パス」（active な `e_learning_corporate_users` 配下のメールでログイン）の場合のみ、**syncFromAuth 内で has_full_access を true へ昇格する**ことを許容する。これは既存 OAuth callback 挙動を継承し、`flow.md §A`（デフォルト false）/ §G（再活性化時の履歴引継）と整合する例外。
+  - 2026-05-13 修正：当初「syncFromAuth では一切変更しない」と記載していたが、企業昇格パスの業務要件と矛盾するため明確化。実装は `app/lib/services/user-service.ts` の `syncFromAuth` を正とする
+- ロール判定（管理者かどうか）を user-service で行わない（管理者判定は `app/lib/auth/admin-guard.ts` の `isAdminEmail` / `requireAdmin` に集約）
 - `withdraw` 内で `email` をマスキングしない（L1 確定：再登録時の履歴引継のため email 保持必須）
 - `withdraw` 内で Supabase Auth の signOut を呼ばない（Controller 層の責務）
 
