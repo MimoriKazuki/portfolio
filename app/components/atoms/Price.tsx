@@ -49,7 +49,12 @@ const formatter = new Intl.NumberFormat('ja-JP', {
 export interface PriceProps
   extends Omit<React.HTMLAttributes<HTMLSpanElement>, 'children'>,
     VariantProps<typeof priceVariants> {
-  /** 価格（円）。free variant の場合は無視。 */
+  /**
+   * 価格（円・正値想定）。free variant の場合は無視される。
+   * 呼び出し側の規約：
+   * - 無料コンテンツには amount=0 ではなく `variant="free"` を渡す
+   * - 負値は渡さない（Intl は `-￥1` 形式で整形してしまうため）
+   */
   amount?: number
   /** 取消線用の旧価格。指定時は新価格 amount と並んで表示。 */
   originalAmount?: number
