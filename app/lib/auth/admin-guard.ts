@@ -3,6 +3,9 @@ import { createClient } from '@/app/lib/supabase/server'
 /**
  * 管理者判定：環境変数 ADMIN_EMAIL（カンマ区切り）に email が含まれるかを照合する。
  * Phase 1 の「auth.users 存在＝管理者」前提は本番で実害発生のため A 案（ADMIN_EMAIL ホワイトリスト）で置き換え。
+ *
+ * email 比較は case-insensitive（OAuth プロバイダーが返す email の case が ADMIN_EMAIL と
+ * 1 文字でも異なると管理者ロックアウトを引き起こすため・security 再チェック [重要] 対応）。
  */
 export function isAdminEmail(email: string | null | undefined): boolean {
   if (!email) return false
@@ -10,7 +13,8 @@ export function isAdminEmail(email: string | null | undefined): boolean {
     .split(',')
     .map((e) => e.trim())
     .filter(Boolean)
-  return adminEmails.includes(email)
+  const normalizedEmail = email.toLowerCase()
+  return adminEmails.some((e) => e.toLowerCase() === normalizedEmail)
 }
 
 export type AdminGuardOk = {

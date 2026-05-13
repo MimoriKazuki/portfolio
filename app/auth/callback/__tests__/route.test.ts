@@ -74,7 +74,13 @@ describe('/auth/callback GET', () => {
   })
 
   describe('外部 redirect_to は /e-learning にフォールバック', () => {
-    const externalTargets = ['//evil.com', 'http://evil.com/path', 'javascript:alert(1)']
+    const externalTargets = [
+      '//evil.com',
+      'http://evil.com/path',
+      'javascript:alert(1)',
+      // バックスラッシュ始まり（security 再チェック [注意] 対応）
+      '/\\evil.com',
+    ]
 
     it.each(externalTargets)('redirect_to=%s → /e-learning フォールバック', async (target) => {
       mockExchangeSuccess(null)

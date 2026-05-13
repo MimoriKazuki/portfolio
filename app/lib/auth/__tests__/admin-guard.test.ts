@@ -62,6 +62,17 @@ describe('isAdminEmail', () => {
     expect(isAdminEmail('a@x.com')).toBe(true)
     expect(isAdminEmail('b@x.com')).toBe(true)
   })
+
+  // case-insensitive 比較（security 再チェック [重要] 対応）
+  it('ADMIN_EMAIL が MixedCase でユーザー email が lowercase → 一致（true）', () => {
+    process.env.ADMIN_EMAIL = 'Sales@LandBridge.co.jp'
+    expect(isAdminEmail('sales@landbridge.co.jp')).toBe(true)
+  })
+
+  it('ADMIN_EMAIL が lowercase でユーザー email が UPPERCASE → 一致（true）', () => {
+    process.env.ADMIN_EMAIL = 'sales@landbridge.co.jp'
+    expect(isAdminEmail('SALES@LANDBRIDGE.CO.JP')).toBe(true)
+  })
 })
 
 // ----------------------------------------------------------------

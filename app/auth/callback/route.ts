@@ -31,10 +31,11 @@ export async function GET(request: NextRequest) {
   const code = requestUrl.searchParams.get('code')
   const origin = requestUrl.origin
 
-  // Open Redirect 対策：先頭が `/` で始まり、`//` で始まらない内部パスのみ許容。
-  // 外部 URL（http://evil.com）や protocol-relative（//evil.com）は弾いて既定値に戻す。
+  // Open Redirect 対策：先頭が `/` で始まり、`//` `/\` で始まらない内部パスのみ許容。
+  // - 外部 URL（http://evil.com）・protocol-relative（//evil.com）を弾く
+  // - バックスラッシュ始まり（/\evil.com）はブラウザによって `/` 扱いされる挙動を弾く（security 再チェック [注意]）
   const rawRedirectTo = requestUrl.searchParams.get('redirect_to') || '/e-learning'
-  const redirectTo = /^\/(?!\/)/.test(rawRedirectTo) ? rawRedirectTo : '/e-learning'
+  const redirectTo = /^\/(?![\/\\])/.test(rawRedirectTo) ? rawRedirectTo : '/e-learning'
 
   // リダイレクト先URLを先に準備
   const redirectUrl = `${origin}${redirectTo}`
