@@ -55,6 +55,7 @@ const ProgressCheckIcon = React.forwardRef<SVGSVGElement, ProgressCheckIconProps
     return (
       <Component
         ref={ref}
+        role="img"
         aria-label={ariaLabel ?? defaultLabel}
         className={cn(progressCheckIconVariants({ variant, size }), className)}
         {...props}

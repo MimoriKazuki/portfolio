@@ -42,6 +42,7 @@ const LockIcon = React.forwardRef<SVGSVGElement, LockIconProps>(
     return (
       <Lock
         ref={ref}
+        role="img"
         aria-label={ariaLabel}
         className={cn(lockIconVariants({ size }), className)}
         {...props}
