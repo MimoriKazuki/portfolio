@@ -69,7 +69,7 @@ export default async function AdminCustomersPage() {
       display_name: eLearningUser?.display_name || authUser.user_metadata?.full_name || null,
       avatar_url: eLearningUser?.avatar_url || authUser.user_metadata?.avatar_url || null,
       is_active: eLearningUser?.is_active ?? true,
-      has_paid_access: eLearningUser?.has_paid_access ?? false,
+      has_full_access: eLearningUser?.has_full_access ?? false,
       created_at: authUser.created_at,
       updated_at: eLearningUser?.updated_at || authUser.updated_at || authUser.created_at,
       last_accessed_at: eLearningUser?.last_accessed_at || null,

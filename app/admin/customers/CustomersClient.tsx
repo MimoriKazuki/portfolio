@@ -33,7 +33,7 @@ interface Customer {
   display_name: string | null
   avatar_url: string | null
   is_active: boolean
-  has_paid_access: boolean
+  has_full_access: boolean
   created_at: string
   updated_at: string
   last_accessed_at: string | null
@@ -114,8 +114,8 @@ export default function CustomersClient({ customers: initialCustomers, corporate
 
       const matchesStatus =
         statusFilter === 'all' ||
-        (statusFilter === 'paid' && customer.has_paid_access) ||
-        (statusFilter === 'free' && !customer.has_paid_access)
+        (statusFilter === 'paid' && customer.has_full_access) ||
+        (statusFilter === 'free' && !customer.has_full_access)
 
       return matchesSearch && matchesStatus
     })
@@ -141,7 +141,7 @@ export default function CustomersClient({ customers: initialCustomers, corporate
   const stats = useMemo(() => {
     const realCustomers = customers.filter((c) => !TEST_ACCOUNTS.includes(c.email))
     const total = realCustomers.length
-    const paid = realCustomers.filter((c) => c.has_paid_access).length
+    const paid = realCustomers.filter((c) => c.has_full_access).length
     const free = total - paid
     const corporate = corporateCustomers.filter((c) => c.contract_status === 'active').length
     const totalRevenue = realCustomers.reduce((sum, c) => {
@@ -232,13 +232,13 @@ export default function CustomersClient({ customers: initialCustomers, corporate
       const res = await fetch(`/api/admin/customers/${customer.id}/status`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ has_paid_access: !customer.has_paid_access }),
+        body: JSON.stringify({ has_full_access: !customer.has_full_access }),
       })
 
       if (res.ok) {
         setCustomers((prev) =>
           prev.map((c) =>
-            c.id === customer.id ? { ...c, has_paid_access: !c.has_paid_access } : c
+            c.id === customer.id ? { ...c, has_full_access: !c.has_full_access } : c
           )
         )
       }
@@ -410,7 +410,7 @@ export default function CustomersClient({ customers: initialCustomers, corporate
       return [
         customer.email,
         customer.display_name || '',
-        customer.has_paid_access ? '有料' : '無料',
+        customer.has_full_access ? '有料' : '無料',
         format(new Date(customer.created_at), 'yyyy/MM/dd HH:mm', { locale: ja }),
         customer.last_accessed_at
           ? format(new Date(customer.last_accessed_at), 'yyyy/MM/dd HH:mm', { locale: ja })
@@ -771,12 +771,12 @@ export default function CustomersClient({ customers: initialCustomers, corporate
                             onClick={() => openStatusConfirmModal(customer)}
                             disabled={updatingStatus === customer.id}
                             className={`inline-flex px-3 py-1 rounded-full text-xs font-medium transition-colors cursor-pointer ${
-                              customer.has_paid_access
+                              customer.has_full_access
                                 ? 'bg-green-100 text-green-700 hover:bg-green-200'
                                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                             } ${updatingStatus === customer.id ? 'opacity-50' : ''}`}
                           >
-                            {updatingStatus === customer.id ? '...' : customer.has_paid_access ? '有料' : '無料'}
+                            {updatingStatus === customer.id ? '...' : customer.has_full_access ? '有料' : '無料'}
                           </button>
                         </td>
                         <td className="w-[160px] px-6 py-4 text-center text-sm text-gray-600">
@@ -1132,31 +1132,31 @@ export default function CustomersClient({ customers: initialCustomers, corporate
                 <div className="mt-3 flex items-center gap-2">
                   <span
                     className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${
-                      statusConfirmModal.has_paid_access
+                      statusConfirmModal.has_full_access
                         ? 'bg-green-100 text-green-700'
                         : 'bg-gray-100 text-gray-700'
                     }`}
                   >
-                    {statusConfirmModal.has_paid_access ? '有料' : '無料'}
+                    {statusConfirmModal.has_full_access ? '有料' : '無料'}
                   </span>
                   <span className="text-gray-400">→</span>
                   <span
                     className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${
-                      !statusConfirmModal.has_paid_access
+                      !statusConfirmModal.has_full_access
                         ? 'bg-green-100 text-green-700'
                         : 'bg-gray-100 text-gray-700'
                     }`}
                   >
-                    {!statusConfirmModal.has_paid_access ? '有料' : '無料'}
+                    {!statusConfirmModal.has_full_access ? '有料' : '無料'}
                   </span>
                 </div>
               </div>
-              {!statusConfirmModal.has_paid_access && (
+              {!statusConfirmModal.has_full_access && (
                 <p className="mt-4 text-sm text-blue-600">
                   有料に変更すると、eラーニングの有料コンテンツにアクセスできるようになります。
                 </p>
               )}
-              {statusConfirmModal.has_paid_access && (
+              {statusConfirmModal.has_full_access && (
                 <p className="mt-4 text-sm text-orange-600">
                   無料に変更すると、eラーニングの有料コンテンツへのアクセスが制限されます。
                 </p>
@@ -1172,12 +1172,12 @@ export default function CustomersClient({ customers: initialCustomers, corporate
               <button
                 onClick={handleConfirmStatusChange}
                 className={`px-4 py-2 text-white rounded-lg transition-colors ${
-                  !statusConfirmModal.has_paid_access
+                  !statusConfirmModal.has_full_access
                     ? 'bg-green-600 hover:bg-green-700'
                     : 'bg-orange-600 hover:bg-orange-700'
                 }`}
               >
-                {!statusConfirmModal.has_paid_access ? '有料に変更' : '無料に変更'}
+                {!statusConfirmModal.has_full_access ? '有料に変更' : '無料に変更'}
               </button>
             </div>
           </div>
