@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { requireAdmin } from '@/app/lib/auth/require-admin'
+import { requireAdmin, isAdminGuardErr } from '@/app/lib/auth/admin-guard'
 
 // Admin用クライアント
 const supabaseAdmin = createClient(
@@ -13,8 +13,10 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const unauthorized = await requireAdmin()
-  if (unauthorized) return unauthorized
+  const guard = await requireAdmin()
+  if (isAdminGuardErr(guard)) {
+    return NextResponse.json({ error: guard.error }, { status: guard.status })
+  }
 
   try {
     const { id } = await params
@@ -26,7 +28,7 @@ export async function GET(
       .order('created_at', { ascending: true })
 
     if (error) {
-      console.error('Failed to fetch corporate users:', error)
+      console.error('Failed to fetch corporate users:', error.message)
       return NextResponse.json(
         { error: 'Failed to fetch corporate users' },
         { status: 500 }
@@ -35,7 +37,7 @@ export async function GET(
 
     return NextResponse.json(data)
   } catch (error) {
-    console.error('Error fetching corporate users:', error)
+    console.error('Error fetching corporate users:', error instanceof Error ? error.message : String(error))
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -48,8 +50,10 @@ export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const unauthorized = await requireAdmin()
-  if (unauthorized) return unauthorized
+  const guard = await requireAdmin()
+  if (isAdminGuardErr(guard)) {
+    return NextResponse.json({ error: guard.error }, { status: guard.status })
+  }
 
   try {
     const { id } = await params
@@ -88,7 +92,7 @@ export async function POST(
           { status: 409 }
         )
       }
-      console.error('Failed to add corporate user:', error)
+      console.error('Failed to add corporate user:', error.message)
       return NextResponse.json(
         { error: 'Failed to add corporate user' },
         { status: 500 }
@@ -103,7 +107,7 @@ export async function POST(
 
     return NextResponse.json(data, { status: 201 })
   } catch (error) {
-    console.error('Error adding corporate user:', error)
+    console.error('Error adding corporate user:', error instanceof Error ? error.message : String(error))
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -116,8 +120,10 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const unauthorized = await requireAdmin()
-  if (unauthorized) return unauthorized
+  const guard = await requireAdmin()
+  if (isAdminGuardErr(guard)) {
+    return NextResponse.json({ error: guard.error }, { status: guard.status })
+  }
 
   try {
     const { id } = await params
@@ -138,7 +144,7 @@ export async function DELETE(
       .eq('email', email.toLowerCase().trim())
 
     if (error) {
-      console.error('Failed to delete corporate user:', error)
+      console.error('Failed to delete corporate user:', error.message)
       return NextResponse.json(
         { error: 'Failed to delete corporate user' },
         { status: 500 }
@@ -170,7 +176,7 @@ export async function DELETE(
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Error deleting corporate user:', error)
+    console.error('Error deleting corporate user:', error instanceof Error ? error.message : String(error))
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

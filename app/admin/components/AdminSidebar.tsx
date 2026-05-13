@@ -6,14 +6,9 @@ import { usePathname, useRouter } from 'next/navigation'
 import { Home, FolderOpen, FileText, Download, Users, Mail, LogOut, Bell, BarChart2, Youtube, PlayCircle } from 'lucide-react'
 import { cn } from '@/app/lib/utils'
 import { createClient } from '@/app/lib/supabase/client'
-import type { User as SupabaseUser } from '@supabase/supabase-js'
 import Image from 'next/image'
 
-interface AdminSidebarProps {
-  user: SupabaseUser
-}
-
-const AdminSidebar = memo(function AdminSidebar({ user }: AdminSidebarProps) {
+const AdminSidebar = memo(function AdminSidebar() {
   const pathname = usePathname()
   const router = useRouter()
   const supabase = createClient()

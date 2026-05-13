@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { requireAdmin } from '@/app/lib/auth/require-admin'
+import { requireAdmin, isAdminGuardErr } from '@/app/lib/auth/admin-guard'
 
 // Admin用クライアント
 const supabaseAdmin = createClient(
@@ -10,8 +10,10 @@ const supabaseAdmin = createClient(
 
 // 契約企業一覧を取得
 export async function GET() {
-  const unauthorized = await requireAdmin()
-  if (unauthorized) return unauthorized
+  const guard = await requireAdmin()
+  if (isAdminGuardErr(guard)) {
+    return NextResponse.json({ error: guard.error }, { status: guard.status })
+  }
 
   try {
     const { data, error } = await supabaseAdmin
@@ -20,7 +22,7 @@ export async function GET() {
       .order('created_at', { ascending: false })
 
     if (error) {
-      console.error('Failed to fetch corporate customers:', error)
+      console.error('Failed to fetch corporate customers:', error.message)
       return NextResponse.json(
         { error: 'Failed to fetch corporate customers' },
         { status: 500 }
@@ -29,7 +31,7 @@ export async function GET() {
 
     return NextResponse.json(data)
   } catch (error) {
-    console.error('Error fetching corporate customers:', error)
+    console.error('Error fetching corporate customers:', error instanceof Error ? error.message : String(error))
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -39,8 +41,10 @@ export async function GET() {
 
 // 契約企業を追加
 export async function POST(request: NextRequest) {
-  const unauthorized = await requireAdmin()
-  if (unauthorized) return unauthorized
+  const guard = await requireAdmin()
+  if (isAdminGuardErr(guard)) {
+    return NextResponse.json({ error: guard.error }, { status: guard.status })
+  }
 
   try {
     const body = await request.json()
@@ -78,7 +82,7 @@ export async function POST(request: NextRequest) {
       .single()
 
     if (error) {
-      console.error('Failed to create corporate customer:', error)
+      console.error('Failed to create corporate customer:', error.message)
       return NextResponse.json(
         { error: 'Failed to create corporate customer' },
         { status: 500 }
@@ -87,7 +91,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(data, { status: 201 })
   } catch (error) {
-    console.error('Error creating corporate customer:', error)
+    console.error('Error creating corporate customer:', error instanceof Error ? error.message : String(error))
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

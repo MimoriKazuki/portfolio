@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import { requireAdmin } from '@/app/lib/auth/require-admin'
+import { requireAdmin, isAdminGuardErr } from '@/app/lib/auth/admin-guard'
 
 // Admin用クライアント
 const supabaseAdmin = createClient(
@@ -13,8 +13,10 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const unauthorized = await requireAdmin()
-  if (unauthorized) return unauthorized
+  const guard = await requireAdmin()
+  if (isAdminGuardErr(guard)) {
+    return NextResponse.json({ error: guard.error }, { status: guard.status })
+  }
 
   try {
     const { id } = await params
@@ -55,7 +57,7 @@ export async function PUT(
       .single()
 
     if (error) {
-      console.error('Failed to update corporate customer:', error)
+      console.error('Failed to update corporate customer:', error.message)
       return NextResponse.json(
         { error: 'Failed to update corporate customer' },
         { status: 500 }
@@ -64,7 +66,7 @@ export async function PUT(
 
     return NextResponse.json(data)
   } catch (error) {
-    console.error('Error updating corporate customer:', error)
+    console.error('Error updating corporate customer:', error instanceof Error ? error.message : String(error))
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }
@@ -77,8 +79,10 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const unauthorized = await requireAdmin()
-  if (unauthorized) return unauthorized
+  const guard = await requireAdmin()
+  if (isAdminGuardErr(guard)) {
+    return NextResponse.json({ error: guard.error }, { status: guard.status })
+  }
 
   try {
     const { id } = await params
@@ -89,7 +93,7 @@ export async function DELETE(
       .eq('id', id)
 
     if (error) {
-      console.error('Failed to delete corporate customer:', error)
+      console.error('Failed to delete corporate customer:', error.message)
       return NextResponse.json(
         { error: 'Failed to delete corporate customer' },
         { status: 500 }
@@ -98,7 +102,7 @@ export async function DELETE(
 
     return NextResponse.json({ success: true })
   } catch (error) {
-    console.error('Error deleting corporate customer:', error)
+    console.error('Error deleting corporate customer:', error instanceof Error ? error.message : String(error))
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

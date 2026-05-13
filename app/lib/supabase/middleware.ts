@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { isAdminEmail } from '@/app/lib/auth/admin-guard'
 
 // 認証必須ルートの判定。
 // 既存稼働パブリック画面（/, /projects, /columns, /documents 等）は false を返してガード対象外。
@@ -83,6 +84,24 @@ export async function updateSession(request: NextRequest) {
     url.search = ''
     url.searchParams.set('returnTo', pathname + request.nextUrl.search)
     return NextResponse.redirect(url)
+  }
+
+  // 認証済かつ /admin or /api/admin/* なら管理者判定（ADMIN_EMAIL ホワイトリスト）
+  // 非管理者：
+  //   - /admin → /e-learning へリダイレクト
+  //   - /api/admin/* → 403 JSON
+  if (user) {
+    const isAdminPage = pathname.startsWith('/admin')
+    const isAdminApi = pathname.startsWith('/api/admin/')
+    if ((isAdminPage || isAdminApi) && !isAdminEmail(user.email)) {
+      if (isAdminApi) {
+        return NextResponse.json({ error: 'forbidden' }, { status: 403 })
+      }
+      const url = request.nextUrl.clone()
+      url.pathname = '/e-learning'
+      url.search = ''
+      return NextResponse.redirect(url)
+    }
   }
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're
