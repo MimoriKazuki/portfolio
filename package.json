@@ -13,7 +13,11 @@
   "dependencies": {
     "@google-analytics/data": "^5.2.0",
     "@gsap/react": "^2.1.2",
+    "@radix-ui/react-checkbox": "^1.3.3",
+    "@radix-ui/react-label": "^2.1.8",
+    "@radix-ui/react-radio-group": "^1.3.8",
     "@radix-ui/react-slot": "^1.2.3",
+    "@radix-ui/react-switch": "^1.2.6",
     "@react-three/drei": "^9.122.0",
     "@react-three/fiber": "^8.18.0",
     "@supabase/ssr": "^0.6.1",
