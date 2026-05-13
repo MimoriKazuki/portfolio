@@ -27,7 +27,8 @@ import { cn } from '@/app/lib/utils'
  */
 
 const checkboxVariants = cva(
-  'peer shrink-0 rounded-sm border border-primary ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=indeterminate]:bg-primary data-[state=indeterminate]:text-primary-foreground',
+  // 子要素から data-state を参照できるよう `group` を付与（forceMount したインジケータの中で CSS 制御）
+  'group peer shrink-0 rounded-sm border border-primary ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=indeterminate]:bg-primary data-[state=indeterminate]:text-primary-foreground',
   {
     variants: {
       size: {
@@ -58,12 +59,23 @@ const Checkbox = React.forwardRef<
       className={cn(checkboxVariants({ size }), className)}
       {...props}
     >
-      <CheckboxPrimitive.Indicator className="flex items-center justify-center text-current">
-        {props.checked === 'indeterminate' ? (
-          <Minus className={iconSize} aria-hidden="true" />
-        ) : (
-          <Check className={iconSize} aria-hidden="true" />
-        )}
+      {/*
+       * 非コントロールド（defaultChecked）でも indeterminate 状態を正しく表示するため、
+       * Indicator を forceMount して両アイコンを常時 DOM に置き、Root の data-state を
+       * group 参照で CSS 制御する（review-mate 注意指摘対応）。
+       */}
+      <CheckboxPrimitive.Indicator
+        forceMount
+        className="flex items-center justify-center text-current"
+      >
+        <Check
+          className={cn(iconSize, 'hidden group-data-[state=checked]:block')}
+          aria-hidden="true"
+        />
+        <Minus
+          className={cn(iconSize, 'hidden group-data-[state=indeterminate]:block')}
+          aria-hidden="true"
+        />
       </CheckboxPrimitive.Indicator>
     </CheckboxPrimitive.Root>
   )
