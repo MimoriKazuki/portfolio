@@ -207,34 +207,39 @@ export async function syncFromAuth(authUser: AuthUserLike): Promise<SyncResult> 
  * 退会処理：e_learning_users を論理削除する。
  *
  * 動作（docs/backend/logic/services/auxiliary-services.md / withdraw）：
- * 1. 該当 user_id の e_learning_users を SELECT
+ * 1. 該当 auth_user_id の e_learning_users を SELECT
  * 2. 既に deleted_at IS NOT NULL ならそのまま成功扱い（冪等）
  * 3. 単一 UPDATE で以下をセット：
  *    - deleted_at = now()
  *    - display_name = NULL（L1 マスキング）
  *    - avatar_url = NULL（L1 マスキング）
  *    - is_active = false
+ *    - updated_at = now()（一貫性のため明示更新）
  * 4. email は保持（L1 確定：再登録時の履歴引継のため）
  * 5. has_full_access は touch しない（減算経路は管理画面手動切替のみ）
  *
  * Supabase Auth signOut は呼ばない（Controller 層の責務）。
  *
- * @param userId e_learning_users.id（auth_user_id ではない・サロゲートPK）
+ * 引数 auth_user_id を受け取る理由（review 指摘対応）：
+ *   route 側で e_learning_users を SELECT すると anon クライアントの RLS に依存する。
+ *   service-role を使う本サービス内で auth_user_id → 内部 id 解決を完結させて RLS 依存を除去する。
+ *
+ * @param authUserId auth.users.id（OAuth セッションから取得）
  */
-export async function withdraw(userId: string): Promise<{ ok: true }> {
+export async function withdraw(authUserId: string): Promise<{ ok: true }> {
   const supabaseAdmin = getServiceClient()
 
   // 1. 対象を取得（NOT_FOUND は throw・冪等性判定のため deleted_at も取得）
   const { data: existing, error: fetchError } = await supabaseAdmin
     .from('e_learning_users')
     .select('id, deleted_at')
-    .eq('id', userId)
+    .eq('auth_user_id', authUserId)
     .single()
 
   if (fetchError || !existing) {
     console.error('[user-service] withdraw fetch failed', {
       code: fetchError?.code,
-      user_id: userId,
+      auth_user_id: authUserId,
     })
     throw new Error('user_not_found')
   }
@@ -242,30 +247,32 @@ export async function withdraw(userId: string): Promise<{ ok: true }> {
   // 2. 既に退会済 → 冪等で成功扱い
   if (existing.deleted_at !== null) {
     console.info('[user-service] user already withdrawn (idempotent)', {
-      user_id: userId,
+      auth_user_id: authUserId,
     })
     return { ok: true }
   }
 
   // 3. 単一 UPDATE で論理削除 + L1 マスキング
+  const now = new Date().toISOString()
   const { error: updateError } = await supabaseAdmin
     .from('e_learning_users')
     .update({
-      deleted_at: new Date().toISOString(),
+      deleted_at: now,
       display_name: null,
       avatar_url: null,
       is_active: false,
+      updated_at: now,
     })
-    .eq('id', userId)
+    .eq('id', existing.id)
 
   if (updateError) {
     console.error('[user-service] withdraw failed', {
       code: updateError.code,
-      user_id: userId,
+      auth_user_id: authUserId,
     })
     throw new Error('withdraw_failed')
   }
 
-  console.info('[user-service] user withdrawn', { user_id: userId })
+  console.info('[user-service] user withdrawn', { auth_user_id: authUserId })
   return { ok: true }
 }
