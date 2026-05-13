@@ -5,18 +5,10 @@ vi.mock('@supabase/ssr', () => ({
   createServerClient: vi.fn(),
 }))
 
-vi.mock('@supabase/supabase-js', () => ({
-  createClient: vi.fn(() => ({
-    from: vi.fn(() => ({
-      select: vi.fn(() => ({
-        eq: vi.fn(() => ({
-          eq: vi.fn(() => ({
-            limit: vi.fn().mockResolvedValue({ data: [], error: null }),
-          })),
-        })),
-      })),
-    })),
-  })),
+// callback route は user-service の内部実装を意識しない（責務分離）。
+// syncFromAuth の動作は user-service.test.ts で網羅する。
+vi.mock('@/app/lib/services/user-service', () => ({
+  syncFromAuth: vi.fn().mockResolvedValue({ id: 'eu-mock', has_full_access: false }),
 }))
 
 import { createServerClient } from '@supabase/ssr'
@@ -35,18 +27,8 @@ function mockExchangeSuccess(user: object | null = null) {
     data: { user },
     error: null,
   })
-  const from = vi.fn(() => ({
-    select: vi.fn(() => ({
-      eq: vi.fn(() => ({
-        single: vi.fn().mockResolvedValue({ data: null, error: { code: 'PGRST116' } }),
-      })),
-    })),
-    insert: vi.fn().mockResolvedValue({ error: null }),
-    update: vi.fn(() => ({ eq: vi.fn().mockResolvedValue({ error: null }) })),
-  }))
   ;(createServerClient as ReturnType<typeof vi.fn>).mockReturnValue({
     auth: { exchangeCodeForSession },
-    from,
   })
   return { exchangeCodeForSession }
 }
