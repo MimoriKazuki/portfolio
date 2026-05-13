@@ -16,8 +16,9 @@ const requiresAuth = (pathname: string): boolean => {
   if (pathname === '/e-learning') return false
   if (pathname.startsWith('/e-learning/')) return true
 
-  // 管理画面
+  // 管理画面 + 管理 API（多層防御は各 route.ts 側でも requireAdmin で検証）
   if (pathname.startsWith('/admin')) return true
+  if (pathname.startsWith('/api/admin/')) return true
 
   // 視聴・進捗・購入・退会
   if (pathname.startsWith('/play')) return true

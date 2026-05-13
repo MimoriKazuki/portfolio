@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
+import { requireAdmin } from '@/app/lib/auth/require-admin'
 
 // Admin用クライアント
 const supabaseAdmin = createClient(
@@ -9,6 +10,9 @@ const supabaseAdmin = createClient(
 
 // 契約企業一覧を取得
 export async function GET() {
+  const unauthorized = await requireAdmin()
+  if (unauthorized) return unauthorized
+
   try {
     const { data, error } = await supabaseAdmin
       .from('e_learning_corporate_customers')
@@ -35,6 +39,9 @@ export async function GET() {
 
 // 契約企業を追加
 export async function POST(request: NextRequest) {
+  const unauthorized = await requireAdmin()
+  if (unauthorized) return unauthorized
+
   try {
     const body = await request.json()
     const {

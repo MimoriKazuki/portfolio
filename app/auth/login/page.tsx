@@ -8,7 +8,15 @@ export const metadata: Metadata = {
   description: 'eラーニングコンテンツを視聴するにはGoogleアカウントでログインしてください。',
 }
 
-export default function AuthLoginPage() {
+export default async function AuthLoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ returnTo?: string }>
+}) {
+  const { returnTo } = await searchParams
+  // returnTo は middleware から「内部パスのみ」で渡される設計（外部誘導は弾く）
+  const safeReturnTo = returnTo && /^\/(?!\/)/.test(returnTo) ? returnTo : undefined
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
@@ -35,7 +43,7 @@ export default function AuthLoginPage() {
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow-lg sm:rounded-lg sm:px-10">
           <div className="space-y-6">
-            <GoogleLoginButton />
+            <GoogleLoginButton returnTo={safeReturnTo} />
 
             <div className="relative">
               <div className="absolute inset-0 flex items-center">

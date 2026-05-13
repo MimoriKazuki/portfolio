@@ -4,7 +4,11 @@ import { useState } from 'react'
 import { createClient } from '@/app/lib/supabase/client'
 import { Loader2 } from 'lucide-react'
 
-export default function GoogleLoginButton() {
+type Props = {
+  returnTo?: string
+}
+
+export default function GoogleLoginButton({ returnTo }: Props) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -15,10 +19,18 @@ export default function GoogleLoginButton() {
     try {
       const supabase = createClient()
 
+      // returnTo を OAuth コールバックの redirect_to に引き継ぐ。
+      // 値は middleware が returnTo として既に「内部パスのみ」で渡してくる前提だが、
+      // /auth/callback 側でも改めて Open Redirect 対策のバリデーションを行う。
+      const callbackUrl = new URL('/auth/callback', window.location.origin)
+      if (returnTo) {
+        callbackUrl.searchParams.set('redirect_to', returnTo)
+      }
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: `${window.location.origin}/auth/callback`,
+          redirectTo: callbackUrl.toString(),
           queryParams: {
             access_type: 'offline',
             prompt: 'consent',
@@ -27,12 +39,12 @@ export default function GoogleLoginButton() {
       })
 
       if (error) {
-        console.error('Google login error:', error)
+        console.error('Google login error:', error.message)
         setError('ログインに失敗しました。もう一度お試しください。')
         setLoading(false)
       }
     } catch (err) {
-      console.error('Unexpected error:', err)
+      console.error('Unexpected error during Google login')
       setError('予期しないエラーが発生しました')
       setLoading(false)
     }
