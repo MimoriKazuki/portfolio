@@ -32,21 +32,21 @@ beforeEach(() => {
 })
 
 describe('POST /api/me/withdraw', () => {
-  it('未ログイン（getUser が null）→ 401 { error: "unauthorized" }', async () => {
+  it('未ログイン（getUser が null）→ 401 { error: { code: "UNAUTHORIZED" } }', async () => {
     mockSupabaseClient({ user: null })
 
     const res = await POST()
     expect(res.status).toBe(401)
-    expect(await res.json()).toEqual({ error: 'unauthorized' })
+    expect(await res.json()).toEqual({ error: { code: 'UNAUTHORIZED' } })
   })
 
-  it('e_learning_users 不存在（withdraw が user_not_found throw）→ 404 { error: "not_found" }', async () => {
+  it('e_learning_users 不存在（withdraw が user_not_found throw）→ 404 { error: { code: "NOT_FOUND" } }', async () => {
     mockSupabaseClient({ user: { id: 'auth-001' } })
     ;(withdraw as ReturnType<typeof vi.fn>).mockRejectedValue(new Error('user_not_found'))
 
     const res = await POST()
     expect(res.status).toBe(404)
-    expect(await res.json()).toEqual({ error: 'not_found' })
+    expect(await res.json()).toEqual({ error: { code: 'NOT_FOUND' } })
   })
 
   it('通常退会成功 → 200 { ok: true } + signOut 呼ばれる', async () => {
@@ -60,13 +60,13 @@ describe('POST /api/me/withdraw', () => {
     expect(signOut).toHaveBeenCalledOnce()
   })
 
-  it('withdraw が throw（withdraw_failed）→ 500 { error: "internal_error" } + signOut 呼ばれない', async () => {
+  it('withdraw が throw（withdraw_failed）→ 500 { error: { code: "INTERNAL_ERROR" } } + signOut 呼ばれない', async () => {
     const { signOut } = mockSupabaseClient({ user: { id: 'auth-001' } })
     ;(withdraw as ReturnType<typeof vi.fn>).mockRejectedValue(new Error('withdraw_failed'))
 
     const res = await POST()
     expect(res.status).toBe(500)
-    expect(await res.json()).toEqual({ error: 'internal_error' })
+    expect(await res.json()).toEqual({ error: { code: 'INTERNAL_ERROR' } })
     expect(signOut).not.toHaveBeenCalled()
   })
 })

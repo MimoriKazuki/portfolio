@@ -73,6 +73,7 @@ E ラーニング機能（Phase 1）で API が返す統一エラーレスポン
 | `GET /api/me/access` `/me/purchases` `/me/bookmarks` | UNAUTHORIZED |
 | `POST /api/me/bookmarks` | VALIDATION_ERROR、UNAUTHORIZED、NOT_FOUND、ALREADY_EXISTS |
 | `DELETE /api/me/bookmarks/:id` | UNAUTHORIZED、NOT_FOUND |
+| `POST /api/me/withdraw` | UNAUTHORIZED、NOT_FOUND（user_not_found）、INTERNAL_ERROR |
 | `/api/admin/**` | UNAUTHORIZED、FORBIDDEN、VALIDATION_ERROR、NOT_FOUND、CONFLICT、DUPLICATE_SLUG、DUPLICATE_DISPLAY_ORDER、DUPLICATE_STRIPE_PRICE_ID、IN_USE |
 
 ## ルール・ビジネスロジック
