@@ -6,7 +6,7 @@ vi.mock('@supabase/supabase-js', () => ({
 }))
 
 import { createClient } from '@supabase/supabase-js'
-import { isCorporateUserEmail, syncFromAuth } from '../user-service'
+import { isCorporateUserEmail, syncFromAuth, withdraw } from '../user-service'
 
 // ----------------------------------------------------------------
 // Supabase チェーンスタブ ビルダー
@@ -51,12 +51,21 @@ function makeRefetchChain(result: { data: unknown; error: unknown }) {
   return makeFetchChain(result)
 }
 
+// withdraw UPDATE チェーン：.from().update().eq() → { error }（select なし）
+function makeWithdrawUpdateChain(error: unknown) {
+  const eq = vi.fn().mockResolvedValue({ error })
+  const update = vi.fn(() => ({ eq }))
+  return { update }
+}
+
 type TableMock = {
   select?:
     | ReturnType<typeof makeFetchChain>['select']
     | ReturnType<typeof makeCorporateChain>['select']
   insert?: ReturnType<typeof makeInsertChain>['insert']
-  update?: ReturnType<typeof makeUpdateChain>['update']
+  update?:
+    | ReturnType<typeof makeUpdateChain>['update']
+    | ReturnType<typeof makeWithdrawUpdateChain>['update']
 }
 
 /**
@@ -240,5 +249,96 @@ describe('syncFromAuth', () => {
 
     const result = await syncFromAuth(baseUser)
     expect(result).toEqual({ id: 'eu-7', has_full_access: false })
+  })
+})
+
+// ----------------------------------------------------------------
+// withdraw
+// ----------------------------------------------------------------
+describe('withdraw', () => {
+  it('通常退会：deleted_at=null → UPDATE 成功 → { ok: true }', async () => {
+    const { from } = mockServiceClient({
+      e_learning_users: [
+        // 1. fetch
+        makeFetchChain({ data: { id: 'eu-10', deleted_at: null }, error: null }),
+        // 2. update
+        makeWithdrawUpdateChain(null),
+      ],
+    })
+
+    const result = await withdraw('eu-10')
+    expect(result).toEqual({ ok: true })
+
+    // UPDATE に has_full_access・email が含まれないことを検証
+    const updateCalls = (from.mock.results as { value: { update?: ReturnType<typeof vi.fn> } }[])
+      .map((r) => r.value?.update)
+      .filter(Boolean)
+    expect(updateCalls).toHaveLength(1)
+    const updateArg = updateCalls[0]!.mock.calls[0][0] as Record<string, unknown>
+    expect(updateArg).toHaveProperty('deleted_at')
+    expect(updateArg).toHaveProperty('display_name', null)
+    expect(updateArg).toHaveProperty('avatar_url', null)
+    expect(updateArg).toHaveProperty('is_active', false)
+    expect(updateArg).not.toHaveProperty('has_full_access')
+    expect(updateArg).not.toHaveProperty('email')
+  })
+
+  it('冪等性：deleted_at が既に non-null → UPDATE 呼ばれない → { ok: true }', async () => {
+    const { from } = mockServiceClient({
+      e_learning_users: makeFetchChain({
+        data: { id: 'eu-11', deleted_at: '2024-01-01T00:00:00Z' },
+        error: null,
+      }),
+    })
+
+    const result = await withdraw('eu-11')
+    expect(result).toEqual({ ok: true })
+
+    // UPDATE が呼ばれていないことを確認
+    const updateCalls = (from.mock.results as { value: { update?: ReturnType<typeof vi.fn> } }[])
+      .map((r) => r.value?.update)
+      .filter(Boolean)
+    expect(updateCalls).toHaveLength(0)
+  })
+
+  it('fetch 失敗（user not found）→ throw Error("user_not_found")', async () => {
+    mockServiceClient({
+      e_learning_users: makeFetchChain({
+        data: null,
+        error: { code: 'PGRST116', message: 'not found' },
+      }),
+    })
+
+    await expect(withdraw('eu-99')).rejects.toThrow('user_not_found')
+  })
+
+  it('update 失敗 → throw Error("withdraw_failed")', async () => {
+    mockServiceClient({
+      e_learning_users: [
+        makeFetchChain({ data: { id: 'eu-12', deleted_at: null }, error: null }),
+        makeWithdrawUpdateChain({ code: '500', message: 'db error' }),
+      ],
+    })
+
+    await expect(withdraw('eu-12')).rejects.toThrow('withdraw_failed')
+  })
+
+  it('成功時に console.info("[user-service] user withdrawn") が呼ばれる', async () => {
+    const infoSpy = vi.spyOn(console, 'info').mockImplementation(() => {})
+
+    mockServiceClient({
+      e_learning_users: [
+        makeFetchChain({ data: { id: 'eu-13', deleted_at: null }, error: null }),
+        makeWithdrawUpdateChain(null),
+      ],
+    })
+
+    await withdraw('eu-13')
+    expect(infoSpy).toHaveBeenCalledWith(
+      '[user-service] user withdrawn',
+      expect.objectContaining({ auth_user_id: 'eu-13' })
+    )
+
+    infoSpy.mockRestore()
   })
 })
