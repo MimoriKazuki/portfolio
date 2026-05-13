@@ -1,7 +1,19 @@
 import { createClient as createServerClient } from '@supabase/supabase-js'
+import { redirect } from 'next/navigation'
+import { requireAdmin, isAdminGuardErr } from '@/app/lib/auth/admin-guard'
 import CustomersClient from './CustomersClient'
 
 export default async function AdminCustomersPage() {
+  // 多層防御：admin/layout.tsx でガード済だが、Service Role キーを直接使う Server Component
+  // のため本ファイルでも改めて管理者確認する
+  const guard = await requireAdmin()
+  if (isAdminGuardErr(guard)) {
+    if (guard.status === 401) {
+      redirect('/auth/login?returnTo=' + encodeURIComponent('/admin/customers'))
+    }
+    redirect('/e-learning')
+  }
+
   // Admin用クライアント（auth.usersアクセス用、RLSバイパス）
   const supabaseAdmin = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
