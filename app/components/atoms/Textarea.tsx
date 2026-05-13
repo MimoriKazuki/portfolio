@@ -29,8 +29,11 @@ const textareaVariants = cva(
         both: 'resize',
       },
       size: {
+        // Tailwind 既定 spacing スケールに 15(60px) / 30(120px) は存在しないため、
+        // sm/lg は 4px 倍数の arbitrary value を許容（ng-patterns §3 は「非 4px 倍数」を NG とする）。
+        // md は既定スケール h-20=80px に置換し arbitrary value を回避（design-mate 軽微指摘対応）。
         sm: 'min-h-[60px]',
-        md: 'min-h-[80px]',
+        md: 'min-h-20',
         lg: 'min-h-[120px]',
       },
     },
