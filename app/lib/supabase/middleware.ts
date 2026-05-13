@@ -1,5 +1,33 @@
-import { createServerClient, type CookieOptions } from '@supabase/ssr'
+import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+
+// 認証必須ルートの判定。
+// 既存稼働パブリック画面（/, /projects, /columns, /documents 等）は false を返してガード対象外。
+// 参照：docs/auth/flow.md §C
+const requiresAuth = (pathname: string): boolean => {
+  // 認証ページ自体・OAuth コールバック・認証 API は除外
+  if (pathname.startsWith('/auth/')) return false
+  if (pathname.startsWith('/login')) return false
+  if (pathname.startsWith('/api/auth/')) return false
+  // Stripe Webhook は外部からの Cookie なしコールバック・ガード対象外
+  if (pathname.startsWith('/api/stripe/webhook')) return false
+
+  // /e-learning は LP として未ログイン可・配下（コース・動画詳細等）はガード
+  if (pathname === '/e-learning') return false
+  if (pathname.startsWith('/e-learning/')) return true
+
+  // 管理画面
+  if (pathname.startsWith('/admin')) return true
+
+  // 視聴・進捗・購入・退会
+  if (pathname.startsWith('/play')) return true
+  if (pathname.startsWith('/videos/')) return true
+  if (pathname === '/complete' || pathname.startsWith('/complete/')) return true
+  if (pathname.startsWith('/api/checkout')) return true
+  if (pathname.startsWith('/api/me/')) return true
+
+  return false
+}
 
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -7,15 +35,13 @@ export async function updateSession(request: NextRequest) {
   })
 
   const pathname = request.nextUrl.pathname
-  console.log(`[Middleware] Processing request for: ${pathname}`)
 
-  // Skip authentication check for login page and debug page
-  if (pathname === '/login' || pathname === '/login/debug') {
-    console.log(`[Middleware] Skipping auth check for: ${pathname}`)
+  // 認証ページ自体や旧 /login への直アクセスは Supabase クライアント生成不要
+  if (pathname.startsWith('/auth/') || pathname.startsWith('/login')) {
     return supabaseResponse
   }
 
-  // Development environment - skip authentication for admin panel
+  // 開発環境で Supabase 環境変数が未設定なら認証チェックをスキップ
   if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
     console.warn('Supabase environment variables not set - skipping authentication')
     return supabaseResponse
@@ -30,7 +56,7 @@ export async function updateSession(request: NextRequest) {
           return request.cookies.getAll()
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value))
+          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
           supabaseResponse = NextResponse.next({
             request,
           })
@@ -50,11 +76,11 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  if (!user && pathname.startsWith('/admin')) {
-    console.log(`[Middleware] No user found for admin route: ${pathname}, redirecting to login`)
-    // no user, potentially respond by redirecting the user to the login page
+  if (!user && requiresAuth(pathname)) {
     const url = request.nextUrl.clone()
-    url.pathname = '/login'
+    url.pathname = '/auth/login'
+    url.search = ''
+    url.searchParams.set('returnTo', pathname + request.nextUrl.search)
     return NextResponse.redirect(url)
   }
 

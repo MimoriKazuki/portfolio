@@ -17,8 +17,8 @@ export default async function AdminLayout({
   console.log('Admin layout auth check:', { user: user?.email, error })
 
   if (!user) {
-    console.log('No user found, redirecting to login')
-    redirect('/login')
+    console.log('No user found, redirecting to /auth/login')
+    redirect('/auth/login?returnTo=' + encodeURIComponent('/admin'))
   }
 
   return (
