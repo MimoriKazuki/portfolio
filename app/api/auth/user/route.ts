@@ -25,17 +25,17 @@ export async function GET() {
   const { data: { user }, error } = await supabase.auth.getUser()
 
   if (error || !user) {
-    return NextResponse.json({ user: null, hasPaidAccess: false, error: error?.message }, { status: 200 })
+    return NextResponse.json({ user: null, hasFullAccess: false, error: error?.message }, { status: 200 })
   }
 
-  // e_learning_usersテーブルから有料アクセス状態を確認
+  // e_learning_users から全動画視聴可フラグを取得（M5 安全順序 Step3：has_paid_access は参照しない）
   const { data: eLearningUser } = await supabase
     .from('e_learning_users')
-    .select('has_paid_access')
+    .select('has_full_access')
     .eq('auth_user_id', user.id)
-    .single()
+    .maybeSingle()
 
-  const hasPaidAccess = eLearningUser?.has_paid_access ?? false
+  const hasFullAccess = eLearningUser?.has_full_access ?? false
 
-  return NextResponse.json({ user, hasPaidAccess }, { status: 200 })
+  return NextResponse.json({ user, hasFullAccess }, { status: 200 })
 }

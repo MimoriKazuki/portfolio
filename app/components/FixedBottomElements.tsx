@@ -17,7 +17,7 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
   const bannerRef = useRef<HTMLDivElement>(null)
   const [bannerHeight, setBannerHeight] = useState(0)
   const [user, setUser] = useState<User | null>(null)
-  const [hasPaidAccess, setHasPaidAccess] = useState(false)
+  const [hasFullAccess, setHasFullAccess] = useState(false)
   const [authChecked, setAuthChecked] = useState(false)
   const [showFloating, setShowFloating] = useState(false)
   const [showBannerAnim, setShowBannerAnim] = useState(false)
@@ -31,7 +31,7 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
         const response = await fetch('/api/auth/user')
         const data = await response.json()
         setUser(data.user)
-        setHasPaidAccess(data.hasPaidAccess ?? false)
+        setHasFullAccess(data.hasFullAccess ?? false)
         setAuthChecked(true)
       } catch (e) {
         console.error('[FixedBottomElements] Auth check error:', e)
@@ -72,7 +72,7 @@ export default function FixedBottomElements({ hideContactButton = false }: Fixed
   // ログインバナーはeラーニングページでは非表示（モーダルがあるため）
   const showLoginBanner = authChecked && !user && !isElearningPage
   // 購入促進バナーはeラーニングページでも表示
-  const showPurchaseBanner = authChecked && user && !hasPaidAccess
+  const showPurchaseBanner = authChecked && user && !hasFullAccess
   const showBanner = showLoginBanner || showPurchaseBanner
 
   // バナーの高さを測定（アニメーション前に測定完了）
