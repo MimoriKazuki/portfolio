@@ -52,7 +52,9 @@ function makeRefetchChain(result: { data: unknown; error: unknown }) {
 }
 
 type TableMock = {
-  select?: ReturnType<typeof makeFetchChain>['select']
+  select?:
+    | ReturnType<typeof makeFetchChain>['select']
+    | ReturnType<typeof makeCorporateChain>['select']
   insert?: ReturnType<typeof makeInsertChain>['insert']
   update?: ReturnType<typeof makeUpdateChain>['update']
 }
