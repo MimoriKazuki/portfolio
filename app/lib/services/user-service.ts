@@ -11,6 +11,11 @@ import { createClient as createServiceClient } from '@supabase/supabase-js'
  * - 新規コードからは `has_paid_access` を一切参照・更新しない
  * - 旧カラムは Sub 2f で削除予定。それまでは DB 上に残存するが本サービスからは touch しない
  * - has_full_access のみ操作する
+ *
+ * ログ方針（PII 保護）：
+ * - 出力は構造化（`{ code, auth_user_id }` 形式）
+ * - email / display_name は記録しない
+ * - DB エラーメッセージ本文も記録せず error.code のみ（PostgreSQL のメッセージにカラム名や PII を含むリスク回避）
  */
 
 type AuthUserLike = {
@@ -118,11 +123,23 @@ export async function syncFromAuth(authUser: AuthUserLike): Promise<SyncResult> 
           return { id: refetched.id, has_full_access: !!refetched.has_full_access }
         }
       }
-      console.error('Error creating e_learning_user:', insertError.message)
+      console.error('[user-service] insert failed', {
+        code: insertError.code,
+        auth_user_id: authUser.id,
+      })
       // INSERT 失敗でもログインは許可するため最小限の戻り値を返すが、
       // 安全側に倒す：DB エラー時は has_full_access=false で返す（権限を与えすぎない）
+      console.warn('[user-service] fallback to has_full_access=false', {
+        auth_user_id: authUser.id,
+        isCorporate,
+        code: insertError.code,
+      })
       return { id: authUser.id, has_full_access: false }
     }
+    console.info('[user-service] user created', {
+      auth_user_id: authUser.id,
+      has_full_access: isCorporate,
+    })
     return { id: inserted.id, has_full_access: !!inserted.has_full_access }
   }
 
@@ -151,8 +168,19 @@ export async function syncFromAuth(authUser: AuthUserLike): Promise<SyncResult> 
         .single()
 
       if (updateError) {
-        console.error('Error updating e_learning_user:', updateError.message)
+        console.error('[user-service] update failed', {
+          code: updateError.code,
+          auth_user_id: authUser.id,
+        })
         return { id: existingUser.id, has_full_access: !!existingUser.has_full_access }
+      }
+      if (needsReactivation) {
+        console.info('[user-service] user reactivated', { auth_user_id: authUser.id })
+      }
+      if (needsCorporatePromotion) {
+        console.info('[user-service] user promoted to corporate', {
+          auth_user_id: authUser.id,
+        })
       }
       return { id: updated.id, has_full_access: !!updated.has_full_access }
     }
@@ -163,6 +191,14 @@ export async function syncFromAuth(authUser: AuthUserLike): Promise<SyncResult> 
 
   // ここに来るのは想定外（fetchError があるが NOT_FOUND でないケース）
   // 安全側に倒す：DB エラー時は has_full_access=false で返す（権限を与えすぎない）
-  console.error('Error fetching e_learning_user:', fetchError?.message || 'unknown')
+  console.error('[user-service] fetch failed', {
+    code: fetchError?.code,
+    auth_user_id: authUser.id,
+  })
+  console.warn('[user-service] fallback to has_full_access=false', {
+    auth_user_id: authUser.id,
+    isCorporate,
+    code: fetchError?.code,
+  })
   return { id: authUser.id, has_full_access: false }
 }
