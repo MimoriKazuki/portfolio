@@ -119,8 +119,9 @@ export async function syncFromAuth(authUser: AuthUserLike): Promise<SyncResult> 
         }
       }
       console.error('Error creating e_learning_user:', insertError.message)
-      // INSERT 失敗でもログインは許可するため、最小限の戻り値を返す
-      return { id: authUser.id, has_full_access: isCorporate }
+      // INSERT 失敗でもログインは許可するため最小限の戻り値を返すが、
+      // 安全側に倒す：DB エラー時は has_full_access=false で返す（権限を与えすぎない）
+      return { id: authUser.id, has_full_access: false }
     }
     return { id: inserted.id, has_full_access: !!inserted.has_full_access }
   }
@@ -161,6 +162,7 @@ export async function syncFromAuth(authUser: AuthUserLike): Promise<SyncResult> 
   }
 
   // ここに来るのは想定外（fetchError があるが NOT_FOUND でないケース）
+  // 安全側に倒す：DB エラー時は has_full_access=false で返す（権限を与えすぎない）
   console.error('Error fetching e_learning_user:', fetchError?.message || 'unknown')
-  return { id: authUser.id, has_full_access: isCorporate }
+  return { id: authUser.id, has_full_access: false }
 }
