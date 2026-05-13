@@ -5,6 +5,7 @@ import MainLayout from '@/app/components/MainLayout'
 import ELearningTopClient from './ELearningTopClient'
 import { ELearningContent, ELearningCategory } from '@/app/types'
 import { Metadata } from 'next'
+import { getViewerAccess } from '@/app/lib/services/access-service'
 
 export const metadata: Metadata = {
   title: 'eラーニング - AI駆動研究所',
@@ -98,15 +99,23 @@ async function getUserBookmarks(userId: string) {
   return bookmarks?.map(b => b.content_id) || []
 }
 
-async function getUserPaidAccess(userId: string) {
+/**
+ * 視聴一覧用：認証済ユーザーの全体アクセス権を取得。
+ * 内部で auth_user_id → e_learning_users.id 解決 → access-service.getViewerAccess を呼ぶ。
+ * has_paid_access への参照は削除済み（M5 安全順序：has_full_access のみ参照）。
+ */
+async function getUserFullAccess(authUserId: string): Promise<boolean> {
   const supabase = await createClient()
   const { data: eLearningUser } = await supabase
     .from('e_learning_users')
-    .select('has_paid_access')
-    .eq('auth_user_id', userId)
+    .select('id')
+    .eq('auth_user_id', authUserId)
     .maybeSingle()
 
-  return eLearningUser?.has_paid_access ?? false
+  if (!eLearningUser) return false
+
+  const { hasFullAccess } = await getViewerAccess(eLearningUser.id)
+  return hasFullAccess
 }
 
 async function updateLastAccessedAt(userId: string) {
@@ -131,9 +140,10 @@ export default async function ELearningPage() {
   const categoryIds = categories.map(c => c.id)
   const contentsByCategory = await getContentsByCategory(categoryIds)
 
-  // ログインユーザーのブックマークと購入状態を取得
+  // ログインユーザーのブックマークとアクセス権を取得
+  // hasFullAccess は access-service 経由で取得（has_paid_access 直書きを廃止）
   const userBookmarks = user ? await getUserBookmarks(user.id) : []
-  const hasPaidAccess = user ? await getUserPaidAccess(user.id) : false
+  const hasFullAccess = user ? await getUserFullAccess(user.id) : false
 
   // 最終アクセス日時を更新（非同期で実行、エラーは無視）
   if (user) {
@@ -149,7 +159,7 @@ export default async function ELearningPage() {
           contentsByCategory={contentsByCategory}
           isLoggedIn={!!user}
           userBookmarks={userBookmarks}
-          hasPaidAccess={hasPaidAccess}
+          hasPaidAccess={hasFullAccess}
         />
       </div>
     </MainLayout>

@@ -6,6 +6,7 @@ import { notFound, redirect } from 'next/navigation'
 import MainLayout from '@/app/components/MainLayout'
 import ELearningDetailClient from './ELearningDetailClient'
 import type { Metadata } from 'next'
+import { canViewContent } from '@/app/lib/services/access-service'
 
 export const revalidate = 60
 export const dynamicParams = true
@@ -110,16 +111,18 @@ export default async function ELearningDetailPage({ params }: PageProps) {
     notFound()
   }
 
-  // eラーニングユーザーを取得（has_paid_accessを含む）
+  // eラーニングユーザーを取得（access-service の userId 引数として e_learning_users.id を使うため）
   const { data: eLearningUser } = await supabase
     .from('e_learning_users')
-    .select('id, has_paid_access')
+    .select('id')
     .eq('auth_user_id', user.id)
     .single()
 
-  // 有料コンテンツへのアクセス権限を判定
-  // 無料コンテンツまたはhas_paid_access=trueの場合はアクセス可能
-  const hasPaidAccess = content.is_free || (eLearningUser?.has_paid_access ?? false)
+  // 視聴権限判定：access-service に集約（has_paid_access 直書きを廃止・M5 安全順序 Step3）
+  // is_free / has_full_access / 単体購入 のいずれかなら canView=true
+  const hasPaidAccess = eLearningUser
+    ? (await canViewContent(eLearningUser.id, content.id)).canView
+    : false
 
   // 関連コンテンツを取得（同じカテゴリの動画、現在の動画を除く最新3件）
   const { data: relatedContents } = await supabase
