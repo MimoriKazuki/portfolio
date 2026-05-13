@@ -27,7 +27,7 @@ export default async function AdminCustomersPage() {
   })
 
   if (authError) {
-    console.error('Error fetching auth users:', authError)
+    console.error('Error fetching auth users:', authError.message)
   }
 
   // eラーニングユーザーデータを取得（購入履歴も含む）
@@ -50,7 +50,7 @@ export default async function AdminCustomersPage() {
     .order('created_at', { ascending: false })
 
   if (usersError) {
-    console.error('Error fetching e_learning_users:', usersError)
+    console.error('Error fetching e_learning_users:', usersError.message)
   }
 
   // auth.usersとe_learning_usersを結合
@@ -94,7 +94,7 @@ export default async function AdminCustomersPage() {
     .order('created_at', { ascending: false })
 
   if (corporateError) {
-    console.error('Error fetching corporate customers:', corporateError)
+    console.error('Error fetching corporate customers:', corporateError.message)
   }
 
   return (
