@@ -164,7 +164,7 @@ export default async function ELearningPage() {
           contentsByCategory={contentsByCategory}
           isLoggedIn={!!user}
           userBookmarks={userBookmarks}
-          hasPaidAccess={hasFullAccess}
+          hasFullAccess={hasFullAccess}
         />
       </div>
     </MainLayout>

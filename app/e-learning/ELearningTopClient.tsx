@@ -14,7 +14,7 @@ interface ELearningTopClientProps {
   contentsByCategory: Record<string, ELearningContent[]>
   isLoggedIn: boolean
   userBookmarks?: string[]
-  hasPaidAccess?: boolean
+  hasFullAccess?: boolean
 }
 
 // コンテンツカードコンポーネント
@@ -109,14 +109,14 @@ export default function ELearningTopClient({
   contentsByCategory,
   isLoggedIn,
   userBookmarks = [],
-  hasPaidAccess = false,
+  hasFullAccess = false,
 }: ELearningTopClientProps) {
   const [isVisible, setIsVisible] = useState(false)
   const [showLoginModal, setShowLoginModal] = useState(false)
   const [showPurchaseModal, setShowPurchaseModal] = useState(false)
 
   // 無料ログインユーザーかどうか（ログイン済みで未購入）
-  const isFreeUser = isLoggedIn && !hasPaidAccess
+  const isFreeUser = isLoggedIn && !hasFullAccess
 
   useEffect(() => {
     setIsVisible(true)

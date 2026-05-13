@@ -120,7 +120,7 @@ export default async function ELearningDetailPage({ params }: PageProps) {
 
   // 視聴権限判定：access-service に集約（has_paid_access 直書きを廃止・M5 安全順序 Step3）
   // is_free / has_full_access / 単体購入 のいずれかなら canView=true
-  const hasPaidAccess = eLearningUser
+  const hasViewAccess = eLearningUser
     ? (await canViewContent(eLearningUser.id, content.id)).canView
     : false
 
@@ -164,7 +164,7 @@ export default async function ELearningDetailPage({ params }: PageProps) {
       <ELearningDetailClient
         content={content as ELearningContent}
         user={user}
-        hasPurchased={hasPaidAccess}
+        hasPurchased={hasViewAccess}
         relatedContents={relatedContents as ELearningContent[] || []}
         initialBookmarked={!!bookmark}
       />

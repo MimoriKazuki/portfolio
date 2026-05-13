@@ -99,10 +99,11 @@ export async function POST(
       )
     }
 
-    // 既存のe_learning_usersにこのメールアドレスのユーザーがいれば、has_paid_accessをtrueに更新
+    // 既存の e_learning_users にこのメールアドレスのユーザーがいれば、has_full_access=true に更新
+    // （M5 安全順序 Step3：has_paid_access は touch しない）
     await supabaseAdmin
       .from('e_learning_users')
-      .update({ has_paid_access: true })
+      .update({ has_full_access: true })
       .eq('email', email.toLowerCase().trim())
 
     return NextResponse.json(data, { status: 201 })
@@ -158,7 +159,8 @@ export async function DELETE(
       .eq('email', email.toLowerCase().trim())
       .limit(1)
 
-    // 他の企業にも登録されていなければ、has_paid_accessをfalseに戻す（購入履歴がない場合のみ）
+    // 他の企業にも登録されていなければ、has_full_access=false に戻す（購入履歴がない場合のみ）
+    // （M5 安全順序 Step3：has_paid_access は touch しない）
     if (!otherCorps || otherCorps.length === 0) {
       const { data: user } = await supabaseAdmin
         .from('e_learning_users')
@@ -169,7 +171,7 @@ export async function DELETE(
       if (user && (!user.purchases || user.purchases.length === 0)) {
         await supabaseAdmin
           .from('e_learning_users')
-          .update({ has_paid_access: false })
+          .update({ has_full_access: false })
           .eq('email', email.toLowerCase().trim())
       }
     }
