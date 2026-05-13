@@ -139,14 +139,14 @@ export async function POST(request: NextRequest) {
     // 購入金額を取得
     const amount = session.amount_total || 0
 
-    // ユーザーのhas_paid_accessをtrueに更新
+    // ユーザーの has_full_access を true に更新（M5 安全順序 Step3：has_paid_access は書き込まない）
     const { error: updateError } = await supabaseAdmin
       .from('e_learning_users')
-      .update({ has_paid_access: true })
+      .update({ has_full_access: true })
       .eq('id', userId)
 
     if (updateError) {
-      console.error('Failed to update user paid access:', updateError)
+      console.error('Failed to update user full access:', updateError.message)
       return NextResponse.json(
         { error: 'Failed to update user access' },
         { status: 500 }
@@ -165,10 +165,10 @@ export async function POST(request: NextRequest) {
       })
 
     if (purchaseError) {
-      console.error('Failed to save purchase:', purchaseError)
-      // 重複エラーの場合は無視（has_paid_accessの更新は成功しているので）
+      console.error('Failed to save purchase:', purchaseError.message)
+      // 重複エラーの場合は無視（has_full_access の更新は成功しているので）
       if (!purchaseError.message.includes('duplicate')) {
-        // ログのみ、エラーは返さない（has_paid_accessの更新が重要）
+        // ログのみ、エラーは返さない（has_full_access の更新が重要）
         console.warn('Purchase record insert failed, but access was granted')
       }
     }

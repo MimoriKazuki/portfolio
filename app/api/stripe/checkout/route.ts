@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
     // eラーニングユーザーを取得または作成
     let { data: elearningUser } = await supabase
       .from('e_learning_users')
-      .select('id, has_paid_access')
+      .select('id, has_full_access')
       .eq('auth_user_id', user.id)
       .single()
 
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
           display_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'User',
           avatar_url: user.user_metadata?.avatar_url || null,
         })
-        .select('id, has_paid_access')
+        .select('id, has_full_access')
         .single()
 
       if (createError) {
@@ -51,8 +51,8 @@ export async function POST(request: NextRequest) {
       elearningUser = newUser
     }
 
-    // 既に購入済みかチェック（has_paid_accessで判定）
-    if (elearningUser.has_paid_access) {
+    // 既に購入済みかチェック（has_full_access で判定・M5 安全順序 Step3）
+    if (elearningUser.has_full_access) {
       return NextResponse.json(
         { error: '既に購入済みです' },
         { status: 400 }
