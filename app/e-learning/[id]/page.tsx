@@ -137,13 +137,15 @@ export default async function ELearningDetailPage({ params }: PageProps) {
     .order('created_at', { ascending: false })
     .limit(3)
 
-  // ブックマーク状態を取得
-  const { data: bookmark } = await supabase
-    .from('e_learning_bookmarks')
-    .select('id')
-    .eq('user_id', user.id)
-    .eq('content_id', content.id)
-    .single()
+  // ブックマーク状態を取得（FB-SYS-001 適用済：user_id は e_learning_users.id 参照）
+  const { data: bookmark } = eLearningUser
+    ? await supabase
+        .from('e_learning_bookmarks')
+        .select('id')
+        .eq('user_id', eLearningUser.id)
+        .eq('content_id', content.id)
+        .maybeSingle()
+    : { data: null }
 
   // 最終アクセス日時を更新（RLSをバイパス、非同期で実行）
   const supabaseAdmin = createServerClient(

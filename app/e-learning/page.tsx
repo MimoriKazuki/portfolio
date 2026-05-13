@@ -88,23 +88,26 @@ async function getCurrentUser() {
   return { user, supabase }
 }
 
-async function getUserBookmarks(userId: string) {
+/**
+ * ブックマーク取得。
+ * 引数 eLearningUserId は e_learning_users.id（auth.users.id ではない）。
+ * FB-SYS-001（bookmarks.user_id を e_learning_users.id 参照に変更）適用済のため。
+ */
+async function getUserBookmarks(eLearningUserId: string) {
   const supabase = await createClient()
-  const { data: bookmarks, error } = await supabase
+  const { data: bookmarks } = await supabase
     .from('e_learning_bookmarks')
     .select('content_id')
-    .eq('user_id', userId)
+    .eq('user_id', eLearningUserId)
 
-  console.log('[ELearning Page] Fetching bookmarks for user:', userId, 'result:', { bookmarks, error })
   return bookmarks?.map(b => b.content_id) || []
 }
 
 /**
- * 視聴一覧用：認証済ユーザーの全体アクセス権を取得。
- * 内部で auth_user_id → e_learning_users.id 解決 → access-service.getViewerAccess を呼ぶ。
- * has_paid_access への参照は削除済み（M5 安全順序：has_full_access のみ参照）。
+ * auth_user_id から e_learning_users.id を取得（無ければ null）。
+ * 後続の bookmarks 取得 / access-service 呼び出しに渡す内部 id を 1 回の SELECT で済ませる。
  */
-async function getUserFullAccess(authUserId: string): Promise<boolean> {
+async function getELearningUserId(authUserId: string): Promise<string | null> {
   const supabase = await createClient()
   const { data: eLearningUser } = await supabase
     .from('e_learning_users')
@@ -112,10 +115,7 @@ async function getUserFullAccess(authUserId: string): Promise<boolean> {
     .eq('auth_user_id', authUserId)
     .maybeSingle()
 
-  if (!eLearningUser) return false
-
-  const { hasFullAccess } = await getViewerAccess(eLearningUser.id)
-  return hasFullAccess
+  return eLearningUser?.id ?? null
 }
 
 async function updateLastAccessedAt(userId: string) {
@@ -141,9 +141,14 @@ export default async function ELearningPage() {
   const contentsByCategory = await getContentsByCategory(categoryIds)
 
   // ログインユーザーのブックマークとアクセス権を取得
-  // hasFullAccess は access-service 経由で取得（has_paid_access 直書きを廃止）
-  const userBookmarks = user ? await getUserBookmarks(user.id) : []
-  const hasFullAccess = user ? await getUserFullAccess(user.id) : false
+  // - bookmarks.user_id は FB-SYS-001 で e_learning_users.id 参照に変更済のため、
+  //   内部 id（eLearningUserId）に解決してから渡す
+  // - hasFullAccess は access-service 経由で取得（has_paid_access 直書きを廃止）
+  const eLearningUserId = user ? await getELearningUserId(user.id) : null
+  const userBookmarks = eLearningUserId ? await getUserBookmarks(eLearningUserId) : []
+  const hasFullAccess = eLearningUserId
+    ? (await getViewerAccess(eLearningUserId)).hasFullAccess
+    : false
 
   // 最終アクセス日時を更新（非同期で実行、エラーは無視）
   if (user) {
