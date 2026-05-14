@@ -171,7 +171,7 @@ export default async function AdminELearningPurchasesPage({ searchParams }: Page
       align: 'right',
       render: row => (
         <span
-          className="truncate text-[10px] text-muted-foreground"
+          className="truncate text-xs text-muted-foreground"
           title={row.stripe_session_id}
         >
           {row.stripe_session_id.slice(0, 14)}…
