@@ -161,13 +161,16 @@ async function existsCompletedPurchase(
 
 /**
  * cancel_return_url の検証。
- * - 文字列・/ 始まり・:// 含まない → そのまま使用
+ * - 文字列・/ 始まり・// 始まりでない・:// 含まない → そのまま使用
+ *   - `//evil.com` 形式（プロトコル相対 URL）を防ぐため `//` 始まりを明示的に拒否
+ *     （${baseUrl}${path} 連結でホストは変わらないが防御的に弾く）
  * - それ以外 → '/e-learning' フォールバック
  */
 function resolveCancelPath(cancelReturnUrl: string | undefined): string {
   if (
     typeof cancelReturnUrl === 'string' &&
     cancelReturnUrl.startsWith('/') &&
+    !cancelReturnUrl.startsWith('//') &&
     !cancelReturnUrl.includes('://')
   ) {
     return cancelReturnUrl
