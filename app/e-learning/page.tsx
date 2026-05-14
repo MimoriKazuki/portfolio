@@ -1,6 +1,5 @@
 import { createStaticClient } from '@/app/lib/supabase/static'
 import { createClient } from '@/app/lib/supabase/server'
-import { createClient as createServerClient } from '@supabase/supabase-js'
 import ELearningTopClient from './ELearningTopClient'
 import { ELearningContent, ELearningCategory } from '@/app/types'
 import { Metadata } from 'next'
@@ -117,18 +116,6 @@ async function getELearningUserId(authUserId: string): Promise<string | null> {
   return eLearningUser?.id ?? null
 }
 
-async function updateLastAccessedAt(userId: string) {
-  // RLSをバイパスしてアクセス日時を更新（service_role_key使用）
-  const supabaseAdmin = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
-  await supabaseAdmin
-    .from('e_learning_users')
-    .update({ last_accessed_at: new Date().toISOString() })
-    .eq('auth_user_id', userId)
-}
-
 export default async function ELearningPage() {
   const [categories, featuredContents, { user }] = await Promise.all([
     getCategories(),
@@ -148,11 +135,6 @@ export default async function ELearningPage() {
   const hasFullAccess = eLearningUserId
     ? (await getViewerAccess(eLearningUserId)).hasFullAccess
     : false
-
-  // 最終アクセス日時を更新（非同期で実行、エラーは無視）
-  if (user) {
-    updateLastAccessedAt(user.id).catch(() => {})
-  }
 
   return (
     <div className="w-full">
