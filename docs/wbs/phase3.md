@@ -208,7 +208,7 @@ Phase 3 中に該当機能を実装する際、合わせて対処する。
 | F-06 | /api/checkout route.ts の単体テスト追加 ✅ 完了（2026-05-14・コミット 95fd423・20 件追加） | — |
 | F-07 | DB エラー経路のユニットテスト追加 ✅ 完了（2026-05-14・コミット 7fce837・checkout-service の 3 経路 +4 件・他 service は既存網羅済） | — |
 | F-08 | 既存 checkout.session.completed ハンドラのテスト追加 ✅ 完了（P3-WEBHOOK-NEW で 29 件追加済・has_full_access 不更新 assert / UNIQUE 違反冪等性 / metadata 欠落 200 / 旧形式後方互換 全カバー） | — |
-| F-09 | Webhook 並行性の実機テスト | Step 4 並行 |
+| F-09 | Webhook 並行性 / 順序逆転 UT 追加 ✅ 完了（2026-05-14・コミット fd5e784・vitest 並行 fetch 模擬・冪等ロジック完全カバー・+4 件） | — |
 | F-10 | 全 atoms / molecules の網羅テスト追加 | Step 4 並行 |
 | F-11 | stripe_payment_intent_id UNIQUE 制約追加（DB マイグレ・Kosuke 確認案件） | Kosuke 判断 |
 | F-12 | checkout.session.completed に stripe_payment_intent_id 書き込み追加 ✅ 完了（P3-WEBHOOK-NEW で対応済・string/object 両対応・charge.refunded マッチングと整合） | — |
