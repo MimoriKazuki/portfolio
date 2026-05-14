@@ -766,3 +766,192 @@ describe('checkout.session.completed — 新形式 metadata (P3-WEBHOOK-NEW)', (
     expect(updateCalled).toBe(true)
   })
 })
+
+// ================================================================
+// F-09：並行性 / 順序逆転シナリオ
+// ----------------------------------------------------------------
+// 既存の単独イベントテスト（29 件）では検証しきれない、複数 webhook
+// 受信の組み合わせ（同時 / 順序逆転 / 通常順 / 重複）を網羅する。
+//
+// supabaseAdmin はモジュールトップレベルで生成されるシングルトンのため、
+// テスト間で mockFrom の挙動を切り替えながら逐次的に POST() を呼び出すことで
+// 「実環境で発生しうるイベント列」を模擬する。
+// 並行性（同時 INSERT）は POSTGRES の UNIQUE 制約に依存するため、
+// 1 件目の INSERT は成功・2 件目以降は 23505 を返す mock で表現する。
+// ================================================================
+
+describe('F-09：並行性 / 順序逆転', () => {
+  it('重複受信（同一 stripe_session_id 並行 2 件）→ 1 件 INSERT 成功・他は 23505 で 200 OK', async () => {
+    const session = makeNewFormatSession({ sessionId: 'cs_dup_001' })
+    _mockConstructEventFn.mockReturnValue(makeCheckoutCompletedEvent(session))
+
+    // INSERT 呼び出し回数で挙動を分岐：1 回目は成功、2 回目以降は UNIQUE 違反
+    let insertCount = 0
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'e_learning_purchases') {
+        const insert = vi.fn().mockImplementation(() => {
+          insertCount += 1
+          if (insertCount === 1) return Promise.resolve({ error: null })
+          return Promise.resolve({
+            error: { code: '23505', message: 'duplicate key value' },
+          })
+        })
+        return { insert }
+      }
+      // e_learning_users
+      const maybeSingle = vi.fn().mockResolvedValue({ data: null, error: null })
+      const eq = vi.fn(() => ({ maybeSingle }))
+      const select = vi.fn(() => ({ eq }))
+      return { select }
+    })
+
+    // 2 回 webhook を並行受信（Promise.all で同時実行）
+    const [res1, res2] = await Promise.all([
+      POST(makeRequest() as unknown as Parameters<typeof POST>[0]),
+      POST(makeRequest() as unknown as Parameters<typeof POST>[0]),
+    ])
+
+    // 両方とも 200 OK（1 件目：成功 INSERT、2 件目：23505 冪等扱い）
+    expect(res1.status).toBe(200)
+    expect(res2.status).toBe(200)
+    expect(insertCount).toBe(2)
+  })
+
+  it('順序逆転：charge.refunded → checkout.session.completed → charge.refunded リトライ', async () => {
+    // フェーズ 1：charge.refunded が先に到達 → purchase 未存在で orphan 通知 + 200 OK
+    _mockConstructEventFn.mockReturnValueOnce(
+      makeChargeRefundedEvent({ payment_intent: 'pi_order_inv' }),
+    )
+    stubSupabase({ selectResult: { data: null, error: null } }) // purchase 未存在
+
+    const res1 = await POST(makeRequest() as unknown as Parameters<typeof POST>[0])
+    // 順序逆転でも 200 を返すことが重要（Stripe にリトライさせない設計）
+    expect(res1.status).toBe(200)
+
+    // フェーズ 2：checkout.session.completed が後から到達 → INSERT 成功
+    const session = makeNewFormatSession({
+      sessionId: 'cs_order_inv',
+      paymentIntentId: 'pi_order_inv',
+    })
+    _mockConstructEventFn.mockReturnValueOnce(makeCheckoutCompletedEvent(session))
+    let inserted = false
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'e_learning_purchases') {
+        const insert = vi.fn().mockImplementation(() => {
+          inserted = true
+          return Promise.resolve({ error: null })
+        })
+        return { insert }
+      }
+      const maybeSingle = vi.fn().mockResolvedValue({ data: null, error: null })
+      const eq = vi.fn(() => ({ maybeSingle }))
+      const select = vi.fn(() => ({ eq }))
+      return { select }
+    })
+    const res2 = await POST(makeRequest() as unknown as Parameters<typeof POST>[0])
+    expect(res2.status).toBe(200)
+    expect(inserted).toBe(true)
+
+    // フェーズ 3：charge.refunded が再到達（Stripe リトライ）→ UPDATE 成功
+    _mockConstructEventFn.mockReturnValueOnce(
+      makeChargeRefundedEvent({ payment_intent: 'pi_order_inv' }),
+    )
+    const { updateEq: phase3UpdateEq } = stubSupabase({
+      selectResult: {
+        data: { id: 'pur-001', status: 'completed', refunded_at: null },
+        error: null,
+      },
+      updateResult: { error: null },
+    })
+
+    const res3 = await POST(makeRequest() as unknown as Parameters<typeof POST>[0])
+    expect(res3.status).toBe(200)
+    expect(phase3UpdateEq).toHaveBeenCalled() // リトライ後 UPDATE が実行された
+  })
+
+  it('通常順序：checkout.session.completed INSERT → charge.refunded UPDATE 成功', async () => {
+    // フェーズ 1：INSERT
+    const session = makeNewFormatSession({
+      sessionId: 'cs_normal_001',
+      paymentIntentId: 'pi_normal_001',
+    })
+    _mockConstructEventFn.mockReturnValueOnce(makeCheckoutCompletedEvent(session))
+    let inserted = false
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'e_learning_purchases') {
+        const insert = vi.fn().mockImplementation(() => {
+          inserted = true
+          return Promise.resolve({ error: null })
+        })
+        return { insert }
+      }
+      const maybeSingle = vi.fn().mockResolvedValue({ data: null, error: null })
+      const eq = vi.fn(() => ({ maybeSingle }))
+      const select = vi.fn(() => ({ eq }))
+      return { select }
+    })
+    const res1 = await POST(makeRequest() as unknown as Parameters<typeof POST>[0])
+    expect(res1.status).toBe(200)
+    expect(inserted).toBe(true)
+
+    // フェーズ 2：charge.refunded → status=refunded UPDATE
+    _mockConstructEventFn.mockReturnValueOnce(
+      makeChargeRefundedEvent({ payment_intent: 'pi_normal_001' }),
+    )
+    let updated = false
+    const updateEq = vi.fn().mockImplementation(() => {
+      updated = true
+      return Promise.resolve({ error: null })
+    })
+    const update = vi.fn(() => ({ eq: updateEq }))
+    const maybeSingle = vi.fn().mockResolvedValue({
+      data: { id: 'pur-002', status: 'completed', refunded_at: null },
+      error: null,
+    })
+    const selectEq = vi.fn(() => ({ maybeSingle }))
+    const select = vi.fn(() => ({ eq: selectEq }))
+    mockFrom.mockReturnValue({ select, update })
+
+    const res2 = await POST(makeRequest() as unknown as Parameters<typeof POST>[0])
+    expect(res2.status).toBe(200)
+    expect(updated).toBe(true)
+  })
+
+  it('重複 refunded（同一 charge を 2 回受信）→ 1 回目 UPDATE・2 回目は冪等で UPDATE スキップ', async () => {
+    // フェーズ 1：1 回目の charge.refunded → status=completed が見つかって UPDATE 実行
+    _mockConstructEventFn.mockReturnValueOnce(
+      makeChargeRefundedEvent({ payment_intent: 'pi_dup_refund_001' }),
+    )
+    const { updateEq: firstUpdateEq } = stubSupabase({
+      selectResult: {
+        data: { id: 'pur-dup', status: 'completed', refunded_at: null },
+        error: null,
+      },
+      updateResult: { error: null },
+    })
+
+    const res1 = await POST(makeRequest() as unknown as Parameters<typeof POST>[0])
+    expect(res1.status).toBe(200)
+    expect(firstUpdateEq).toHaveBeenCalled()
+
+    // フェーズ 2：2 回目の charge.refunded（既に refunded）→ 冪等で UPDATE スキップ
+    _mockConstructEventFn.mockReturnValueOnce(
+      makeChargeRefundedEvent({ payment_intent: 'pi_dup_refund_001' }),
+    )
+    const { updateEq: secondUpdateEq } = stubSupabase({
+      selectResult: {
+        data: {
+          id: 'pur-dup',
+          status: 'refunded',
+          refunded_at: '2026-05-14T00:00:00Z',
+        },
+        error: null,
+      },
+      updateResult: { error: null },
+    })
+
+    const res2 = await POST(makeRequest() as unknown as Parameters<typeof POST>[0])
+    expect(res2.status).toBe(200)
+    expect(secondUpdateEq).not.toHaveBeenCalled() // 冪等：UPDATE スキップ
+  })
+})
