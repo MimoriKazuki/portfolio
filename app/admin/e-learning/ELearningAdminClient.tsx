@@ -52,7 +52,17 @@ export default function ELearningAdminClient({ contents, isReleased: initialRele
         (priceFilter === 'free' && content.is_free) ||
         (priceFilter === 'paid' && !content.is_free)
 
-      const matchesPublish = publishFilter === '' ||
+      // 論理削除フィルタ（Phase 1 確定追加）：
+      // - 'deleted' フィルタ：削除済のみ表示
+      // - それ以外：削除済を非表示（運用配慮・誤操作防止）
+      const isDeleted = !!content.deleted_at
+      if (publishFilter === 'deleted') {
+        if (!isDeleted) return false
+      } else if (isDeleted) {
+        return false
+      }
+
+      const matchesPublish = publishFilter === '' || publishFilter === 'deleted' ||
         (publishFilter === 'published' && content.is_published) ||
         (publishFilter === 'draft' && !content.is_published)
 
@@ -193,6 +203,7 @@ export default function ELearningAdminClient({ contents, isReleased: initialRele
                   <option value="">公開状態</option>
                   <option value="published">公開</option>
                   <option value="draft">下書き</option>
+                  <option value="deleted">削除済</option>
                 </select>
                 <Filter className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
               </div>
@@ -281,13 +292,19 @@ export default function ELearningAdminClient({ contents, isReleased: initialRele
                       </td>
                       {/* 公開 */}
                       <td className="px-4 py-3 text-center">
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold whitespace-nowrap ${
-                          content.is_published
-                            ? 'bg-blue-100 text-blue-800'
-                            : 'bg-gray-100 text-gray-600'
-                        }`}>
-                          {content.is_published ? '公開' : '下書き'}
-                        </span>
+                        {content.deleted_at ? (
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold whitespace-nowrap bg-red-100 text-red-800">
+                            削除済
+                          </span>
+                        ) : (
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold whitespace-nowrap ${
+                            content.is_published
+                              ? 'bg-blue-100 text-blue-800'
+                              : 'bg-gray-100 text-gray-600'
+                          }`}>
+                            {content.is_published ? '公開' : '下書き'}
+                          </span>
+                        )}
                       </td>
                       {/* 注目 */}
                       <td className="px-4 py-3 text-center text-sm">

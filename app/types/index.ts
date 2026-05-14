@@ -158,6 +158,8 @@ export interface ELearningContent {
   view_count: number
   created_at: string
   updated_at: string
+  /** 論理削除日時（Phase 1 確定追加・null = アクティブ）。 */
+  deleted_at?: string | null
   materials?: ELearningMaterial[]
 }
 
