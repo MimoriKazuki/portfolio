@@ -3,7 +3,6 @@ import { createStaticClient } from '@/app/lib/supabase/static'
 import { createClient as createServerClient } from '@supabase/supabase-js'
 import { ELearningContent } from '@/app/types'
 import { notFound, redirect } from 'next/navigation'
-import MainLayout from '@/app/components/MainLayout'
 import ELearningDetailClient from './ELearningDetailClient'
 import type { Metadata } from 'next'
 import { canViewContent } from '@/app/lib/services/access-service'
@@ -160,14 +159,12 @@ export default async function ELearningDetailPage({ params }: PageProps) {
     .catch(() => {})
 
   return (
-    <MainLayout>
-      <ELearningDetailClient
-        content={content as ELearningContent}
-        user={user}
-        hasPurchased={hasViewAccess}
-        relatedContents={relatedContents as ELearningContent[] || []}
-        initialBookmarked={!!bookmark}
-      />
-    </MainLayout>
+    <ELearningDetailClient
+      content={content as ELearningContent}
+      user={user}
+      hasPurchased={hasViewAccess}
+      relatedContents={relatedContents as ELearningContent[] || []}
+      initialBookmarked={!!bookmark}
+    />
   )
 }

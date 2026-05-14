@@ -1,7 +1,6 @@
 import { createStaticClient } from '@/app/lib/supabase/static'
 import { createClient } from '@/app/lib/supabase/server'
 import { createClient as createServerClient } from '@supabase/supabase-js'
-import MainLayout from '@/app/components/MainLayout'
 import ELearningTopClient from './ELearningTopClient'
 import { ELearningContent, ELearningCategory } from '@/app/types'
 import { Metadata } from 'next'
@@ -156,17 +155,15 @@ export default async function ELearningPage() {
   }
 
   return (
-    <MainLayout>
-      <div className="w-full">
-        <ELearningTopClient
-          featuredContents={featuredContents}
-          categories={categories}
-          contentsByCategory={contentsByCategory}
-          isLoggedIn={!!user}
-          userBookmarks={userBookmarks}
-          hasFullAccess={hasFullAccess}
-        />
-      </div>
-    </MainLayout>
+    <div className="w-full">
+      <ELearningTopClient
+        featuredContents={featuredContents}
+        categories={categories}
+        contentsByCategory={contentsByCategory}
+        isLoggedIn={!!user}
+        userBookmarks={userBookmarks}
+        hasFullAccess={hasFullAccess}
+      />
+    </div>
   )
 }
