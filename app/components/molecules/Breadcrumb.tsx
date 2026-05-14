@@ -20,7 +20,9 @@ import { cn } from '@/app/lib/utils'
  * ```
  *
  * - aria-label="パンくず"（nav）
- * - 末尾アイテム（href なし）に aria-current="page"
+ * - 末尾アイテムに aria-current="page"（F-02：中間 item で href なしのときに aria-current が
+ *   付くと不整合なため、判定を「最後のアイテム」だけに限定）
+ * - 中間で href が無いアイテムは静的ラベル（current ではない）として表示
  * - separator: 'chevron'（既定・ChevronRight）/ 'slash'（Slash）
  */
 
@@ -59,23 +61,21 @@ const Breadcrumb = React.forwardRef<HTMLElement, BreadcrumbProps>(
         <ol className="flex flex-wrap items-center gap-1.5 text-sm text-muted-foreground">
           {items.map((item, idx) => {
             const isLast = idx === items.length - 1
-            const isCurrent = !item.href || isLast
             return (
               <li key={`${item.label}-${idx}`} className="flex items-center gap-1.5">
-                {isCurrent ? (
-                  <span
-                    aria-current="page"
-                    className="text-foreground"
-                  >
+                {isLast ? (
+                  <span aria-current="page" className="text-foreground">
                     {item.label}
                   </span>
-                ) : (
+                ) : item.href ? (
                   <Link
-                    href={item.href!}
+                    href={item.href}
                     className="rounded-sm transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1"
                   >
                     {item.label}
                   </Link>
+                ) : (
+                  <span className="text-muted-foreground">{item.label}</span>
                 )}
                 {!isLast && <SeparatorIcon kind={separator} />}
               </li>
