@@ -12,6 +12,11 @@
     "allowJs": true,
     "noUnusedLocals": false,
     "strictNullChecks": false,
+    "alwaysStrict": true,
+    "noImplicitThis": true,
+    "strictBindCallApply": true,
+    "strictFunctionTypes": true,
+    "useUnknownInCatchVariables": true,
     "target": "ES2017",
     "lib": [
       "dom",

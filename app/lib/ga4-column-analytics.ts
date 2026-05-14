@@ -185,8 +185,10 @@ export async function fetchColumnViewsWithPagination({
       
     } catch (error) {
       console.error(`Error fetching page ${offset / pageSize}:`, error)
-      
-      if (error?.code === 429) {
+
+      // useUnknownInCatchVariables: true 対応・GA4 SDK エラーは { code: number } 形状の可能性あり
+      const errCode = (error as { code?: number } | null)?.code
+      if (errCode === 429) {
         await new Promise(resolve => setTimeout(resolve, 5000))
         continue
       }

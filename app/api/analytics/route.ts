@@ -43,7 +43,10 @@ export async function GET(request: NextRequest) {
     } catch (parseError) {
       console.error('Failed to parse credentials:', parseError)
       return NextResponse.json(
-        { error: 'Invalid credentials format', details: parseError.message },
+        {
+          error: 'Invalid credentials format',
+          details: parseError instanceof Error ? parseError.message : String(parseError),
+        },
         { status: 500 }
       )
     }

@@ -112,7 +112,8 @@ export default function ColumnGoalsPage() {
       await fetchDistribution()
     } catch (err) {
       console.error('Error computing goals:', err)
-      setError(`目標値の計算に失敗しました: ${err.message}`)
+      const message = err instanceof Error ? err.message : String(err)
+      setError(`目標値の計算に失敗しました: ${message}`)
     }
   }
 
