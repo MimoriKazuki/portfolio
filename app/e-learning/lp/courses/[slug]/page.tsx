@@ -1,4 +1,6 @@
 import Link from 'next/link'
+import Image from 'next/image'
+import { PlayCircle } from 'lucide-react'
 import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/app/lib/supabase/server'
 import { Badge } from '@/app/components/atoms/Badge'
@@ -119,7 +121,26 @@ export default async function ELearningLPCourseDetailPage({ params }: PageProps)
         </nav>
       }
       hero={
-        <section className="flex flex-col gap-4 rounded-lg border border-border bg-card p-6 text-card-foreground md:p-8">
+        <section className="flex flex-col gap-4 overflow-hidden rounded-lg border border-border bg-card text-card-foreground">
+          {/* B004 hero サムネ：aspect-video・thumbnail_url null 時はプレースホルダ */}
+          <div className="relative aspect-video w-full bg-muted">
+            {course.thumbnail_url ? (
+              <Image
+                src={course.thumbnail_url}
+                alt=""
+                fill
+                priority
+                sizes="(min-width: 1024px) 70vw, 100vw"
+                className="object-cover"
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center text-muted-foreground">
+                <PlayCircle aria-hidden="true" className="h-16 w-16" />
+              </div>
+            )}
+          </div>
+
+          <div className="flex flex-col gap-4 p-6 md:p-8">
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="info">コース</Badge>
             {course.is_free && <FreeBadge />}
@@ -164,6 +185,7 @@ export default async function ELearningLPCourseDetailPage({ params }: PageProps)
               進捗：{completedCount} / {totalVideos} 本（{progressPct}%）
             </p>
           )}
+          </div>
         </section>
       }
       meta={
