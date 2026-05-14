@@ -121,6 +121,24 @@
 - 確認内容: キャンセル旨の案内とコース詳細への導線が表示される
 - ステータス: 📋 未着手
 
+#### SC-SMK-010c: B010 新購入キャンセル画面表示（`/e-learning/lp/checkout/cancel`）
+- 対象URL: `/e-learning/lp/checkout/cancel`
+- 認証: 不要（静的表示・個人情報なし）
+- 確認内容:
+  - タイトル「購入をキャンセルしました」が表示される
+  - 「コース一覧へ」ボタン（href: `/e-learning/lp/courses`）が表示される
+  - 「単体動画一覧へ」ボタン（href: `/e-learning/lp/videos`）が表示される
+- ステータス: 📋 未着手
+
+#### SC-SMK-005d: B004 購入モーダル自動 open（`?purchase=1`）
+- 対象URL: `/e-learning/lp/courses/[slug]?purchase=1`（有料コース・未購入・ログイン済み）
+- 前提: ログイン済み・有料コースが存在する
+- 確認内容:
+  - ページロード時に PurchasePromptModalV2 が自動で open している（Dialog が表示される）
+  - Dialog 内にコースタイトルが表示される
+- 補足: `?purchase=1` が URL に含まれた状態でのマウントで自動 open する CoursePurchaseCtaClient の動作確認
+- ステータス: 📋 未着手
+
 #### SC-SMK-011: B011 マイページ購入履歴表示
 - 対象URL: `/e-learning/mypage/purchases`
 - 前提: ログイン済み
@@ -225,7 +243,7 @@
 
 | 状態 | 件数 |
 |------|------|
-| 📋 未着手 | 31 |
+| 📋 未着手 | 33 |
 | 🔧 実装中 | 0 |
 | ✅ 完了 | 0 |
-| **合計** | **31** |
+| **合計** | **33** |

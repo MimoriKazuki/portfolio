@@ -170,6 +170,22 @@
 - 期待結果: 購入確認モーダルが表示される
 - ステータス: 📋 未着手
 
+#### SC-UAT-042b: B004 新「購入する」ボタン → URL に `?purchase=1` 付与 + モーダル open
+- 対象URL: `/e-learning/lp/courses/[slug]`（未購入・有料・ログイン済み）
+- 操作: 「購入する」ボタンをクリック
+- 期待結果（2点）:
+  1. URL が `/e-learning/lp/courses/[slug]?purchase=1` に変わる（router.push）
+  2. PurchasePromptModalV2 Dialog が open し、コースタイトルと価格が表示される
+- ステータス: 📋 未着手
+
+#### SC-UAT-042c: B004 新モーダル「キャンセル」→ close + URL から `?purchase` 除去
+- 前提: `/e-learning/lp/courses/[slug]?purchase=1` の状態（SC-UAT-042b 後）
+- 操作: モーダル内「キャンセル」ボタン（または Dialog の閉じる操作）をクリック
+- 期待結果（2点）:
+  1. Dialog が閉じる
+  2. URL が `/e-learning/lp/courses/[slug]`（`?purchase` なし）に戻る（router.replace）
+- ステータス: 📋 未着手
+
 #### SC-UAT-035: B007 視聴完了ボタン → 「視聴済」表示に切り替わり・再読み込みで維持
 - 対象URL: `/e-learning/[id]`（テスト用動画・視聴権限あり）
 - 操作: 「視聴完了」ボタンをクリック
@@ -213,6 +229,12 @@
 - 対象URL: `/e-learning/checkout/cancel`
 - 操作: 「コースに戻る」ボタンをクリック
 - 期待結果: 元のコース詳細（B004）へ遷移
+- ステータス: 📋 未着手
+
+#### SC-UAT-043b: 新 B010 購入キャンセル画面 → 一覧への導線確認
+- 対象URL: `/e-learning/lp/checkout/cancel`
+- 確認内容: 「コース一覧へ」ボタンクリック → `/e-learning/lp/courses` へ遷移
+- 補足: 「単体動画一覧へ」クリック → `/e-learning/lp/videos` へ遷移する導線も確認
 - ステータス: 📋 未着手
 
 ### マイページ（B011/B012/B013/B014）
@@ -295,7 +317,7 @@
 
 | 状態 | 件数 |
 |------|------|
-| 📋 未着手 | 45 |
+| 📋 未着手 | 49 |
 | 🔧 実装中 | 0 |
 | ✅ 完了 | 0 |
-| **合計** | **45** |
+| **合計** | **49** |
