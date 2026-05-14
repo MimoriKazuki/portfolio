@@ -1,7 +1,6 @@
 'use client'
 
 import * as React from 'react'
-import { useRouter } from 'next/navigation'
 import { Loader2 } from 'lucide-react'
 import {
   Dialog,
@@ -44,7 +43,6 @@ export interface WithdrawDialogClientProps {
 export function WithdrawDialogClient({
   triggerLabel = '退会する',
 }: WithdrawDialogClientProps) {
-  const router = useRouter()
   const [open, setOpen] = React.useState(false)
   const [loading, setLoading] = React.useState(false)
   const [error, setError] = React.useState<string | null>(null)
