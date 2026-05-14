@@ -27,7 +27,7 @@ Phase 3 の team-lead と dev-mate / design-mate / review-mate / unittest-mate /
 | 1 | 業務ロジック実装（access-service / checkout-service / stripe-webhook-service） | 5-8 | ✅ 完了（04/05 完了・03 は ⏸ 保留→P3-CLEANUP-01 として Step 7 統合・2026-05-14） |
 | 2 | 会員向け画面実装（LP + 一覧 + 詳細 + 視聴 + 購入 + マイページ） | 14 | ✅ 完了（14/14 + 後続課題 + Webhook + Playwright・100%・2026-05-14） |
 | 3 | 管理画面実装（C001〜C011） | 11 | ✅ 完了（11/11・100%・M3-3 達成・2026-05-14） |
-| 4 | E2E テスト | 5-10 | 🔧 対応中（Playwright 環境構築済・smoke 10 件実装・UAT/regression シナリオ追加完了・spec 実装は今後） |
+| 4 | E2E テスト | 5-10 | 🔧 主要完走（phase1-smoke 57 件 + phase4-regression 18 件 spec 化完了・middleware バグ修正含む・UAT 87 件は Phase 4 候補・部分 M3-4 達成） |
 | 5 | LP 用素材確定・配置 | 1-3 | 📋 未着手 |
 | 6 | Phase 2 申し送り 16 件（F-01〜F-16） | 16 | 📋 未着手 |
 | 7 | 後続課題対応（ESLint / tsconfig / 既存 admin UI 等） | 6 | 📋 未着手 |
