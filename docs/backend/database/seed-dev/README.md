@@ -5,12 +5,15 @@
 `scripts/dev-seed/` 配下に置かれる SQL ファイルの**運用ドキュメント**。
 ローカル開発環境でのみ実行するダミーデータ投入スクリプトを管理する。
 
-## 重要原則
+## 重要原則（2026-05-15 改訂）
 
-- **本番 Supabase プロジェクト（mtyogrpeeeggqoxzvyry）には絶対に適用しない**
-- `supabase/migrations/` には置かない（本番自動デプロイ対象から分離）
-- 開発者が**手動で**ローカル Supabase に投入する運用
+- **本番 Supabase プロジェクト（mtyogrpeeeggqoxzvyry）への投入は Kosuke 承認時のみ可**
+  - 当初（2026-05-14 Phase 3 Step 2 着手時）は「絶対適用 NG」だった
+  - 2026-05-15 Kosuke 判断で「Phase 3 リリース前の動作確認のため、dummy- prefix 維持で本番投入可・リリース前削除」に方針変更
+  - 投入前に必ず team-lead 経由 Kosuke 承認を取る（自己判断 NG）
+- `supabase/migrations/` には置かない（本番自動デプロイ対象から分離・手動投入のみ）
 - 既存運用中テーブル（projects / columns / documents / e_learning_contents 等）への破壊的変更（UPDATE / DELETE）は禁止。INSERT のみ
+- リリース前に dummy- prefix データを削除する運用（後述「ロールバック」参照）
 
 ## ファイル一覧
 

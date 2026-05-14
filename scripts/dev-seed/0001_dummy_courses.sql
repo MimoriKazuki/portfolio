@@ -1,7 +1,20 @@
--- ★ DEV ONLY: ローカル開発環境専用のダミーデータ ★
--- 本番（Supabase 本番プロジェクト mtyogrpeeeggqoxzvyry）には絶対に適用しない
--- 適用方法: 開発者がローカル Supabase に手動で実行（supabase db query 等）
--- 作成日: 2026-05-14・Kosuke 判断（Phase 3 Step 2 着手前）
+-- ★ Phase 3 暫定運用：Kosuke 承認時に本番投入可（リリース前に削除）★
+-- 用途：B001 LP / B002〜B014 の動作確認用ダミーコース
+-- 作成日：2026-05-14（Phase 3 Step 2 着手前・当初は「ローカル専用」として作成）
+-- 方針変更：2026-05-15 Kosuke 承認（Phase 3 リリース前の動作確認のため本番投入可・dummy- prefix 維持・リリース前削除運用）
+--
+-- 本番投入実績：
+--   - 2026-05-15：本番 Supabase（mtyogrpeeeggqoxzvyry）に投入済
+--   - 1 カテゴリ + 3 コース + 8 章 + 19 動画
+--   - 既存 e_learning_contents 15 件は非破壊（INSERT のみ）
+--
+-- 適用方法：
+--   - ローカル Supabase：開発者が `supabase db query "$(cat scripts/dev-seed/0001_dummy_courses.sql)"` で実行
+--   - 本番 Supabase：team-lead 経由 Kosuke 承認後に dev-mate が mcp__supabase__execute_sql で実行
+--
+-- 削除タイミング：
+--   - リリース前に削除 SQL（README 末尾参照）を Kosuke 承認後に実行
+--   - or 本番リリース用に整形して実コースとして残す判断（Phase 3 クローズ時に Kosuke 判断）
 --
 -- 目的：
 --   B001 LP / B002〜B014 の動作確認用に 3 コースを投入する。
