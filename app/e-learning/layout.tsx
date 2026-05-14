@@ -13,8 +13,6 @@ import MainLayout from '@/app/components/MainLayout'
  * 設計方針：
  * - `app/e-learning/**` 配下のページに共通ヘッダー・サイドバー・フッターを適用する
  * - 既存 `app/components/MainLayout.tsx` をそのまま利用（ng-patterns §12 line 101 遵守）
- * - 配下 page.tsx 側の `<MainLayout>` ラップは段階的に削除する（後続 PR）
- *   → Phase 2 では layout.tsx の導入のみ・既存ページのラップ重複は Sub 7a-2 で解消
  *
  * 認証ガード：
  * - `/e-learning` は middleware（既存）で `auth.users` セッションを要件としていないため
