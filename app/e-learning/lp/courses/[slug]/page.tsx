@@ -1,0 +1,237 @@
+import Link from 'next/link'
+import { notFound, redirect } from 'next/navigation'
+import { createClient } from '@/app/lib/supabase/server'
+import { Badge } from '@/app/components/atoms/Badge'
+import { FreeBadge } from '@/app/components/atoms/FreeBadge'
+import { Button } from '@/app/components/atoms/Button'
+import { CourseDetailTemplate } from '@/app/components/templates/CourseDetailTemplate'
+import {
+  canDownloadCourseMaterials,
+  getViewerAccess,
+} from '@/app/lib/services/access-service'
+import { getCompletedCourseVideoIds } from '@/app/lib/services/progress-service'
+import { CurriculumAccordionClient } from './_lib/CurriculumAccordionClient'
+import { getCourseDetailBySlug } from './_lib/get-course-detail'
+
+/**
+ * B004 コース詳細（/e-learning/lp/courses/[slug]）— Server Component
+ *
+ * 起点：
+ * - docs/frontend/screens.md B004
+ * - docs/frontend/page-templates.md §CourseDetailTemplate
+ *
+ * 設計：
+ * - 公開コース取得 → 視聴権限・進捗・ブックマーク状態を services 経由で取得 → テンプレに渡す
+ * - 未ログイン：A001 ログインへ returnTo 付きリダイレクト
+ * - 視聴権限判定は access-service.getViewerAccess（has_full_access / purchased_course_ids）に集約
+ * - 進捗マークは progress-service.getCompletedCourseVideoIds
+ *
+ * 既存 /e-learning/courses（旧単体動画一覧）は完全非破壊
+ */
+
+export const dynamic = 'force-dynamic'
+
+interface PageProps {
+  params: Promise<{ slug: string }>
+}
+
+export default async function ELearningLPCourseDetailPage({ params }: PageProps) {
+  const { slug } = await params
+
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+
+  if (!user) {
+    redirect(`/auth/login?returnTo=/e-learning/lp/courses/${encodeURIComponent(slug)}`)
+  }
+
+  const course = await getCourseDetailBySlug(slug)
+  if (!course) notFound()
+
+  // e_learning_users.id を解決（access-service / progress-service 引数）
+  const { data: eLearningUser } = await supabase
+    .from('e_learning_users')
+    .select('id')
+    .eq('auth_user_id', user.id)
+    .maybeSingle()
+
+  // 視聴権限・進捗・資料 DL 可否・ブックマーク状態を並列取得
+  let viewerAccess: { has_full_access: boolean; purchased_course_ids: string[]; purchased_content_ids: string[] } = {
+    has_full_access: false,
+    purchased_course_ids: [],
+    purchased_content_ids: [],
+  }
+  let completedVideoIds: string[] = []
+  let canDownloadMaterials = false
+  let isBookmarked = false
+
+  if (eLearningUser) {
+    const [access, completed, dlAllowed, bookmark] = await Promise.all([
+      getViewerAccess(eLearningUser.id),
+      getCompletedCourseVideoIds(eLearningUser.id, course.id).catch(() => [] as string[]),
+      canDownloadCourseMaterials(eLearningUser.id, course.id),
+      supabase
+        .from('e_learning_bookmarks')
+        .select('id')
+        .eq('user_id', eLearningUser.id)
+        .eq('course_id', course.id)
+        .maybeSingle()
+        .then(r => !!r.data),
+    ])
+    viewerAccess = access
+    completedVideoIds = completed
+    canDownloadMaterials = dlAllowed
+    isBookmarked = bookmark
+  }
+
+  const hasCourseAccess =
+    viewerAccess.has_full_access || viewerAccess.purchased_course_ids.includes(course.id)
+
+  // メタ集計
+  const totalVideos = course.chapters.reduce((sum, ch) => sum + ch.videos.length, 0)
+  const completedCount = completedVideoIds.length
+  const progressPct = totalVideos > 0 ? Math.round((completedCount / totalVideos) * 100) : 0
+
+  // 「最初から見る」/「続きから見る」の遷移先動画 ID
+  const firstVideoId = course.chapters.find(c => c.videos.length > 0)?.videos[0]?.id
+  const nextUnwatchedVideoId = (() => {
+    for (const chap of course.chapters) {
+      for (const v of chap.videos) {
+        if (!completedVideoIds.includes(v.id)) return v.id
+      }
+    }
+    return undefined
+  })()
+  const continueVideoId = nextUnwatchedVideoId ?? firstVideoId
+
+  return (
+    <CourseDetailTemplate
+      breadcrumb={
+        <nav aria-label="パンくず" className="text-sm text-muted-foreground">
+          <Link href="/e-learning/lp/courses" className="hover:text-foreground">
+            コース一覧
+          </Link>
+          <span className="mx-2">/</span>
+          <span className="text-foreground">{course.title}</span>
+        </nav>
+      }
+      hero={
+        <section className="flex flex-col gap-4 rounded-lg border border-border bg-card p-6 text-card-foreground md:p-8">
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge variant="info">コース</Badge>
+            {course.is_free && <FreeBadge />}
+            {course.category_name && (
+              <span className="text-xs text-muted-foreground">{course.category_name}</span>
+            )}
+          </div>
+          <h1 className="text-2xl text-foreground md:text-3xl">{course.title}</h1>
+          {course.description && (
+            <p className="whitespace-pre-wrap text-sm text-muted-foreground md:text-base">
+              {course.description}
+            </p>
+          )}
+          <div className="mt-2 flex flex-wrap items-center gap-3">
+            {hasCourseAccess && continueVideoId ? (
+              <Button asChild size="lg">
+                <Link
+                  href={`/e-learning/lp/courses/${course.slug}/videos/${continueVideoId}`}
+                >
+                  {completedCount > 0 ? '続きから見る' : '最初から見る'}
+                </Link>
+              </Button>
+            ) : course.is_free && firstVideoId ? (
+              <Button asChild size="lg">
+                <Link
+                  href={`/e-learning/lp/courses/${course.slug}/videos/${firstVideoId}`}
+                >
+                  最初から見る
+                </Link>
+              </Button>
+            ) : course.price !== null && !course.is_free ? (
+              <div className="flex items-center gap-3">
+                <span className="text-xl text-foreground">¥{course.price.toLocaleString()}</span>
+                {/* 購入 CTA は Client から（PurchasePromptModalV2 を起動）。
+                    本 Server Component では遷移リンクのみ提示し、後続で client 化検討 */}
+                <Button asChild size="lg" variant="outline">
+                  <Link
+                    href={`/e-learning/lp/courses/${course.slug}?purchase=1`}
+                    aria-label="このコースの購入手続きへ"
+                  >
+                    購入する
+                  </Link>
+                </Button>
+              </div>
+            ) : null}
+          </div>
+          {hasCourseAccess && totalVideos > 0 && (
+            <p className="text-xs text-muted-foreground">
+              進捗：{completedCount} / {totalVideos} 本（{progressPct}%）
+            </p>
+          )}
+        </section>
+      }
+      meta={
+        <dl className="grid grid-cols-2 gap-4 sm:grid-cols-4">
+          <div>
+            <dt className="text-xs text-muted-foreground">章数</dt>
+            <dd className="text-lg text-foreground">{course.chapters.length}</dd>
+          </div>
+          <div>
+            <dt className="text-xs text-muted-foreground">動画本数</dt>
+            <dd className="text-lg text-foreground">{totalVideos}</dd>
+          </div>
+          <div>
+            <dt className="text-xs text-muted-foreground">資料</dt>
+            <dd className="text-lg text-foreground">{course.materials.length}</dd>
+          </div>
+          <div>
+            <dt className="text-xs text-muted-foreground">ブックマーク</dt>
+            <dd className="text-lg text-foreground">{isBookmarked ? '済' : '未'}</dd>
+          </div>
+        </dl>
+      }
+      curriculum={
+        <section className="flex flex-col gap-3">
+          <h2 className="text-xl text-foreground">カリキュラム</h2>
+          <CurriculumAccordionClient
+            courseSlug={course.slug}
+            courseIsFree={course.is_free}
+            hasCourseAccess={hasCourseAccess}
+            completedVideoIds={completedVideoIds}
+            chapters={course.chapters}
+          />
+        </section>
+      }
+      materials={
+        course.materials.length > 0 ? (
+          <section className="flex flex-col gap-3">
+            <h2 className="text-xl text-foreground">資料</h2>
+            {canDownloadMaterials ? (
+              <ul className="flex flex-col divide-y divide-border rounded-lg border border-border">
+                {course.materials.map(m => (
+                  <li key={m.id} className="flex items-center justify-between px-4 py-3">
+                    <span className="truncate text-sm text-foreground">{m.title}</span>
+                    <a
+                      href={m.file_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-sm text-primary hover:underline"
+                    >
+                      ダウンロード
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-sm text-muted-foreground">
+                資料は購入後にダウンロードできます。
+              </p>
+            )}
+          </section>
+        ) : null
+      }
+    />
+  )
+}
