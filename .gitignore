@@ -52,3 +52,8 @@ supabase/.temp/
 
 # Claude Code local settings (個人開発環境設定・チーム共有不要)
 .claude/settings.local.json
+
+# Playwright（P3-TEST-01）
+/playwright-report/
+/test-results/
+/e2e/.auth/
