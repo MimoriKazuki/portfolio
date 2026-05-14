@@ -145,16 +145,43 @@
 - 確認内容: 購入履歴一覧または空状態が表示される
 - ステータス: 📋 未着手
 
+#### SC-SMK-011c: B011 新マイページ購入履歴表示（`/e-learning/lp/mypage/purchases`）
+- 対象URL: `/e-learning/lp/mypage/purchases`
+- 前提: ログイン済み
+- 確認内容:
+  - h1「購入履歴」が表示される
+  - MyPageSidebarClient（マイページナビ）が表示される
+  - 購入履歴0件でも 200 OK（EmptyState 表示）
+- ステータス: 📋 未着手
+
 #### SC-SMK-012: B012 マイページブックマーク表示
 - 対象URL: `/e-learning/mypage/bookmarks`
 - 前提: ログイン済み
 - 確認内容: ブックマーク一覧または空状態が表示される
 - ステータス: 📋 未着手
 
+#### SC-SMK-012c: B012 新マイページブックマーク表示（`/e-learning/lp/mypage/bookmarks`）
+- 対象URL: `/e-learning/lp/mypage/bookmarks`
+- 前提: ログイン済み
+- 確認内容:
+  - h1「ブックマーク」が表示される
+  - MyPageSidebarClient が表示される
+  - ブックマーク0件でも 200 OK（EmptyState 表示）
+- ステータス: 📋 未着手
+
 #### SC-SMK-013: B013 マイページ視聴履歴表示
 - 対象URL: `/e-learning/mypage/progress`
 - 前提: ログイン済み
 - 確認内容: 視聴履歴一覧または空状態が表示される
+- ステータス: 📋 未着手
+
+#### SC-SMK-013c: B013 新マイページ視聴履歴表示（`/e-learning/lp/mypage/progress`）
+- 対象URL: `/e-learning/lp/mypage/progress`
+- 前提: ログイン済み
+- 確認内容:
+  - h1「視聴履歴」が表示される
+  - MyPageSidebarClient が表示される
+  - 視聴履歴0件でも 200 OK（EmptyState 表示）
 - ステータス: 📋 未着手
 
 #### SC-SMK-014: B014 マイページプロフィール表示
@@ -243,7 +270,7 @@
 
 | 状態 | 件数 |
 |------|------|
-| 📋 未着手 | 33 |
+| 📋 未着手 | 36 |
 | 🔧 実装中 | 0 |
 | ✅ 完了 | 0 |
-| **合計** | **33** |
+| **合計** | **36** |

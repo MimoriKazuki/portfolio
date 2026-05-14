@@ -256,6 +256,48 @@
 - 期待結果: 確認ダイアログが表示される
 - ステータス: 📋 未着手
 
+### 新マイページ（B011/B012/B013 — `/e-learning/lp/mypage/**`）
+
+#### SC-UAT-053: B011 新購入履歴 has_full_access=true → FullAccessBanner 表示
+- 対象URL: `/e-learning/lp/mypage/purchases`（has_full_access=true ユーザー）
+- 確認内容:
+  - `role="status"` のバナー「全コンテンツ視聴権限を取得済みです」が表示される
+  - 「コース一覧へ」リンクが `/e-learning/lp/courses` を向いている
+- ステータス: 📋 未着手
+
+#### SC-UAT-054: B011 新購入履歴「視聴する」→ B004 / B007 へ遷移
+- 対象URL: `/e-learning/lp/mypage/purchases`（completed 購入あり）
+- 操作: 購入済みコース行の「視聴する」ボタンをクリック
+- 期待結果: `/e-learning/lp/courses/[slug]` に遷移する
+- 補足: 単体動画購入なら `/e-learning/[id]` へ遷移
+- ステータス: 📋 未着手
+
+#### SC-UAT-055: B012 新ブックマーク「解除」→ 行が楽観的に非表示 + リロード後も復活しない
+- 対象URL: `/e-learning/lp/mypage/bookmarks`（ブックマーク1件以上）
+- 操作: ブックマーク行の解除ボタン（BookmarkX アイコン）をクリック
+- 期待結果（2点）:
+  1. ボタンクリック後、該当行が即座に非表示になる（楽観的更新）
+  2. ページをリロードしても行が復活しない（DB 削除確認）
+  （クリーンアップ：テスト用ブックマークはテスト前に作成・解除で完結）
+- ステータス: 📋 未着手
+
+#### SC-UAT-056: B013 新視聴履歴 コース別 ProgressBar + 「次のレッスン」→ B005 へ遷移
+- 対象URL: `/e-learning/lp/mypage/progress`（コース進捗あり）
+- 確認内容:
+  - コース行に ProgressBar が表示され、「completed/total（pct%）」が表示される
+  - 「次のレッスン」ボタンをクリック → `/e-learning/lp/courses/[slug]/videos/[videoId]` に遷移する
+  - コース完了時はボタンが「もう一度視聴」表示になる
+- ステータス: 📋 未着手
+
+#### SC-UAT-057: マイページサイドバー active 強調（aria-current="page"）
+- 前提: ログイン済み
+- 操作: `/e-learning/lp/mypage/purchases` にアクセス
+- 確認内容:
+  - サイドバーの「購入履歴」リンクに `aria-current="page"` が付いている
+  - 他の3リンク（ブックマーク・視聴履歴・プロフィール）には `aria-current` が付いていない
+- 補足: B012/B013 でも同様の active 強調が機能することを確認
+- ステータス: 📋 未着手
+
 ### 管理画面 単体動画（C001/C002/C003）
 
 #### SC-UAT-060: C001 単体動画一覧 検索フィルタ
@@ -317,7 +359,7 @@
 
 | 状態 | 件数 |
 |------|------|
-| 📋 未着手 | 49 |
+| 📋 未着手 | 54 |
 | 🔧 実装中 | 0 |
 | ✅ 完了 | 0 |
-| **合計** | **49** |
+| **合計** | **54** |
