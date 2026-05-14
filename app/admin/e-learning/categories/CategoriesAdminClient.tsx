@@ -14,7 +14,8 @@ import {
   X,
   Loader2,
   ArrowUp,
-  ArrowDown
+  ArrowDown,
+  Filter
 } from 'lucide-react'
 import { ELearningCategory } from '@/app/types'
 
@@ -32,6 +33,19 @@ export default function CategoriesAdminClient({ categories: initialCategories }:
   const [newForm, setNewForm] = useState({ name: '', slug: '', description: '' })
   const [loading, setLoading] = useState(false)
   const [movingId, setMovingId] = useState<string | null>(null)
+  // 状態フィルタ（C001 と同パターン・最小追加）：
+  // - ''（既定）：削除済を非表示（運用配慮・誤操作防止）
+  // - 'active'：有効のみ / 'inactive'：無効のみ / 'deleted'：削除済のみ
+  const [statusFilter, setStatusFilter] = useState<'' | 'active' | 'inactive' | 'deleted'>('')
+
+  const filteredCategories = categories.filter((category) => {
+    const isDeleted = !!category.deleted_at
+    if (statusFilter === 'deleted') return isDeleted
+    if (isDeleted) return false
+    if (statusFilter === 'active') return category.is_active
+    if (statusFilter === 'inactive') return !category.is_active
+    return true
+  })
 
   // スラッグを自動生成（日本語対応）
   const generateSlug = (name: string) => {
@@ -227,6 +241,24 @@ export default function CategoriesAdminClient({ categories: initialCategories }:
           <p className="text-gray-600 mt-2">
             カテゴリの追加・編集・並べ替えができます。並び順はユーザー画面のトップページのセクション表示順に反映されます。
           </p>
+
+          {/* 状態フィルタ（最小追加・既定は削除済を非表示） */}
+          <div className="mt-4 flex items-center gap-3">
+            <div className="relative">
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value as typeof statusFilter)}
+                className="appearance-none pl-3 pr-8 py-2 border border-gray-300 rounded-lg bg-white text-sm text-gray-900 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+                <option value="">すべて（削除済を除く）</option>
+                <option value="active">有効のみ</option>
+                <option value="inactive">無効のみ</option>
+                <option value="deleted">削除済のみ</option>
+              </select>
+              <Filter className="absolute right-2 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none" />
+            </div>
+            <span className="text-sm text-gray-500">{filteredCategories.length} / {categories.length} 件</span>
+          </div>
         </div>
 
         {/* Add Form */}
@@ -295,13 +327,15 @@ export default function CategoriesAdminClient({ categories: initialCategories }:
 
         {/* Categories List */}
         <div className="bg-white rounded-lg shadow-md">
-          {categories.length === 0 ? (
+          {filteredCategories.length === 0 ? (
             <div className="p-8 text-center text-gray-500">
-              カテゴリがありません。「新規追加」ボタンから追加してください。
+              {categories.length === 0
+                ? 'カテゴリがありません。「新規追加」ボタンから追加してください。'
+                : '条件に一致するカテゴリがありません。'}
             </div>
           ) : (
             <ul className="divide-y divide-gray-200">
-              {categories.map((category, index) => (
+              {filteredCategories.map((category) => (
                 <li key={category.id} className="p-4">
                   {editingId === category.id ? (
                     // 編集モード
@@ -348,14 +382,22 @@ export default function CategoriesAdminClient({ categories: initialCategories }:
                       <div className="flex flex-col gap-1">
                         <button
                           onClick={() => moveCategory(category.id, 'up')}
-                          disabled={index === 0 || movingId !== null}
+                          disabled={
+                            statusFilter !== '' ||
+                            categories.findIndex((c) => c.id === category.id) === 0 ||
+                            movingId !== null
+                          }
                           className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed"
                         >
                           <ArrowUp className="h-4 w-4" />
                         </button>
                         <button
                           onClick={() => moveCategory(category.id, 'down')}
-                          disabled={index === categories.length - 1 || movingId !== null}
+                          disabled={
+                            statusFilter !== '' ||
+                            categories.findIndex((c) => c.id === category.id) === categories.length - 1 ||
+                            movingId !== null
+                          }
                           className="p-1 text-gray-400 hover:text-gray-600 disabled:opacity-30 disabled:cursor-not-allowed"
                         >
                           <ArrowDown className="h-4 w-4" />
