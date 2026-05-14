@@ -12,10 +12,15 @@ import {
   Download,
   Lock,
   Play,
-  Bookmark
+  Bookmark,
+  CheckCircle2
 } from 'lucide-react'
 import { createClient } from '@/app/lib/supabase/client'
 import PurchasePromptModal from '../PurchasePromptModal'
+import {
+  markContentCompletedAction,
+  type MarkContentCompletedResult,
+} from './_actions/mark-completed'
 
 interface ELearningDetailClientProps {
   content: ELearningContent
@@ -23,6 +28,8 @@ interface ELearningDetailClientProps {
   hasPurchased: boolean
   relatedContents?: ELearningContent[]
   initialBookmarked?: boolean
+  /** 視聴完了済か（B007 完了マーク UI 用・最小追加）。 */
+  initialCompleted?: boolean
 }
 
 // YouTube動画IDを抽出
@@ -48,7 +55,8 @@ export default function ELearningDetailClient({
   user,
   hasPurchased,
   relatedContents = [],
-  initialBookmarked = false
+  initialBookmarked = false,
+  initialCompleted = false
 }: ELearningDetailClientProps) {
   const searchParams = useSearchParams()
   const router = useRouter()
@@ -57,6 +65,8 @@ export default function ELearningDetailClient({
   const [isLoading, setIsLoading] = useState(false)
   const [isBookmarked, setIsBookmarked] = useState(initialBookmarked)
   const [isBookmarkLoading, setIsBookmarkLoading] = useState(false)
+  const [isCompleted, setIsCompleted] = useState(initialCompleted)
+  const [isCompleting, setIsCompleting] = useState(false)
   const supabase = createClient()
 
   // 有料コンテンツで未購入の場合、初期表示でモーダルを表示
@@ -288,6 +298,42 @@ export default function ELearningDetailClient({
                 />
                 ブックマーク
               </button>
+
+              {/* 視聴完了マークボタン（B007 最小追加・hasPurchased 時のみ表示） */}
+              {hasPurchased && (
+                <button
+                  onClick={async () => {
+                    if (isCompleted || isCompleting) return
+                    setIsCompleting(true)
+                    try {
+                      const result: MarkContentCompletedResult =
+                        await markContentCompletedAction(content.id)
+                      if (result.success === true) {
+                        setIsCompleted(true)
+                      } else if (result.success === false) {
+                        console.error('mark completed failed:', result.code)
+                      }
+                    } catch (err) {
+                      console.error('mark completed unexpected error:', err)
+                    } finally {
+                      setIsCompleting(false)
+                    }
+                  }}
+                  disabled={isCompleted || isCompleting}
+                  aria-label={isCompleted ? '視聴済' : '視聴完了としてマーク'}
+                  className={`inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full font-medium text-sm transition-all border whitespace-nowrap ${
+                    isCompleted
+                      ? 'bg-green-50 border-green-300 text-green-700 cursor-default'
+                      : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
+                  } ${isCompleting ? 'opacity-50 cursor-wait' : ''}`}
+                >
+                  <CheckCircle2
+                    className="w-4 h-4"
+                    fill={isCompleted ? 'currentColor' : 'none'}
+                  />
+                  {isCompleted ? '視聴済' : '視聴完了'}
+                </button>
+              )}
 
               {/* ダウンロードボタン */}
               {sortedMaterials.length > 0 && (

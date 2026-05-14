@@ -145,6 +145,17 @@ export default async function ELearningDetailPage({ params }: PageProps) {
         .maybeSingle()
     : { data: null }
 
+  // 視聴完了済か（B007 完了マーク表示用・最小改修）
+  // 進捗レコードが存在する＝視聴完了。再視聴で completed_at を上書きしない仕様（N6/N7）
+  const { data: progress } = eLearningUser
+    ? await supabase
+        .from('e_learning_progress')
+        .select('completed_at')
+        .eq('user_id', eLearningUser.id)
+        .eq('content_id', content.id)
+        .maybeSingle()
+    : { data: null }
+
   return (
     <ELearningDetailClient
       content={content as ELearningContent}
@@ -152,6 +163,7 @@ export default async function ELearningDetailPage({ params }: PageProps) {
       hasPurchased={hasViewAccess}
       relatedContents={relatedContents as ELearningContent[] || []}
       initialBookmarked={!!bookmark}
+      initialCompleted={!!progress?.completed_at}
     />
   )
 }
