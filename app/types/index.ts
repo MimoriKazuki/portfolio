@@ -138,6 +138,8 @@ export interface ELearningCategory {
   is_active: boolean
   created_at: string
   updated_at: string
+  /** 論理削除日時（L4 確定追加・null = アクティブ）。 */
+  deleted_at?: string | null
 }
 
 export interface ELearningContent {

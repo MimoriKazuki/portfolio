@@ -372,13 +372,19 @@ export default function CategoriesAdminClient({ categories: initialCategories }:
                         </div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className={`text-xs px-2 py-1 rounded ${
-                          category.is_active
-                            ? 'bg-green-100 text-green-700'
-                            : 'bg-gray-100 text-gray-500'
-                        }`}>
-                          {category.is_active ? '有効' : '無効'}
-                        </span>
+                        {category.deleted_at ? (
+                          <span className="text-xs px-2 py-1 rounded bg-red-100 text-red-700">
+                            削除済
+                          </span>
+                        ) : (
+                          <span className={`text-xs px-2 py-1 rounded ${
+                            category.is_active
+                              ? 'bg-green-100 text-green-700'
+                              : 'bg-gray-100 text-gray-500'
+                          }`}>
+                            {category.is_active ? '有効' : '無効'}
+                          </span>
+                        )}
                         <button
                           onClick={() => startEdit(category)}
                           className="p-2 text-gray-500 hover:text-blue-600"
