@@ -95,7 +95,7 @@ export default async function ELearningLPPage() {
           cta={
             <>
               <Button asChild size="lg">
-                <Link href="/e-learning/courses">コースを探す</Link>
+                <Link href="/e-learning/lp/courses">コースを探す</Link>
               </Button>
               <Button asChild variant="outline" size="lg">
                 <Link href="/auth/login">無料で始める</Link>
@@ -118,7 +118,7 @@ export default async function ELearningLPPage() {
             description="体系的に学べるコース。順番に視聴して理解を深められます。"
             cta={
               <Button asChild variant="outline">
-                <Link href="/e-learning/courses">すべて見る</Link>
+                <Link href="/e-learning/lp/courses">すべて見る</Link>
               </Button>
             }
           >
@@ -135,7 +135,7 @@ export default async function ELearningLPPage() {
             description="気になるテーマだけサクッと視聴できる単体動画。"
             cta={
               <Button asChild variant="outline">
-                <Link href="/e-learning">すべて見る</Link>
+                <Link href="/e-learning/lp/videos">すべて見る</Link>
               </Button>
             }
           >
