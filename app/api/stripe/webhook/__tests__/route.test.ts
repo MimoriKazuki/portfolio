@@ -553,3 +553,216 @@ describe('POST /api/stripe/webhook — 署名検証', () => {
     expect(res.status).toBe(400)
   })
 })
+
+// ================================================================
+// checkout.session.completed — 新形式 metadata 分岐（P3-WEBHOOK-NEW）
+// ================================================================
+
+function makeNewFormatSession(override: {
+  targetType?: string
+  targetId?: string
+  userId?: string
+  sessionId?: string
+  paymentIntentId?: string
+  amountTotal?: number
+}) {
+  const {
+    targetType = 'course',
+    targetId = 'course-id-001',
+    userId = 'eu-id-001',
+    sessionId = 'cs_test_001',
+    paymentIntentId = 'pi_test_001',
+    amountTotal = 9800,
+  } = override
+  return {
+    id: sessionId,
+    metadata: {
+      user_id: userId,
+      target_type: targetType,
+      target_id: targetId,
+    },
+    payment_intent: paymentIntentId,
+    amount_total: amountTotal,
+  }
+}
+
+function makeCheckoutCompletedEvent(session: object): Stripe.Event {
+  return {
+    id: 'evt_checkout_001',
+    type: 'checkout.session.completed',
+    data: { object: session },
+  } as unknown as Stripe.Event
+}
+
+// supabaseAdmin の INSERT + 後続 SELECT（userData 取得）をスタブするヘルパー
+function stubSupabaseForNewFormat({
+  insertError = null,
+  userData = null as object | null,
+} = {}) {
+  let callCount = 0
+  mockFrom.mockImplementation(() => {
+    callCount++
+    if (callCount === 1) {
+      // INSERT into e_learning_purchases
+      const insert = vi.fn().mockResolvedValue({ error: insertError })
+      return { insert }
+    }
+    // SELECT e_learning_users for userData
+    const maybeSingle = vi.fn().mockResolvedValue({ data: userData, error: null })
+    const eq = vi.fn(() => ({ maybeSingle }))
+    const select = vi.fn(() => ({ eq }))
+    return { select }
+  })
+}
+
+describe('checkout.session.completed — 新形式 metadata (P3-WEBHOOK-NEW)', () => {
+  it('target_type=course → e_learning_purchases に course_id セットで INSERT・200 OK', async () => {
+    const session = makeNewFormatSession({ targetType: 'course', targetId: 'course-001' })
+    _mockConstructEventFn.mockReturnValue(makeCheckoutCompletedEvent(session))
+
+    let insertedRow: object | null = null
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'e_learning_purchases') {
+        const insert = vi.fn().mockImplementation((row: object) => {
+          insertedRow = row
+          return Promise.resolve({ error: null })
+        })
+        return { insert }
+      }
+      // e_learning_users
+      const maybeSingle = vi.fn().mockResolvedValue({ data: null, error: null })
+      const eq = vi.fn(() => ({ maybeSingle }))
+      const select = vi.fn(() => ({ eq }))
+      return { select }
+    })
+
+    const res = await POST(makeRequest() as unknown as Parameters<typeof POST>[0])
+    expect(res.status).toBe(200)
+    expect(await res.json()).toEqual({ received: true })
+    expect(insertedRow).toMatchObject({
+      course_id: 'course-001',
+      content_id: null,
+      user_id: 'eu-id-001',
+      status: 'completed',
+    })
+  })
+
+  it('target_type=content → e_learning_purchases に content_id セットで INSERT', async () => {
+    const session = makeNewFormatSession({ targetType: 'content', targetId: 'content-001' })
+    _mockConstructEventFn.mockReturnValue(makeCheckoutCompletedEvent(session))
+
+    let insertedRow: object | null = null
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'e_learning_purchases') {
+        const insert = vi.fn().mockImplementation((row: object) => {
+          insertedRow = row
+          return Promise.resolve({ error: null })
+        })
+        return { insert }
+      }
+      const maybeSingle = vi.fn().mockResolvedValue({ data: null, error: null })
+      const eq = vi.fn(() => ({ maybeSingle }))
+      const select = vi.fn(() => ({ eq }))
+      return { select }
+    })
+
+    const res = await POST(makeRequest() as unknown as Parameters<typeof POST>[0])
+    expect(res.status).toBe(200)
+    expect(insertedRow).toMatchObject({
+      content_id: 'content-001',
+      course_id: null,
+      status: 'completed',
+    })
+  })
+
+  it('新形式で INSERT 成功 → has_full_access は更新しない（update が呼ばれない）', async () => {
+    const session = makeNewFormatSession({})
+    _mockConstructEventFn.mockReturnValue(makeCheckoutCompletedEvent(session))
+
+    const updateCalls: string[] = []
+    mockFrom.mockImplementation((table: string) => {
+      if (table === 'e_learning_purchases') {
+        const insert = vi.fn().mockResolvedValue({ error: null })
+        return { insert }
+      }
+      if (table === 'e_learning_users') {
+        // track update calls
+        const update = vi.fn().mockImplementation(() => {
+          updateCalls.push('update called')
+          return { eq: vi.fn().mockResolvedValue({ error: null }) }
+        })
+        const maybeSingle = vi.fn().mockResolvedValue({ data: null, error: null })
+        const eq = vi.fn(() => ({ maybeSingle }))
+        const select = vi.fn(() => ({ eq }))
+        return { select, update }
+      }
+      const maybeSingle = vi.fn().mockResolvedValue({ data: null, error: null })
+      const eq = vi.fn(() => ({ maybeSingle }))
+      const select = vi.fn(() => ({ eq }))
+      return { select }
+    })
+
+    await POST(makeRequest() as unknown as Parameters<typeof POST>[0])
+    // has_full_access 更新（UPDATE e_learning_users）は呼ばれない
+    expect(updateCalls).toHaveLength(0)
+  })
+
+  it('新形式 INSERT で 23505（UNIQUE 違反）→ 200 OK（冪等）', async () => {
+    const session = makeNewFormatSession({})
+    _mockConstructEventFn.mockReturnValue(makeCheckoutCompletedEvent(session))
+    stubSupabaseForNewFormat({ insertError: { code: '23505', message: 'duplicate key value' } })
+
+    const res = await POST(makeRequest() as unknown as Parameters<typeof POST>[0])
+    expect(res.status).toBe(200)
+    expect(await res.json()).toEqual({ received: true })
+  })
+
+  it('新形式 INSERT で非冪等エラー → 500 + Slack 通知経路', async () => {
+    const session = makeNewFormatSession({})
+    _mockConstructEventFn.mockReturnValue(makeCheckoutCompletedEvent(session))
+    stubSupabaseForNewFormat({ insertError: { code: '42501', message: 'permission denied' } })
+
+    const res = await POST(makeRequest() as unknown as Parameters<typeof POST>[0])
+    expect(res.status).toBe(500)
+    expect(await res.json()).toMatchObject({ error: 'Purchase insert failed' })
+  })
+
+  it('旧形式 metadata（userId のみ）→ has_full_access 更新（旧ロジック）が動く', async () => {
+    const legacySession = {
+      id: 'cs_legacy_001',
+      metadata: { userId: 'eu-legacy-001' },
+      payment_intent: 'pi_legacy_001',
+      amount_total: 9800,
+    }
+    _mockConstructEventFn.mockReturnValue(makeCheckoutCompletedEvent(legacySession))
+
+    let updateCalled = false
+    let callCount = 0
+    mockFrom.mockImplementation((table: string) => {
+      callCount++
+      if (table === 'e_learning_users') {
+        // 1回目はUPDATE（has_full_access=true）
+        // 2回目はSELECT（userData取得）
+        if (callCount <= 1) {
+          const updateEq = vi.fn().mockResolvedValue({ error: null })
+          const update = vi.fn().mockImplementation(() => {
+            updateCalled = true
+            return { eq: updateEq }
+          })
+          return { update }
+        }
+        const single = vi.fn().mockResolvedValue({ data: null, error: null })
+        const eq = vi.fn(() => ({ single }))
+        const select = vi.fn(() => ({ eq }))
+        return { select }
+      }
+      // e_learning_purchases
+      const insert = vi.fn().mockResolvedValue({ error: null })
+      return { insert }
+    })
+
+    const res = await POST(makeRequest() as unknown as Parameters<typeof POST>[0])
+    expect(res.status).toBe(200)
+    expect(updateCalled).toBe(true)
+  })
+})

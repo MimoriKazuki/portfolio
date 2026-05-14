@@ -10,6 +10,8 @@ export default defineConfig({
     environmentMatchGlobs: [
       ['**/__tests__/**/*.tsx', 'jsdom'],
     ],
+    // Playwright E2E spec は vitest の対象外（P3-TEST-01 追加・別 runner）
+    exclude: ['**/node_modules/**', '**/dist/**', 'e2e/**'],
   },
   resolve: {
     alias: {
