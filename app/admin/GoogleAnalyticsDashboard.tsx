@@ -161,15 +161,20 @@ export default function GoogleAnalyticsDashboard() {
 
       setData(processedData)
       setRealTimeUsers(processedData.realTimeUsers)
-      console.log('Analytics data loaded successfully', processedData)
-      
+      // P3-AUX-05：processedData 全体は GA4 ユーザーデータ含むため出力削減
+      console.log('[admin/ga] analytics data loaded')
+
       // 最小ローディング時間を確保
       const elapsedTime = Date.now() - startTime
       if (elapsedTime < minLoadingTime) {
         await new Promise(resolve => setTimeout(resolve, minLoadingTime - elapsedTime))
       }
     } catch (err) {
-      console.error('Failed to fetch analytics data:', err)
+      // P3-AUX-05：err オブジェクト全体ではなく name + message のみ log
+      console.error('[admin/ga] failed to fetch analytics', {
+        name: err instanceof Error ? err.name : 'UnknownError',
+        message: err instanceof Error ? err.message : String(err),
+      })
       const errorMessage = err instanceof Error ? err.message : 'アナリティクスデータの取得に失敗しました'
       setError(errorMessage)
     } finally {
@@ -191,7 +196,7 @@ export default function GoogleAnalyticsDashboard() {
     userActivity: any,
     timeRange: string
   ): AnalyticsData => {
-    console.log('Processing analytics response:', { overview, realtime, traffic, devices, pages, locations, userAcquisition, hourly, browsers })
+    // P3-AUX-05：GA4 ローデータ（ユーザー位置情報・流入元等）は console に出さない
     // 基本メトリクスの集計
     const overviewMetrics = {
       users: 0,
@@ -426,7 +431,7 @@ export default function GoogleAnalyticsDashboard() {
       userActivity: userActivity || null
     }
     
-    console.log('Processed data:', result)
+    // P3-AUX-05：processed data 全体は GA4 ユーザーデータ含むため出力しない
     return result
   }
 
@@ -561,7 +566,10 @@ export default function GoogleAnalyticsDashboard() {
         const count = data.rows?.[0]?.metricValues[0]?.value || 0
         setRealTimeUsers(parseInt(count))
       } catch (err) {
-        console.error('Failed to update realtime users:', err)
+        // P3-AUX-05：err 全体ではなく name のみ log
+        console.error('[admin/ga] failed to update realtime users', {
+          name: err instanceof Error ? err.name : 'UnknownError',
+        })
       }
     }, 30000) // 30秒ごとに更新
     

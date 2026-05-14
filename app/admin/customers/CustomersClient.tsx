@@ -243,7 +243,10 @@ export default function CustomersClient({ customers: initialCustomers, corporate
         )
       }
     } catch (error) {
-      console.error('Failed to update status:', error)
+      // P3-AUX-05：error オブジェクト全体ではなく name + message のみ log（PII 漏洩防止）
+      console.error('[admin/customers] update status failed', {
+        name: error instanceof Error ? error.name : 'UnknownError',
+      })
     } finally {
       setUpdatingStatus(null)
     }
@@ -309,7 +312,10 @@ export default function CustomersClient({ customers: initialCustomers, corporate
         setShowCorporateModal(false)
       }
     } catch (error) {
-      console.error('Failed to save corporate customer:', error)
+      // P3-AUX-05：error 全体ではなく name のみ log（form 内容に PII 含むため）
+      console.error('[admin/customers] save corporate customer failed', {
+        name: error instanceof Error ? error.name : 'UnknownError',
+      })
     } finally {
       setSaving(false)
     }
@@ -328,7 +334,9 @@ export default function CustomersClient({ customers: initialCustomers, corporate
         setCorporateCustomers((prev) => prev.filter((c) => c.id !== id))
       }
     } catch (error) {
-      console.error('Failed to delete corporate customer:', error)
+      console.error('[admin/customers] delete corporate customer failed', {
+        name: error instanceof Error ? error.name : 'UnknownError',
+      })
     }
   }
 
@@ -364,7 +372,10 @@ export default function CustomersClient({ customers: initialCustomers, corporate
         setUserError(data.error || 'ユーザーの追加に失敗しました')
       }
     } catch (error) {
-      console.error('Failed to add corporate user:', error)
+      // P3-AUX-05：error 全体ではなく name のみ log（newUserEmail を含む可能性のあるため）
+      console.error('[admin/customers] add corporate user failed', {
+        name: error instanceof Error ? error.name : 'UnknownError',
+      })
       setUserError('ユーザーの追加に失敗しました')
     } finally {
       setAddingUser(false)
@@ -394,7 +405,9 @@ export default function CustomersClient({ customers: initialCustomers, corporate
         )
       }
     } catch (error) {
-      console.error('Failed to remove corporate user:', error)
+      console.error('[admin/customers] remove corporate user failed', {
+        name: error instanceof Error ? error.name : 'UnknownError',
+      })
     }
   }
 

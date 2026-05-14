@@ -159,7 +159,11 @@ export default function ProjectForm({ initialData, projectId }: ProjectFormProps
       })
 
     if (uploadError) {
-      console.error('Video upload error:', uploadError)
+      // P3-AUX-05：upload error 全体ではなく message のみ
+      console.error('[admin/projects] video upload failed', {
+        name: uploadError.name,
+        message: uploadError.message,
+      })
       throw uploadError
     }
 
@@ -211,36 +215,38 @@ export default function ProjectForm({ initialData, projectId }: ProjectFormProps
         live_url: videoUrl
       }
 
-      console.log('Attempting to save project data:', projectData)
-      console.log('Current auth status:', await supabase.auth.getUser())
+      // P3-AUX-05：projectData 全体・auth.getUser() 全体は PII を含むため出力しない
+      // デバッグが必要な場合は projectId のみ log
+      console.log('[admin/projects] saving project', { projectId: projectId ?? 'new' })
 
       if (projectId) {
         // Update existing project
-        const { error, data } = await supabase
+        const { error } = await supabase
           .from('projects')
           .update(projectData)
           .eq('id', projectId)
           .select()
 
-        console.log('Update result:', { error, data })
         if (error) throw error
       } else {
         // Create new project
-        const { error, data } = await supabase
+        const { error } = await supabase
           .from('projects')
           .insert([projectData])
           .select()
 
-        console.log('Insert result:', { error, data })
-
         if (error) throw error
       }
 
-      console.log('Project saved successfully')
+      console.log('[admin/projects] project saved successfully')
       router.push('/admin/projects')
       router.refresh()
     } catch (error: unknown) {
-      console.error('Error saving project:', error)
+      // P3-AUX-05：error 全体ではなく name + message のみ log
+      console.error('[admin/projects] save project failed', {
+        name: error instanceof Error ? error.name : 'UnknownError',
+        message: error instanceof Error ? error.message : String(error),
+      })
       alert('Error saving project: ' + (error instanceof Error ? error.message : 'Unknown error'))
     } finally {
       setLoading(false)
