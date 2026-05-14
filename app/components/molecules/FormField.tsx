@@ -19,7 +19,8 @@ import { cn } from '@/app/lib/utils'
  * ```
  *
  * アクセシビリティ：
- * - children の入力フィールドに id と aria-describedby を呼び出し側で連携させる
+ * - children の入力フィールド（単一 React 要素）に aria-describedby / aria-errormessage を
+ *   自動 wire-up（F-01・呼び出し側で指定済なら尊重して結合）
  * - error は赤系（text-destructive）/ helpText は muted-foreground
  */
 
@@ -38,6 +39,37 @@ export interface FormFieldProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode
 }
 
+type FieldElementProps = {
+  'aria-describedby'?: string
+  'aria-errormessage'?: string
+  'aria-invalid'?: boolean | 'true' | 'false'
+}
+
+/**
+ * 単一の React 要素である children に aria-* を自動付与。
+ * 呼び出し側で既に指定済の値がある場合は半角スペース区切りで結合し、上書きしない。
+ */
+function wireFieldA11y(
+  children: React.ReactNode,
+  errorId: string | undefined,
+  helpId: string | undefined,
+): React.ReactNode {
+  if (!React.isValidElement(children)) return children
+
+  const existing = children.props as FieldElementProps
+  const describedBy = [helpId, existing['aria-describedby']].filter(Boolean).join(' ') || undefined
+  const errorMessageId = [errorId, existing['aria-errormessage']].filter(Boolean).join(' ') || undefined
+
+  const next: FieldElementProps = {}
+  if (describedBy !== existing['aria-describedby']) next['aria-describedby'] = describedBy
+  if (errorMessageId !== existing['aria-errormessage']) next['aria-errormessage'] = errorMessageId
+  // aria-invalid は呼び出し側に裁量を残す（自動付与しない）
+
+  return Object.keys(next).length > 0
+    ? React.cloneElement(children as React.ReactElement<FieldElementProps>, next)
+    : children
+}
+
 const FormField = React.forwardRef<HTMLDivElement, FormFieldProps>(
   (
     {
@@ -54,13 +86,14 @@ const FormField = React.forwardRef<HTMLDivElement, FormFieldProps>(
   ) => {
     const errorId = error ? `${htmlFor}-error` : undefined
     const helpId = helpText ? `${htmlFor}-help` : undefined
+    const wiredChildren = wireFieldA11y(children, errorId, helpId)
 
     return (
       <div ref={ref} className={cn('w-full', className)} {...props}>
         <Label htmlFor={htmlFor} required={required} className="mb-1.5 block">
           {label}
         </Label>
-        {children}
+        {wiredChildren}
         {helpText && !error && (
           <p id={helpId} className="mt-1 text-xs text-muted-foreground">
             {helpText}
