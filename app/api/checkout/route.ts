@@ -46,6 +46,7 @@ function checkoutErrorToStatus(code: CheckoutError['code']): number {
       return 409
     case 'STRIPE_API_ERROR':
       return 502
+    case 'DB_ERROR':
     case 'INTERNAL_ERROR':
     default:
       return 500
@@ -95,7 +96,10 @@ export async function POST(request: NextRequest) {
     .eq('auth_user_id', user.id)
     .maybeSingle()
 
-  if (euError || !elearningUser) {
+  if (euError) {
+    return errorResponse('DB_ERROR', 'ユーザー取得時の DB エラー', 500)
+  }
+  if (!elearningUser) {
     return errorResponse(
       'NOT_FOUND',
       'e-learning ユーザーが見つかりません',
@@ -120,7 +124,9 @@ export async function POST(request: NextRequest) {
     if (err instanceof CheckoutError) {
       return errorResponse(err.code, err.message, checkoutErrorToStatus(err.code))
     }
-    console.error('[POST /api/checkout] unexpected error', err)
+    console.error('[POST /api/checkout] unexpected error', {
+      message: err instanceof Error ? err.message : String(err),
+    })
     return errorResponse(
       'INTERNAL_ERROR',
       '決済処理中にエラーが発生しました',

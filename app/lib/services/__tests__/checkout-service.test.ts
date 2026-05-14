@@ -251,10 +251,12 @@ describe('startCheckout — cancelReturnUrl セキュリティ', () => {
     expect(url).not.toContain('foo')
   })
 
-  it(':// 含む値（/x://y）→ /e-learning フォールバック', async () => {
-    const url = await getCancelUrl('/x://y')
-    expect(url).toContain('/e-learning')
-    expect(url).not.toContain('x://')
+  it('バックスラッシュ迂回（/\\evil.com）→ 同一オリジン内パスとして処理（hostname 検証で安全）', async () => {
+    // new URL パーサーが \\evil.com を正規化しても hostname は placeholder のまま
+    // → 同一オリジン内パスとして使用される（外部リダイレクトは発生しない）
+    const url = await getCancelUrl('/\\evil.com')
+    expect(url).toContain('https://www.landbridge.ai/')
+    expect(new URL(url).hostname).toBe('www.landbridge.ai')
   })
 
   it('プロトコル相対 URL（//evil.com/x）→ /e-learning フォールバック', async () => {

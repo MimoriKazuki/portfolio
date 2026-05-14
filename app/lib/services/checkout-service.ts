@@ -1,4 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
+import Stripe from 'stripe'
 import { createClient } from '@/app/lib/supabase/server'
 import { getStripe } from '@/app/lib/stripe/client'
 
@@ -51,6 +52,7 @@ export type CheckoutErrorCode =
   | 'NOT_FOUND'
   | 'BAD_REQUEST' // 無料商品の購入拒否
   | 'INTERNAL_ERROR' // stripe_price_id 未設定（設計エラー）
+  | 'DB_ERROR' // Supabase / DB クエリ失敗（一時的・リトライ可）
   | 'ALREADY_PURCHASED'
   | 'ALREADY_FULL_ACCESS'
   | 'STRIPE_API_ERROR'
@@ -85,7 +87,10 @@ async function getTargetPriceInfo(
     .eq('id', targetId)
     .maybeSingle()
 
-  if (error || !target) {
+  if (error) {
+    throw new CheckoutError('DB_ERROR', '対象取得時の DB エラー')
+  }
+  if (!target) {
     throw new CheckoutError('NOT_FOUND', '対象が見つかりません')
   }
 
@@ -120,7 +125,10 @@ async function getUserAccessInfo(
     .eq('id', userId)
     .maybeSingle()
 
-  if (error || !user) {
+  if (error) {
+    throw new CheckoutError('DB_ERROR', 'ユーザー取得時の DB エラー')
+  }
+  if (!user) {
     throw new CheckoutError('NOT_FOUND', 'ユーザーが見つかりません')
   }
 
@@ -133,6 +141,10 @@ async function getUserAccessInfo(
 /**
  * 既購入チェック（完了状態の購入が存在するか）。
  * status='completed' のみ対象（'refunded' は権限剥奪・再購入可）。
+ *
+ * race condition は Webhook 側の stripe_session_id UNIQUE 制約で吸収（errors.md §F 参照）。
+ * 本チェックと Stripe Session 作成の間に同一ユーザーの並行購入があっても、
+ * DB 反映は最初に完了した 1 件のみが UNIQUE で勝つ設計。
  */
 async function existsCompletedPurchase(
   supabase: AnySupabase,
@@ -150,30 +162,38 @@ async function existsCompletedPurchase(
     .eq('status', 'completed')
 
   if (error) {
-    throw new CheckoutError(
-      'INTERNAL_ERROR',
-      '購入履歴の取得に失敗しました',
-    )
+    throw new CheckoutError('DB_ERROR', '購入履歴の取得に失敗しました')
   }
 
   return (count ?? 0) > 0
 }
 
 /**
- * cancel_return_url の検証。
- * - 文字列・/ 始まり・// 始まりでない・:// 含まない → そのまま使用
- *   - `//evil.com` 形式（プロトコル相対 URL）を防ぐため `//` 始まりを明示的に拒否
- *     （${baseUrl}${path} 連結でホストは変わらないが防御的に弾く）
- * - それ以外 → '/e-learning' フォールバック
+ * cancel_return_url の検証（new URL パーサーで堅牢化）。
+ *
+ * 検証方針：
+ * - `/` 始まりのサイト内パスのみ受け入れる（先頭 1 文字を文字列レベルで確認）
+ * - `//` 始まり（プロトコル相対 URL）も拒否（先頭 2 文字目で確認）
+ * - 上記をクリアした後、placeholder ベース URL に対する相対 URL として解析
+ *   → 解析後の hostname が placeholder のままであれば「同一オリジン内パス」と確認できる
+ * - パーサーがバックスラッシュ・URL-encoded 等を正規化するため、文字列レベルの
+ *   `://` 包含チェックでは見落とす迂回パターンも検出可能
+ * - 解析失敗 / 外部ホスト混入 → '/e-learning' フォールバック
  */
 function resolveCancelPath(cancelReturnUrl: string | undefined): string {
   if (
     typeof cancelReturnUrl === 'string' &&
     cancelReturnUrl.startsWith('/') &&
-    !cancelReturnUrl.startsWith('//') &&
-    !cancelReturnUrl.includes('://')
+    !cancelReturnUrl.startsWith('//')
   ) {
-    return cancelReturnUrl
+    try {
+      const parsed = new URL(cancelReturnUrl, 'https://placeholder.invalid')
+      if (parsed.hostname === 'placeholder.invalid') {
+        return parsed.pathname + parsed.search + parsed.hash
+      }
+    } catch {
+      // パース失敗は下のフォールバックへ
+    }
   }
   return '/e-learning'
 }
@@ -251,14 +271,32 @@ export async function startCheckout(
       )
     }
 
+    // 成功時の監査トレイル（PII 除外・e_learning_users.id と Stripe Session ID のみ）
+    console.info('[checkout-service] session created', {
+      userId: input.userId,
+      targetType: input.targetType,
+      targetId: input.targetId,
+      stripeSessionId: session.id,
+    })
+
     return {
       checkoutUrl: session.url,
       stripeSessionId: session.id,
     }
   } catch (err) {
     if (err instanceof CheckoutError) throw err
-    // Stripe SDK エラーは詳細をログ・ユーザーには汎用メッセージ
-    console.error('[checkout-service] Stripe API error', err)
+    // Stripe SDK エラーは構造化ログ（PII / 内部情報の漏洩防止）
+    if (err instanceof Stripe.errors.StripeError) {
+      console.error('[checkout-service] Stripe API error', {
+        requestId: err.requestId,
+        type: err.type,
+        message: err.message,
+      })
+    } else {
+      console.error('[checkout-service] unexpected error', {
+        message: err instanceof Error ? err.message : String(err),
+      })
+    }
     throw new CheckoutError(
       'STRIPE_API_ERROR',
       'Stripe API エラーが発生しました',
