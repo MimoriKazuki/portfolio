@@ -315,7 +315,7 @@ describe('startCheckout — Stripe API 呼び出し引数の確認', () => {
       target_type: BASE_INPUT.targetType,
       target_id: BASE_INPUT.targetId,
     })
-    expect(arg.success_url).toContain('/e-learning/checkout/complete')
+    expect(arg.success_url).toContain('/e-learning/lp/checkout/complete')
     expect(arg.success_url).toContain('{CHECKOUT_SESSION_ID}')
     expect(arg.customer_email).toBe(normalUser.email)
   })

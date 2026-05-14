@@ -243,7 +243,8 @@ export async function startCheckout(
   // 5. URL 決定
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'https://www.landbridge.ai'
   // success_url：B009「決済完了ページ」へ統一（Stripe プレースホルダで session.id 置換）
-  const successUrl = `${baseUrl}/e-learning/checkout/complete?session_id={CHECKOUT_SESSION_ID}`
+  // Phase 3 中は /e-learning/lp/* 配下に集約（P3-CLEANUP-01 で /e-learning/checkout/complete へ正規化予定）
+  const successUrl = `${baseUrl}/e-learning/lp/checkout/complete?session_id={CHECKOUT_SESSION_ID}`
   const cancelUrl = `${baseUrl}${resolveCancelPath(input.cancelReturnUrl)}?canceled=true`
 
   // 6. Stripe Session 作成
