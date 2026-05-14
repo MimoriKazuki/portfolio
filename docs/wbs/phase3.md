@@ -224,9 +224,9 @@ Phase 3 中に該当機能を実装する際、合わせて対処する。
 | P3-AUX-01 | ESLint 復活（`npm run lint` echo 解消） | 📋 |
 | P3-AUX-02 | tsconfig strict 化（strictNullChecks 等） | 📋 |
 | P3-AUX-03 | `docs/auth/flow.md §D` の管理者判定前提崩れの修正 | 📋 |
-| P3-AUX-04 | `/api/youtube-videos/import` と `sync` への認可ガード追加 | 📋 |
-| P3-AUX-05 | admin UI コンポーネント（CustomersClient.tsx 等）の console.error PII 漏洩 | 📋 |
-| P3-AUX-06 | columns/[id] の dangerouslySetInnerHTML サニタイズ | 📋 |
+| P3-AUX-04 | `/api/youtube-videos/import` と `sync` への認可ガード追加 ✅ 完了（2026-05-14・コミット 1d5bd9a + 0e2b6b3・requireAdmin 多層防御 + UT 4 件） |
+| P3-AUX-05 | admin UI コンポーネント（CustomersClient.tsx 等）の console.error PII 漏洩 ✅ 完了（2026-05-14・コミット 054f651・3 ファイル 16 箇所・ProjectForm auth.getUser 完全削除含む） |
+| P3-AUX-06 | columns/[id] の dangerouslySetInnerHTML サニタイズ ✅ 完了（2026-05-14・コミット 1c5f9ce + 4f5a954 + 003bf22・DOMPurify + TipTap 拡張対応） |
 | P3-CLEANUP-01 | ★ Step 2 新導線 UI 完成後：旧 `/api/stripe/checkout` ルート + 旧 Webhook checkout.session.completed ハンドラ削除（旧買い切り「全コンテンツアクセス」導線を完全廃止）。Kosuke 判断 2026-05-14：UI から旧導線が外れたタイミングで削除する段階移行方針。新導線 UI（B001 LP + B002〜B014）完成 = Step 2 完了が前提 | dev-mate | 📋 |
 | P3-ADM-DELETE-LOGIC | ➖ **対応不要**（Kosuke 判断 2026-05-14：物理削除温存方針確定・「削除→再投稿」運用） | — | ➖ |
 | P3-SEED-01 | ローカル開発用ダミーコース投入スクリプト（既存 contents コピー方式・3 コース × 2-3 章 × 2-3 動画）✅ 完了（2026-05-14・コミット 9569b88・scripts/dev-seed/0001_dummy_courses.sql・review-mate 承認・本番非流入確認） | dev-mate | Kosuke 指示 | scripts/dev-seed/0001_dummy_courses.sql + docs/backend/database/seed-dev/README.md |
