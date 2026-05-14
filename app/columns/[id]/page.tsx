@@ -275,8 +275,10 @@ export default async function ColumnDetailPage({ params }: PageProps) {
           dangerouslySetInnerHTML={{
             // P3-AUX-06：column.content（CMS / TipTap 由来 HTML）を DOMPurify でサニタイズ
             // TipTap が生成するタグ（h1-h6 / p / a / strong / em / code / pre / blockquote /
-            //   ul / ol / li / img / br / hr / table / tr / td / th / thead / tbody）を許可。
-            // <script> や on* イベントハンドラ等は DOMPurify が既定で除去。
+            //   ul / ol / li / img / br / hr / table / tr / td / th / thead / tbody / mark）を許可。
+            // - mark：Highlight 拡張（背景色ハイライト）
+            // - style 属性：TextStyle/Color（文字色）+ Highlight（背景色）拡張
+            //   ※ DOMPurify は style 内の expression() / on* / javascript: を既定で除去するため許可しても安全
             // addIdsToHeadings は h1-h6 に id 属性を付与するだけなのでサニタイズ後に適用。
             __html: addIdsToHeadings(
               DOMPurify.sanitize(column.content, {
@@ -288,12 +290,14 @@ export default async function ColumnDetailPage({ params }: PageProps) {
                   'img', 'br', 'hr',
                   'table', 'thead', 'tbody', 'tr', 'td', 'th',
                   'span', 'div',
+                  'mark', // Highlight 拡張（review-mate 指摘）
                 ],
                 ALLOWED_ATTR: [
                   'href', 'target', 'rel',
                   'src', 'alt', 'title', 'width', 'height',
                   'class', 'id',
                   'colspan', 'rowspan',
+                  'style', // TextStyle/Color + Highlight 拡張（review-mate 指摘）
                 ],
                 ALLOW_DATA_ATTR: false,
               }),
