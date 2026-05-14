@@ -76,9 +76,12 @@ test.describe('旧 e-learning 会員ページ smoke（未ログイン → redire
 
   test('SC-SMK-010：旧 /e-learning/checkout/cancel', async ({ page }) => {
     await page.goto('/e-learning/checkout/cancel', { waitUntil: 'networkidle' })
-    // 認証 redirect or 200（既存 path の挙動による・両方許容）
+    // 認証 redirect or 200 表示の両方を許容（旧 path 廃止の可能性あり）
+    // review-mate 指摘：ノーアサート化を解消し、許容範囲を明示的に assert
     const url = page.url()
-    expect(url).toBeTruthy()
+    const isAuthRedirect = url.includes('/auth/login')
+    const isElearningPath = url.includes('/e-learning') // 旧パス自体表示 or /e-learning ルートへフォールバック
+    expect(isAuthRedirect || isElearningPath, `unexpected URL: ${url}`).toBe(true)
   })
 })
 

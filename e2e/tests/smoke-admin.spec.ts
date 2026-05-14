@@ -38,7 +38,8 @@ async function expectAdminRedirect(page: import('@playwright/test').Page, path: 
   // 本 smoke は未ログイン前提のため /auth/login へ redirect する想定
   const url = page.url()
   const isLogin = url.includes('/auth/login')
-  const isElearning = /\/e-learning(?!\/lp)?(?:\?|\/|$)/.test(url) && !url.includes('/admin/')
+  // /e-learning/lp/* は除外して /e-learning ルート / 配下のみマッチ（review-mate 指摘：末尾 ? が lookahead を optional にしていたバグ修正）
+  const isElearning = /\/e-learning(?!\/lp)(?:\?|\/|$)/.test(url) && !url.includes('/admin/')
   expect(isLogin || isElearning, `${path} は /auth/login or /e-learning へ redirect すべき（current: ${url}）`).toBe(true)
 }
 
@@ -129,7 +130,9 @@ test.describe('管理画面 smoke（未ログイン → redirect 確認）', () 
 })
 
 test.describe('SC-SMK-026：管理画面アクセス制御', () => {
-  test('未ログインで管理画面直アクセス → /auth/login or /e-learning へ', async ({ page }) => {
-    await expectAdminRedirect(page, '/admin/e-learning')
+  // SC-SMK-015 が /admin/e-learning を対象としているため、独立カバレッジとして別パスを採用
+  // 「アクセス制御は複数 path で機能する」ことを示す（review-mate 指摘の重複解消）
+  test('未ログインで管理画面の別 path 直アクセス → /auth/login or /e-learning へ', async ({ page }) => {
+    await expectAdminRedirect(page, '/admin/e-learning/purchases')
   })
 })
