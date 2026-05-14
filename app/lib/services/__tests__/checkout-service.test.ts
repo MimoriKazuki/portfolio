@@ -256,6 +256,12 @@ describe('startCheckout — cancelReturnUrl セキュリティ', () => {
     expect(url).toContain('/e-learning')
     expect(url).not.toContain('x://')
   })
+
+  it('プロトコル相対 URL（//evil.com/x）→ /e-learning フォールバック', async () => {
+    const url = await getCancelUrl('//evil.com/x')
+    expect(url).toContain('/e-learning')
+    expect(url).not.toContain('evil.com')
+  })
 })
 
 // ----------------------------------------------------------------
