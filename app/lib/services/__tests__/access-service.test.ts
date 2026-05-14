@@ -329,4 +329,89 @@ describe('canDownloadContentMaterials', () => {
     })
     expect(await canDownloadContentMaterials('eu-1', 'content-1')).toBe(false)
   })
+
+  it('canViewContent と同条件（ラッパー）：has_full_access=true → true', async () => {
+    mockClient({
+      e_learning_contents: makeMaybySingleChain({ id: 'content-1', is_free: false }),
+      e_learning_users: makeMaybySingleChain({ has_full_access: true }),
+    })
+    expect(await canDownloadContentMaterials('eu-1', 'content-1')).toBe(true)
+  })
+
+  it('canViewContent と同条件（ラッパー）：コンテンツ購入済 → true', async () => {
+    mockClient({
+      e_learning_contents: makeMaybySingleChain({ id: 'content-1', is_free: false }),
+      e_learning_users: makeMaybySingleChain({ has_full_access: false }),
+      e_learning_purchases: makePurchaseChain({ id: 'purchase-1' }),
+    })
+    expect(await canDownloadContentMaterials('eu-1', 'content-1')).toBe(true)
+  })
+})
+
+// ----------------------------------------------------------------
+// 異常系：DB エラー時のフォールバック
+// ----------------------------------------------------------------
+describe('DB エラー時フォールバック', () => {
+  it('fetchHasFullAccess が DB エラー → false にフォールバックし canViewCourseVideo は not_purchased', async () => {
+    // e_learning_users の select が error を返す
+    const maybeSingle = vi.fn().mockResolvedValue({ data: null, error: { code: 'PGRST301', message: 'db error' } })
+    const eq = vi.fn(() => ({ maybeSingle, eq }))
+    const select = vi.fn(() => ({ eq, maybeSingle }))
+    const usersStub = { select }
+
+    mockClient({
+      e_learning_course_videos: makeMaybySingleChain({
+        id: 'video-1',
+        is_free: false,
+        chapter: { id: 'ch-1', course_id: 'course-1', course: { id: 'course-1', is_free: false } },
+      }),
+      e_learning_users: usersStub,
+      e_learning_purchases: makePurchaseChain(null),
+    })
+    const result = await canViewCourseVideo('eu-1', 'video-1')
+    expect(result).toEqual({ allowed: false, reason: 'not_purchased' })
+  })
+
+  it('fetchHasFullAccess が DB エラー → false にフォールバックし canViewContent は not_purchased', async () => {
+    const maybeSingle = vi.fn().mockResolvedValue({ data: null, error: { code: 'PGRST301', message: 'db error' } })
+    const eq = vi.fn(() => ({ maybeSingle, eq }))
+    const select = vi.fn(() => ({ eq, maybeSingle }))
+    const usersStub = { select }
+
+    mockClient({
+      e_learning_contents: makeMaybySingleChain({ id: 'content-1', is_free: false }),
+      e_learning_users: usersStub,
+      e_learning_purchases: makePurchaseChain(null),
+    })
+    const result = await canViewContent('eu-1', 'content-1')
+    expect(result).toEqual({ allowed: false, reason: 'not_purchased' })
+  })
+
+  it('getViewerAccess で purchases 取得が DB エラー → 空配列フォールバック', async () => {
+    const eq2 = vi.fn().mockResolvedValue({ data: null, error: { code: 'PGRST301', message: 'db error' } })
+    const eq1 = vi.fn(() => ({ eq: eq2 }))
+    const select = vi.fn(() => ({ eq: eq1 }))
+    const purchasesStub = { select }
+
+    mockClient({
+      e_learning_users: makeMaybySingleChain({ has_full_access: false }),
+      e_learning_purchases: purchasesStub,
+    })
+    const result = await getViewerAccess('eu-1')
+    expect(result.purchased_course_ids).toEqual([])
+    expect(result.purchased_content_ids).toEqual([])
+  })
+})
+
+// ----------------------------------------------------------------
+// 異常系：レコード存在なし
+// ----------------------------------------------------------------
+describe('レコード存在なし', () => {
+  it('canViewContent でコンテンツが存在しない（null）→ not_purchased', async () => {
+    mockClient({
+      e_learning_contents: makeMaybySingleChain(null),
+    })
+    const result = await canViewContent('eu-1', 'nonexistent-content')
+    expect(result).toEqual({ allowed: false, reason: 'not_purchased' })
+  })
 })
