@@ -200,11 +200,21 @@ Phase 3 中に該当機能を実装する際、合わせて対処する。
 
 | ID | 内容 | 関連 Step |
 |----|------|---------|
-| F-01〜F-04 | UI 系（FormField errorId / Breadcrumb / StatsSection / prop 名統一） | Step 2 |
-| F-05 | AdminSidebar e-learning サブナビ | Step 3 着手時 |
-| F-06〜F-10 | テスト系（route.ts / DB エラー / checkout.session.completed / 並行性 / atoms 網羅） | Step 4 並行 |
-| F-11〜F-14 | Stripe 系（payment_intent UNIQUE / 既存 webhook リファクタ等） | Step 1 + Step 4 |
-| F-15〜F-16 | デザイントークン拡張 | Step 2 中 |
+| F-01 | FormField errorId / helpId children 自動連携 ✅ 完了（2026-05-14・コミット dcad491） | — |
+| F-02 | Breadcrumb 中間 href なし時の aria-current 矛盾 ✅ 完了（2026-05-14・コミット acd3c86） | — |
+| F-03 | StatsSection stats.length=1 時の colsClass[1] 漏れ ✅ 完了（2026-05-14・コミット f85af80） | — |
+| F-04 | hasPurchased → hasViewAccess 統一 ✅ 完了（2026-05-14・コミット 027195d・access-service 意味論と整合） | — |
+| F-05 | AdminSidebar e-learning サブナビ追加 | Step 3 着手時 |
+| F-06〜F-07 | テスト系（route.ts / DB エラー） | Step 4 並行 |
+| F-08 | 既存 checkout.session.completed ハンドラのテスト追加（要確認：P3-WEBHOOK-NEW で対応済の可能性） | Step 4 並行 |
+| F-09 | Webhook 並行性の実機テスト | Step 4 並行 |
+| F-10 | 全 atoms / molecules の網羅テスト追加 | Step 4 並行 |
+| F-11 | stripe_payment_intent_id UNIQUE 制約追加（DB マイグレ・Kosuke 確認案件） | Kosuke 判断 |
+| F-12 | checkout.session.completed に stripe_payment_intent_id 書き込み追加（要確認：P3-WEBHOOK-NEW で対応済の可能性） | — |
+| F-13 | has_full_access の Webhook 切り替え（P3-WEBHOOK-NEW で対応済・確認のみ） | — |
+| F-14 | 既存購入完了 Slack 通知の PII 削除 | Step 4 並行 |
+| F-15 | Textarea min-h arbitrary value ➖ **対応不要**（2026-05-14・design-mate 判断：60px/120px は 4px 倍数で ng-patterns §3 違反なし） | — |
+| F-16 | Badge / Price free / FreeBadge のカスタムトークン化 ➖ **対応不要**（2026-05-14・design-mate 判断：atom 内集約済・colors.md §3 原則達成） | — |
 
 ### Step 7：後続課題対応
 
