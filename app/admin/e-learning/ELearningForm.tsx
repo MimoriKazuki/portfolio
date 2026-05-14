@@ -17,6 +17,8 @@ interface ELearningFormData {
   is_free: boolean
   is_published: boolean
   is_featured: boolean
+  /** Stripe Price ID（任意・Phase 1 確定追加・有料コンテンツ購入時に必須）。 */
+  stripe_price_id: string
 }
 
 interface MaterialFormData {
@@ -52,6 +54,7 @@ export default function ELearningForm({ initialData, initialMaterials, contentId
     is_free: initialData?.is_free ?? true,
     is_published: initialData?.is_published ?? true,
     is_featured: initialData?.is_featured ?? false,
+    stripe_price_id: initialData?.stripe_price_id ?? '',
   })
 
   const [materials, setMaterials] = useState<MaterialFormData[]>(
@@ -171,6 +174,7 @@ export default function ELearningForm({ initialData, initialMaterials, contentId
         is_free: formData.is_free,
         is_published: formData.is_published,
         is_featured: formData.is_featured,
+        stripe_price_id: formData.stripe_price_id.trim() || null,
         updated_at: new Date().toISOString(),
       }
 
@@ -394,6 +398,28 @@ export default function ELearningForm({ initialData, initialMaterials, contentId
                   有料
                 </button>
               </div>
+            </div>
+
+            {/* Stripe Price ID（Phase 1 確定追加・有料時に必須） */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Stripe Price ID
+                <span className="ml-2 text-xs font-normal text-gray-500">（有料時に必須）</span>
+              </label>
+              <input
+                type="text"
+                value={formData.stripe_price_id}
+                onChange={(e) =>
+                  setFormData({ ...formData, stripe_price_id: e.target.value })
+                }
+                placeholder="price_xxx"
+                maxLength={64}
+                disabled={formData.is_free}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:text-gray-400"
+              />
+              <p className="mt-1 text-xs text-gray-500">
+                Stripe Dashboard で発行した Price ID（例：price_1AbCdEf...）。空欄なら有料コンテンツとして購入できません。
+              </p>
             </div>
 
             {/* 公開設定 */}
