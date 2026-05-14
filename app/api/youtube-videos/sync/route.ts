@@ -1,13 +1,22 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/app/lib/supabase/server'
 import { fetchYouTubeVideoData } from '@/app/lib/youtube-api'
+import { requireAdmin, isAdminGuardErr } from '@/app/lib/auth/admin-guard'
 
 /**
  * 既存の動画の統計情報をYouTube APIから更新するAPIエンドポイント
  * POST /api/youtube-videos/sync
  * Body: { videoId: string } または { syncAll: boolean }
+ *
+ * 認可：管理者のみ（P3-AUX-04・既存 admin API と同パターン）
  */
 export async function POST(request: Request) {
+  // 管理者ガード（multi-layer defense・middleware 対象外パスの route 側保護）
+  const guard = await requireAdmin()
+  if (isAdminGuardErr(guard)) {
+    return NextResponse.json({ error: guard.error }, { status: guard.status })
+  }
+
   try {
     const body = await request.json()
     const { videoId, syncAll } = body

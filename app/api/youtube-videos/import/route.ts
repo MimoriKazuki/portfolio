@@ -2,13 +2,23 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/app/lib/supabase/server'
 import { fetchChannelVideos } from '@/app/lib/youtube-api'
 import { DEFAULT_ENTERPRISE_SERVICE, DEFAULT_INDIVIDUAL_SERVICE } from '@/app/lib/services/service-selector'
+import { requireAdmin, isAdminGuardErr } from '@/app/lib/auth/admin-guard'
 
 /**
  * チャンネルから最新動画を取得してデータベースにインポートするAPIエンドポイント
  * POST /api/youtube-videos/import
  * Body: { maxResults?: number, fetchAll?: boolean } (optional)
+ *
+ * 認可：管理者のみ（P3-AUX-04・既存 admin API と同パターン）
  */
 export async function POST(request: Request) {
+  // 管理者ガード（middleware で /admin 配下と /api/admin/ を保護しているが、
+  // /api/youtube-videos/ は middleware 対象外のため route 側で多層防御を追加）
+  const guard = await requireAdmin()
+  if (isAdminGuardErr(guard)) {
+    return NextResponse.json({ error: guard.error }, { status: guard.status })
+  }
+
   try {
     const body = await request.json()
     const { maxResults = 10, fetchAll = false } = body
