@@ -221,9 +221,9 @@ Phase 3 中に該当機能を実装する際、合わせて対処する。
 
 | ID | 内容 | 状態 |
 |----|------|------|
-| P3-AUX-01 | ESLint 復活（`npm run lint` echo 解消） | 📋 |
-| P3-AUX-02 | tsconfig strict 化（strictNullChecks 等） | 📋 |
-| P3-AUX-03 | `docs/auth/flow.md §D` の管理者判定前提崩れの修正 | 📋 |
+| P3-AUX-01 | ESLint 復活（`npm run lint` echo 解消）✅ 完了（2026-05-14・コミット 698dbaa・flat config + next/core-web-vitals + 段階導入 5 ルール warn 化） |
+| P3-AUX-02 | tsconfig strict 化（strictNullChecks 等）✅ 完了（2026-05-14・コミット 188a988・5 オプション段階導入 + 既存エラー 3 件解消・strictNullChecks は Phase 4 候補） |
+| P3-AUX-03 | `docs/auth/flow.md §D` の管理者判定前提崩れの修正 ✅ 完了（2026-05-14・team-lead 編集・ADMIN_EMAIL ホワイトリスト方式に書き換え + Phase 1→2 変更経緯記載） |
 | P3-AUX-04 | `/api/youtube-videos/import` と `sync` への認可ガード追加 ✅ 完了（2026-05-14・コミット 1d5bd9a + 0e2b6b3・requireAdmin 多層防御 + UT 4 件） |
 | P3-AUX-05 | admin UI コンポーネント（CustomersClient.tsx 等）の console.error PII 漏洩 ✅ 完了（2026-05-14・コミット 054f651・3 ファイル 16 箇所・ProjectForm auth.getUser 完全削除含む） |
 | P3-AUX-06 | columns/[id] の dangerouslySetInnerHTML サニタイズ ✅ 完了（2026-05-14・コミット 1c5f9ce + 4f5a954 + 003bf22・DOMPurify + TipTap 拡張対応） |
