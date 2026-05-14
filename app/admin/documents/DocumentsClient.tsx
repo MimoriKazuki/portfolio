@@ -31,7 +31,7 @@ export default function DocumentsClient({ documents }: DocumentsClientProps) {
   const [sortBy, setSortBy] = useState<string>('newest')
 
   const filteredAndSortedDocuments = useMemo(() => {
-    let filtered = documents.filter(doc => {
+    const filtered = documents.filter(doc => {
       const matchesSearch = searchQuery === '' || 
         doc.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (doc.description && doc.description.toLowerCase().includes(searchQuery.toLowerCase()))

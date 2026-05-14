@@ -370,7 +370,7 @@ export default function UserActivityTrend({ timeRange = '30daysAgo', userActivit
           
           // 画面右端での位置調整
           let transform = 'translateX(-50%)'
-          let leftPosition = `${xPosition}%`
+          const leftPosition = `${xPosition}%`
           
           if (xPosition > 80) {
             // 右端80%以降は右寄せ
