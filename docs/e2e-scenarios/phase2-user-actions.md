@@ -490,13 +490,123 @@
 - 期待結果: DB 上の has_full_access が切り替わる
 - ステータス: 📋 未着手
 
+#### SC-UAT-081: C010 フルアクセス付与 → 確認 Dialog → Badge「付与済」に変化
+- 対象URL: `/admin/e-learning/users`（has_full_access=false のユーザー行あり）
+- 前提: 管理者ログイン済み・テスト用ユーザー（has_full_access=false）が存在する
+- 操作: テストユーザー行の「付与」ボタンをクリック
+- 確認内容:
+  - DialogTitle「フルアクセスを付与」が表示される
+  - 「この操作は監査ログに記録されます」テキストが表示される
+  - 「付与する」ボタンをクリックすると Loader2 スピナー + 「処理中...」が表示される
+  - 成功後 Dialog が閉じ、テーブル行のバッジが「付与済」（Badge variant=info）に切り替わる
+  - ページリロード後も「付与済」バッジのままである（DB 反映確認）
+- ステータス: 📋 未着手
+
+#### SC-UAT-082: C010 フルアクセス解除 → 確認 Dialog（variant=danger）→ Badge「未付与」に変化
+- 対象URL: `/admin/e-learning/users`（has_full_access=true のユーザー行あり）
+- 前提: 管理者ログイン済み・テスト用ユーザー（has_full_access=true）が存在する
+- 操作: テストユーザー行の「解除」ボタンをクリック
+- 確認内容:
+  - DialogTitle「フルアクセスを解除」が表示される
+  - 「解除する」ボタンが variant=danger（赤色）で表示される
+  - 「解除する」ボタンをクリック → 成功後 Dialog が閉じ、バッジが「未付与」（Badge variant=neutral）に切り替わる
+  - ページリロード後も「未付与」バッジのままである（DB 反映確認）
+- ステータス: 📋 未着手
+
+#### SC-UAT-083: C010 フルアクセスフィルタ + キーワード検索 URL query 連動
+- 対象URL: `/admin/e-learning/users`
+- 前提: 管理者ログイン済み・付与済・未付与のユーザーが混在
+- 操作:
+  1. フルアクセス Select を「付与済」に変更 → URL `?access=true` が付き、has_full_access=true のユーザーのみ表示
+  2. 検索ボックスにメールアドレスの一部を入力（debounce 300ms 待ち）→ URL `?q=xxx` が付き、該当ユーザーのみ表示
+  3. フルアクセス Select を「すべて」に戻す → `?access` が URL から消え、全ユーザーが表示
+- 確認内容: 各操作で URL query が更新され、テーブル行がフィルタ結果に応じて切り替わる
+- ステータス: 📋 未着手
+
+### 管理画面 購入履歴（C009）
+
+#### SC-UAT-084: C009 ステータス / 購入対象 フィルタ URL query 連動
+- 対象URL: `/admin/e-learning/purchases`
+- 前提: 管理者ログイン済み・completed・refunded の購入が混在
+- 操作:
+  1. ステータス Select を「返金済」に変更 → URL `?status=refunded` が付き、返金済のみ表示
+  2. 購入対象 Select を「コース」に変更 → URL `?target=course` が付き、course_id ありの行のみ表示
+  3. 各 Select をリセット → `?status` / `?target` が URL から消え全件表示に戻る
+- 確認内容: フィルタ変更のたびに URL query が更新され、テーブル行が絞り込まれる
+- ステータス: 📋 未着手
+
+#### SC-UAT-085: C009 旧 LP「legacy」フィルタで旧導線購入（course_id=null AND content_id=null）を分離表示
+- 対象URL: `/admin/e-learning/purchases`
+- 前提: 管理者ログイン済み・旧 LP 経由の購入（course_id=null AND content_id=null）が DB に存在する
+- 操作: 購入対象 Select を「旧 LP」に変更 → URL `?target=legacy`
+- 確認内容:
+  - 「旧 LP」Badge（variant=warning）の行のみ表示される
+  - 「全コンテンツ買い切り（後方互換）」テキストが行に表示される
+  - コース / 単体動画購入の行が表示されない
+- ステータス: 📋 未着手
+
+### 管理画面 カリキュラム編集（C008）
+
+#### SC-UAT-086: C008 章追加 → カリキュラムタブに新章が表示される
+- 対象URL: `/admin/e-learning/courses/[id]/edit`（カリキュラムタブ）
+- 前提: 管理者ログイン済み・dev-seed のダミーコースが存在する
+- 操作: 「新しい章を追加」Input に章名を入力 → 「章を追加」ボタンクリック
+- 確認内容:
+  - 送信中 Loader2 スピナー + 「追加中...」がボタン上に表示される
+  - createChapterAction 成功後、Input がクリアされ新章がリストの末尾に表示される（revalidatePath で SSR 再取得）
+  - 「動画はまだありません」テキストを含む空の章カードが表示される
+- ステータス: 📋 未着手
+
+#### SC-UAT-087: C008 章名インライン編集（Input blur）→ DB に反映
+- 対象URL: `/admin/e-learning/courses/[id]/edit`（カリキュラムタブ）
+- 前提: 管理者ログイン済み・章が1つ以上存在する
+- 操作: 章ヘッダーの章名 Input を編集（別の値を入力）→ Input からフォーカスを外す（blur）
+- 確認内容:
+  - updateChapterTitleAction が呼ばれ、ページリロード後も変更後の章名が表示される（DB 反映確認）
+  - 章名が元と同じ値の場合は API 呼び出しが行われない（同値 blur は skip）
+- ステータス: 📋 未着手
+
+#### SC-UAT-088: C008 動画追加 Dialog → タイトル・URL 入力 → 章内動画リストに追加
+- 対象URL: `/admin/e-learning/courses/[id]/edit`（カリキュラムタブ）
+- 前提: 管理者ログイン済み・章が1つ以上存在する
+- 操作: 章フッターの「動画を追加」ボタンをクリック → Dialog でタイトルと動画 URL を入力 → 「保存」ボタンクリック
+- 確認内容:
+  - DialogTitle「動画を追加」が表示される
+  - タイトル・動画 URL・動画長・説明・無料公開 Switch の各入力欄が表示される
+  - 「保存」クリック後 Dialog が閉じ、章内動画リストに新動画行が追加される
+  - 追加された動画の is_free=false の場合 Badge「無料」が表示されない
+- ステータス: 📋 未着手
+
+#### SC-UAT-089: C008 動画 is_free Switch 切替 → 即時 Badge 更新 + DB 反映
+- 対象URL: `/admin/e-learning/courses/[id]/edit`（カリキュラムタブ・動画あり）
+- 前提: 管理者ログイン済み・is_free=false の動画が存在する
+- 操作: 動画行の「無料公開」Switch を ON にクリック
+- 確認内容:
+  - updateVideoAction が呼ばれ、Switch が ON に切り替わる
+  - 動画行に Badge「無料」（variant=success）が表示される
+  - ページリロード後も Switch が ON のままである（DB 反映確認）
+  - B004/B005 公開 LP で対象動画が無料視聴可能になっている（revalidatePath 確認）
+- ステータス: 📋 未着手
+
+#### SC-UAT-090: C008 章削除 → 確認 Dialog → 章 + 章内動画が CASCADE 削除される
+- 対象URL: `/admin/e-learning/courses/[id]/edit`（カリキュラムタブ・動画ありの章が存在する）
+- 前提: 管理者ログイン済み・削除専用テスト章（動画1本以上含む）が存在する
+- 操作: 章ヘッダーの Trash2 削除ボタンをクリック
+- 確認内容:
+  - DialogTitle「章を削除」と「章内の動画もまとめて削除されます（FK CASCADE）。」メッセージが表示される
+  - 「削除する」ボタンをクリック → Loader2「削除中...」が表示される
+  - 成功後 Dialog が閉じ、その章カード（および章内動画）がリストから消える（revalidatePath で再取得）
+  - ページリロード後も章・動画が表示されない（DB 削除確認）
+- 補足: **dev-seed の章・動画を使用。本番コースには実行しないこと**
+- ステータス: 📋 未着手
+
 ---
 
 ## サマリ
 
 | 状態 | 件数 |
 |------|------|
-| 📋 未着手 | 66 |
+| 📋 未着手 | 76 |
 | 🔧 実装中 | 0 |
 | ✅ 完了 | 0 |
-| **合計** | **66** |
+| **合計** | **76** |
