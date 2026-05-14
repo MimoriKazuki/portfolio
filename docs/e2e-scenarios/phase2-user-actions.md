@@ -321,7 +321,7 @@
 
 #### SC-UAT-060: B014 退会確定 → POST /api/me/withdraw → セッション破棄 → B001 LP へリダイレクト
 - 対象URL: `/e-learning/lp/mypage`
-- 前提: 退会専用テストアカウント（再利用不可・テスト1回ごとに用意）でログイン
+- 前提: **`[TEST_WITHDRAW]` 接頭辞付きテスト専用アカウント**（テスト実施前に Google OAuth で新規作成）でログイン
 - 操作: 「退会する」ボタン → Dialog 内「退会を確定する」ボタンをクリック
 - 確認内容:
   - loading 状態中（Loader2 スピナー + 「退会処理中...」）がボタン上に表示される
@@ -329,19 +329,24 @@
   - supabase.auth.signOut が呼ばれた後、`window.location.href = '/e-learning/lp'` でフルリロードされる
   - `/e-learning/lp` に遷移し、未ログイン状態（ログインボタン表示等）になっている
   - `/e-learning/lp/mypage` に直アクセスすると `/auth/login?returnTo=...` にリダイレクトされる（セッション破棄確認）
-- 補足: **破壊的テスト（アカウント削除）のため専用テストユーザーを使用。本番環境では原則実行しない**
+- 補足:
+  - **破壊的テスト（アカウント削除）のため `[TEST_WITHDRAW]` 専用アカウントのみ使用**
+  - **既存 109 名の e_learning_users（人作成データ）は絶対に対象にしない**
+  - テスト終了後のクリーンアップは不要（退会処理自体がアカウント削除）
 - ステータス: 📋 未着手
 
 #### SC-UAT-061: B014 退会後に同一アカウントで再ログイン → has_full_access が維持されている
 - 対象URL: `/auth/login` → `/e-learning/lp/mypage`
 - 前提:
-  - has_full_access=true の退会専用テストアカウント（DB seed で事前設定）
-  - 退会後（SC-UAT-060 実施後）の状態
+  - **`[TEST_WITHDRAW_FA]` 接頭辞付きテスト専用アカウント**（テスト前に作成・`has_full_access=true` を管理者が手動付与または DB で直接設定）
+  - 退会後（SC-UAT-060 実施後の同アカウント）の状態
 - 操作: 退会後に同じメールアドレスで再ログイン → `/e-learning/lp/mypage` にアクセス
 - 確認内容:
   - `role="status"` の全コンテンツ視聴権限バナー（「全コンテンツ視聴権限あり」）が表示される（has_full_access が再ログイン後も保持）
   - 購入履歴が残っている（税務上保持）
-- 補足: **has_full_access=true の退会ユーザーが同一メールで再登録された場合の引継ぎ確認。DB seed で has_full_access=true にしたアカウントを使用**
+- 補足:
+  - **`[TEST_WITHDRAW_FA]` 専用アカウントのみ使用。既存 109 名は touch しない**
+  - has_full_access 付与は C010 管理画面（SC-UAT-081）経由または DB 直接設定で行う
 - ステータス: 📋 未着手
 
 ### B009 購入完了画面 ポーリング
@@ -424,7 +429,7 @@
 
 #### SC-UAT-075: C005 管理コース一覧 ステータスフィルタ → 表示行が変わる
 - 対象URL: `/admin/e-learning/courses`
-- 前提: 管理者ログイン済み・公開中コースと下書きコースが混在（dev-seed 等で準備）
+- 前提: 管理者ログイン済み・**テストで `[TEST_COURSE]` 接頭辞コースを公開・下書き各1件作成済み**（テスト終了後にクリーンアップ）
 - 操作:
   1. ステータス Select を「下書き」に変更 → URL `?status=draft` が付き、下書きコースのみ表示されることを確認
   2. ステータス Select を「すべて」に変更 → URL `?status=all` が付き、公開+下書き+削除済がすべて表示されることを確認
@@ -434,23 +439,25 @@
 
 #### SC-UAT-076: C005 管理コース一覧 公開／非公開 Switch トグル → 楽観的 UI + DB 反映
 - 対象URL: `/admin/e-learning/courses`（公開中コース行あり）
-- 前提: 管理者ログイン済み・テスト用非公開コース行が表示されている
-- 操作: テスト用コース行の「公開」列 Switch を ON → OFF にクリック
+- 前提: 管理者ログイン済み・**テストで `[TEST_COURSE_PUB]` 接頭辞コース（is_published=true）を作成済み**（テスト終了後にクリーンアップ）
+- 操作: `[TEST_COURSE_PUB]` 行の「公開」列 Switch を ON → OFF にクリック
 - 確認内容:
   - Switch が即座に OFF に切り替わる（楽観的 UI）
   - toggleCoursePublishedAction が呼ばれ、DB 上の `is_published` が false になる（ページリロードで確認）
   - `/e-learning/lp/courses` にアクセスするとそのコースが非表示になる（revalidatePath 確認）
+- 補足: **既存の公開中コース（人作成データ）には触れない。`[TEST_COURSE_PUB]` のみ操作すること**
 - ステータス: 📋 未着手
 
 #### SC-UAT-077: C006 コース新規作成 → 編集画面に `?created=1` 付きで遷移
 - 対象URL: `/admin/e-learning/courses/new`
 - 前提: 管理者ログイン済み
-- 操作: タイトル・スラッグ・カテゴリを入力 → 「作成する」ボタンクリック
+- 操作: タイトル `[TEST_NEW_COURSE]`・スラッグ `test-new-course-{timestamp}`・カテゴリを入力 → 「作成する」ボタンクリック
 - 確認内容:
   - 送信中に Loader2 スピナー + 「保存中...」がボタン上に表示される
   - 成功後 `/admin/e-learning/courses/[新規ID]/edit?created=1` に遷移する
   - 編集画面の AdminPageHeader 説明文が「コースを作成しました。続けて公開設定や章の追加を行えます。」になっている
   - C005 一覧（`/admin/e-learning/courses`）に戻ると新規コースが表示される
+- 補足: **テスト終了後に `[TEST_NEW_COURSE]` コースを SC-UAT-080 の論理削除テストで兼ねてクリーンアップ、または C007 編集画面から論理削除で除去すること**
 - ステータス: 📋 未着手
 
 #### SC-UAT-078: C006 コース新規作成 バリデーション（タイトル空欄）
@@ -463,17 +470,18 @@
 - ステータス: 📋 未着手
 
 #### SC-UAT-079: C007 コース基本情報更新 → 保存 → 公開 LP B004 にも反映
-- 対象URL: `/admin/e-learning/courses/[id]/edit`（dev-seed の dummy-ai-intro 等）
-- 前提: 管理者ログイン済み・テスト用公開コースが存在する
-- 操作: タイトルを変更 → 「保存する」ボタンクリック
+- 対象URL: `/admin/e-learning/courses/[id]/edit`（SC-UAT-077 で作成した `[TEST_NEW_COURSE]`）
+- 前提: 管理者ログイン済み・`[TEST_NEW_COURSE]` コースが存在し is_published=true に設定されている
+- 操作: タイトルを `[TEST_NEW_COURSE_UPDATED]` に変更 → 「保存する」ボタンクリック
 - 確認内容:
-  - 保存後、編集画面がリフレッシュされ新しいタイトルが表示される
+  - 保存後、編集画面がリフレッシュされ変更後のタイトルが表示される
   - `/e-learning/lp/courses/[slug]` にアクセスすると変更後のタイトルが表示される（revalidatePath 確認）
+- 補足: **既存コース（人作成データ）のタイトルは変更しない。`[TEST_NEW_COURSE]` のみ操作すること**
 - ステータス: 📋 未着手
 
 #### SC-UAT-080: C007 コース論理削除 → window.confirm → 一覧から非表示
-- 対象URL: `/admin/e-learning/courses/[id]/edit`（削除専用テストコース）
-- 前提: 管理者ログイン済み・削除専用テストコース（dev-seed の dummy コース等）が存在する
+- 対象URL: `/admin/e-learning/courses/[id]/edit`（SC-UAT-077 で作成した `[TEST_NEW_COURSE]`）
+- 前提: 管理者ログイン済み・**テストで作成した `[TEST_NEW_COURSE]` コースが存在する**
 - 操作: 「論理削除」ボタンをクリック → `window.confirm`「このコースを論理削除しますか？」で OK
 - 確認内容:
   - confirm ダイアログが表示される
@@ -481,7 +489,10 @@
   - softDeleteCourseAction 成功後、C005 一覧（`/admin/e-learning/courses`）にリダイレクトされる
   - C005 一覧のデフォルト表示（status=published）でそのコースが消えている
   - status=deleted フィルタに切り替えると「削除済」Badge 付きで表示される（deleted_at が設定されている）
-- 補足: **dev-seed の dummy コースを使用し、本番データへの影響を避けること**
+- 補足:
+  - **SC-UAT-077 で作成した `[TEST_NEW_COURSE]` コースを対象にすること**
+  - **既存コース（人作成データ）には絶対に論理削除を実行しない**
+  - このシナリオが SC-UAT-077〜080 の一連テストのクリーンアップ兼務
 - ステータス: 📋 未着手
 
 #### SC-UAT-073: C010 フルアクセスユーザー管理 has_full_access 切替
@@ -492,30 +503,32 @@
 
 #### SC-UAT-081: C010 フルアクセス付与 → 確認 Dialog → Badge「付与済」に変化
 - 対象URL: `/admin/e-learning/users`（has_full_access=false のユーザー行あり）
-- 前提: 管理者ログイン済み・テスト用ユーザー（has_full_access=false）が存在する
-- 操作: テストユーザー行の「付与」ボタンをクリック
+- 前提: 管理者ログイン済み・**`[TEST_USER]` 接頭辞付きテストアカウント（has_full_access=false）が e_learning_users に存在する**（テスト前に Google OAuth 新規登録で作成）
+- 操作: `[TEST_USER]` 行の「付与」ボタンをクリック
 - 確認内容:
   - DialogTitle「フルアクセスを付与」が表示される
   - 「この操作は監査ログに記録されます」テキストが表示される
   - 「付与する」ボタンをクリックすると Loader2 スピナー + 「処理中...」が表示される
   - 成功後 Dialog が閉じ、テーブル行のバッジが「付与済」（Badge variant=info）に切り替わる
   - ページリロード後も「付与済」バッジのままである（DB 反映確認）
+- 補足: **既存 109 名の e_learning_users（人作成データ）には触れない。`[TEST_USER]` のみ操作すること**
 - ステータス: 📋 未着手
 
 #### SC-UAT-082: C010 フルアクセス解除 → 確認 Dialog（variant=danger）→ Badge「未付与」に変化
 - 対象URL: `/admin/e-learning/users`（has_full_access=true のユーザー行あり）
-- 前提: 管理者ログイン済み・テスト用ユーザー（has_full_access=true）が存在する
-- 操作: テストユーザー行の「解除」ボタンをクリック
+- 前提: 管理者ログイン済み・**SC-UAT-081 で has_full_access=true にした `[TEST_USER]` が存在する**
+- 操作: `[TEST_USER]` 行の「解除」ボタンをクリック
 - 確認内容:
   - DialogTitle「フルアクセスを解除」が表示される
   - 「解除する」ボタンが variant=danger（赤色）で表示される
   - 「解除する」ボタンをクリック → 成功後 Dialog が閉じ、バッジが「未付与」（Badge variant=neutral）に切り替わる
   - ページリロード後も「未付与」バッジのままである（DB 反映確認）
+- 補足: **`[TEST_USER]` のみ操作。このシナリオが SC-UAT-081 の has_full_access 付与の後始末（クリーンアップ兼務）**
 - ステータス: 📋 未着手
 
 #### SC-UAT-083: C010 フルアクセスフィルタ + キーワード検索 URL query 連動
 - 対象URL: `/admin/e-learning/users`
-- 前提: 管理者ログイン済み・付与済・未付与のユーザーが混在
+- 前提: 管理者ログイン済み・付与済・未付与のユーザーが混在（`[TEST_USER]` + SC-UAT-081 で付与済みの状態を利用）
 - 操作:
   1. フルアクセス Select を「付与済」に変更 → URL `?access=true` が付き、has_full_access=true のユーザーのみ表示
   2. 検索ボックスにメールアドレスの一部を入力（debounce 300ms 待ち）→ URL `?q=xxx` が付き、該当ユーザーのみ表示
@@ -549,55 +562,61 @@
 
 #### SC-UAT-086: C008 章追加 → カリキュラムタブに新章が表示される
 - 対象URL: `/admin/e-learning/courses/[id]/edit`（カリキュラムタブ）
-- 前提: 管理者ログイン済み・dev-seed のダミーコースが存在する
-- 操作: 「新しい章を追加」Input に章名を入力 → 「章を追加」ボタンクリック
+- 前提: 管理者ログイン済み・**SC-UAT-077 で作成した `[TEST_NEW_COURSE]` コースの編集画面（カリキュラムタブ）**
+- 操作: 「新しい章を追加」Input に `[TEST_CHAPTER]` と入力 → 「章を追加」ボタンクリック
 - 確認内容:
   - 送信中 Loader2 スピナー + 「追加中...」がボタン上に表示される
-  - createChapterAction 成功後、Input がクリアされ新章がリストの末尾に表示される（revalidatePath で SSR 再取得）
+  - createChapterAction 成功後、Input がクリアされ `[TEST_CHAPTER]` がリストの末尾に表示される（revalidatePath で SSR 再取得）
   - 「動画はまだありません」テキストを含む空の章カードが表示される
+- 補足: **既存コース（人作成データ）の章は変更しない。`[TEST_NEW_COURSE]` のみ操作すること**
 - ステータス: 📋 未着手
 
 #### SC-UAT-087: C008 章名インライン編集（Input blur）→ DB に反映
 - 対象URL: `/admin/e-learning/courses/[id]/edit`（カリキュラムタブ）
-- 前提: 管理者ログイン済み・章が1つ以上存在する
-- 操作: 章ヘッダーの章名 Input を編集（別の値を入力）→ Input からフォーカスを外す（blur）
+- 前提: 管理者ログイン済み・**SC-UAT-086 で追加した `[TEST_CHAPTER]` が存在する**
+- 操作: `[TEST_CHAPTER]` 章ヘッダーの章名 Input を `[TEST_CHAPTER_RENAMED]` に変更 → Input からフォーカスを外す（blur）
 - 確認内容:
-  - updateChapterTitleAction が呼ばれ、ページリロード後も変更後の章名が表示される（DB 反映確認）
+  - updateChapterTitleAction が呼ばれ、ページリロード後も `[TEST_CHAPTER_RENAMED]` が表示される（DB 反映確認）
   - 章名が元と同じ値の場合は API 呼び出しが行われない（同値 blur は skip）
+- 補足: **`[TEST_CHAPTER]`（SC-UAT-086 で作成したもの）のみ操作すること**
 - ステータス: 📋 未着手
 
 #### SC-UAT-088: C008 動画追加 Dialog → タイトル・URL 入力 → 章内動画リストに追加
 - 対象URL: `/admin/e-learning/courses/[id]/edit`（カリキュラムタブ）
-- 前提: 管理者ログイン済み・章が1つ以上存在する
-- 操作: 章フッターの「動画を追加」ボタンをクリック → Dialog でタイトルと動画 URL を入力 → 「保存」ボタンクリック
+- 前提: 管理者ログイン済み・**SC-UAT-086/087 で作成した `[TEST_CHAPTER_RENAMED]` が存在する**
+- 操作: `[TEST_CHAPTER_RENAMED]` フッターの「動画を追加」ボタンをクリック → Dialog でタイトル `[TEST_VIDEO]`・動画 URL `https://example.com/test-video` を入力 → 「保存」ボタンクリック
 - 確認内容:
   - DialogTitle「動画を追加」が表示される
   - タイトル・動画 URL・動画長・説明・無料公開 Switch の各入力欄が表示される
-  - 「保存」クリック後 Dialog が閉じ、章内動画リストに新動画行が追加される
-  - 追加された動画の is_free=false の場合 Badge「無料」が表示されない
+  - 「保存」クリック後 Dialog が閉じ、`[TEST_CHAPTER_RENAMED]` 内動画リストに `[TEST_VIDEO]` 行が追加される
+  - `[TEST_VIDEO]` の is_free=false のため Badge「無料」が表示されない
+- 補足: **既存コース（人作成データ）の章・動画には触れない**
 - ステータス: 📋 未着手
 
 #### SC-UAT-089: C008 動画 is_free Switch 切替 → 即時 Badge 更新 + DB 反映
-- 対象URL: `/admin/e-learning/courses/[id]/edit`（カリキュラムタブ・動画あり）
-- 前提: 管理者ログイン済み・is_free=false の動画が存在する
-- 操作: 動画行の「無料公開」Switch を ON にクリック
+- 対象URL: `/admin/e-learning/courses/[id]/edit`（カリキュラムタブ）
+- 前提: 管理者ログイン済み・**SC-UAT-088 で追加した `[TEST_VIDEO]`（is_free=false）が存在する**
+- 操作: `[TEST_VIDEO]` 行の「無料公開」Switch を ON にクリック
 - 確認内容:
   - updateVideoAction が呼ばれ、Switch が ON に切り替わる
   - 動画行に Badge「無料」（variant=success）が表示される
   - ページリロード後も Switch が ON のままである（DB 反映確認）
-  - B004/B005 公開 LP で対象動画が無料視聴可能になっている（revalidatePath 確認）
+  - B004/B005 公開 LP で `[TEST_VIDEO]` が無料視聴可能になっている（revalidatePath 確認）
+- 補足: **`[TEST_VIDEO]`（SC-UAT-088 で作成したもの）のみ Switch を操作すること**
 - ステータス: 📋 未着手
 
 #### SC-UAT-090: C008 章削除 → 確認 Dialog → 章 + 章内動画が CASCADE 削除される
-- 対象URL: `/admin/e-learning/courses/[id]/edit`（カリキュラムタブ・動画ありの章が存在する）
-- 前提: 管理者ログイン済み・削除専用テスト章（動画1本以上含む）が存在する
-- 操作: 章ヘッダーの Trash2 削除ボタンをクリック
+- 対象URL: `/admin/e-learning/courses/[id]/edit`（カリキュラムタブ）
+- 前提: 管理者ログイン済み・**SC-UAT-086〜089 で作成した `[TEST_CHAPTER_RENAMED]`（`[TEST_VIDEO]` 含む）が存在する**
+- 操作: `[TEST_CHAPTER_RENAMED]` ヘッダーの Trash2 削除ボタンをクリック
 - 確認内容:
   - DialogTitle「章を削除」と「章内の動画もまとめて削除されます（FK CASCADE）。」メッセージが表示される
   - 「削除する」ボタンをクリック → Loader2「削除中...」が表示される
-  - 成功後 Dialog が閉じ、その章カード（および章内動画）がリストから消える（revalidatePath で再取得）
+  - 成功後 Dialog が閉じ、`[TEST_CHAPTER_RENAMED]` カード（および `[TEST_VIDEO]`）がリストから消える
   - ページリロード後も章・動画が表示されない（DB 削除確認）
-- 補足: **dev-seed の章・動画を使用。本番コースには実行しないこと**
+- 補足:
+  - **SC-UAT-086〜089 で作成したテストデータのクリーンアップを兼ねる**
+  - **既存コース（人作成データ）の章・動画には絶対に削除ボタンを押さないこと**
 - ステータス: 📋 未着手
 
 ---
