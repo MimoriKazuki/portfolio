@@ -338,70 +338,175 @@ export async function POST(request: NextRequest) {
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session
 
-    const userId = session.metadata?.userId
+    // 新形式 metadata 判定（P3-WEBHOOK-NEW・2026-05-14）
+    // 新導線 /api/checkout（checkout-service.ts）は metadata.user_id / target_type / target_id を必ずセットする。
+    // 3 つすべてが揃っているなら新形式ロジック（e_learning_purchases に course_id or content_id を INSERT・
+    // has_full_access は触らない）で処理する。
+    //
+    // 一方、旧導線 /api/stripe/checkout は metadata.userId（camelCase）のみ送る。
+    // 旧形式は has_full_access 自動切替を温存（Kosuke 判断 2026-05-14・P3-CLEANUP-01 まで現状維持）。
+    const newUserId = session.metadata?.user_id
+    const newTargetType = session.metadata?.target_type
+    const newTargetId = session.metadata?.target_id
+    const isNewMetadata =
+      typeof newUserId === 'string' &&
+      newUserId.length > 0 &&
+      (newTargetType === 'course' || newTargetType === 'content') &&
+      typeof newTargetId === 'string' &&
+      newTargetId.length > 0
 
-    if (!userId) {
-      console.error('Missing userId in session metadata:', session.id)
-      return NextResponse.json(
-        { error: 'Missing metadata' },
-        { status: 400 }
-      )
-    }
+    if (isNewMetadata) {
+      // ---- 新形式（コース／単体動画ごとの購入） ----
+      // stripe-webhook-service.md §handleCheckoutCompleted 準拠
 
-    // 購入金額を取得
-    const amount = session.amount_total || 0
+      // payment_intent ID 取得（mode='payment' では string で返る・SDK v20 で確認済）
+      const paymentIntentId =
+        typeof session.payment_intent === 'string'
+          ? session.payment_intent
+          : (session.payment_intent?.id ?? null)
 
-    // ユーザーの has_full_access を true に更新（M5 安全順序 Step3：has_paid_access は書き込まない）
-    const { error: updateError } = await supabaseAdmin
-      .from('e_learning_users')
-      .update({ has_full_access: true })
-      .eq('id', userId)
-
-    if (updateError) {
-      console.error('Failed to update user full access:', updateError.message)
-      return NextResponse.json(
-        { error: 'Failed to update user access' },
-        { status: 500 }
-      )
-    }
-
-    // 購入履歴を保存（content_idはnull - 全コンテンツアクセス購入）
-    const { error: purchaseError } = await supabaseAdmin
-      .from('e_learning_purchases')
-      .insert({
-        user_id: userId,
-        content_id: null,
+      const amount = session.amount_total ?? 0
+      const insertRow = {
+        user_id: newUserId,
+        course_id: newTargetType === 'course' ? newTargetId : null,
+        content_id: newTargetType === 'content' ? newTargetId : null,
         stripe_session_id: session.id,
-        amount: amount,
-        status: 'completed',
+        stripe_payment_intent_id: paymentIntentId,
+        amount,
+        status: 'completed' as const,
+      }
+
+      console.info('[stripe-webhook] checkout.session.completed (new metadata) received', {
+        eventId: event.id,
+        eventType: event.type,
+        sessionId: session.id,
+        target_type: newTargetType,
       })
 
-    if (purchaseError) {
-      console.error('Failed to save purchase:', purchaseError.message)
-      // 重複エラーの場合は無視（has_full_access の更新は成功しているので）
-      if (!purchaseError.message.includes('duplicate')) {
-        // ログのみ、エラーは返さない（has_full_access の更新が重要）
-        console.warn('Purchase record insert failed, but access was granted')
+      const { error: insertError } = await supabaseAdmin
+        .from('e_learning_purchases')
+        .insert(insertRow)
+
+      if (insertError) {
+        // UNIQUE 違反（既処理）→ 200 OK で冪等終了（stripe_session_id UNIQUE / 部分 UNIQUE のいずれか）
+        const code = (insertError as { code?: string }).code
+        const message = insertError.message ?? ''
+        const isDuplicate = code === '23505' || message.toLowerCase().includes('duplicate')
+        if (isDuplicate) {
+          console.info('[stripe-webhook] checkout.session.completed already processed (idempotent)', {
+            sessionId: session.id,
+            target_id: newTargetId,
+          })
+        } else {
+          // 非冪等エラー → 500 を返して Stripe 側にリトライさせる + errors.md rule G の Slack 通知
+          console.error('[stripe-webhook] new-format purchase insert failed', {
+            code,
+            message,
+            sessionId: session.id,
+          })
+          await sendSlackWebhookErrorNotification({
+            eventId: event.id,
+            eventType: event.type,
+            errorMessage: `new-format insert failed: ${message}`,
+          })
+          return NextResponse.json(
+            { error: 'Purchase insert failed' },
+            { status: 500 },
+          )
+        }
+      } else {
+        console.info('[stripe-webhook] new-format purchase inserted', {
+          sessionId: session.id,
+          target_type: newTargetType,
+          target_id: newTargetId,
+          amount,
+        })
       }
+
+      // 新形式での Slack 通知は target タイトルを取得して整形（旧形式の「全コンテンツアクセス」固定から脱却）
+      const { data: userData } = await supabaseAdmin
+        .from('e_learning_users')
+        .select('email, display_name')
+        .eq('id', newUserId)
+        .maybeSingle()
+
+      if (userData) {
+        await sendSlackPurchaseNotification(
+          userData.email,
+          userData.display_name,
+          amount,
+          session.id,
+        )
+      }
+    } else {
+      // ---- 旧形式（has_full_access 自動切替・後方互換） ----
+      // 既存運用維持のため Kosuke 判断 2026-05-14 で温存
+      // P3-CLEANUP-01（旧 /api/stripe/checkout 削除）と同時にこの分岐ごと削除予定
+      const userId = session.metadata?.userId
+
+      if (!userId) {
+        console.error('Missing userId in session metadata:', session.id)
+        return NextResponse.json(
+          { error: 'Missing metadata' },
+          { status: 400 }
+        )
+      }
+
+      // 購入金額を取得
+      const amount = session.amount_total || 0
+
+      // ユーザーの has_full_access を true に更新（旧導線専用・新形式では絶対に触らない）
+      const { error: updateError } = await supabaseAdmin
+        .from('e_learning_users')
+        .update({ has_full_access: true })
+        .eq('id', userId)
+
+      if (updateError) {
+        console.error('Failed to update user full access:', updateError.message)
+        return NextResponse.json(
+          { error: 'Failed to update user access' },
+          { status: 500 }
+        )
+      }
+
+      // 購入履歴を保存（content_idはnull - 全コンテンツアクセス購入）
+      const { error: purchaseError } = await supabaseAdmin
+        .from('e_learning_purchases')
+        .insert({
+          user_id: userId,
+          content_id: null,
+          stripe_session_id: session.id,
+          amount: amount,
+          status: 'completed',
+        })
+
+      if (purchaseError) {
+        console.error('Failed to save purchase:', purchaseError.message)
+        // 重複エラーの場合は無視（has_full_access の更新は成功しているので）
+        if (!purchaseError.message.includes('duplicate')) {
+          // ログのみ、エラーは返さない（has_full_access の更新が重要）
+          console.warn('Purchase record insert failed, but access was granted')
+        }
+      }
+
+      // ユーザー情報を取得してSlack通知を送信
+      const { data: userData } = await supabaseAdmin
+        .from('e_learning_users')
+        .select('email, display_name')
+        .eq('id', userId)
+        .single()
+
+      if (userData) {
+        await sendSlackPurchaseNotification(
+          userData.email,
+          userData.display_name,
+          amount,
+          session.id
+        )
+      }
+
+      console.log(`E-Learning purchase completed: user=${userId}, session=${session.id}, amount=${amount}`)
     }
-
-    // ユーザー情報を取得してSlack通知を送信
-    const { data: userData } = await supabaseAdmin
-      .from('e_learning_users')
-      .select('email, display_name')
-      .eq('id', userId)
-      .single()
-
-    if (userData) {
-      await sendSlackPurchaseNotification(
-        userData.email,
-        userData.display_name,
-        amount,
-        session.id
-      )
-    }
-
-    console.log(`E-Learning purchase completed: user=${userId}, session=${session.id}, amount=${amount}`)
   }
 
   // charge.refunded イベントを処理（Phase 2 Sub 3b 追加）
