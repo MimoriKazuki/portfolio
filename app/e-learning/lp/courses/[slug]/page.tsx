@@ -10,6 +10,7 @@ import {
   getViewerAccess,
 } from '@/app/lib/services/access-service'
 import { getCompletedCourseVideoIds } from '@/app/lib/services/progress-service'
+import { CoursePurchaseCtaClient } from './_lib/CoursePurchaseCtaClient'
 import { CurriculumAccordionClient } from './_lib/CurriculumAccordionClient'
 import { getCourseDetailBySlug } from './_lib/get-course-detail'
 
@@ -149,20 +150,13 @@ export default async function ELearningLPCourseDetailPage({ params }: PageProps)
                   最初から見る
                 </Link>
               </Button>
-            ) : course.price !== null && !course.is_free ? (
-              <div className="flex items-center gap-3">
-                <span className="text-xl text-foreground">¥{course.price.toLocaleString()}</span>
-                {/* 購入 CTA は Client から（PurchasePromptModalV2 を起動）。
-                    本 Server Component では遷移リンクのみ提示し、後続で client 化検討 */}
-                <Button asChild size="lg" variant="outline">
-                  <Link
-                    href={`/e-learning/lp/courses/${course.slug}?purchase=1`}
-                    aria-label="このコースの購入手続きへ"
-                  >
-                    購入する
-                  </Link>
-                </Button>
-              </div>
+            ) : !course.is_free ? (
+              <CoursePurchaseCtaClient
+                courseId={course.id}
+                courseSlug={course.slug}
+                courseTitle={course.title}
+                price={course.price}
+              />
             ) : null}
           </div>
           {hasCourseAccess && totalVideos > 0 && (
