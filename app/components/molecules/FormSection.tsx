@@ -22,13 +22,11 @@ export interface FormSectionProps extends React.HTMLAttributes<HTMLElement> {
   description?: string
   /** FormField 等の子要素。 */
   children: React.ReactNode
-  /** 子要素の縦間隔。既定 space-y-4。 */
-  spacing?: string
 }
 
 const FormSection = React.forwardRef<HTMLElement, FormSectionProps>(
   (
-    { className, title, description, children, spacing = 'space-y-4', ...props },
+    { className, title, description, children, ...props },
     ref,
   ) => {
     return (
@@ -39,7 +37,7 @@ const FormSection = React.forwardRef<HTMLElement, FormSectionProps>(
             <p className="mt-1 text-sm text-muted-foreground">{description}</p>
           )}
         </header>
-        <div className={spacing}>{children}</div>
+        <div className="space-y-4">{children}</div>
       </section>
     )
   },

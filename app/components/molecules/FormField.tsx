@@ -34,8 +34,6 @@ export interface FormFieldProps extends React.HTMLAttributes<HTMLDivElement> {
   error?: string
   /** ヘルプテキスト（補助説明）。 */
   helpText?: string
-  /** Label と入力フィールドの間隔調整用。既定 mb-1.5。 */
-  labelGap?: string
   /** 入力フィールド本体。 */
   children: React.ReactNode
 }
@@ -49,7 +47,6 @@ const FormField = React.forwardRef<HTMLDivElement, FormFieldProps>(
       required = false,
       error,
       helpText,
-      labelGap = 'mb-1.5',
       children,
       ...props
     },
@@ -60,7 +57,7 @@ const FormField = React.forwardRef<HTMLDivElement, FormFieldProps>(
 
     return (
       <div ref={ref} className={cn('w-full', className)} {...props}>
-        <Label htmlFor={htmlFor} required={required} className={labelGap + ' block'}>
+        <Label htmlFor={htmlFor} required={required} className="mb-1.5 block">
           {label}
         </Label>
         {children}

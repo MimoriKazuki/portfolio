@@ -3,7 +3,6 @@
 import * as React from 'react'
 import * as PopoverPrimitive from '@radix-ui/react-popover'
 import { DayPicker } from 'react-day-picker'
-import 'react-day-picker/dist/style.css'
 import { Calendar as CalendarIcon } from 'lucide-react'
 import { format } from 'date-fns'
 import { ja } from 'date-fns/locale'
