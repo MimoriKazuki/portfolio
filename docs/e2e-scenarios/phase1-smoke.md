@@ -227,16 +227,40 @@
 - 確認内容: 単体動画一覧テーブル・新規ボタンが表示される
 - ステータス: 📋 未着手
 
+#### SC-SMK-015b: C001 管理 単体動画一覧 削除済フィルタ選択肢が存在する
+- 対象URL: `/admin/e-learning`
+- 前提: 管理者ログイン済み
+- 確認内容:
+  - 公開状態 Select に「削除済」選択肢が存在する（publishFilter の `<option value="deleted">`）
+  - デフォルト表示（publishFilter=published/draft）では削除済コンテンツ行は表示されない
+- ステータス: 📋 未着手
+
 #### SC-SMK-016: C002 管理 単体動画新規作成画面表示
 - 対象URL: `/admin/e-learning/new`
 - 前提: 管理者ログイン済み
 - 確認内容: 登録フォームが表示される
 - ステータス: 📋 未着手
 
+#### SC-SMK-016b: C002 管理 単体動画新規作成フォームに stripe_price_id 入力欄が表示される
+- 対象URL: `/admin/e-learning/new`
+- 前提: 管理者ログイン済み
+- 確認内容:
+  - `placeholder="price_xxx"` の stripe_price_id 入力欄が表示される
+  - is_free チェックボックスが OFF（有料）のとき、stripe_price_id 入力欄が有効（disabled でない）
+- ステータス: 📋 未着手
+
 #### SC-SMK-017: C003 管理 単体動画編集画面表示
 - 対象URL: `/admin/e-learning/[id]/edit`（テスト用）
 - 前提: 管理者ログイン済み
 - 確認内容: 編集フォームが表示される
+- ステータス: 📋 未着手
+
+#### SC-SMK-017b: C003 管理 単体動画編集フォームに stripe_price_id 入力欄が表示される
+- 対象URL: `/admin/e-learning/[id]/edit`（既存テスト用動画の ID）
+- 前提: 管理者ログイン済み・既存動画の編集画面
+- 確認内容:
+  - `placeholder="price_xxx"` の stripe_price_id 入力欄が表示される
+  - is_free チェックボックスが OFF（有料）のとき、stripe_price_id 入力欄が有効（disabled でない）
 - ステータス: 📋 未着手
 
 #### SC-SMK-018: C004 管理 カテゴリ管理表示
@@ -359,7 +383,7 @@
 
 | 状態 | 件数 |
 |------|------|
-| 📋 未着手 | 48 |
+| 📋 未着手 | 51 |
 | 🔧 実装中 | 0 |
 | ✅ 完了 | 0 |
-| **合計** | **48** |
+| **合計** | **51** |

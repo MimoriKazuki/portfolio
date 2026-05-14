@@ -408,6 +408,63 @@
 - 期待結果: 一覧から消える（deleted_at が設定される）
 - ステータス: 📋 未着手
 
+#### SC-UAT-091: C001 管理 単体動画一覧 「削除済」フィルタ選択 → 削除済バッジ行のみ表示
+- 対象URL: `/admin/e-learning`
+- 前提: 管理者ログイン済み・**テストで `[TEST_CONTENT]` 接頭辞コンテンツを新規作成し削除済み（deleted_at あり）にした状態**（SC-UAT-064 の流れで作成・削除）
+- 操作: 公開状態 Select を「削除済」に変更（`publishFilter = 'deleted'`）
+- 確認内容:
+  - URL に `?publishFilter=deleted`（またはクライアント状態の変化）が反映される
+  - 削除済（deleted_at あり）コンテンツ行のみ表示される
+  - 各行に「削除済」赤バッジ（`bg-red-100 text-red-800`）が表示される
+  - 通常公開・下書きコンテンツ行が表示されない
+- 補足:
+  - **`[TEST_CONTENT]` のみ対象。既存 15 件の動画（人作成データ）を削除しないこと**
+  - このシナリオの確認後、「すべて」または「下書き」に戻して非削除コンテンツが再表示されることも確認
+- ステータス: 📋 未着手
+
+#### SC-UAT-092: C001 管理 単体動画一覧 削除済フィルタ以外では削除済行が非表示
+- 対象URL: `/admin/e-learning`
+- 前提: 管理者ログイン済み・deleted_at ありのコンテンツ（`[TEST_CONTENT]` またはすでに削除済みの既存データ）が DB に存在する
+- 操作: 公開状態 Select が「公開中」「下書き」「すべて（削除済以外）」の各状態
+- 確認内容:
+  - 「削除済」以外のフィルタでは deleted_at ありの行がテーブルに表示されない（クライアント側フィルタの動作）
+  - 「削除済」に切り替えた場合のみ削除済行が出現する
+- 補足: 既存 15 件の動画に deleted_at があれば実コンテンツで確認可能（既存データは削除しない・読み取りのみ）
+- ステータス: 📋 未着手
+
+#### SC-UAT-093: C002 単体動画 新規作成 stripe_price_id を入力して保存 → DB に反映
+- 対象URL: `/admin/e-learning/new`
+- 前提: 管理者ログイン済み
+- 操作:
+  1. タイトル `[TEST_CONTENT_STRIPE]`・is_free=false（有料）を設定
+  2. stripe_price_id 入力欄に `price_test_xxx` を入力
+  3. 登録ボタンをクリック
+- 確認内容:
+  - 送信後 C001 一覧に `[TEST_CONTENT_STRIPE]` が表示される
+  - `/admin/e-learning/[id]/edit` で編集画面を開くと stripe_price_id 欄に `price_test_xxx` が入っている（DB 反映確認）
+- 補足: **テスト終了後に `[TEST_CONTENT_STRIPE]` を SC-UAT-064 の論理削除手順でクリーンアップすること**
+- ステータス: 📋 未着手
+
+#### SC-UAT-094: C002/C003 単体動画フォーム is_free=true に切替 → stripe_price_id 欄が disabled になる
+- 対象URL: `/admin/e-learning/new`（または `/admin/e-learning/[id]/edit`）
+- 前提: 管理者ログイン済み
+- 操作:
+  1. is_free チェックボックスを ON（無料）に切り替える
+- 確認内容:
+  - stripe_price_id 入力欄が `disabled` 属性付きになり、`disabled:bg-gray-100 disabled:text-gray-400` のスタイルが適用される
+  - is_free を OFF に戻すと stripe_price_id 欄が再び有効（入力可能）になる
+- ステータス: 📋 未着手
+
+#### SC-UAT-095: C003 単体動画 編集画面 stripe_price_id 変更 → 保存 → DB に反映
+- 対象URL: `/admin/e-learning/[id]/edit`（SC-UAT-093 で作成した `[TEST_CONTENT_STRIPE]` の編集画面）
+- 前提: 管理者ログイン済み・`[TEST_CONTENT_STRIPE]` が存在し stripe_price_id が `price_test_xxx` の状態
+- 操作: stripe_price_id を `price_test_yyy` に変更 → 保存ボタンクリック
+- 確認内容:
+  - 保存後に編集画面を再度開くと stripe_price_id 欄に `price_test_yyy` が表示される（DB 反映確認）
+  - 空文字に変更して保存した場合、DB 上の stripe_price_id が NULL になる（`.trim() || null` 動作確認）
+- 補足: **`[TEST_CONTENT_STRIPE]`（SC-UAT-093 で作成したもの）のみ操作すること**
+- ステータス: 📋 未着手
+
 ### 管理画面 コース（C005/C006/C007/C008）
 
 #### SC-UAT-070: C006 コース新規作成 基本情報入力 → 保存
@@ -625,7 +682,7 @@
 
 | 状態 | 件数 |
 |------|------|
-| 📋 未着手 | 76 |
+| 📋 未着手 | 81 |
 | 🔧 実装中 | 0 |
 | ✅ 完了 | 0 |
-| **合計** | **76** |
+| **合計** | **81** |
