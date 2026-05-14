@@ -72,12 +72,12 @@ describe('getCoursesList', () => {
   const rawCourses = [
     {
       id: 'c-1', slug: 'intro-ai', title: 'AI 入門', description: 'desc',
-      thumbnail_url: null, is_free: false, price: 9800,
+      thumbnail_url: null, is_free: false, price: 9800, is_featured: true,
       category_id: 'cat-1', category: { name: 'AI 基礎' },
     },
     {
       id: 'c-2', slug: 'llm', title: 'LLM 基礎', description: null,
-      thumbnail_url: null, is_free: true, price: null,
+      thumbnail_url: null, is_free: true, price: null, is_featured: false,
       category_id: 'cat-2', category: [{ name: 'LLM' }],  // 配列形式のケース
     },
   ]
@@ -89,6 +89,8 @@ describe('getCoursesList', () => {
     expect(result).toHaveLength(2)
     expect(result[0].category_name).toBe('AI 基礎')
     expect(result[1].category_name).toBe('LLM')   // 配列形式でも正しく解決
+    expect(result[0].is_featured).toBe(true)
+    expect(result[1].is_featured).toBe(false)
   })
 
   it('eq("is_published", true) が呼ばれる', async () => {
