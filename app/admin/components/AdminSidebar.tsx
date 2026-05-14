@@ -8,6 +8,19 @@ import { cn } from '@/app/lib/utils'
 import { createClient } from '@/app/lib/supabase/client'
 import Image from 'next/image'
 
+// F-05：eラーニング配下に常時展開のサブナビを追加。
+// 管理側 C001 / C004 / C005 / C009 / C010 / C011 への導線を sidebar に集約し、
+// 管理画面トップ Action bar 任せだった導線分散を解消する。
+// 「eラーニング」セクションが active なときのみ展開（pathname.startsWith('/admin/e-learning')）。
+const eLearningSubItems: { label: string; href: string }[] = [
+  { label: '単体動画一覧', href: '/admin/e-learning' },
+  { label: 'カテゴリ管理', href: '/admin/e-learning/categories' },
+  { label: 'コース一覧', href: '/admin/e-learning/courses' },
+  { label: '購入履歴', href: '/admin/e-learning/purchases' },
+  { label: 'フルアクセスユーザー', href: '/admin/e-learning/users' },
+  { label: 'レガシー購入', href: '/admin/e-learning/legacy-purchases' },
+]
+
 const AdminSidebar = memo(function AdminSidebar() {
   const pathname = usePathname()
   const router = useRouter()
@@ -32,6 +45,8 @@ const AdminSidebar = memo(function AdminSidebar() {
     { icon: Mail, label: 'お問い合わせ', href: '/admin/contacts' },
   ]
 
+  const isELearningArea = pathname.startsWith('/admin/e-learning')
+
   return (
     <nav className="w-56 bg-white border-r border-gray-200 h-screen flex flex-col fixed left-0 top-0">
       {/* Logo */}
@@ -53,23 +68,51 @@ const AdminSidebar = memo(function AdminSidebar() {
       <div className="flex-1 p-4">
         <div className="space-y-1">
           {menuItems.map((item) => {
-            const isActive = pathname === item.href || 
+            const isActive = pathname === item.href ||
               (item.href !== '/admin' && pathname.startsWith(item.href))
             const Icon = item.icon
-            
+            const isELearningItem = item.href === '/admin/e-learning'
+
             return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200",
-                  "hover:bg-gray-100 text-gray-700 hover:text-portfolio-blue",
-                  isActive && "bg-portfolio-blue/10 text-portfolio-blue font-medium"
+              <div key={item.href}>
+                <Link
+                  href={item.href}
+                  className={cn(
+                    "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200",
+                    "hover:bg-gray-100 text-gray-700 hover:text-portfolio-blue",
+                    isActive && "bg-portfolio-blue/10 text-portfolio-blue font-medium"
+                  )}
+                >
+                  <Icon className="h-5 w-5" />
+                  <span>{item.label}</span>
+                </Link>
+
+                {/* F-05：eラーニング配下のサブナビ（active 時のみ展開） */}
+                {isELearningItem && isELearningArea && (
+                  <ul className="ml-7 mt-1 mb-1 space-y-0.5 border-l border-gray-200 pl-3">
+                    {eLearningSubItems.map((sub) => {
+                      // /admin/e-learning は配下が深いため完全一致でのみ active 化（誤一致防止）
+                      const isSubActive = sub.href === '/admin/e-learning'
+                        ? pathname === sub.href
+                        : pathname === sub.href || pathname.startsWith(sub.href + '/')
+                      return (
+                        <li key={sub.href}>
+                          <Link
+                            href={sub.href}
+                            className={cn(
+                              "block px-3 py-1.5 rounded-md text-sm transition-colors",
+                              "hover:bg-gray-100 text-gray-600 hover:text-portfolio-blue",
+                              isSubActive && "bg-portfolio-blue/5 text-portfolio-blue font-medium"
+                            )}
+                          >
+                            {sub.label}
+                          </Link>
+                        </li>
+                      )
+                    })}
+                  </ul>
                 )}
-              >
-                <Icon className="h-5 w-5" />
-                <span>{item.label}</span>
-              </Link>
+              </div>
             )
           })}
         </div>
