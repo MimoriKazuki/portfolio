@@ -115,6 +115,17 @@
 - 確認内容: 購入完了またはポーリングスピナーが表示される
 - ステータス: 📋 未着手
 
+#### SC-SMK-009c: B009 新購入完了画面 session_id なし表示（`/e-learning/lp/checkout/complete`）
+- 対象URL: `/e-learning/lp/checkout/complete`（session_id クエリなし）
+- 前提: ログイン済み
+- 確認内容:
+  - タイトル「ご購入ありがとうございます」が表示される
+  - `target.kind === 'unknown'` 分岐により「購入対象を特定できませんでした」メッセージが表示される
+  - 「マイページ：購入履歴へ」リンク（href: `/e-learning/lp/mypage/purchases`）が表示される
+  - ポーリングスピナーは表示されない
+- 補足: session_id なしは unknown fallback で表示されるため Stripe テストモード不要
+- ステータス: 📋 未着手
+
 #### SC-SMK-010: B010 購入キャンセル画面表示
 - 対象URL: `/e-learning/checkout/cancel`
 - 前提: ログイン済み
@@ -240,16 +251,46 @@
 - 確認内容: コース一覧テーブル・新規ボタンが表示される
 - ステータス: 📋 未着手
 
+#### SC-SMK-019b: C005 管理 コース一覧表示（実装済みの新 path）
+- 対象URL: `/admin/e-learning/courses`
+- 前提: 管理者ログイン済み
+- 確認内容:
+  - AdminPageHeader「コース管理」タイトルが表示される
+  - 「新規作成」ボタン（href: `/admin/e-learning/courses/new`）が表示される
+  - ステータス Select・カテゴリ Select フィルタが表示される
+  - AdminDataTable（コース一覧行、またはコースゼロ時の空状態）が表示される
+- ステータス: 📋 未着手
+
 #### SC-SMK-020: C006 管理 コース新規作成画面表示
 - 対象URL: `/admin/e-learning/courses/new`
 - 前提: 管理者ログイン済み
 - 確認内容: 基本情報・カリキュラム・資料の各タブが表示される
 - ステータス: 📋 未着手
 
+#### SC-SMK-020b: C006 管理 コース新規作成画面表示（実装済みの新 path）
+- 対象URL: `/admin/e-learning/courses/new`
+- 前提: 管理者ログイン済み
+- 確認内容:
+  - AdminPageHeader「コース新規作成」タイトルが表示される
+  - 「一覧に戻る」ボタン（href: `/admin/e-learning/courses`）が表示される
+  - CourseFormClient が表示される（タイトル・スラッグ・カテゴリ・説明・価格の各入力欄）
+  - 「作成する」送信ボタンが表示される
+- ステータス: 📋 未着手
+
 #### SC-SMK-021: C007 管理 コース編集画面表示
 - 対象URL: `/admin/e-learning/courses/[id]/edit`（テスト用）
 - 前提: 管理者ログイン済み
 - 確認内容: 編集フォーム（タブ付き）が表示される
+- ステータス: 📋 未着手
+
+#### SC-SMK-021b: C007 管理 コース編集画面表示（実装済みの新 path）
+- 対象URL: `/admin/e-learning/courses/[id]/edit`（dev-seed の dummy-ai-intro 等の ID を使用）
+- 前提: 管理者ログイン済み・dev-seed のダミーコースが存在する
+- 確認内容:
+  - AdminPageHeader「コース編集」タイトルが表示される
+  - CourseFormClient が初期値で表示される（コースタイトル・スラッグ等が埋まっている）
+  - 「保存する」ボタンと「論理削除」ボタンが表示される
+  - 「カリキュラム・資料の編集について」注意書きが表示される
 - ステータス: 📋 未着手
 
 #### SC-SMK-022: C009 管理 購入履歴表示
@@ -288,7 +329,7 @@
 
 | 状態 | 件数 |
 |------|------|
-| 📋 未着手 | 38 |
+| 📋 未着手 | 43 |
 | 🔧 実装中 | 0 |
 | ✅ 完了 | 0 |
-| **合計** | **38** |
+| **合計** | **43** |

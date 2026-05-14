@@ -344,6 +344,35 @@
 - 補足: **has_full_access=true の退会ユーザーが同一メールで再登録された場合の引継ぎ確認。DB seed で has_full_access=true にしたアカウントを使用**
 - ステータス: 📋 未着手
 
+### B009 購入完了画面 ポーリング
+
+#### SC-UAT-065: B009 ポーリング成功 → Webhook 反映後に「視聴を開始する」リンク表示
+- 対象URL: `/e-learning/lp/checkout/complete?session_id={stripe_cs_test_xxx}`
+- 前提:
+  - ログイン済み・課金 flow 完了済み（Stripe テストモードで Checkout Session 作成済み）
+  - POST /api/stripe/webhook（checkout.session.completed）が受信済みで e_learning_purchases に INSERT 済みの状態
+  - session_id はテスト Stripe Dashboard から取得
+- 操作: URL にアクセス（session_id クエリ付き）
+- 確認内容:
+  - 初期表示でポーリングスピナー（`role="status"` の Loader2）と「決済反映処理中です」メッセージが表示される
+  - 2 秒以内に `/api/me/access` のレスポンスに target_id が含まれ、`CheckCircle2` アイコン + 「決済が反映されました。視聴を開始できます。」が表示される
+  - 「視聴を開始する」リンクが target に応じた href（コース: `/e-learning/lp/courses/[slug]`・単体動画: `/e-learning/[id]`）を持つ
+- 補足: **Stripe テストモード必須。ローカルで `stripe listen --forward-to localhost:3000/api/stripe/webhook` を先に起動しておくこと**
+- ステータス: 📋 未着手
+
+#### SC-UAT-066: B009 ポーリングタイムアウト（10 回経過後の案内表示）
+- 対象URL: `/e-learning/lp/checkout/complete?session_id={stripe_cs_test_xxx}`
+- 前提:
+  - ログイン済み・Stripe Checkout Session は存在するが Webhook がまだ届いていない状態
+  - （テスト方法：`stripe trigger` を使わず、または Webhook 転送を停止して session_id だけ付与してアクセス）
+- 操作: URL にアクセス → ポーリングを 20 秒間待つ
+- 確認内容:
+  - ポーリング中は `確認中… N/10` カウンタが更新される（N=1〜9）
+  - 10 回（約 20 秒）経過後、`AlertCircle` アイコン + 「決済反映が遅延しています。」メッセージが表示される
+  - 「マイページへ」（href: `/e-learning/lp/mypage/purchases`）と「お問い合わせ」（href: `/contact`）2 ボタンが表示される
+- 補足: **Webhook 転送を意図的にブロックして再現。ループスピナーが「視聴を開始する」に切り替わらないことを確認**
+- ステータス: 📋 未着手
+
 ### 管理画面 単体動画（C001/C002/C003）
 
 #### SC-UAT-060: C001 単体動画一覧 検索フィルタ
@@ -393,6 +422,68 @@
 - 期待結果: 章内に動画が追加される
 - ステータス: 📋 未着手
 
+#### SC-UAT-075: C005 管理コース一覧 ステータスフィルタ → 表示行が変わる
+- 対象URL: `/admin/e-learning/courses`
+- 前提: 管理者ログイン済み・公開中コースと下書きコースが混在（dev-seed 等で準備）
+- 操作:
+  1. ステータス Select を「下書き」に変更 → URL `?status=draft` が付き、下書きコースのみ表示されることを確認
+  2. ステータス Select を「すべて」に変更 → URL `?status=all` が付き、公開+下書き+削除済がすべて表示されることを確認
+  3. ステータス Select を「公開中」に戻す → `?status` が URL から消え、公開中コースのみ表示されることを確認
+- 確認内容: Select 変更のたびに URL query が更新され、テーブル行がフィルタ結果に応じて切り替わる
+- ステータス: 📋 未着手
+
+#### SC-UAT-076: C005 管理コース一覧 公開／非公開 Switch トグル → 楽観的 UI + DB 反映
+- 対象URL: `/admin/e-learning/courses`（公開中コース行あり）
+- 前提: 管理者ログイン済み・テスト用非公開コース行が表示されている
+- 操作: テスト用コース行の「公開」列 Switch を ON → OFF にクリック
+- 確認内容:
+  - Switch が即座に OFF に切り替わる（楽観的 UI）
+  - toggleCoursePublishedAction が呼ばれ、DB 上の `is_published` が false になる（ページリロードで確認）
+  - `/e-learning/lp/courses` にアクセスするとそのコースが非表示になる（revalidatePath 確認）
+- ステータス: 📋 未着手
+
+#### SC-UAT-077: C006 コース新規作成 → 編集画面に `?created=1` 付きで遷移
+- 対象URL: `/admin/e-learning/courses/new`
+- 前提: 管理者ログイン済み
+- 操作: タイトル・スラッグ・カテゴリを入力 → 「作成する」ボタンクリック
+- 確認内容:
+  - 送信中に Loader2 スピナー + 「保存中...」がボタン上に表示される
+  - 成功後 `/admin/e-learning/courses/[新規ID]/edit?created=1` に遷移する
+  - 編集画面の AdminPageHeader 説明文が「コースを作成しました。続けて公開設定や章の追加を行えます。」になっている
+  - C005 一覧（`/admin/e-learning/courses`）に戻ると新規コースが表示される
+- ステータス: 📋 未着手
+
+#### SC-UAT-078: C006 コース新規作成 バリデーション（タイトル空欄）
+- 対象URL: `/admin/e-learning/courses/new`
+- 前提: 管理者ログイン済み
+- 操作: タイトル欄を空欄のまま「作成する」ボタンクリック
+- 確認内容:
+  - `role="alert"` のエラーメッセージが表示される（「入力内容に不備があります。」等）
+  - `/admin/e-learning/courses/[id]/edit` への遷移が起きない
+- ステータス: 📋 未着手
+
+#### SC-UAT-079: C007 コース基本情報更新 → 保存 → 公開 LP B004 にも反映
+- 対象URL: `/admin/e-learning/courses/[id]/edit`（dev-seed の dummy-ai-intro 等）
+- 前提: 管理者ログイン済み・テスト用公開コースが存在する
+- 操作: タイトルを変更 → 「保存する」ボタンクリック
+- 確認内容:
+  - 保存後、編集画面がリフレッシュされ新しいタイトルが表示される
+  - `/e-learning/lp/courses/[slug]` にアクセスすると変更後のタイトルが表示される（revalidatePath 確認）
+- ステータス: 📋 未着手
+
+#### SC-UAT-080: C007 コース論理削除 → window.confirm → 一覧から非表示
+- 対象URL: `/admin/e-learning/courses/[id]/edit`（削除専用テストコース）
+- 前提: 管理者ログイン済み・削除専用テストコース（dev-seed の dummy コース等）が存在する
+- 操作: 「論理削除」ボタンをクリック → `window.confirm`「このコースを論理削除しますか？」で OK
+- 確認内容:
+  - confirm ダイアログが表示される
+  - OK 後に削除処理中スピナーが表示される
+  - softDeleteCourseAction 成功後、C005 一覧（`/admin/e-learning/courses`）にリダイレクトされる
+  - C005 一覧のデフォルト表示（status=published）でそのコースが消えている
+  - status=deleted フィルタに切り替えると「削除済」Badge 付きで表示される（deleted_at が設定されている）
+- 補足: **dev-seed の dummy コースを使用し、本番データへの影響を避けること**
+- ステータス: 📋 未着手
+
 #### SC-UAT-073: C010 フルアクセスユーザー管理 has_full_access 切替
 - 対象URL: `/admin/e-learning/users`
 - 操作: ユーザー行の has_full_access トグルをクリック
@@ -405,7 +496,7 @@
 
 | 状態 | 件数 |
 |------|------|
-| 📋 未着手 | 58 |
+| 📋 未着手 | 66 |
 | 🔧 実装中 | 0 |
 | ✅ 完了 | 0 |
-| **合計** | **58** |
+| **合計** | **66** |
