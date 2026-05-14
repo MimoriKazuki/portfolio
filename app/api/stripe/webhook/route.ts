@@ -88,6 +88,183 @@ async function sendSlackPurchaseNotification(
   }
 }
 
+// Slack通知：返金完了（既存購入通知と同パターン・PII 含む既存運用に合わせる）
+async function sendSlackRefundNotification(
+  stripeChargeId: string,
+  paymentIntentId: string,
+  amountRefunded: number,
+) {
+  if (!SLACK_WEBHOOK_URL) {
+    console.warn('SLACK_WEBHOOK_URL is not set, skipping refund notification')
+    return
+  }
+
+  const slackMessage = {
+    text: 'Stripe 返金処理が完了しました',
+    blocks: [
+      {
+        type: 'header',
+        text: {
+          type: 'plain_text',
+          text: '💸 Stripe 返金完了',
+          emoji: true,
+        },
+      },
+      {
+        type: 'section',
+        fields: [
+          { type: 'mrkdwn', text: `*返金金額:*\n¥${amountRefunded.toLocaleString()}` },
+          { type: 'mrkdwn', text: `*Charge ID:*\n${stripeChargeId}` },
+          { type: 'mrkdwn', text: `*Payment Intent:*\n${paymentIntentId}` },
+        ],
+      },
+      { type: 'divider' },
+      {
+        type: 'context',
+        elements: [
+          {
+            type: 'mrkdwn',
+            text: `処理日時: ${new Date().toLocaleString('ja-JP', { timeZone: 'Asia/Tokyo' })}`,
+          },
+        ],
+      },
+    ],
+  }
+
+  try {
+    const response = await fetch(SLACK_WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(slackMessage),
+    })
+    if (!response.ok) {
+      console.error('Slack refund notification failed:', response.statusText)
+    }
+  } catch (error) {
+    console.error('Failed to send Slack refund notification:', error)
+  }
+}
+
+// Slack通知：未対応の charge.refunded（順序逆転 / 未マッチ）
+async function sendSlackRefundOrphanNotification(
+  paymentIntentId: string,
+  stripeChargeId: string,
+) {
+  if (!SLACK_WEBHOOK_URL) return
+  try {
+    await fetch(SLACK_WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        text: `⚠️ charge.refunded が対応する purchase レコードと一致しませんでした (payment_intent=${paymentIntentId}, charge=${stripeChargeId})`,
+      }),
+    })
+  } catch (error) {
+    console.error('Failed to send Slack orphan refund notification:', error)
+  }
+}
+
+/**
+ * charge.refunded ハンドラ
+ *
+ * 起点：docs/backend/logic/services/stripe-webhook-service.md §handleChargeRefunded
+ *
+ * 流れ：
+ * 1. Charge object から payment_intent と created（Unix epoch 秒）を取得
+ * 2. e_learning_purchases.stripe_payment_intent_id でマッチング（status='completed' 限定）
+ * 3. status='refunded' + refunded_at = to_timestamp(charge.created) を同一 UPDATE 文でセット
+ *    （CHECK 制約：(status='refunded' AND refunded_at IS NOT NULL) のため必須）
+ * 4. 対象未存在：Slack 通知 + 200 OK（順序逆転対策・Stripe にリトライさせない）
+ * 5. 既に refunded：noop + 200 OK（冪等・既存 refunded_at を保持）
+ * 6. has_full_access は触らない（access-service が status='completed' のみ視聴可と判定）
+ *
+ * 返り値：処理成否（true=成功または冪等、false=DB エラーで 500 返却すべき）
+ */
+async function handleChargeRefunded(charge: Stripe.Charge): Promise<boolean> {
+  const paymentIntentId =
+    typeof charge.payment_intent === 'string'
+      ? charge.payment_intent
+      : charge.payment_intent?.id
+
+  if (!paymentIntentId) {
+    console.error('[stripe-webhook] charge.refunded missing payment_intent', {
+      chargeId: charge.id,
+    })
+    return true // metadata 欠落系は 200 OK
+  }
+
+  // refunded_at = to_timestamp(charge.created)（Unix epoch 秒 → ISO 8601）
+  const refundedAt = new Date(charge.created * 1000).toISOString()
+
+  // 既存 purchase を取得（payment_intent_id でマッチ）
+  const { data: existing, error: selectError } = await supabaseAdmin
+    .from('e_learning_purchases')
+    .select('id, status, refunded_at')
+    .eq('stripe_payment_intent_id', paymentIntentId)
+    .maybeSingle()
+
+  if (selectError) {
+    console.error('[stripe-webhook] charge.refunded select failed', {
+      message: selectError.message,
+      paymentIntentId,
+    })
+    return false // 500 でリトライさせる
+  }
+
+  if (!existing) {
+    // 順序逆転 or 対象外：Slack 通知 + 200 OK
+    console.warn('[stripe-webhook] charge.refunded no matching purchase', {
+      paymentIntentId,
+      chargeId: charge.id,
+    })
+    await sendSlackRefundOrphanNotification(paymentIntentId, charge.id)
+    return true
+  }
+
+  if (existing.status === 'refunded') {
+    // 冪等：既に refunded → 既存 refunded_at を保持・noop
+    console.info('[stripe-webhook] charge.refunded already processed (idempotent)', {
+      purchaseId: existing.id,
+      paymentIntentId,
+    })
+    return true
+  }
+
+  // status と refunded_at を同一 UPDATE 文でセット（CHECK 制約遵守）
+  const { error: updateError } = await supabaseAdmin
+    .from('e_learning_purchases')
+    .update({
+      status: 'refunded',
+      refunded_at: refundedAt,
+    })
+    .eq('id', existing.id)
+
+  if (updateError) {
+    console.error('[stripe-webhook] charge.refunded update failed', {
+      message: updateError.message,
+      purchaseId: existing.id,
+      paymentIntentId,
+    })
+    return false // 500 でリトライさせる
+  }
+
+  console.info('[stripe-webhook] charge.refunded handled', {
+    purchaseId: existing.id,
+    paymentIntentId,
+    chargeId: charge.id,
+    refundedAt,
+  })
+
+  // Slack 通知（返金完了）
+  await sendSlackRefundNotification(
+    charge.id,
+    paymentIntentId,
+    charge.amount_refunded ?? 0,
+  )
+
+  return true
+}
+
 export async function POST(request: NextRequest) {
   const body = await request.text()
   const signature = request.headers.get('stripe-signature')
@@ -190,6 +367,22 @@ export async function POST(request: NextRequest) {
     }
 
     console.log(`E-Learning purchase completed: user=${userId}, session=${session.id}, amount=${amount}`)
+  }
+
+  // charge.refunded イベントを処理（Phase 2 Sub 3b 追加）
+  if (event.type === 'charge.refunded') {
+    const charge = event.data.object as Stripe.Charge
+    console.info('[stripe-webhook] charge.refunded received', {
+      eventId: event.id,
+      chargeId: charge.id,
+    })
+    const ok = await handleChargeRefunded(charge)
+    if (!ok) {
+      return NextResponse.json(
+        { error: 'Refund processing failed' },
+        { status: 500 },
+      )
+    }
   }
 
   return NextResponse.json({ received: true })
