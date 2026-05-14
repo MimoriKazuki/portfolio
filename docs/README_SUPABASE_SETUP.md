@@ -28,8 +28,8 @@
 
 1. 管理画面にログイン
    - URL: https://portfolio-site-blond-eta.vercel.app/login
-   - Email: tamogami@landbridge.co.jp
-   - Password: Portfolio2024!
+   - Email: `.env.local` の `ADMIN_EMAIL` の値
+   - Password: `<管理者から取得>`（平文記載禁止）
 
 2. プロジェクトの作成/編集
    - 「画像を選択」ボタンでサムネイルをアップロード

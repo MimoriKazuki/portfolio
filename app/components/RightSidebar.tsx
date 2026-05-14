@@ -9,11 +9,11 @@ import { Document } from '@/app/types'
 
 // サービス定義（固定）
 const corporateService = {
-  id: "comprehensive-ai-training",
-  title: "生成AI総合研修",
-  description: "生成AIの基礎から実践まで、企業の現場で即戦力として活躍できる人材を育成する包括的な研修プログラムです。",
-  href: "/services/comprehensive-ai-training",
-  image: "/images/sidebar/comprehensive-ai-training.jpg",
+  id: "ai-coding-training",
+  title: "AIコーディング研修",
+  description: "GitHub Copilot、Claude Code等を活用したAI支援プログラミング技術を習得し、開発効率を飛躍的に向上させる研修プログラムです。",
+  href: "/services/ai-coding-training",
+  image: "/images/sidebar/ai-coding-training.jpg",
   label: "企業向け"
 }
 

@@ -88,23 +88,8 @@ export default function ServicesContent() {
   // 企業向けサービス
   const corporateServices: ServiceItem[] = [
     {
-      id: 'comprehensive-ai-training',
-      number: '01',
-      label: '生成AI総合研修',
-      title: '組織に、より良い習慣を。',
-      subtitle: '生成AIの基礎から実践まで体系的に学べる包括的な研修プログラムです。ChatGPT、Claude、Geminiなど主要な生成AIツールの活用法を網羅的に習得できます。',
-      description: [
-        '企業の業務課題に合わせたカスタマイズ研修で、社員一人ひとりのAIリテラシーを向上させます。未経験者から上級者まで、幅広いレベルに対応したカリキュラムを用意しています。',
-        '座学だけでなく実務を想定したワークショップを通じて、現場で即座に使えるスキルを習得。チーム全体のAI活用文化を定着させ、組織の生産性向上を実現します。'
-      ],
-      href: '/services/comprehensive-ai-training',
-      image: '/images/services/list/comprehensive-ai-training.jpg',
-      logoText: '生成AI総合研修',
-      logoSubtext: 'エンゲージメントプラットフォーム'
-    },
-    {
       id: 'ai-coding-training',
-      number: '02',
+      number: '01',
       label: 'AIコーディング研修',
       title: '開発効率を、飛躍的に。',
       subtitle: 'AI支援プログラミング技術を習得し、開発効率を飛躍的に向上させる研修です。GitHub Copilot、Claude Code、Cursorなど最新ツールの効果的な活用法を学びます。',
@@ -116,6 +101,21 @@ export default function ServicesContent() {
       image: '/images/services/list/ai-coding-training.jpg',
       logoText: 'AIコーディング',
       logoSubtext: '開発効率化プログラム'
+    },
+    {
+      id: 'claude-training',
+      number: '02',
+      label: 'Claude研修',
+      title: 'Claudeを、業務の中核に。',
+      subtitle: 'CoWork、Claude in Chrome、Claude Designなど、Claudeの多様な機能を業務全般で使いこなし、組織の生産性を引き上げる研修です。開発者・非開発者を問わず対応します。',
+      description: [
+        'プロンプト設計の基礎から、Projects・Artifacts、CoWorkによる共同編集、Claude in Chromeを使ったブラウザ業務の自動化、Claude Designによる成果物制作まで、Claude主要機能を体系的に習得します。',
+        '業務テンプレートとしてプロンプトを標準化し、調査・資料作成・分析・社内共有までをClaude1つで完結。社内のAI活用レベルを底上げし、再現性のある業務フローを構築できます。'
+      ],
+      href: '/services/claude-training',
+      image: '/images/services/list/claude-training.jpg',
+      logoText: 'Claude研修',
+      logoSubtext: 'Claude総合活用プログラム'
     },
     {
       id: 'ai-organization-os',
@@ -146,6 +146,36 @@ export default function ServicesContent() {
       image: '/images/services/list/ai-video-training.jpg',
       logoText: 'AI動画生成',
       logoSubtext: 'マーケティング動画制作'
+    },
+    {
+      id: 'ai-short-video-training',
+      number: '05',
+      label: 'AIショート動画研修',
+      title: '縦動画を、AIで量産する。',
+      subtitle: 'SNS向け縦動画（TikTok・Reels・Shorts）をAIで量産する研修です。Sora、Runway、Pika、ElevenLabs、CapCut等を組み合わせ、SNSマーケティングを加速します。',
+      description: [
+        'ショート動画特有の構成設計（冒頭フック・テンポ・字幕）の基本から、AIによる素材生成、ElevenLabsによる音声合成、CapCutでの仕上げ編集まで、制作の全工程をハンズオンで習得します。',
+        '撮影や外注に頼らず、社内で必要な本数を必要なタイミングで投下できる量産体制を構築。SNSアルゴリズムに乗る継続発信の仕組みを定着させ、発信力を強化できます。'
+      ],
+      href: '/services/ai-short-video-training',
+      image: '/images/services/list/ai-short-video-training.jpg',
+      logoText: 'AIショート動画',
+      logoSubtext: 'SNS縦動画量産プログラム'
+    },
+    {
+      id: 'ai-animation-training',
+      number: '06',
+      label: 'AIアニメ制作研修',
+      title: 'アニメ制作を、AIで再定義する。',
+      subtitle: 'キャラクター生成、シーン生成、リップシンク、声優AIまで、AIを駆使したアニメ制作を体系的に学ぶ研修です。企画から完成までの工程を大幅に短縮します。',
+      description: [
+        'AIアニメ制作の基礎から、キャラクター・シーン生成、ElevenLabsの声優AIとリップシンク、編集ソフトでの統合まで、アニメ制作の全工程をハンズオンで習得します。',
+        '広告・販促アニメ、解説アニメ、社内向けコンテンツなど、用途に応じた作品を企画から完成まで自走で制作可能に。外部スタジオへの依存を減らし、表現の幅を広げます。'
+      ],
+      href: '/services/ai-animation-training',
+      image: '/images/services/list/ai-animation-training.jpg',
+      logoText: 'AIアニメ制作',
+      logoSubtext: 'AI駆動アニメ制作プログラム'
     }
   ]
 

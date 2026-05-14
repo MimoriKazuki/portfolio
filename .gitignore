@@ -44,14 +44,19 @@ dist-ssr
 *.tsbuildinfo
 next-env.d.ts
 
-# Serena local memories (Claude/Serena ローカルメモ・プロジェクト共有不要)
-.serena/memories/
+# Serena (LSP-based code analysis tool / IDE state)
+.serena/
 
-# Supabase CLI 作業時の一時ファイル
+# Claude Code local state
+.claude/scheduled_tasks.lock
+.claude/settings.local.json
+
+# Supabase CLI local temp
 supabase/.temp/
 
-# Claude Code local settings (個人開発環境設定・チーム共有不要)
-.claude/settings.local.json
+# 機密情報を含む参考SQL（デフォルトパスワード平文記載のため公開しない）
+supabase/create-admin-user.sql
+supabase/create-correct-admin-user.sql
 
 # Playwright（P3-TEST-01）
 /playwright-report/

@@ -43,5 +43,5 @@
 1. Vercelで再デプロイをトリガー（GitHubへのプッシュまたは手動デプロイ）
 2. https://portfolio-site-blond-eta.vercel.app/admin/login にアクセス
 3. 管理者アカウントでログイン：
-   - Email: admin@portfolio.com
-   - Password: Portfolio2024!
+   - Email: `.env.local` の `ADMIN_EMAIL` の値
+   - Password: `<管理者から取得>`（平文記載禁止）

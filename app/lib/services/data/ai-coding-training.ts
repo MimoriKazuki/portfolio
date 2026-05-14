@@ -223,7 +223,7 @@ export const AI_CODING_TRAINING_DATA: ServiceData = {
     ]
   },
   
-  otherTrainingPrograms: generateOtherTrainingProgramsData("ai-coding"),
+  otherTrainingPrograms: generateOtherTrainingProgramsData("ai-coding-training"),
   
   finalCTA: {
     title: "開発効率革新の第一歩を踏み出しませんか？",

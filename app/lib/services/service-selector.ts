@@ -5,7 +5,7 @@ import { ALL_TRAINING_PROGRAMS } from './training-programs'
  */
 
 // Default services
-export const DEFAULT_ENTERPRISE_SERVICE = 'comprehensive-ai-training'
+export const DEFAULT_ENTERPRISE_SERVICE = 'ai-coding-training'
 export const DEFAULT_INDIVIDUAL_SERVICE = 'individual-coaching'
 
 // Service options for dropdowns

@@ -5,20 +5,20 @@ import type { OtherTrainingProgram } from '@/app/lib/types/service'
  */
 export const ALL_TRAINING_PROGRAMS: OtherTrainingProgram[] = [
   {
-    id: "comprehensive-ai-training",
-    title: "生成AI総合研修",
-    description: "ChatGPTやClaude等の生成AIツールを活用し、未経験者から実務レベルまで体系的に学習。企業の現場で即戦力として活躍できる人材を育成します。",
-    href: "/services/comprehensive-ai-training",
-    image: "/images/services/list/comprehensive-ai-training.jpg",
-    available: true,
-    category: "enterprise"
-  },
-  {
-    id: "ai-coding",
+    id: "ai-coding-training",
     title: "AIコーディング研修",
     description: "GitHub Copilot、Claude Code等を活用したAI支援プログラミング技術を習得し、開発効率を飛躍的に向上させます。",
     href: "/services/ai-coding-training",
     image: "/images/services/list/ai-coding-training.jpg",
+    available: true,
+    category: "enterprise"
+  },
+  {
+    id: "claude-training",
+    title: "Claude研修",
+    description: "CoWork、Claude in Chrome、Claude Designなど、Claudeの多様な機能を業務全般で使いこなし、組織の生産性を引き上げる研修です。",
+    href: "/services/claude-training",
+    image: "/images/services/list/claude-training.jpg",
     available: true,
     category: "enterprise"
   },
@@ -32,11 +32,29 @@ export const ALL_TRAINING_PROGRAMS: OtherTrainingProgram[] = [
     category: "enterprise"
   },
   {
-    id: "ai-video",
+    id: "ai-video-training",
     title: "AI動画生成研修",
     description: "Sora、Gemini、Higgsfield等のAI動画生成ツールを活用して、マーケティング動画やプレゼン動画を効率的に制作する技術を学びます。",
     href: "/services/ai-video-training",
     image: "/images/services/list/ai-video-training.jpg",
+    available: true,
+    category: "enterprise"
+  },
+  {
+    id: "ai-short-video-training",
+    title: "AIショート動画研修",
+    description: "Sora、Runway、Pika、ElevenLabs、CapCut等を活用し、SNS向け縦動画をAIで量産。SNSマーケティングを加速する技術を学びます。",
+    href: "/services/ai-short-video-training",
+    image: "/images/services/list/ai-short-video-training.jpg",
+    available: true,
+    category: "enterprise"
+  },
+  {
+    id: "ai-animation-training",
+    title: "AIアニメ制作研修",
+    description: "キャラクター生成、シーン生成、リップシンク、声優AIまでAIを駆使したアニメ制作を体系的に学び、企画から完成までを大幅に短縮します。",
+    href: "/services/ai-animation-training",
+    image: "/images/services/list/ai-animation-training.jpg",
     available: true,
     category: "enterprise"
   },
