@@ -12,6 +12,34 @@ const supabaseAdmin = createClient(
 // Slack Webhook URL
 const SLACK_WEBHOOK_URL = process.env.SLACK_WEBHOOK_URL || ''
 
+/**
+ * Slack 通知用の PII マスキング（F-14）
+ *
+ * 既存運用では Slack 通知に email / display_name の全文を載せていたが、
+ * Slack 受信側の運営の認知体験を維持しつつ PII を最小化する：
+ * - email：local part 先頭 3 文字 + ***、domain は維持（user@example.com → use***@example.com）
+ *   → 受信者が「誰の購入か」を社内ドメイン基準で識別する既存運用を温存
+ * - display_name：先頭 2 文字 + ***（山田太郎 → 山田***）
+ *   → 全文を露出しないが、識別用ヒントは残す
+ *
+ * 短い文字列（local part 3 文字未満 / 名前 2 文字未満）はそのまま返す
+ * （マスキングしてもしなくても情報量がほぼ同じため）。
+ */
+function maskEmail(email: string): string {
+  const atIdx = email.indexOf('@')
+  if (atIdx <= 0) return email // '@' なし or 空 local part：そのまま
+  const local = email.slice(0, atIdx)
+  const domain = email.slice(atIdx) // '@' 含む
+  if (local.length <= 3) return `${local}${domain}`
+  return `${local.slice(0, 3)}***${domain}`
+}
+
+function maskDisplayName(name: string | null): string {
+  if (!name) return '名前未設定'
+  if (name.length <= 2) return name
+  return `${name.slice(0, 2)}***`
+}
+
 // Slack通知を送信する関数
 async function sendSlackPurchaseNotification(
   userEmail: string,
@@ -39,12 +67,14 @@ async function sendSlackPurchaseNotification(
         type: 'section',
         fields: [
           {
+            // F-14：display_name はマスキング後の値で通知
             type: 'mrkdwn',
-            text: `*購入者:*\n${userName || '名前未設定'}`
+            text: `*購入者:*\n${maskDisplayName(userName)}`
           },
           {
+            // F-14：email は local part マスキング後の値で通知（domain は維持）
             type: 'mrkdwn',
-            text: `*メールアドレス:*\n${userEmail}`
+            text: `*メールアドレス:*\n${maskEmail(userEmail)}`
           },
           {
             type: 'mrkdwn',
