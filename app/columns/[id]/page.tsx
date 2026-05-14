@@ -8,6 +8,7 @@ import { Calendar, ChevronLeft } from 'lucide-react'
 import MainLayout from '@/app/components/MainLayout'
 import TableOfContents from '@/app/components/TableOfContents'
 import AudioPlayerWrapper from '@/app/columns/AudioPlayerWrapper'
+import DOMPurify from 'isomorphic-dompurify'
 import type { Metadata } from 'next'
 
 // ISRを使用してパフォーマンスを向上
@@ -271,8 +272,32 @@ export default async function ColumnDetailPage({ params }: PageProps) {
             prose-ul:text-[16px] prose-ul:text-gray-700 prose-ol:text-[16px] prose-ol:text-gray-700
             prose-li:marker:text-gray-400
             prose-img:max-w-full prose-img:h-auto prose-img:rounded-lg prose-img:shadow-md prose-img:my-6 prose-img:mx-auto"
-          dangerouslySetInnerHTML={{ 
-            __html: addIdsToHeadings(column.content)
+          dangerouslySetInnerHTML={{
+            // P3-AUX-06：column.content（CMS / TipTap 由来 HTML）を DOMPurify でサニタイズ
+            // TipTap が生成するタグ（h1-h6 / p / a / strong / em / code / pre / blockquote /
+            //   ul / ol / li / img / br / hr / table / tr / td / th / thead / tbody）を許可。
+            // <script> や on* イベントハンドラ等は DOMPurify が既定で除去。
+            // addIdsToHeadings は h1-h6 に id 属性を付与するだけなのでサニタイズ後に適用。
+            __html: addIdsToHeadings(
+              DOMPurify.sanitize(column.content, {
+                ALLOWED_TAGS: [
+                  'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+                  'p', 'a', 'strong', 'em', 'u', 's',
+                  'code', 'pre', 'blockquote',
+                  'ul', 'ol', 'li',
+                  'img', 'br', 'hr',
+                  'table', 'thead', 'tbody', 'tr', 'td', 'th',
+                  'span', 'div',
+                ],
+                ALLOWED_ATTR: [
+                  'href', 'target', 'rel',
+                  'src', 'alt', 'title', 'width', 'height',
+                  'class', 'id',
+                  'colspan', 'rowspan',
+                ],
+                ALLOW_DATA_ATTR: false,
+              }),
+            ),
           }}
         />
 
