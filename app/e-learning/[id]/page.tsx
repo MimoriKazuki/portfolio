@@ -117,9 +117,9 @@ export default async function ELearningDetailPage({ params }: PageProps) {
     .single()
 
   // 視聴権限判定：access-service に集約（has_paid_access 直書きを廃止・M5 安全順序 Step3）
-  // is_free / has_full_access / 単体購入 のいずれかなら canView=true
+  // is_free / has_full_access / 単体購入 のいずれかなら allowed=true
   const hasViewAccess = eLearningUser
-    ? (await canViewContent(eLearningUser.id, content.id)).canView
+    ? (await canViewContent(eLearningUser.id, content.id)).allowed
     : false
 
   // 関連コンテンツを取得（同じカテゴリの動画、現在の動画を除く最新3件）

@@ -133,7 +133,7 @@ export default async function ELearningPage() {
   const eLearningUserId = user ? await getELearningUserId(user.id) : null
   const userBookmarks = eLearningUserId ? await getUserBookmarks(eLearningUserId) : []
   const hasFullAccess = eLearningUserId
-    ? (await getViewerAccess(eLearningUserId)).hasFullAccess
+    ? (await getViewerAccess(eLearningUserId)).has_full_access
     : false
 
   return (

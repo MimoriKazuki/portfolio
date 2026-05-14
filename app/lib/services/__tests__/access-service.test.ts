@@ -79,7 +79,7 @@ describe('getViewerAccess', () => {
       e_learning_purchases: makePurchasesListChain([]),
     })
     const result = await getViewerAccess('eu-1')
-    expect(result).toEqual({ hasFullAccess: true, purchasedCourseIds: [], purchasedContentIds: [] })
+    expect(result).toEqual({ has_full_access: true, purchased_course_ids: [], purchased_content_ids: [] })
   })
 
   it('has_full_access=false + 購入なし → 全て false/空', async () => {
@@ -88,7 +88,7 @@ describe('getViewerAccess', () => {
       e_learning_purchases: makePurchasesListChain([]),
     })
     const result = await getViewerAccess('eu-2')
-    expect(result).toEqual({ hasFullAccess: false, purchasedCourseIds: [], purchasedContentIds: [] })
+    expect(result).toEqual({ has_full_access: false, purchased_course_ids: [], purchased_content_ids: [] })
   })
 
   it('has_full_access=false + course 2件 + content 1件（completed）→ 各配列に含まれる', async () => {
@@ -101,9 +101,9 @@ describe('getViewerAccess', () => {
       ]),
     })
     const result = await getViewerAccess('eu-3')
-    expect(result.hasFullAccess).toBe(false)
-    expect(result.purchasedCourseIds).toEqual(['course-1', 'course-2'])
-    expect(result.purchasedContentIds).toEqual(['content-1'])
+    expect(result.has_full_access).toBe(false)
+    expect(result.purchased_course_ids).toEqual(['course-1', 'course-2'])
+    expect(result.purchased_content_ids).toEqual(['content-1'])
   })
 
   it('refunded ステータスは含まれない（status=completed のみ取得）', async () => {
@@ -114,8 +114,8 @@ describe('getViewerAccess', () => {
       e_learning_purchases: makePurchasesListChain([]),  // refunded のみ → 0件
     })
     const result = await getViewerAccess('eu-4')
-    expect(result.purchasedCourseIds).toHaveLength(0)
-    expect(result.purchasedContentIds).toHaveLength(0)
+    expect(result.purchased_course_ids).toHaveLength(0)
+    expect(result.purchased_content_ids).toHaveLength(0)
 
     // eq('status', 'completed') が実際に呼ばれていることを確認
     const purchasesEntry = (createClient as ReturnType<typeof vi.fn>).mock.results[0]
@@ -143,55 +143,55 @@ describe('canViewCourseVideo', () => {
   }
   const videoDataFreeVideo = { ...videoData, is_free: true }
 
-  it('① has_full_access=true → { canView: true, reason: "full_access" }', async () => {
+  it('① has_full_access=true → { allowed: true, reason: "full_access" }', async () => {
     mockClient({
       e_learning_course_videos: makeMaybySingleChain(videoData),
       e_learning_users: makeMaybySingleChain({ has_full_access: true }),
     })
-    expect(await canViewCourseVideo(USER_ID, VIDEO_ID)).toEqual({ canView: true, reason: 'full_access' })
+    expect(await canViewCourseVideo(USER_ID, VIDEO_ID)).toEqual({ allowed: true, reason: 'full_access' })
   })
 
-  it('② コース購入済（completed）→ { canView: true, reason: "course_purchased" }', async () => {
+  it('② コース購入済（completed）→ { allowed: true, reason: "course_purchased" }', async () => {
     mockClient({
       e_learning_course_videos: makeMaybySingleChain(videoData),
       e_learning_users: makeMaybySingleChain({ has_full_access: false }),
       e_learning_purchases: makePurchaseChain({ id: 'purchase-1' }),
     })
-    expect(await canViewCourseVideo(USER_ID, VIDEO_ID)).toEqual({ canView: true, reason: 'course_purchased' })
+    expect(await canViewCourseVideo(USER_ID, VIDEO_ID)).toEqual({ allowed: true, reason: 'course_purchased' })
   })
 
-  it('③ コース全体 is_free=true → { canView: true, reason: "free_course" }', async () => {
+  it('③ コース全体 is_free=true → { allowed: true, reason: "free_course" }', async () => {
     mockClient({
       e_learning_course_videos: makeMaybySingleChain(videoDataFreeCourse),
       e_learning_users: makeMaybySingleChain({ has_full_access: false }),
       e_learning_purchases: makePurchaseChain(null),
     })
-    expect(await canViewCourseVideo(USER_ID, VIDEO_ID)).toEqual({ canView: true, reason: 'free_course' })
+    expect(await canViewCourseVideo(USER_ID, VIDEO_ID)).toEqual({ allowed: true, reason: 'free_course' })
   })
 
-  it('④ 動画個別 is_free=true → { canView: true, reason: "free_course_video" }', async () => {
+  it('④ 動画個別 is_free=true → { allowed: true, reason: "free_course_video" }', async () => {
     mockClient({
       e_learning_course_videos: makeMaybySingleChain(videoDataFreeVideo),
       e_learning_users: makeMaybySingleChain({ has_full_access: false }),
       e_learning_purchases: makePurchaseChain(null),
     })
-    expect(await canViewCourseVideo(USER_ID, VIDEO_ID)).toEqual({ canView: true, reason: 'free_course_video' })
+    expect(await canViewCourseVideo(USER_ID, VIDEO_ID)).toEqual({ allowed: true, reason: 'free_course_video' })
   })
 
-  it('⑤ いずれもなし → { canView: false, reason: "not_purchased" }', async () => {
+  it('⑤ いずれもなし → { allowed: false, reason: "not_purchased" }', async () => {
     mockClient({
       e_learning_course_videos: makeMaybySingleChain(videoData),
       e_learning_users: makeMaybySingleChain({ has_full_access: false }),
       e_learning_purchases: makePurchaseChain(null),
     })
-    expect(await canViewCourseVideo(USER_ID, VIDEO_ID)).toEqual({ canView: false, reason: 'not_purchased' })
+    expect(await canViewCourseVideo(USER_ID, VIDEO_ID)).toEqual({ allowed: false, reason: 'not_purchased' })
   })
 
-  it('動画が存在しない → { canView: false, reason: "not_purchased" }', async () => {
+  it('動画が存在しない → { allowed: false, reason: "not_purchased" }', async () => {
     mockClient({
       e_learning_course_videos: makeMaybySingleChain(null),
     })
-    expect(await canViewCourseVideo(USER_ID, VIDEO_ID)).toEqual({ canView: false, reason: 'not_purchased' })
+    expect(await canViewCourseVideo(USER_ID, VIDEO_ID)).toEqual({ allowed: false, reason: 'not_purchased' })
   })
 
   it('購入が refunded のみ → 購入扱いされず ⑤ not_purchased', async () => {
@@ -201,7 +201,7 @@ describe('canViewCourseVideo', () => {
       e_learning_users: makeMaybySingleChain({ has_full_access: false }),
       e_learning_purchases: makePurchaseChain(null),
     })
-    expect(await canViewCourseVideo(USER_ID, VIDEO_ID)).toEqual({ canView: false, reason: 'not_purchased' })
+    expect(await canViewCourseVideo(USER_ID, VIDEO_ID)).toEqual({ allowed: false, reason: 'not_purchased' })
   })
 })
 
@@ -212,39 +212,39 @@ describe('canViewContent', () => {
   const CONTENT_ID = 'content-1'
   const USER_ID = 'eu-1'
 
-  it('① has_full_access=true → { canView: true, reason: "full_access" }', async () => {
+  it('① has_full_access=true → { allowed: true, reason: "full_access" }', async () => {
     mockClient({
       e_learning_contents: makeMaybySingleChain({ id: CONTENT_ID, is_free: false }),
       e_learning_users: makeMaybySingleChain({ has_full_access: true }),
     })
-    expect(await canViewContent(USER_ID, CONTENT_ID)).toEqual({ canView: true, reason: 'full_access' })
+    expect(await canViewContent(USER_ID, CONTENT_ID)).toEqual({ allowed: true, reason: 'full_access' })
   })
 
-  it('② 単体購入済（completed）→ { canView: true, reason: "content_purchased" }', async () => {
+  it('② 単体購入済（completed）→ { allowed: true, reason: "content_purchased" }', async () => {
     mockClient({
       e_learning_contents: makeMaybySingleChain({ id: CONTENT_ID, is_free: false }),
       e_learning_users: makeMaybySingleChain({ has_full_access: false }),
       e_learning_purchases: makePurchaseChain({ id: 'purchase-1' }),
     })
-    expect(await canViewContent(USER_ID, CONTENT_ID)).toEqual({ canView: true, reason: 'content_purchased' })
+    expect(await canViewContent(USER_ID, CONTENT_ID)).toEqual({ allowed: true, reason: 'content_purchased' })
   })
 
-  it('③ is_free=true → { canView: true, reason: "free_content" }', async () => {
+  it('③ is_free=true → { allowed: true, reason: "free_content" }', async () => {
     mockClient({
       e_learning_contents: makeMaybySingleChain({ id: CONTENT_ID, is_free: true }),
       e_learning_users: makeMaybySingleChain({ has_full_access: false }),
       e_learning_purchases: makePurchaseChain(null),
     })
-    expect(await canViewContent(USER_ID, CONTENT_ID)).toEqual({ canView: true, reason: 'free_content' })
+    expect(await canViewContent(USER_ID, CONTENT_ID)).toEqual({ allowed: true, reason: 'free_content' })
   })
 
-  it('④ いずれもなし → { canView: false, reason: "not_purchased" }', async () => {
+  it('④ いずれもなし → { allowed: false, reason: "not_purchased" }', async () => {
     mockClient({
       e_learning_contents: makeMaybySingleChain({ id: CONTENT_ID, is_free: false }),
       e_learning_users: makeMaybySingleChain({ has_full_access: false }),
       e_learning_purchases: makePurchaseChain(null),
     })
-    expect(await canViewContent(USER_ID, CONTENT_ID)).toEqual({ canView: false, reason: 'not_purchased' })
+    expect(await canViewContent(USER_ID, CONTENT_ID)).toEqual({ allowed: false, reason: 'not_purchased' })
   })
 
   it('refunded のみ → 購入扱いされない → not_purchased', async () => {
@@ -253,7 +253,7 @@ describe('canViewContent', () => {
       e_learning_users: makeMaybySingleChain({ has_full_access: false }),
       e_learning_purchases: makePurchaseChain(null),  // status=completed で絞り込み → null
     })
-    expect(await canViewContent(USER_ID, CONTENT_ID)).toEqual({ canView: false, reason: 'not_purchased' })
+    expect(await canViewContent(USER_ID, CONTENT_ID)).toEqual({ allowed: false, reason: 'not_purchased' })
   })
 })
 
