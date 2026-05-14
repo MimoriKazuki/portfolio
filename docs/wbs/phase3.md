@@ -24,7 +24,7 @@ Phase 3 の team-lead と dev-mate / design-mate / review-mate / unittest-mate /
 
 | Step | 内容 | 想定タスク数 | 状態 |
 |------|------|------------|------|
-| 1 | 業務ロジック実装（access-service / checkout-service / stripe-webhook-service） | 5-8 | 📋 未着手 |
+| 1 | 業務ロジック実装（access-service / checkout-service / stripe-webhook-service） | 5-8 | ✅ 完了（04/05 完了・03 は ⏸ 保留→P3-CLEANUP-01 として Step 7 統合・2026-05-14） |
 | 2 | 会員向け画面実装（LP + 一覧 + 詳細 + 視聴 + 購入 + マイページ） | 14 | 📋 未着手 |
 | 3 | 管理画面実装（C001〜C011） | 11 | 📋 未着手 |
 | 4 | E2E テスト | 5-10 | 📋 未着手 |
@@ -60,11 +60,11 @@ Phase 3 の team-lead と dev-mate / design-mate / review-mate / unittest-mate /
 
 | ID | タスク | 担当 | 入力 | 出力 |
 |----|--------|------|------|------|
-| P3-LOGIC-01 | access-service の判定実体実装（getViewerAccess / canViewCourseVideo / canViewContent 等 5 メソッド） | dev-mate | access-service.md | `app/lib/services/access-service.ts` 完成 |
-| P3-LOGIC-02 | checkout-service の Stripe 呼び出し実体完成 | dev-mate | checkout-service.md | `app/lib/services/checkout-service.ts` 完成 |
-| P3-LOGIC-03 | stripe-webhook-service：checkout.session.completed リファクタ（has_full_access Webhook 切り替え修正・F-13） | dev-mate | stripe-webhook-service.md §NG | `app/api/stripe/webhook/route.ts` 改修 |
-| P3-LOGIC-04 | bookmark-service 新規実装（list / add / remove） | dev-mate | docs/backend/logic/services/bookmark-service.md | `app/lib/services/bookmark-service.ts` |
-| P3-LOGIC-05 | progress-service 新規実装（コース内動画の視聴進捗管理） | dev-mate | docs/backend/logic/services/progress-service.md | `app/lib/services/progress-service.ts` |
+| P3-LOGIC-01 | access-service の判定実体実装（getViewerAccess / canViewCourseVideo / canViewContent 等 5 メソッド） ✅ 完了（2026-05-14・コミット 5d2dd2c + 06b4650・テスト 29 件パス） | dev-mate | access-service.md | `app/lib/services/access-service.ts` 完成 |
+| P3-LOGIC-02 | checkout-service の Stripe 呼び出し実体完成 ✅ 完了（2026-05-14・Phase 2 で実装済・dev-mate により仕様乖離なし確認） | dev-mate | checkout-service.md | `app/lib/services/checkout-service.ts`（既存・Phase 2 完了済） |
+| P3-LOGIC-03 | stripe-webhook-service：checkout.session.completed リファクタ ⏸ **保留（Kosuke 判断 2026-05-14）** ・既存 Webhook は新導線 UI 完成後に削除（P3-CLEANUP-01 と統合）・現状維持で段階移行 | dev-mate | stripe-webhook-service.md §NG | （現状維持・後続タスクへ統合） |
+| P3-LOGIC-04 | bookmark-service 新規実装（list / add / remove） ✅ 完了（2026-05-14・コミット aa4820c・テスト 16 件パス・M4 コース内動画除外） | dev-mate | docs/backend/logic/services/auxiliary-services.md §bookmark-service | `app/lib/services/bookmark-service.ts` |
+| P3-LOGIC-05 | progress-service 新規実装（コース内動画の視聴進捗管理） ✅ 完了（2026-05-14・コミット 14d2eda + f98ca66・テスト 20 件パス・access-service 権限ガード一元化） | dev-mate | docs/backend/logic/services/progress-service.md | `app/lib/services/progress-service.ts` |
 
 ### Step 2：会員向け画面実装
 
@@ -143,6 +143,7 @@ Phase 3 中に該当機能を実装する際、合わせて対処する。
 | P3-AUX-04 | `/api/youtube-videos/import` と `sync` への認可ガード追加 | 📋 |
 | P3-AUX-05 | admin UI コンポーネント（CustomersClient.tsx 等）の console.error PII 漏洩 | 📋 |
 | P3-AUX-06 | columns/[id] の dangerouslySetInnerHTML サニタイズ | 📋 |
+| P3-CLEANUP-01 | ★ Step 2 新導線 UI 完成後：旧 `/api/stripe/checkout` ルート + 旧 Webhook checkout.session.completed ハンドラ削除（旧買い切り「全コンテンツアクセス」導線を完全廃止）。Kosuke 判断 2026-05-14：UI から旧導線が外れたタイミングで削除する段階移行方針。新導線 UI（B001 LP + B002〜B014）完成 = Step 2 完了が前提 | dev-mate | 📋 |
 
 ### Step 8（任意）：機密情報 / git 関連
 
