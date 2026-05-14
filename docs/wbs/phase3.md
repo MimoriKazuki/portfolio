@@ -70,7 +70,7 @@ Phase 3 の team-lead と dev-mate / design-mate / review-mate / unittest-mate /
 
 | ID | タスク | 担当 | 入力 | 出力 |
 |----|--------|------|------|------|
-| P3-SCR-B001 | B001 LP 実装（HeroSection 等 8 organisms に実コンテンツ） | design-mate + dev-mate | screens.md B001 + page-templates.md LPTemplate | `app/(elearning)/page.tsx` |
+| P3-SCR-B001 | B001 LP 実装（HeroSection 等 8 organisms に実コンテンツ）✅ 完了（2026-05-14・コミット dbd04c4 + 43cefda・新パス /e-learning/lp で既存 LP 非破壊・UT 16 件 + e2e SC-SMK-002b 追加・仮素材） | design-mate + dev-mate | screens.md B001 + page-templates.md LPTemplate | `app/e-learning/lp/page.tsx` |
 | P3-SCR-B002 | B002 メディア一覧（コース） | design-mate + dev-mate | screens.md B002 + MediaListTemplate | `app/e-learning/courses/page.tsx` |
 | P3-SCR-B003 | B003 メディア一覧（単体動画） | design-mate + dev-mate | screens.md B003 | `app/e-learning/page.tsx`（既存改修） |
 | P3-SCR-B004 | B004 コース詳細 | design-mate + dev-mate | screens.md B004 + CourseDetailTemplate | `app/e-learning/courses/[slug]/page.tsx` |
@@ -144,6 +144,7 @@ Phase 3 中に該当機能を実装する際、合わせて対処する。
 | P3-AUX-05 | admin UI コンポーネント（CustomersClient.tsx 等）の console.error PII 漏洩 | 📋 |
 | P3-AUX-06 | columns/[id] の dangerouslySetInnerHTML サニタイズ | 📋 |
 | P3-CLEANUP-01 | ★ Step 2 新導線 UI 完成後：旧 `/api/stripe/checkout` ルート + 旧 Webhook checkout.session.completed ハンドラ削除（旧買い切り「全コンテンツアクセス」導線を完全廃止）。Kosuke 判断 2026-05-14：UI から旧導線が外れたタイミングで削除する段階移行方針。新導線 UI（B001 LP + B002〜B014）完成 = Step 2 完了が前提 | dev-mate | 📋 |
+| P3-SEED-01 | ローカル開発用ダミーコース投入スクリプト（既存 contents コピー方式・3 コース × 2-3 章 × 2-3 動画）✅ 完了（2026-05-14・コミット 9569b88・scripts/dev-seed/0001_dummy_courses.sql・review-mate 承認・本番非流入確認） | dev-mate | Kosuke 指示 | scripts/dev-seed/0001_dummy_courses.sql + docs/backend/database/seed-dev/README.md |
 
 ### Step 8（任意）：機密情報 / git 関連
 
