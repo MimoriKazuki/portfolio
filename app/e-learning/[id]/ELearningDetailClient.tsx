@@ -321,7 +321,7 @@ export default function ELearningDetailClient({
                   }}
                   disabled={isCompleted || isCompleting}
                   aria-label={isCompleted ? '視聴済' : '視聴完了としてマーク'}
-                  className={`inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full font-medium text-sm transition-all border whitespace-nowrap ${
+                  className={`inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full font-medium text-sm transition-all border whitespace-nowrap ${
                     isCompleted
                       ? 'bg-green-50 border-green-300 text-green-700 cursor-default'
                       : 'bg-white border-gray-200 text-gray-600 hover:bg-gray-50'
