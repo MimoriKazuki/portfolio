@@ -50,6 +50,7 @@
     "embla-carousel-react": "^8.6.0",
     "googleapis": "^156.0.0",
     "gsap": "^3.13.0",
+    "isomorphic-dompurify": "^3.3.0",
     "lucide-react": "^0.462.0",
     "next": "^15.3.6",
     "ogl": "^1.0.11",
