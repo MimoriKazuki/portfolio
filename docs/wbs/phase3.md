@@ -35,6 +35,37 @@ Phase 3 の team-lead と dev-mate / design-mate / review-mate / unittest-mate /
 
 ---
 
+## ★ Phase 3 中の URL 命名規則（重要・2026-05-14 確定）
+
+### 背景
+
+screens.md（Phase 1）では「既存 URL を新仕様で再構築・置換」する設計（例：`/e-learning/courses` を新コース一覧に書き換え）。しかし Kosuke 確定方針「既存運用 100% 非破壊」と統合した結果、Phase 3 中は **新 path `/e-learning/lp/*` 配下で並走実装**し、P3-CLEANUP-01（Step 7）で URL 正規化（旧削除 + 新 → 正規 path にリネーム or リダイレクト）する。
+
+### Phase 3 暫定 URL マップ
+
+| 画面 ID | screens.md 正規 URL（最終） | Phase 3 中の暫定 URL（実装中） | 既存 URL の状態 |
+|--------|----------------------------|-------------------------------|----------------|
+| B001 | `/e-learning` | `/e-learning/lp` ✅ 完了 | 既存 `/e-learning` は単体動画一覧として温存 |
+| B002 | `/e-learning/home` | `/e-learning/lp/home` | （新規・既存なし） |
+| B003 | `/e-learning/courses` | `/e-learning/lp/courses` | 既存 `/e-learning/courses` は単体動画一覧として温存 |
+| B004 | `/e-learning/courses/[slug]` | `/e-learning/lp/courses/[slug]` | （新規・既存なし） |
+| B005 | `/e-learning/courses/[slug]/videos/[videoId]` | `/e-learning/lp/courses/[slug]/videos/[videoId]` | （新規・既存なし） |
+| B006 | `/e-learning/videos` | `/e-learning/lp/videos` | （新規・既存なし） |
+| B007 | `/e-learning/[id]` | `/e-learning/[id]`（既存最小改修） | 既存温存 + progress 完了マーク追加 |
+| B008〜B014 | screens.md 通り | `/e-learning/lp/*` 配下 | （新規・既存なし） |
+
+### P3-CLEANUP-01 での正規化（Step 2 完了後）
+
+1. 旧 `/e-learning` / `/e-learning/courses` / `/e-learning/[id]` を削除 or 301 リダイレクトに置換
+2. 新 `/e-learning/lp/*` を screens.md 正規 path にリネーム or リダイレクト
+3. screens.md の URL と完全一致させる
+
+### B007 例外（既存最小改修）
+
+B007 単体動画詳細・視聴は既存 `app/e-learning/[id]/page.tsx`（404 行 Client Component）が本番稼働中・access-service 連携済のため、**完全な VideoPlayerTemplate 化はしない**。progress-service の完了マークボタンを最小追加する程度に留める。VideoPlayerTemplate の真価は B005 コース内動画視聴で発揮される。
+
+---
+
 ## Phase 3 のスコープ
 
 ### ✅ Phase 3 で実装するもの
@@ -71,12 +102,12 @@ Phase 3 の team-lead と dev-mate / design-mate / review-mate / unittest-mate /
 | ID | タスク | 担当 | 入力 | 出力 |
 |----|--------|------|------|------|
 | P3-SCR-B001 | B001 LP 実装（HeroSection 等 8 organisms に実コンテンツ）✅ 完了（2026-05-14・コミット dbd04c4 + 43cefda・新パス /e-learning/lp で既存 LP 非破壊・UT 16 件 + e2e SC-SMK-002b 追加・仮素材） | design-mate + dev-mate | screens.md B001 + page-templates.md LPTemplate | `app/e-learning/lp/page.tsx` |
-| P3-SCR-B002 | B002 メディア一覧（コース） | design-mate + dev-mate | screens.md B002 + MediaListTemplate | `app/e-learning/courses/page.tsx` |
-| P3-SCR-B003 | B003 メディア一覧（単体動画） | design-mate + dev-mate | screens.md B003 | `app/e-learning/page.tsx`（既存改修） |
+| P3-SCR-B002 | コース一覧（screens.md B003）✅ 完了（2026-05-14・コミット a377b97・新 path /e-learning/lp/courses・既存 /e-learning/courses 完全非破壊・URL query 連動フィルタ・UT 19 件） | design-mate + dev-mate | screens.md B003 + MediaListTemplate | `app/e-learning/lp/courses/page.tsx` |
+| P3-SCR-B003 | 単体動画一覧（screens.md B006）✅ 完了（2026-05-14・コミット 8cb3f09・新 path /e-learning/lp/videos・既存 /e-learning は非破壊・UT 13 件） | design-mate + dev-mate | screens.md B006 | `app/e-learning/lp/videos/page.tsx` |
 | P3-SCR-B004 | B004 コース詳細 | design-mate + dev-mate | screens.md B004 + CourseDetailTemplate | `app/e-learning/courses/[slug]/page.tsx` |
 | P3-SCR-B005 | B005 コース内動画視聴 | design-mate + dev-mate | screens.md B005 + VideoPlayerTemplate | `app/e-learning/courses/[slug]/play/[videoId]/page.tsx` |
 | P3-SCR-B006 | B006 メディア一覧（フィルタ状態） | design-mate + dev-mate | screens.md B006 | （既存改修） |
-| P3-SCR-B007 | B007 単体動画詳細・視聴 | design-mate + dev-mate | screens.md B007 + VideoPlayerTemplate | `app/e-learning/[id]/page.tsx`（既存改修） |
+| P3-SCR-B007 | B007 単体動画詳細・視聴 ✅ 完了（2026-05-14・コミット d1efce4 + eaadd5b・既存 [id] 最小改修・案 B-1：404 行 Client 温存・progress 完了マーク追加のみ・UT 7 件） | design-mate + dev-mate | screens.md B007 | `app/e-learning/[id]/page.tsx`（既存最小改修） |
 | P3-SCR-B008 | B008 購入導線（PurchasePromptModal 改修・コース対応） | design-mate + dev-mate | screens.md B008 | `PurchasePromptModal.tsx`（既存改修） |
 | P3-SCR-B009 | B009 購入完了（CheckoutCompleteCard + CheckoutPollingStatus） | design-mate + dev-mate | screens.md B009 + InfoPageTemplate | 新規 organisms 2 件 + page |
 | P3-SCR-B010 | B010 購入キャンセル | design-mate + dev-mate | screens.md B010 | page |
