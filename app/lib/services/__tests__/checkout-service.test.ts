@@ -333,3 +333,51 @@ describe('startCheckout — Stripe API 呼び出し引数の確認', () => {
     expect(arg.customer_email).toBeUndefined()
   })
 })
+
+// ----------------------------------------------------------------
+// F-07：DB エラー経路（DB_ERROR）
+// ----------------------------------------------------------------
+describe('startCheckout — DB_ERROR（F-07 追加）', () => {
+  it('target 取得時の DB エラー → CheckoutError(DB_ERROR)', async () => {
+    mockClient({
+      e_learning_courses: makeTargetChain(null, { message: 'select failed' }),
+    })
+
+    await expect(startCheckout(BASE_INPUT)).rejects.toMatchObject({
+      code: 'DB_ERROR',
+    })
+  })
+
+  it('content 取得時の DB エラー → CheckoutError(DB_ERROR)', async () => {
+    mockClient({
+      e_learning_contents: makeTargetChain(null, { message: 'select failed' }),
+    })
+
+    await expect(
+      startCheckout({ ...BASE_INPUT, targetType: 'content', targetId: 'content-1' }),
+    ).rejects.toMatchObject({ code: 'DB_ERROR' })
+  })
+
+  it('user 取得時の DB エラー → CheckoutError(DB_ERROR)', async () => {
+    mockClient({
+      e_learning_courses: makeTargetChain(publishedCourse),
+      e_learning_users: makeUserChain(null, { message: 'user select failed' }),
+    })
+
+    await expect(startCheckout(BASE_INPUT)).rejects.toMatchObject({
+      code: 'DB_ERROR',
+    })
+  })
+
+  it('既購入チェック時の DB エラー → CheckoutError(DB_ERROR)', async () => {
+    mockClient({
+      e_learning_courses: makeTargetChain(publishedCourse),
+      e_learning_users: makeUserChain(normalUser),
+      e_learning_purchases: makePurchaseCountChain(0, { message: 'count failed' }),
+    })
+
+    await expect(startCheckout(BASE_INPUT)).rejects.toMatchObject({
+      code: 'DB_ERROR',
+    })
+  })
+})
