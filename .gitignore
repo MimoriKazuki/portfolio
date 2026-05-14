@@ -43,10 +43,12 @@ dist-ssr
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-.mcp.json
 
 # Serena local memories (Claude/Serena ローカルメモ・プロジェクト共有不要)
 .serena/memories/
 
 # Supabase CLI 作業時の一時ファイル
 supabase/.temp/
+
+# Claude Code local settings (個人開発環境設定・チーム共有不要)
+.claude/settings.local.json
