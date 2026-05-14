@@ -70,6 +70,11 @@ export function BookmarkRowClient({ bookmark }: BookmarkRowClientProps) {
         <p className="truncate text-sm text-foreground">
           {bookmark.title ?? '（タイトル不明）'}
         </p>
+        {error && (
+          <span role="alert" className="text-xs text-destructive">
+            {error}
+          </span>
+        )}
       </div>
       <div className="flex items-center gap-2">
         {detailHref && (
@@ -91,11 +96,6 @@ export function BookmarkRowClient({ bookmark }: BookmarkRowClientProps) {
           )}
         </Button>
       </div>
-      {error && (
-        <span role="alert" className="text-xs text-destructive">
-          {error}
-        </span>
-      )}
     </li>
   )
 }
