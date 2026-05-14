@@ -29,6 +29,8 @@ export type CourseListItem = {
   price: number | null
   category_id: string
   category_name: string | null
+  /** 注目コース（B001 LP の CourseShowcase / B002 のバッジ表示用）。 */
+  is_featured: boolean
 }
 
 export async function getCoursesList(
@@ -39,7 +41,7 @@ export async function getCoursesList(
   let query = supabase
     .from('e_learning_courses')
     .select(
-      'id, slug, title, description, thumbnail_url, is_free, price, category_id, category:e_learning_categories(name)',
+      'id, slug, title, description, thumbnail_url, is_free, price, is_featured, category_id, category:e_learning_categories(name)',
     )
     .eq('is_published', true)
     .is('deleted_at', null)
@@ -74,6 +76,7 @@ export async function getCoursesList(
     thumbnail_url: string | null
     is_free: boolean
     price: number | null
+    is_featured: boolean
     category_id: string
     /** Supabase relationship は to-one でも配列で返るケースがある。 */
     category: { name: string | null } | { name: string | null }[] | null
@@ -89,6 +92,7 @@ export async function getCoursesList(
       thumbnail_url: r.thumbnail_url,
       is_free: r.is_free,
       price: r.price,
+      is_featured: r.is_featured,
       category_id: r.category_id,
       category_name: cat?.name ?? null,
     }

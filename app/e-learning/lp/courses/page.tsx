@@ -1,13 +1,10 @@
-import Link from 'next/link'
-import { Badge } from '@/app/components/atoms/Badge'
-import { FreeBadge } from '@/app/components/atoms/FreeBadge'
+import { CourseCard } from '@/app/components/molecules/CourseCard'
 import { MediaGrid } from '@/app/components/organisms/MediaGrid'
 import { MediaListTemplate } from '@/app/components/templates/MediaListTemplate'
 import { MediaListFilterBarClient } from '@/app/e-learning/lp/_lib/MediaListFilterBarClient'
 import {
   getActiveCategories,
   getCoursesList,
-  type CourseListItem,
   type CoursesListFilters,
 } from './_lib/get-courses-list'
 
@@ -55,34 +52,6 @@ function parseFilters(
   return { categoryIds, freeFilter, keyword }
 }
 
-function CourseListCard({ course }: { course: CourseListItem }) {
-  return (
-    <Link
-      href={`/e-learning/courses/${course.slug}`}
-      className="group flex h-full flex-col gap-3 rounded-lg border border-border bg-card p-5 text-card-foreground transition hover:border-primary"
-      aria-label={`${course.title} の詳細を見る`}
-    >
-      <div className="flex items-center justify-between gap-2">
-        <Badge variant="info">コース</Badge>
-        {course.is_free ? (
-          <FreeBadge />
-        ) : course.price !== null ? (
-          <span className="text-sm text-foreground">¥{course.price.toLocaleString()}</span>
-        ) : null}
-      </div>
-      <h3 className="text-base text-foreground group-hover:text-primary md:text-lg">
-        {course.title}
-      </h3>
-      {course.description && (
-        <p className="line-clamp-3 text-sm text-muted-foreground">{course.description}</p>
-      )}
-      {course.category_name && (
-        <p className="mt-auto text-xs text-muted-foreground">{course.category_name}</p>
-      )}
-    </Link>
-  )
-}
-
 export default async function ELearningLPCoursesPage({ searchParams }: PageProps) {
   const sp = await searchParams
   const filters = parseFilters(sp)
@@ -108,7 +77,16 @@ export default async function ELearningLPCoursesPage({ searchParams }: PageProps
       grid={
         <MediaGrid isEmpty={courses.length === 0}>
           {courses.map(course => (
-            <CourseListCard key={course.id} course={course} />
+            <CourseCard
+              key={course.id}
+              href={`/e-learning/lp/courses/${course.slug}`}
+              title={course.title}
+              thumbnailUrl={course.thumbnail_url}
+              categoryName={course.category_name}
+              isFree={course.is_free}
+              price={course.price}
+              isFeatured={course.is_featured}
+            />
           ))}
         </MediaGrid>
       }
