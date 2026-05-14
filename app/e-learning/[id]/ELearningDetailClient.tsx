@@ -25,7 +25,7 @@ import {
 interface ELearningDetailClientProps {
   content: ELearningContent
   user: User
-  hasPurchased: boolean
+  hasViewAccess: boolean
   relatedContents?: ELearningContent[]
   initialBookmarked?: boolean
   /** 視聴完了済か（B007 完了マーク UI 用・最小追加）。 */
@@ -53,7 +53,7 @@ const getGoogleDriveEmbedUrl = (url: string) => {
 export default function ELearningDetailClient({
   content,
   user,
-  hasPurchased,
+  hasViewAccess,
   relatedContents = [],
   initialBookmarked = false,
   initialCompleted = false
@@ -70,7 +70,7 @@ export default function ELearningDetailClient({
   const supabase = createClient()
 
   // 有料コンテンツで未購入の場合、初期表示でモーダルを表示
-  const initialShowModal = !hasPurchased && !content.is_free
+  const initialShowModal = !hasViewAccess && !content.is_free
   const [showPurchaseModal, setShowPurchaseModal] = useState(initialShowModal)
   // 初期表示でモーダルが開かれたかどうか（閉じる時の挙動を変えるため）
   const [isInitialModal, setIsInitialModal] = useState(initialShowModal)
@@ -160,7 +160,7 @@ export default function ELearningDetailClient({
 
         {/* 動画プレイヤー */}
         <div className="relative aspect-video rounded-lg overflow-hidden bg-black mb-4">
-          {hasPurchased ? (
+          {hasViewAccess ? (
             !isPlaying ? (
               <>
                 {content.thumbnail_url && (
@@ -299,8 +299,8 @@ export default function ELearningDetailClient({
                 ブックマーク
               </button>
 
-              {/* 視聴完了マークボタン（B007 最小追加・hasPurchased 時のみ表示） */}
-              {hasPurchased && (
+              {/* 視聴完了マークボタン（B007 最小追加・hasViewAccess 時のみ表示） */}
+              {hasViewAccess && (
                 <button
                   onClick={async () => {
                     if (isCompleted || isCompleting) return
@@ -338,7 +338,7 @@ export default function ELearningDetailClient({
               {/* ダウンロードボタン */}
               {sortedMaterials.length > 0 && (
                 <>
-                  {hasPurchased ? (
+                  {hasViewAccess ? (
                     <div className="flex flex-col gap-2">
                       {sortedMaterials.map((material, index) => (
                         <a

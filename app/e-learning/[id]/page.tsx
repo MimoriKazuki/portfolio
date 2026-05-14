@@ -160,7 +160,7 @@ export default async function ELearningDetailPage({ params }: PageProps) {
     <ELearningDetailClient
       content={content as ELearningContent}
       user={user}
-      hasPurchased={hasViewAccess}
+      hasViewAccess={hasViewAccess}
       relatedContents={relatedContents as ELearningContent[] || []}
       initialBookmarked={!!bookmark}
       initialCompleted={!!progress?.completed_at}
