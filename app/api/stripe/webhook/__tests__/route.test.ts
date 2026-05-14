@@ -326,8 +326,11 @@ describe('charge.refunded ハンドラ — CHECK 制約遵守', () => {
 
     await POST(makeRequest() as unknown as Parameters<typeof POST>[0])
 
-    const updateArg = update.mock.calls[0][0]
-    expect(updateArg.refunded_at).toBe(expectedIso)
+    const updateCalls = update.mock.calls as unknown as Array<
+      [{ refunded_at?: string }]
+    >
+    expect(updateCalls.length).toBeGreaterThan(0)
+    expect(updateCalls[0][0].refunded_at).toBe(expectedIso)
   })
 })
 

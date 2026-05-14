@@ -164,6 +164,37 @@ async function sendSlackRefundOrphanNotification(
   }
 }
 
+// Slack通知：Webhook 処理失敗（errors.md rule G 準拠）
+// event.id / event.type / errorMessage を必ず含めて Slack に通知。
+async function sendSlackWebhookErrorNotification(input: {
+  eventId: string
+  eventType: string
+  errorMessage: string
+}) {
+  if (!SLACK_WEBHOOK_URL) return
+  try {
+    await fetch(SLACK_WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        text: `❌ Stripe Webhook 処理失敗`,
+        blocks: [
+          {
+            type: 'section',
+            fields: [
+              { type: 'mrkdwn', text: `*Event ID:*\n${input.eventId}` },
+              { type: 'mrkdwn', text: `*Event Type:*\n${input.eventType}` },
+              { type: 'mrkdwn', text: `*Error:*\n${input.errorMessage}` },
+            ],
+          },
+        ],
+      }),
+    })
+  } catch (error) {
+    console.error('Failed to send Slack webhook error notification:', error)
+  }
+}
+
 /**
  * charge.refunded ハンドラ
  *
@@ -178,9 +209,13 @@ async function sendSlackRefundOrphanNotification(
  * 5. 既に refunded：noop + 200 OK（冪等・既存 refunded_at を保持）
  * 6. has_full_access は触らない（access-service が status='completed' のみ視聴可と判定）
  *
- * 返り値：処理成否（true=成功または冪等、false=DB エラーで 500 返却すべき）
+ * 返り値：
+ *   - { ok: true }：成功または冪等（200 OK 返却）
+ *   - { ok: false, errorMessage }：DB エラー（500 返却 + Slack 通知）
  */
-async function handleChargeRefunded(charge: Stripe.Charge): Promise<boolean> {
+type RefundHandleResult = { ok: true } | { ok: false; errorMessage: string }
+
+async function handleChargeRefunded(charge: Stripe.Charge): Promise<RefundHandleResult> {
   const paymentIntentId =
     typeof charge.payment_intent === 'string'
       ? charge.payment_intent
@@ -190,7 +225,7 @@ async function handleChargeRefunded(charge: Stripe.Charge): Promise<boolean> {
     console.error('[stripe-webhook] charge.refunded missing payment_intent', {
       chargeId: charge.id,
     })
-    return true // metadata 欠落系は 200 OK
+    return { ok: true } // metadata 欠落系は 200 OK
   }
 
   // refunded_at = to_timestamp(charge.created)（Unix epoch 秒 → ISO 8601）
@@ -208,7 +243,7 @@ async function handleChargeRefunded(charge: Stripe.Charge): Promise<boolean> {
       message: selectError.message,
       paymentIntentId,
     })
-    return false // 500 でリトライさせる
+    return { ok: false, errorMessage: `select failed: ${selectError.message}` }
   }
 
   if (!existing) {
@@ -218,7 +253,7 @@ async function handleChargeRefunded(charge: Stripe.Charge): Promise<boolean> {
       chargeId: charge.id,
     })
     await sendSlackRefundOrphanNotification(paymentIntentId, charge.id)
-    return true
+    return { ok: true }
   }
 
   if (existing.status === 'refunded') {
@@ -227,7 +262,7 @@ async function handleChargeRefunded(charge: Stripe.Charge): Promise<boolean> {
       purchaseId: existing.id,
       paymentIntentId,
     })
-    return true
+    return { ok: true }
   }
 
   // status と refunded_at を同一 UPDATE 文でセット（CHECK 制約遵守）
@@ -245,7 +280,7 @@ async function handleChargeRefunded(charge: Stripe.Charge): Promise<boolean> {
       purchaseId: existing.id,
       paymentIntentId,
     })
-    return false // 500 でリトライさせる
+    return { ok: false, errorMessage: `update failed: ${updateError.message}` }
   }
 
   console.info('[stripe-webhook] charge.refunded handled', {
@@ -262,7 +297,7 @@ async function handleChargeRefunded(charge: Stripe.Charge): Promise<boolean> {
     charge.amount_refunded ?? 0,
   )
 
-  return true
+  return { ok: true }
 }
 
 export async function POST(request: NextRequest) {
@@ -372,12 +407,20 @@ export async function POST(request: NextRequest) {
   // charge.refunded イベントを処理（Phase 2 Sub 3b 追加）
   if (event.type === 'charge.refunded') {
     const charge = event.data.object as Stripe.Charge
+    // stripe-webhook-service.md「全 event：event.id と event.type を必ずログ」準拠
     console.info('[stripe-webhook] charge.refunded received', {
       eventId: event.id,
+      eventType: event.type,
       chargeId: charge.id,
     })
-    const ok = await handleChargeRefunded(charge)
-    if (!ok) {
+    const result = await handleChargeRefunded(charge)
+    if (result.ok === false) {
+      // errors.md rule G：失敗時は event.id / event.type / errorMessage を Slack 通知
+      await sendSlackWebhookErrorNotification({
+        eventId: event.id,
+        eventType: event.type,
+        errorMessage: result.errorMessage,
+      })
       return NextResponse.json(
         { error: 'Refund processing failed' },
         { status: 500 },
