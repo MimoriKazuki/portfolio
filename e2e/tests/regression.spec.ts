@@ -110,13 +110,10 @@ test.describe('Regression Group C：CTA href / 旧 path 非破壊', () => {
   })
 
   test('SC-REG-004 (B002 旧)：既存 /e-learning/courses は認証必須・redirect されること（非破壊）', async ({ page }) => {
-    // 旧パスも middleware で認証ガードされている（screens.md 通り）。
-    // 「壊れていない」確認として未ログインで 404 / 500 にならず redirect されることを assert。
-    await page.goto('/e-learning/courses', { waitUntil: 'networkidle' })
-    const url = page.url()
-    // /auth/login へ redirect or /e-learning に戻る or 200 表示のいずれかで OK（404/500 でないこと）
-    expect(url, `旧パス /e-learning/courses が 404/500 にならず処理されている`).toBeTruthy()
-    // page.goto が throw しなければ少なくとも path は応答している
+    // 旧パスも middleware で startsWith('/e-learning/') にガードされている（screens.md 通り）。
+    // 未ログインなら /auth/login?returnTo=... へ redirect されることで「壊れていない」を担保。
+    // review-mate 指摘：toBeTruthy() ノーアサート解消、expectAuthRedirect で明示
+    await expectAuthRedirect(page, '/e-learning/courses')
   })
 
   test('SC-REG-008 (B014 旧)：既存 /e-learning/mypage は認証必須・redirect されること（非破壊）', async ({ page }) => {
