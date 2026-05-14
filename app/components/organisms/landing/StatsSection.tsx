@@ -28,11 +28,12 @@ export interface StatsSectionProps extends React.HTMLAttributes<HTMLElement> {
   title?: string
   description?: string
   stats: StatItem[]
-  /** lg 以上での列数（既定：stats 件数に合わせ最大 4）。 */
-  cols?: 2 | 3 | 4
+  /** lg 以上での列数（既定：stats 件数に合わせ最大 4）。stats.length=1 のときは 1 にフォールバック（F-03）。 */
+  cols?: 1 | 2 | 3 | 4
 }
 
 const colsClass: Record<NonNullable<StatsSectionProps['cols']>, string> = {
+  1: '', // stats=1 のときは base の grid-cols-1 のままで十分（md 以上で列数を増やさない）
   2: 'md:grid-cols-2',
   3: 'md:grid-cols-3',
   4: 'md:grid-cols-2 lg:grid-cols-4',
@@ -40,7 +41,8 @@ const colsClass: Record<NonNullable<StatsSectionProps['cols']>, string> = {
 
 const StatsSection = React.forwardRef<HTMLElement, StatsSectionProps>(
   ({ title, description, stats, cols, className, ...props }, ref) => {
-    const resolvedCols = cols ?? (Math.min(stats.length, 4) as NonNullable<StatsSectionProps['cols']>)
+    // stats=0 のときは [] を render するだけだが colsClass[0] アクセス防止で 1 にクランプ
+    const resolvedCols = cols ?? (Math.min(Math.max(stats.length, 1), 4) as NonNullable<StatsSectionProps['cols']>)
     return (
       <section
         ref={ref}
