@@ -39,7 +39,9 @@ test('新 LP に JS 例外（pageerror）が出ない', async ({ page }) => {
   ).toBeLessThanOrEqual(5)
 })
 
-test('B010 購入キャンセル画面に JS 例外が出ない', async ({ page }) => {
+test('B010 購入キャンセル画面アクセス時（未ログイン → ログインへ redirect）に JS 例外が出ない', async ({ page }) => {
+  // B010 は middleware で認証必須・未ログインは /auth/login へ redirect される
+  // 本 smoke は「redirect 経路で JS 例外が出ない」ことを担保（B010 本体の表示確認は Phase 4 UAT）
   const errors = collectConsoleErrors(page, { ignoreErrors: IGNORE })
   await page.goto('/e-learning/lp/checkout/cancel', { waitUntil: 'networkidle' })
 
