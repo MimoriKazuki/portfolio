@@ -40,6 +40,7 @@ describe('updateSession / requiresAuth', () => {
     const publicPaths = [
       '/',
       '/e-learning',
+      '/e-learning/lp', // B001 新 LP（screens.md「不要（未ログイン）」に従う）
       '/projects',
       '/projects/abc',
       '/columns',
@@ -105,6 +106,10 @@ describe('updateSession / requiresAuth', () => {
       '/e-learning/courses',
       '/e-learning/courses/ai-basic',
       '/e-learning/abc-123',
+      '/e-learning/lp/courses', // /e-learning/lp 配下はガード（screens.md 通り）
+      '/e-learning/lp/videos',
+      '/e-learning/lp/mypage',
+      '/e-learning/lp/checkout/complete',
       '/play/xxx',
       '/videos/yyy',
       '/complete',

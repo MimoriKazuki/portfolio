@@ -14,7 +14,10 @@ const requiresAuth = (pathname: string): boolean => {
   if (pathname.startsWith('/api/stripe/webhook')) return false
 
   // /e-learning は LP として未ログイン可・配下（コース・動画詳細等）はガード
+  // /e-learning/lp（B001 新 LP）も screens.md「不要（未ログイン）」に従い未ログイン可
+  // 配下（/e-learning/lp/courses, /lp/videos, /lp/mypage, /lp/checkout/* 等）は startsWith で引き続きガード
   if (pathname === '/e-learning') return false
+  if (pathname === '/e-learning/lp') return false
   if (pathname.startsWith('/e-learning/')) return true
 
   // 管理画面 + 管理 API（多層防御は各 route.ts 側でも requireAdmin で検証）
