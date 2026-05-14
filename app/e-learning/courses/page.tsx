@@ -1,6 +1,5 @@
 import { createStaticClient } from '@/app/lib/supabase/static'
 import { createClient } from '@/app/lib/supabase/server'
-import { createClient as createServerClient } from '@supabase/supabase-js'
 import ELearningCoursesClient from './ELearningCoursesClient'
 import { ELearningContent, ELearningCategory } from '@/app/types'
 import { Metadata } from 'next'
@@ -54,6 +53,11 @@ async function getContents(): Promise<ELearningContent[]> {
   return contents || []
 }
 
+/**
+ * ログイン中ユーザーとそのブックマーク（content_id 配列）を取得。
+ * FB-SYS-001（bookmarks.user_id を e_learning_users.id 参照に変更）適用：
+ *   auth_user_id → e_learning_users.id を解決してから bookmarks を取得する。
+ */
 async function getCurrentUserAndBookmarks() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -62,27 +66,25 @@ async function getCurrentUserAndBookmarks() {
     return { user: null, bookmarks: [] }
   }
 
+  const { data: eLearningUser } = await supabase
+    .from('e_learning_users')
+    .select('id')
+    .eq('auth_user_id', user.id)
+    .maybeSingle()
+
+  if (!eLearningUser) {
+    return { user, bookmarks: [] }
+  }
+
   const { data: bookmarks } = await supabase
     .from('e_learning_bookmarks')
     .select('content_id')
-    .eq('user_id', user.id)
+    .eq('user_id', eLearningUser.id)
 
   return {
     user,
     bookmarks: bookmarks?.map(b => b.content_id) || [],
   }
-}
-
-async function updateLastAccessedAt(userId: string) {
-  // RLSをバイパスしてアクセス日時を更新（service_role_key使用）
-  const supabaseAdmin = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  )
-  await supabaseAdmin
-    .from('e_learning_users')
-    .update({ last_accessed_at: new Date().toISOString() })
-    .eq('auth_user_id', userId)
 }
 
 export default async function ELearningCoursesPage() {
@@ -91,11 +93,6 @@ export default async function ELearningCoursesPage() {
     getContents(),
     getCurrentUserAndBookmarks(),
   ])
-
-  // 最終アクセス日時を更新（非同期で実行、エラーは無視）
-  if (user) {
-    updateLastAccessedAt(user.id).catch(() => {})
-  }
 
   return (
     <div className="w-full">
