@@ -107,6 +107,38 @@
 - 期待結果: 各操作で URL query が更新され、Server 再 fetch で絞り込み結果が表示される（SC-UAT-024〜026 と同仕様）
 - ステータス: 📋 未着手
 
+### 新統合一覧 フィルタ操作（B002 — `/e-learning/lp/home`）
+
+#### SC-UAT-103: B002 統合一覧 種別 Checkbox 切替 → URL query 反映・表示行絞り込み
+- 対象URL: `/e-learning/lp/home`
+- 前提: ログイン済み
+- 操作:
+  1. 「コース」Checkbox を ON → URL `?types=course` が付き、コース（MediaCard type=course）のみ表示されることを確認
+  2. 「単体動画」も ON → URL `?types=course,content` になり、両方が表示されることを確認
+  3. 両方 OFF → `?types=` が URL から消え、コース＋単体動画の全件が表示されることを確認
+- 確認内容: Checkbox 操作のたびに URL query が更新され、MediaGrid の表示内容が絞り込まれる
+- ステータス: 📋 未着手
+
+#### SC-UAT-104: B002 統合一覧 価格 Radio 切替 → URL query 反映・表示行絞り込み
+- 対象URL: `/e-learning/lp/home`
+- 前提: ログイン済み
+- 操作:
+  1. 「無料のみ」Radio を選択 → URL `?price=free` が付き、is_free のアイテムのみ表示されることを確認
+  2. 「有料のみ」Radio を選択 → URL `?price=paid` になり、有料アイテムのみ表示されることを確認
+  3. 「すべて」Radio を選択 → `?price=` が URL から消え、全件表示に戻ることを確認
+- 確認内容: Radio 変更のたびに URL query が更新され、MediaGrid の表示内容が連動する
+- ステータス: 📋 未着手
+
+#### SC-UAT-105: B002 統合一覧 キーワード検索 → 300ms debounce 後に URL query 反映
+- 対象URL: `/e-learning/lp/home`
+- 前提: ログイン済み
+- 操作: キーワード Input（`aria-label="キーワード検索"`）に文字を入力（300ms 待ち）
+- 確認内容:
+  - 入力から 300ms 後に URL `?q={keyword}` が更新される
+  - タイトル・説明がキーワードに一致するアイテムのみ MediaGrid に表示される
+  - Input をクリアすると `?q=` が URL から削除され全件表示に戻る
+- ステータス: 📋 未着手
+
 #### SC-UAT-102: B002 CourseCard クリック → B004 コース詳細に 200 で遷移する（404 にならない）
 - 対象URL: `/e-learning/lp/courses`（dev-seed コース投入済み環境）
 - 前提: ログイン済み・dev-seed のダミーコース（dummy-ai-intro 等）が存在する
@@ -761,7 +793,7 @@
 
 | 状態 | 件数 |
 |------|------|
-| 📋 未着手 | 88 |
+| 📋 未着手 | 91 |
 | 🔧 実装中 | 0 |
 | ✅ 完了 | 0 |
-| **合計** | **88** |
+| **合計** | **91** |
