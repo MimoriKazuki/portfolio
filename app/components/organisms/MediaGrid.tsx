@@ -39,6 +39,12 @@ export interface MediaGridProps extends React.HTMLAttributes<HTMLDivElement> {
   emptyState?: React.ReactNode
   /** xl ブレークポイントでの最大列数（既定 4）。 */
   cols?: MediaGridCols
+  /**
+   * 内部グリッド div の className を上書きする。
+   * 指定時は cols から導かれる既定クラスを置換し、独自のブレイクポイント指定が可能。
+   * 例：`'grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4'`
+   */
+  gridClassName?: string
   children?: React.ReactNode
 }
 
@@ -56,6 +62,7 @@ const MediaGrid = React.forwardRef<HTMLDivElement, MediaGridProps>(
       isEmpty,
       emptyState,
       cols = 4,
+      gridClassName,
       className,
       children,
       ...props
@@ -70,7 +77,9 @@ const MediaGrid = React.forwardRef<HTMLDivElement, MediaGridProps>(
         {showEmpty ? (
           emptyState ?? <EmptyState title="表示できる項目がありません" />
         ) : (
-          <div className={cn('grid gap-4', colsClass[cols])}>{children}</div>
+          <div className={cn('grid gap-4', gridClassName ?? colsClass[cols])}>
+            {children}
+          </div>
         )}
 
         {loading && (

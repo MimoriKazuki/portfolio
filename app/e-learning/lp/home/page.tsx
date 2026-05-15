@@ -93,16 +93,23 @@ export default async function ELearningLPHomePage({ searchParams }: PageProps) {
         </Button>
       </header>
 
-      <div className="flex flex-col gap-6 lg:flex-row">
-        {/* 左カラム：フィルタ（aside landmark は内部 MediaFilterSidebar のみが担う・design-mate 指摘で div に変更） */}
-        <div className="w-full shrink-0 lg:w-64">
+      <div className="flex flex-col gap-6 md:flex-row md:gap-8">
+        {/* 左カラム：フィルタ（aside landmark は内部 MediaFilterSidebar のみが担う・design-mate 指摘で div に変更）
+            既存 MyPageTemplate（md=641px 切替 / w-64）に揃え、tablet からサイドバー横並びに */}
+        <div className="w-full shrink-0 md:w-56">
           <MixedListFilterClient categories={categories.map(c => ({ id: c.id, name: c.name }))} />
         </div>
 
-        {/* 右カラム：検索バー（上部）+ グリッド（3 列固定・Kosuke FB 2026-05-15） */}
+        {/* 右カラム：検索バー（上部）+ グリッド（B002 専用ブレイクポイント・Kosuke FB 2026-05-15 レスポンシブ対応）
+            1 列 → sm(640+) 2 列 → lg(900+) 2 列維持 → xl(1025+) 3 列。
+            サイドバー併設による圧縮を避けるため、e-learning 単体動画一覧（lg で 3 列）より遅め展開。 */}
         <section className="flex flex-1 flex-col gap-4">
           <MixedListSearchClient />
-          <MediaGrid cols={3} isEmpty={items.length === 0}>
+          <MediaGrid
+            cols={3}
+            isEmpty={items.length === 0}
+            gridClassName="grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3"
+          >
             {items.map(item => (
               <MediaCard
                 key={item.key}
