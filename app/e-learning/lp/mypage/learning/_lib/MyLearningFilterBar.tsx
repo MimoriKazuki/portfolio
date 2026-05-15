@@ -13,11 +13,14 @@ import { cn } from '@/app/lib/utils'
  * - type=course|content（未指定 or 'all' で省略）
  * - category={categoryId}（未指定 or 'all' で省略）
  *
- * Udemy 風 UX（Kosuke FB 2026-05-15 追加）：
- * - 未選択時のドロップダウンには「種別」「カテゴリ」がプレースホルダ風に表示される
- *   （options[0].label を "すべて" → "種別" / "カテゴリ" に変えて実現。Select molecule は無 touch）
- * - 選択後はドロップダウン右端（chevron 左）に ✕ ボタンを重ね、クリックで "all" にリセット
+ * Udemy 風 UX（Kosuke FB 2026-05-15 反映）：
+ * - 未選択時のドロップダウンには「種別」「カテゴリ」が placeholder として表示される
+ *   （molecules/Select の placeholder prop + value=undefined で実現）
+ * - 選択肢には「種別」「カテゴリ」自体は含めない（コース / 単体動画 / カテゴリ各種 のみ）。
+ *   クリアは ✕ ボタンと「フィルターをクリア」リンクから行う。
+ * - 選択後はドロップダウン右端（chevron 跡）に ✕ ボタンを重ね、クリックで未選択へリセット
  * - いずれかのフィルタが選択中のときは右側に「フィルターをクリア」テキストボタンを表示し、全クリア
+ * - 選択時は ChevronDown を CSS で非表示（Trigger ＝ wrapper の first-child button 内 svg）
  *
  * 既存 molecules/Select は touch せず、外側ラッパで対応。
  */
@@ -81,17 +84,16 @@ export function MyLearningFilterBar({ categories }: MyLearningFilterBarProps) {
     })
   }
 
-  // options[0] の label をプレースホルダ風に。Select の Value 表示が "種別" / "カテゴリ" になる。
+  // 選択肢に「種別」「カテゴリ」自体は含めない。未選択時の表示は Select の placeholder で実現する。
   const typeOptions: SelectOption[] = [
-    { label: '種別', value: ALL },
     { label: 'コース', value: 'course' },
     { label: '単体動画', value: 'content' },
   ]
 
-  const categoryOptions: SelectOption[] = [
-    { label: 'カテゴリ', value: ALL },
-    ...categories.map(c => ({ label: c.name, value: c.id })),
-  ]
+  const categoryOptions: SelectOption[] = categories.map(c => ({
+    label: c.name,
+    value: c.id,
+  }))
 
   const isTypeSelected = currentType !== ALL
   const isCategorySelected = currentCategory !== ALL
@@ -100,18 +102,19 @@ export function MyLearningFilterBar({ categories }: MyLearningFilterBarProps) {
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
       {/* 種別ドロップダウン
-          選択時は Select Trigger 内の ChevronDown を CSS で非表示にし、✕ アイコンのみ表示する
-          （Kosuke FB 2026-05-15・Select の button 直下の svg を `[&>button>svg]:hidden` で消す） */}
+          選択時は Select Trigger（wrapper の first-child = button）内の ChevronDown を CSS で非表示にし、
+          ✕ アイコンのみ表示する。`first-child` を絞ることで ✕ ボタン側の svg は消さない。 */}
       <div
         className={cn(
           'relative sm:w-48',
-          isTypeSelected && '[&>button>svg]:hidden',
+          isTypeSelected && '[&>button:first-child>svg]:hidden',
         )}
       >
         <Select
           id="mylearning-type"
           aria-label="種別フィルタ"
-          value={currentType}
+          placeholder="種別"
+          value={isTypeSelected ? currentType : undefined}
           onValueChange={handleTypeChange}
           // 選択時は ✕ ボタン分の右パディング確保（chevron は CSS で消すため pr-10 で十分）
           className={isTypeSelected ? 'pr-10' : undefined}
@@ -136,13 +139,14 @@ export function MyLearningFilterBar({ categories }: MyLearningFilterBarProps) {
       <div
         className={cn(
           'relative sm:w-56',
-          isCategorySelected && '[&>button>svg]:hidden',
+          isCategorySelected && '[&>button:first-child>svg]:hidden',
         )}
       >
         <Select
           id="mylearning-category"
           aria-label="カテゴリフィルタ"
-          value={currentCategory}
+          placeholder="カテゴリ"
+          value={isCategorySelected ? currentCategory : undefined}
           onValueChange={handleCategoryChange}
           className={isCategorySelected ? 'pr-10' : undefined}
           options={categoryOptions}
