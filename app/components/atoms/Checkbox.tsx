@@ -29,7 +29,9 @@ import { cn } from '@/app/lib/utils'
 const checkboxVariants = cva(
   // 子要素から data-state を参照できるよう `group` を付与（forceMount したインジケータの中で CSS 制御）
   // rounded-none：チェックボックス（直角）vs ラジオ（円）の視覚区別を最大化（Kosuke FB 2026-05-15）
-  'group peer shrink-0 rounded-none border border-primary ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=indeterminate]:bg-primary data-[state=indeterminate]:text-primary-foreground',
+  // bg-white：未チェック時の背景を白明示（ページ背景との同化を回避・Kosuke FB 2026-05-15）。
+  //          data-[state=checked]:bg-primary / data-[state=indeterminate]:bg-primary が後で上書きするためチェック時の見た目に影響なし。
+  'group peer shrink-0 rounded-none border border-primary bg-white ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground data-[state=indeterminate]:bg-primary data-[state=indeterminate]:text-primary-foreground',
   {
     variants: {
       size: {

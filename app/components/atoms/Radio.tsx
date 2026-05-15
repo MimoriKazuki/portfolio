@@ -25,7 +25,9 @@ import { cn } from '@/app/lib/utils'
  */
 
 const radioGroupItemVariants = cva(
-  'aspect-square rounded-full border border-primary text-primary ring-offset-background focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
+  // bg-white：未選択時の背景を白明示（ページ背景との同化を回避・Kosuke FB 2026-05-15）。
+  // 選択時の Indicator（Circle）は別 div で描画されるため背景には影響しない。
+  'aspect-square rounded-full border border-primary bg-white text-primary ring-offset-background focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
   {
     variants: {
       size: {
