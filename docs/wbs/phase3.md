@@ -242,6 +242,59 @@ Phase 3 中に該当機能を実装する際、合わせて対処する。
 
 ---
 
+## ★ Phase 3.5 動画ホスティング Bunny Stream 統合（Kosuke 確定 2026-05-15）
+
+### 背景
+- 現状：Google Drive に動画を格納 → 管理画面で URL 手動登録
+- 問題：
+  1. 動画ダウンロード可能（有料コース価値毀損リスク）
+  2. Drive と管理画面の 2 重管理
+- Kosuke 判断（2026-05-15）：**Bunny Stream に切替**
+
+### 選定理由
+- ホスティング + ダウンロード防止 + API 連携 + 管理画面統合の 4 要件達成
+- 月額 **$5-15**（Vimeo / Mux / Cloudflare Stream より安価・候補 4 ツール中最安）
+- Bunny MediaCage（signed URL + AES-256）でダウンロード防止
+- アップロード API + Webhook で「管理画面アップロード → DB 自動反映」を実現
+
+### 要件（Kosuke 確定）
+1. ホスティング機能
+2. ダウンロード防止
+3. 管理画面経由でアップロード → 発行 URL でシステム運用
+4. 安価
+
+### タスク一覧（Phase 3.5・Bunny アカウント発行後着手）
+
+| ID | 内容 | 担当 | 状態 |
+|----|------|------|------|
+| P3.5-VIDEO-01 | Bunny.net アカウント発行 + Stream ライブラリ作成 + API key 取得 | Kosuke（社長依頼） | 📋（アカウント発行待ち） |
+| P3.5-VIDEO-02 | 環境変数設定（BUNNY_API_KEY / BUNNY_LIBRARY_ID 等）| dev-mate | 📋（P3.5-VIDEO-01 後） |
+| P3.5-VIDEO-03 | DB スキーマ追加：`e_learning_course_videos.bunny_video_id` / `e_learning_contents.bunny_video_id` カラム追加（マイグレ） | dev-mate | 📋 |
+| P3.5-VIDEO-04 | 管理画面（C006/C007）にアップロード UI 追加 + Bunny API 連携 | dev-mate | 📋 |
+| P3.5-VIDEO-05 | `/api/bunny/webhook` 実装（動画準備完了通知 → DB 更新） | dev-mate | 📋 |
+| P3.5-VIDEO-06 | 視聴画面（B005 / B007）で signed URL 生成 + Bunny プレイヤー埋め込み（access-service 連携） | dev-mate | 📋 |
+| P3.5-VIDEO-07 | 既存 15 件動画の Bunny 移行（手動 or API 一括） | dev-mate + Kosuke | 📋 |
+| P3.5-VIDEO-08 | テスト追加（UT / E2E） | dev-mate | 📋 |
+
+### 工数目安
+- 全タスク完了まで **3-5 日**（アカウント発行後）
+
+### 着手タイミング
+- Phase 3 リリース後・Phase 3.5 として速やかに着手
+- リリース時は Drive 運用継続 → リリース直後に Bunny 切替の段階移行
+
+### NG ルール
+- 既存 Drive 動画 URL は移行完了まで温存（既存運用非破壊）
+- 既存 access-service / progress-service は無破壊（signed URL 生成だけ追加）
+
+### Bunny Stream API 参考
+- API ドキュメント：https://docs.bunny.net/reference/api-overview
+- アップロード：`POST /library/{libraryId}/videos`
+- 視聴：`https://iframe.mediadelivery.net/play/{libraryId}/{videoId}` + `?token=xxx&expires=yyy`
+- Webhook 設定：Stream ライブラリ設定で webhook URL 登録
+
+---
+
 ## 依存関係と並行可能タスク
 
 ```
