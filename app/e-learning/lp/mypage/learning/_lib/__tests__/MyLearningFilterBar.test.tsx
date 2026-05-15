@@ -104,10 +104,69 @@ describe('MyLearningFilterBar', () => {
     expect((screen.getByTestId('mylearning-type') as HTMLSelectElement).value).toBe('course')
   })
 
-  it('categories が空配列でもエラーなく描画され、カテゴリは「すべて」のみ表示', () => {
+  it('categories が空配列でもエラーなく描画され、カテゴリは「カテゴリ」プレースホルダのみ表示', () => {
     render(<MyLearningFilterBar categories={[]} />)
     const select = screen.getByTestId('mylearning-category') as HTMLSelectElement
     expect(select.options).toHaveLength(1)
     expect(select.options[0].value).toBe('all')
+    expect(select.options[0].text).toBe('カテゴリ')
+  })
+
+  it('Udemy 風プレースホルダ：未選択時は種別 options[0] のラベルが「種別」', () => {
+    render(<MyLearningFilterBar categories={categories} />)
+    const select = screen.getByTestId('mylearning-type') as HTMLSelectElement
+    expect(select.options[0].text).toBe('種別')
+    expect(select.options[0].value).toBe('all')
+  })
+
+  it('種別が未選択のとき ✕ ボタンと「フィルターをクリア」は表示されない', () => {
+    render(<MyLearningFilterBar categories={categories} />)
+    expect(screen.queryByLabelText('種別フィルタをクリア')).toBeNull()
+    expect(screen.queryByLabelText('カテゴリフィルタをクリア')).toBeNull()
+    expect(screen.queryByText('フィルターをクリア')).toBeNull()
+  })
+
+  it('種別選択時に ✕ ボタンが表示され、クリックで URL から type が削除される', () => {
+    searchParamsRef.current = new URLSearchParams('type=course')
+    render(<MyLearningFilterBar categories={categories} />)
+    const clearBtn = screen.getByLabelText('種別フィルタをクリア')
+    fireEvent.click(clearBtn)
+    expect(pushMock).toHaveBeenCalledWith('/e-learning/lp/mypage/learning', {
+      scroll: false,
+    })
+  })
+
+  it('カテゴリ選択時に ✕ ボタンが表示され、クリックで URL から category が削除される', () => {
+    searchParamsRef.current = new URLSearchParams('category=cat-1')
+    render(<MyLearningFilterBar categories={categories} />)
+    const clearBtn = screen.getByLabelText('カテゴリフィルタをクリア')
+    fireEvent.click(clearBtn)
+    expect(pushMock).toHaveBeenCalledWith('/e-learning/lp/mypage/learning', {
+      scroll: false,
+    })
+  })
+
+  it('「フィルターをクリア」ボタンは type/category いずれかが選択中のとき表示される', () => {
+    searchParamsRef.current = new URLSearchParams('type=course')
+    render(<MyLearningFilterBar categories={categories} />)
+    expect(screen.getByText('フィルターをクリア')).toBeInTheDocument()
+  })
+
+  it('「フィルターをクリア」クリックで type と category の両方が URL から削除される（他クエリは維持）', () => {
+    searchParamsRef.current = new URLSearchParams('tab=bookmarked&type=course&category=cat-1')
+    render(<MyLearningFilterBar categories={categories} />)
+    fireEvent.click(screen.getByText('フィルターをクリア'))
+    expect(pushMock).toHaveBeenCalledWith(
+      '/e-learning/lp/mypage/learning?tab=bookmarked',
+      { scroll: false },
+    )
+  })
+
+  it('未知の category id が URL にあるとき all 扱いになり ✕ ボタンは表示されない', () => {
+    searchParamsRef.current = new URLSearchParams('category=unknown')
+    render(<MyLearningFilterBar categories={categories} />)
+    const select = screen.getByTestId('mylearning-category') as HTMLSelectElement
+    expect(select.value).toBe('all')
+    expect(screen.queryByLabelText('カテゴリフィルタをクリア')).toBeNull()
   })
 })
