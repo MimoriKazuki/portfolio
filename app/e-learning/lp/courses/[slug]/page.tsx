@@ -124,102 +124,112 @@ export default async function ELearningLPCourseDetailPage({ params }: PageProps)
         </nav>
       }
       hero={
-        <section className="flex flex-col gap-4 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
-          {/* B004 hero サムネ：aspect-video・thumbnail_url null 時はプレースホルダ */}
-          <div className="relative aspect-video w-full bg-gray-100">
-            {course.thumbnail_url ? (
-              <Image
-                src={course.thumbnail_url}
-                alt=""
-                fill
-                priority
-                sizes="(min-width: 1024px) 70vw, 100vw"
-                className="object-cover"
-              />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center text-gray-400">
-                <PlayCircle aria-hidden="true" className="h-16 w-16" />
-              </div>
+        // Claude Code Academy 風（Kosuke FB 2026-05-15・大改修）：
+        // - 外枠なし・サムネだけ独立枠（bg-gray-50 + 余白）
+        // - タイトル / 概要 / メタピル / CTA は枠なし直配置
+        <section className="flex flex-col gap-5">
+          {/* サムネだけ独立枠（beige 風コンテナ） */}
+          <div className="rounded-xl bg-gray-50 p-6 sm:p-10">
+            <div className="relative aspect-video w-full overflow-hidden rounded-lg bg-white">
+              {course.thumbnail_url ? (
+                <Image
+                  src={course.thumbnail_url}
+                  alt=""
+                  fill
+                  priority
+                  sizes="(min-width: 1024px) 70vw, 100vw"
+                  className="object-cover"
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center text-gray-400">
+                  <PlayCircle aria-hidden="true" className="h-16 w-16" />
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* バッジ + カテゴリ */}
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge variant="info">コース</Badge>
+            {course.is_free && <FreeBadge />}
+            {course.category_name && (
+              <span className="text-xs text-muted-foreground">{course.category_name}</span>
             )}
           </div>
 
-          <div className="flex flex-col gap-4 p-4 sm:p-6">
-            <div className="flex flex-wrap items-center gap-2">
-              <Badge variant="info">コース</Badge>
-              {course.is_free && <FreeBadge />}
-              {course.category_name && (
-                <span className="text-xs text-muted-foreground">{course.category_name}</span>
-              )}
-            </div>
-            <h1 className="text-2xl text-foreground md:text-3xl">{course.title}</h1>
-            {course.description && (
-              <p className="whitespace-pre-wrap text-sm text-muted-foreground md:text-base">
-                {course.description}
-              </p>
+          {/* タイトル */}
+          <h1 className="text-2xl text-foreground md:text-3xl">{course.title}</h1>
+
+          {/* 概要 */}
+          {course.description && (
+            <p className="whitespace-pre-wrap text-sm text-muted-foreground md:text-base">
+              {course.description}
+            </p>
+          )}
+
+          {/* メタピル群（横並び flex-wrap） */}
+          <ul className="flex flex-wrap items-center gap-2">
+            <li className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 text-sm text-gray-700">
+              <PlayCircle aria-hidden="true" className="h-4 w-4" />
+              {totalVideos} レッスン
+            </li>
+            <li className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 text-sm text-gray-700">
+              <BookOpen aria-hidden="true" className="h-4 w-4" />
+              {course.chapters.length} 章
+            </li>
+            {course.materials.length > 0 && (
+              <li className="inline-flex items-center gap-1.5 rounded-full bg-gray-100 px-3 py-1.5 text-sm text-gray-700">
+                <FileText aria-hidden="true" className="h-4 w-4" />
+                資料 {course.materials.length}
+              </li>
             )}
-            <div className="mt-2 flex flex-wrap items-center gap-3">
-              {hasCourseAccess && continueVideoId ? (
-                <Button asChild size="lg">
-                  <Link
-                    href={`/e-learning/lp/courses/${course.slug}/videos/${continueVideoId}`}
-                  >
-                    {completedCount > 0 ? '続きから見る' : '最初から見る'}
-                  </Link>
-                </Button>
-              ) : course.is_free && firstVideoId ? (
-                <Button asChild size="lg">
-                  <Link
-                    href={`/e-learning/lp/courses/${course.slug}/videos/${firstVideoId}`}
-                  >
-                    最初から見る
-                  </Link>
-                </Button>
-              ) : !course.is_free ? (
-                <CoursePurchaseCtaClient
-                  courseId={course.id}
-                  courseSlug={course.slug}
-                  courseTitle={course.title}
-                  price={course.price}
-                />
-              ) : null}
-              {/* ブックマーク トグル（B007 と同流儀の rounded-full ボタン） */}
-              <BookmarkToggleClient
+          </ul>
+
+          {/* CTA + ブックマーク */}
+          <div className="mt-2 flex flex-wrap items-center gap-3">
+            {hasCourseAccess && continueVideoId ? (
+              <Button asChild size="lg">
+                <Link
+                  href={`/e-learning/lp/courses/${course.slug}/videos/${continueVideoId}`}
+                >
+                  {completedCount > 0 ? '続きから見る' : '最初から見る'}
+                </Link>
+              </Button>
+            ) : course.is_free && firstVideoId ? (
+              <Button asChild size="lg">
+                <Link
+                  href={`/e-learning/lp/courses/${course.slug}/videos/${firstVideoId}`}
+                >
+                  最初から見る
+                </Link>
+              </Button>
+            ) : !course.is_free ? (
+              <CoursePurchaseCtaClient
                 courseId={course.id}
                 courseSlug={course.slug}
-                initialBookmarked={isBookmarked}
-                initialBookmarkId={bookmarkId}
+                courseTitle={course.title}
+                price={course.price}
               />
-            </div>
-            {hasCourseAccess && totalVideos > 0 && (
-              <p className="text-xs text-muted-foreground">
-                進捗：{completedCount} / {totalVideos} 本（{progressPct}%）
-              </p>
-            )}
+            ) : null}
+            {/* ブックマーク トグル（rounded-full・ロジック維持） */}
+            <BookmarkToggleClient
+              courseId={course.id}
+              courseSlug={course.slug}
+              initialBookmarked={isBookmarked}
+              initialBookmarkId={bookmarkId}
+            />
           </div>
+
+          {hasCourseAccess && totalVideos > 0 && (
+            <p className="text-xs text-muted-foreground">
+              進捗：{completedCount} / {totalVideos} 本（{progressPct}%）
+            </p>
+          )}
         </section>
       }
-      meta={
-        // Udemy 風アイコン付きメタカード（Kosuke FB 2026-05-15・B007 と同じ bg-gray-50 トーン）
-        <dl className="grid grid-cols-3 gap-4 rounded-xl bg-gray-50 p-5">
-          <div className="flex flex-col items-center gap-1 text-center">
-            <BookOpen aria-hidden="true" className="h-5 w-5 text-blue-600" />
-            <dd className="text-xl font-bold text-gray-900">{course.chapters.length}</dd>
-            <dt className="text-xs text-gray-500">章</dt>
-          </div>
-          <div className="flex flex-col items-center gap-1 text-center">
-            <PlayCircle aria-hidden="true" className="h-5 w-5 text-blue-600" />
-            <dd className="text-xl font-bold text-gray-900">{totalVideos}</dd>
-            <dt className="text-xs text-gray-500">動画</dt>
-          </div>
-          <div className="flex flex-col items-center gap-1 text-center">
-            <FileText aria-hidden="true" className="h-5 w-5 text-blue-600" />
-            <dd className="text-xl font-bold text-gray-900">{course.materials.length}</dd>
-            <dt className="text-xs text-gray-500">資料</dt>
-          </div>
-        </dl>
-      }
       curriculum={
-        <section className="flex flex-col gap-3">
+        // レッスン一覧との区切りに border-t（Claude Code Academy 風）
+        <section className="flex flex-col gap-3 border-t border-gray-200 pt-6">
           <h2 className="text-xl text-foreground">カリキュラム</h2>
           <CurriculumAccordionClient
             courseSlug={course.slug}
