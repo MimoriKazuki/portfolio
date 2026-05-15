@@ -84,9 +84,10 @@ export default async function ELearningLPHomePage({ searchParams }: PageProps) {
             コース / 単体動画を横断的に検索できます。
           </p>
         </div>
-        {/* マイラーニング導線（Kosuke FB 2026-05-15・middleware で /e-learning/ 配下はログイン必須のため未ログイン考慮不要） */}
+        {/* マイラーニング導線（Kosuke FB 2026-05-15・middleware で /e-learning/ 配下はログイン必須のため未ログイン考慮不要）
+            遷移先：マイラーニング新規ページ（購入 + ブックマーク 統合） */}
         <Button asChild variant="outline">
-          <Link href="/e-learning/lp/mypage">
+          <Link href="/e-learning/lp/mypage/learning">
             <BookOpen className="mr-2 h-4 w-4" aria-hidden="true" />
             マイラーニング
           </Link>
