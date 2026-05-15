@@ -801,49 +801,47 @@
   - MediaGrid に購入済みアイテムが表示される
 - ステータス: 📋 未着手
 
-#### SC-UAT-112: B012b マイラーニング 種別「コース」Checkbox ON → URL `?types=course`・コースのみ表示
+#### SC-UAT-112: B012b マイラーニング 種別 Select で「コース」選択 → URL `?type=course`・コースのみ表示
 - 対象URL: `/e-learning/lp/mypage/learning`（ログイン済み・購入済みコースとコンテンツが混在）
 - 前提: ログイン済み・購入済みコース・単体動画が各1件以上存在する
-- 操作: `aria-label="マイラーニングフィルタ"` aside 内「コース」Checkbox（`id="mylearning-type-course"`）を ON にする
+- 操作: `aria-label="種別フィルタ"` Select で「コース」を選択
 - 確認内容:
-  - URL に `?types=course` が付く
+  - URL に `?type=course` が付く
   - MediaGrid に `type="course"` の MediaCard のみ表示される
   - 「単体動画」MediaCard が表示されない
+- 補足: Kosuke FB 2026-05-15（Udemy 風）で左サイドバー Checkbox → 上部 Select ドロップダウンに変更（単一値選択）
 - ステータス: 📋 未着手
 
-#### SC-UAT-113: B012b マイラーニング 種別 Checkbox 両方 ON → `?types=course,content`・全件表示
-- 対象URL: `/e-learning/lp/mypage/learning`
-- 前提: ログイン済み・SC-UAT-112 で「コース」だけ ON の状態から続けて操作
-- 操作: 「単体動画」Checkbox（`id="mylearning-type-content"`）も ON にする
+#### SC-UAT-113: B012b マイラーニング 種別 Select で「すべて」選択 → `?type` が URL から消え全件表示
+- 対象URL: `/e-learning/lp/mypage/learning?type=course`（SC-UAT-112 の後続）
+- 操作: `aria-label="種別フィルタ"` Select で「すべて」を選択
 - 確認内容:
-  - URL が `?types=course,content` になる
-  - コース・単体動画の両方が MediaGrid に表示される
+  - URL から `?type=` が削除される（`params.delete('type')`）
+  - コース・単体動画の両方が再び MediaGrid に表示される（フィルタなし状態に戻る）
 - ステータス: 📋 未着手
 
-#### SC-UAT-114: B012b マイラーニング 種別 Checkbox 両方 OFF → `?types` が URL から消え全件表示
-- 対象URL: `/e-learning/lp/mypage/learning?types=course,content`
-- 操作: 「コース」「単体動画」の両 Checkbox を OFF にする
-- 確認内容:
-  - URL から `?types=` が削除される（`params.delete('types')`）
-  - コース・単体動画の両方が再び表示される（フィルタなし状態に戻る）
-- ステータス: 📋 未着手
+#### ~~SC-UAT-114: B012b マイラーニング 種別 Checkbox 両方 OFF → `?types` が URL から消え全件表示~~
+- **廃止（2026-05-15）**: Kosuke FB によりフィルタが Checkbox（複数値）→ Select（単一値）に変更。「両方 OFF」操作は存在しなくなった。相当する確認は SC-UAT-113「すべて選択」に統合済み。
+- ステータス: 🚫 廃止
 
-#### SC-UAT-115: B012b マイラーニング カテゴリ Checkbox 選択 → URL `?categories={id}` 反映・絞り込み
+#### SC-UAT-115: B012b マイラーニング カテゴリ Select でカテゴリ選択 → URL `?category={id}` 反映・絞り込み
 - 対象URL: `/e-learning/lp/mypage/learning`（ログイン済み・複数カテゴリのアイテムが存在）
-- 前提: ログイン済み・aside のカテゴリセクションにカテゴリが1件以上表示されている
-- 操作: カテゴリ Checkbox（`id="mylearning-category-{id}"`）を1件 ON にする
+- 前提: ログイン済み・カテゴリ Select（`aria-label="カテゴリフィルタ"`）にカテゴリが1件以上表示されている
+- 操作: `aria-label="カテゴリフィルタ"` Select で任意のカテゴリを選択
 - 確認内容:
-  - URL に `?categories={id}` が付く
+  - URL に `?category={id}` が付く（複数値カンマ区切りではなく単一 ID）
   - MediaGrid にそのカテゴリのアイテムのみ表示される
   - 他カテゴリのアイテムが非表示になる
+  - 「すべて」に戻すと URL から `?category=` が削除され全件表示に戻る
+- 補足: 旧 `?categories={id}` からキー名が `?category={id}`（単数形）に変更
 - ステータス: 📋 未着手
 
-#### SC-UAT-116: B012b マイラーニング タブ切替時に types・categories フィルタが維持される
-- 対象URL: `/e-learning/lp/mypage/learning?types=course&categories={id}`
+#### SC-UAT-116: B012b マイラーニング タブ切替時に type・category フィルタが維持される
+- 対象URL: `/e-learning/lp/mypage/learning?type=course&category={id}`
 - 操作: 「ブックマーク済み」タブをクリック
 - 確認内容:
-  - URL が `?tab=bookmarked&types=course&categories={id}` に更新される（既存 query が保持される）
-  - フィルタがタブ切替をまたいで維持されている
+  - URL が `?tab=bookmarked&type=course&category={id}` に更新される（既存 query が保持される）
+  - type / category フィルタがタブ切替をまたいで維持されている
 - 補足: `MyLearningTabsClient` は `new URLSearchParams(searchParams.toString())` で既存パラメータを引き継ぐ設計のため
 - ステータス: 📋 未着手
 
@@ -853,8 +851,8 @@
 
 | 状態 | 件数 |
 |------|------|
-| 📋 未着手 | 96 |
+| 📋 未着手 | 95 |
 | 🔧 実装中 | 0 |
 | ✅ 完了 | 0 |
-| 🚫 廃止 | 2 |
+| 🚫 廃止 | 3 |
 | **合計** | **98** |
