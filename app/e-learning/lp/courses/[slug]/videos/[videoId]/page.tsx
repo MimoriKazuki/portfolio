@@ -175,7 +175,8 @@ export default async function ELearningLPCourseVideoPage({ params }: PageProps) 
       }
       tabs={
         ctx.currentVideo.description ? (
-          <section className="flex flex-col gap-2 rounded-lg border border-border bg-card p-5 text-card-foreground">
+          // B007 と同じトーン（rounded-xl + bg-gray-50・Kosuke FB 2026-05-15）
+          <section className="flex flex-col gap-2 rounded-xl border border-gray-200 bg-gray-50 p-4">
             <h2 className="text-base text-foreground">概要</h2>
             <p className="whitespace-pre-wrap text-sm text-muted-foreground">
               {ctx.currentVideo.description}

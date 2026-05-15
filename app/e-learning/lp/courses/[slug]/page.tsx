@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { PlayCircle } from 'lucide-react'
+import { BookOpen, FileText, PlayCircle } from 'lucide-react'
 import { notFound, redirect } from 'next/navigation'
 import { createClient } from '@/app/lib/supabase/server'
 import { Badge } from '@/app/components/atoms/Badge'
@@ -12,6 +12,7 @@ import {
   getViewerAccess,
 } from '@/app/lib/services/access-service'
 import { getCompletedCourseVideoIds } from '@/app/lib/services/progress-service'
+import { BookmarkToggleClient } from './_lib/BookmarkToggleClient'
 import { CoursePurchaseCtaClient } from './_lib/CoursePurchaseCtaClient'
 import { CurriculumAccordionClient } from './_lib/CurriculumAccordionClient'
 import { getCourseDetailBySlug } from './_lib/get-course-detail'
@@ -69,6 +70,7 @@ export default async function ELearningLPCourseDetailPage({ params }: PageProps)
   let completedVideoIds: string[] = []
   let canDownloadMaterials = false
   let isBookmarked = false
+  let bookmarkId: string | null = null
 
   if (eLearningUser) {
     const [access, completed, dlAllowed, bookmark] = await Promise.all([
@@ -81,12 +83,13 @@ export default async function ELearningLPCourseDetailPage({ params }: PageProps)
         .eq('user_id', eLearningUser.id)
         .eq('course_id', course.id)
         .maybeSingle()
-        .then(r => !!r.data),
+        .then(r => (r.data?.id as string | undefined) ?? null),
     ])
     viewerAccess = access
     completedVideoIds = completed
     canDownloadMaterials = dlAllowed
-    isBookmarked = bookmark
+    bookmarkId = bookmark
+    isBookmarked = bookmark !== null
   }
 
   const hasCourseAccess =
@@ -121,9 +124,9 @@ export default async function ELearningLPCourseDetailPage({ params }: PageProps)
         </nav>
       }
       hero={
-        <section className="flex flex-col gap-4 overflow-hidden rounded-lg border border-border bg-card text-card-foreground">
+        <section className="flex flex-col gap-4 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
           {/* B004 hero サムネ：aspect-video・thumbnail_url null 時はプレースホルダ */}
-          <div className="relative aspect-video w-full bg-muted">
+          <div className="relative aspect-video w-full bg-gray-100">
             {course.thumbnail_url ? (
               <Image
                 src={course.thumbnail_url}
@@ -134,77 +137,84 @@ export default async function ELearningLPCourseDetailPage({ params }: PageProps)
                 className="object-cover"
               />
             ) : (
-              <div className="flex h-full w-full items-center justify-center text-muted-foreground">
+              <div className="flex h-full w-full items-center justify-center text-gray-400">
                 <PlayCircle aria-hidden="true" className="h-16 w-16" />
               </div>
             )}
           </div>
 
-          <div className="flex flex-col gap-4 p-6 md:p-8">
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="info">コース</Badge>
-            {course.is_free && <FreeBadge />}
-            {course.category_name && (
-              <span className="text-xs text-muted-foreground">{course.category_name}</span>
+          <div className="flex flex-col gap-4 p-4 sm:p-6">
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge variant="info">コース</Badge>
+              {course.is_free && <FreeBadge />}
+              {course.category_name && (
+                <span className="text-xs text-muted-foreground">{course.category_name}</span>
+              )}
+            </div>
+            <h1 className="text-2xl text-foreground md:text-3xl">{course.title}</h1>
+            {course.description && (
+              <p className="whitespace-pre-wrap text-sm text-muted-foreground md:text-base">
+                {course.description}
+              </p>
             )}
-          </div>
-          <h1 className="text-2xl text-foreground md:text-3xl">{course.title}</h1>
-          {course.description && (
-            <p className="whitespace-pre-wrap text-sm text-muted-foreground md:text-base">
-              {course.description}
-            </p>
-          )}
-          <div className="mt-2 flex flex-wrap items-center gap-3">
-            {hasCourseAccess && continueVideoId ? (
-              <Button asChild size="lg">
-                <Link
-                  href={`/e-learning/lp/courses/${course.slug}/videos/${continueVideoId}`}
-                >
-                  {completedCount > 0 ? '続きから見る' : '最初から見る'}
-                </Link>
-              </Button>
-            ) : course.is_free && firstVideoId ? (
-              <Button asChild size="lg">
-                <Link
-                  href={`/e-learning/lp/courses/${course.slug}/videos/${firstVideoId}`}
-                >
-                  最初から見る
-                </Link>
-              </Button>
-            ) : !course.is_free ? (
-              <CoursePurchaseCtaClient
+            <div className="mt-2 flex flex-wrap items-center gap-3">
+              {hasCourseAccess && continueVideoId ? (
+                <Button asChild size="lg">
+                  <Link
+                    href={`/e-learning/lp/courses/${course.slug}/videos/${continueVideoId}`}
+                  >
+                    {completedCount > 0 ? '続きから見る' : '最初から見る'}
+                  </Link>
+                </Button>
+              ) : course.is_free && firstVideoId ? (
+                <Button asChild size="lg">
+                  <Link
+                    href={`/e-learning/lp/courses/${course.slug}/videos/${firstVideoId}`}
+                  >
+                    最初から見る
+                  </Link>
+                </Button>
+              ) : !course.is_free ? (
+                <CoursePurchaseCtaClient
+                  courseId={course.id}
+                  courseSlug={course.slug}
+                  courseTitle={course.title}
+                  price={course.price}
+                />
+              ) : null}
+              {/* ブックマーク トグル（B007 と同流儀の rounded-full ボタン） */}
+              <BookmarkToggleClient
                 courseId={course.id}
                 courseSlug={course.slug}
-                courseTitle={course.title}
-                price={course.price}
+                initialBookmarked={isBookmarked}
+                initialBookmarkId={bookmarkId}
               />
-            ) : null}
-          </div>
-          {hasCourseAccess && totalVideos > 0 && (
-            <p className="text-xs text-muted-foreground">
-              進捗：{completedCount} / {totalVideos} 本（{progressPct}%）
-            </p>
-          )}
+            </div>
+            {hasCourseAccess && totalVideos > 0 && (
+              <p className="text-xs text-muted-foreground">
+                進捗：{completedCount} / {totalVideos} 本（{progressPct}%）
+              </p>
+            )}
           </div>
         </section>
       }
       meta={
-        <dl className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-          <div>
-            <dt className="text-xs text-muted-foreground">章数</dt>
-            <dd className="text-lg text-foreground">{course.chapters.length}</dd>
+        // Udemy 風アイコン付きメタカード（Kosuke FB 2026-05-15・B007 と同じ bg-gray-50 トーン）
+        <dl className="grid grid-cols-3 gap-4 rounded-xl bg-gray-50 p-5">
+          <div className="flex flex-col items-center gap-1 text-center">
+            <BookOpen aria-hidden="true" className="h-5 w-5 text-blue-600" />
+            <dd className="text-xl font-bold text-gray-900">{course.chapters.length}</dd>
+            <dt className="text-xs text-gray-500">章</dt>
           </div>
-          <div>
-            <dt className="text-xs text-muted-foreground">動画本数</dt>
-            <dd className="text-lg text-foreground">{totalVideos}</dd>
+          <div className="flex flex-col items-center gap-1 text-center">
+            <PlayCircle aria-hidden="true" className="h-5 w-5 text-blue-600" />
+            <dd className="text-xl font-bold text-gray-900">{totalVideos}</dd>
+            <dt className="text-xs text-gray-500">動画</dt>
           </div>
-          <div>
-            <dt className="text-xs text-muted-foreground">資料</dt>
-            <dd className="text-lg text-foreground">{course.materials.length}</dd>
-          </div>
-          <div>
-            <dt className="text-xs text-muted-foreground">ブックマーク</dt>
-            <dd className="text-lg text-foreground">{isBookmarked ? '済' : '未'}</dd>
+          <div className="flex flex-col items-center gap-1 text-center">
+            <FileText aria-hidden="true" className="h-5 w-5 text-blue-600" />
+            <dd className="text-xl font-bold text-gray-900">{course.materials.length}</dd>
+            <dt className="text-xs text-gray-500">資料</dt>
           </div>
         </dl>
       }
