@@ -85,9 +85,9 @@ export default async function ELearningLPHomePage({ searchParams }: PageProps) {
           <MixedListFilterClient categories={categories.map(c => ({ id: c.id, name: c.name }))} />
         </div>
 
-        {/* 右カラム：グリッド */}
+        {/* 右カラム：グリッド（3 列固定・Kosuke フィードバック 2026-05-15） */}
         <section className="flex-1">
-          <MediaGrid isEmpty={items.length === 0}>
+          <MediaGrid cols={3} isEmpty={items.length === 0}>
             {items.map(item => (
               <MediaCard
                 key={item.key}
