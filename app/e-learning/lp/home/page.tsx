@@ -1,3 +1,6 @@
+import Link from 'next/link'
+import { BookOpen } from 'lucide-react'
+import { Button } from '@/app/components/atoms/Button'
 import { MediaCard } from '@/app/components/molecules/MediaCard'
 import { MediaGrid } from '@/app/components/organisms/MediaGrid'
 import { MixedListFilterClient } from './_lib/MixedListFilterClient'
@@ -74,11 +77,20 @@ export default async function ELearningLPHomePage({ searchParams }: PageProps) {
 
   return (
     <main className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-6 py-10 md:py-12">
-      <header className="flex flex-col gap-1">
-        <h1 className="text-2xl text-foreground md:text-3xl">学びを探す</h1>
-        <p className="text-sm text-muted-foreground md:text-base">
-          コース / 単体動画を横断的に検索できます。
-        </p>
+      <header className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
+        <div className="flex flex-col gap-1">
+          <h1 className="text-2xl text-foreground md:text-3xl">学びを探す</h1>
+          <p className="text-sm text-muted-foreground md:text-base">
+            コース / 単体動画を横断的に検索できます。
+          </p>
+        </div>
+        {/* マイラーニング導線（Kosuke FB 2026-05-15・middleware で /e-learning/ 配下はログイン必須のため未ログイン考慮不要） */}
+        <Button asChild variant="outline">
+          <Link href="/e-learning/lp/mypage">
+            <BookOpen className="mr-2 h-4 w-4" aria-hidden="true" />
+            マイラーニング
+          </Link>
+        </Button>
       </header>
 
       <div className="flex flex-col gap-6 lg:flex-row">

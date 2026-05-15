@@ -49,6 +49,8 @@ export function MixedListSearchClient() {
       value={keyword}
       onChange={e => setKeyword(e.target.value)}
       aria-label="キーワード検索"
+      // 白背景で「フィールド感」を出す（Kosuke FB 2026-05-15）
+      className="bg-white"
     />
   )
 }
