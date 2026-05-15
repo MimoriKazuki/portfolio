@@ -110,8 +110,8 @@ const MediaCard = React.forwardRef<HTMLAnchorElement, MediaCardProps>(
 
         {/* 本体（左右パディングは外側 p-4 に委譲し、上下のみ pt-4 で間隔確保） */}
         <div className="flex flex-1 flex-col gap-2 pt-4">
-          {/* タイトル（2 行クランプ） */}
-          <h3 className="line-clamp-2 text-base text-foreground group-hover:text-primary md:text-lg">
+          {/* タイトル（2 行クランプ・16px 統一：既存 ELearningCard / ProjectCard と整合） */}
+          <h3 className="line-clamp-2 text-base text-foreground group-hover:text-primary">
             {title}
           </h3>
 
