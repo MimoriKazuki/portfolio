@@ -80,10 +80,10 @@ export default async function ELearningLPHomePage({ searchParams }: PageProps) {
       </header>
 
       <div className="flex flex-col gap-6 lg:flex-row">
-        {/* 左カラム：フィルタ */}
-        <aside className="w-full shrink-0 lg:w-64">
+        {/* 左カラム：フィルタ（aside landmark は内部 MediaFilterSidebar のみが担う・design-mate 指摘で div に変更） */}
+        <div className="w-full shrink-0 lg:w-64">
           <MixedListFilterClient categories={categories.map(c => ({ id: c.id, name: c.name }))} />
-        </aside>
+        </div>
 
         {/* 右カラム：グリッド */}
         <section className="flex-1">
