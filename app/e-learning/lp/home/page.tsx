@@ -1,6 +1,7 @@
 import { MediaCard } from '@/app/components/molecules/MediaCard'
 import { MediaGrid } from '@/app/components/organisms/MediaGrid'
 import { MixedListFilterClient } from './_lib/MixedListFilterClient'
+import { MixedListSearchClient } from './_lib/MixedListSearchClient'
 import {
   getActiveCategoriesForHome,
   getMixedList,
@@ -15,8 +16,9 @@ import {
  * - screens.md B002（コース + 単体動画 混在一覧）
  *
  * 構成：
- * - 左カラム：MediaFilterSidebar（種別 / カテゴリ / 価格）+ 検索バー
- * - 右カラム：MediaGrid + MediaCard（type='course' or 'content'）
+ * - 左カラム：MixedListFilterClient（種別 / カテゴリ / 価格 のフィルタ・枠なし素のセクション）
+ * - 右カラム上部：MixedListSearchClient（検索バー・Kosuke FB 2026-05-15 で左カラム→右カラム上部に移動）
+ * - 右カラム下部：MediaGrid + MediaCard（type='course' or 'content'）
  *
  * URL query 同期：
  * - types=course,content / categories=...,... / price=free|paid / q=...
@@ -85,8 +87,9 @@ export default async function ELearningLPHomePage({ searchParams }: PageProps) {
           <MixedListFilterClient categories={categories.map(c => ({ id: c.id, name: c.name }))} />
         </div>
 
-        {/* 右カラム：グリッド（3 列固定・Kosuke フィードバック 2026-05-15） */}
-        <section className="flex-1">
+        {/* 右カラム：検索バー（上部）+ グリッド（3 列固定・Kosuke FB 2026-05-15） */}
+        <section className="flex flex-1 flex-col gap-4">
+          <MixedListSearchClient />
           <MediaGrid cols={3} isEmpty={items.length === 0}>
             {items.map(item => (
               <MediaCard

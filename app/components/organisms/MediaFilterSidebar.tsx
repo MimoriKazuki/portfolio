@@ -64,7 +64,8 @@ const MediaFilterSidebar: React.FC<MediaFilterSidebarProps> = ({
       role="complementary"
       aria-label="一覧フィルタ"
       className={cn(
-        'flex w-full flex-col gap-6 rounded-lg border border-border bg-card p-5 text-card-foreground',
+        // 枠・背景なしの素のセクション（Claude Code Academy 参考・Kosuke FB 2026-05-15）
+        'flex w-full flex-col gap-6 text-foreground',
         className,
       )}
     >

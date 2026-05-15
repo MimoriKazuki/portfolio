@@ -2,7 +2,6 @@
 
 import * as React from 'react'
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
-import { Input } from '@/app/components/atoms/Input'
 import {
   MediaFilterSidebar,
   type MediaPriceFilter,
@@ -10,18 +9,16 @@ import {
 } from '@/app/components/organisms/MediaFilterSidebar'
 
 /**
- * B002 統合一覧（/e-learning/lp/home）の左フィルタ + 検索バー Client Component。
+ * B002 統合一覧（/e-learning/lp/home）の左フィルタ Client Component。
+ *
+ * 担当：種別 / カテゴリ / 価格 のフィルタ（URL query 同期）
+ * 検索バー（q）は MixedListSearchClient に分離（Kosuke FB 2026-05-15：検索バーを右カラム上部に移動）
  *
  * URL query 同期方針：
  * - types: "course,content" のカンマ区切り（空なら未指定）
  * - categories: "id1,id2" カンマ区切り
  * - price: "all" | "free" | "paid"（既定 all は省略）
- * - q: キーワード（debounce 300ms）
- *
- * MediaListFilterBarClient（既存）の URL 同期パターンを踏襲。
  */
-
-const KEYWORD_DEBOUNCE_MS = 300
 
 export interface MixedListFilterClientProps {
   categories: MediaFilterCategory[]
@@ -32,7 +29,6 @@ export function MixedListFilterClient({ categories }: MixedListFilterClientProps
   const pathname = usePathname()
   const searchParams = useSearchParams()
 
-  // URL からの現在値抽出
   const currentTypes = React.useMemo(() => {
     const raw = searchParams.get('types')
     if (!raw) return [] as ('course' | 'content')[]
@@ -49,9 +45,6 @@ export function MixedListFilterClient({ categories }: MixedListFilterClientProps
   const priceParam = searchParams.get('price')
   const currentPriceFilter: MediaPriceFilter =
     priceParam === 'free' || priceParam === 'paid' ? priceParam : 'all'
-
-  const currentKeyword = searchParams.get('q') ?? ''
-  const [keyword, setKeyword] = React.useState(currentKeyword)
 
   const pushWithQuery = React.useCallback(
     (mutator: (params: URLSearchParams) => void) => {
@@ -93,36 +86,15 @@ export function MixedListFilterClient({ categories }: MixedListFilterClientProps
     [pushWithQuery],
   )
 
-  // キーワード debounce 反映
-  React.useEffect(() => {
-    if (keyword === currentKeyword) return
-    const timer = window.setTimeout(() => {
-      pushWithQuery(params => {
-        if (keyword.trim() === '') params.delete('q')
-        else params.set('q', keyword.trim())
-      })
-    }, KEYWORD_DEBOUNCE_MS)
-    return () => window.clearTimeout(timer)
-  }, [keyword, currentKeyword, pushWithQuery])
-
   return (
-    <div className="flex flex-col gap-4">
-      <Input
-        type="search"
-        placeholder="キーワードで検索"
-        value={keyword}
-        onChange={e => setKeyword(e.target.value)}
-        aria-label="キーワード検索"
-      />
-      <MediaFilterSidebar
-        selectedTypes={currentTypes}
-        onTypesChange={handleTypesChange}
-        selectedCategoryIds={currentCategoryIds}
-        onCategoriesChange={handleCategoriesChange}
-        categories={categories}
-        priceFilter={currentPriceFilter}
-        onPriceChange={handlePriceChange}
-      />
-    </div>
+    <MediaFilterSidebar
+      selectedTypes={currentTypes}
+      onTypesChange={handleTypesChange}
+      selectedCategoryIds={currentCategoryIds}
+      onCategoriesChange={handleCategoriesChange}
+      categories={categories}
+      priceFilter={currentPriceFilter}
+      onPriceChange={handlePriceChange}
+    />
   )
 }
