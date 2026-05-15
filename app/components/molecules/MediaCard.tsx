@@ -9,20 +9,21 @@ import { cn } from '@/app/lib/utils'
  *
  * 起点：
  * - team-lead 指示「B002 統合一覧（コース + 単体動画混在）」
- * - CourseCard を拡張し、コース / 単体動画 両対応にしたカード
+ * - Kosuke 最終確定（2026-05-15）：既存 ELearningCard と完全同一構造
  *
- * 構成（Kosuke フィードバック反映・2026-05-15）：
- * - 上部：aspect-video サムネ（バッジ overlay なし・純粋な画像）
- * - フッタ：
+ * 構成（最終形）：
+ * - 上部：aspect-video サムネ
+ *   - type='content' のみ：サムネ左上に「単体動画」緑 border バッジ overlay
+ *   - type='course'：バッジ overlay なし
+ * - 本体：
  *   - タイトル（2 行クランプ）
- *   - カテゴリ名（小・muted）
- *   - 下段：左に「価格 / 無料」、右に「コース / 単体動画」テキスト（両端寄せ）
+ *   - 概要文（line-clamp-3・任意）
+ *   - 下段：金額テキスト（左）+ カテゴリバッジ（右）両端寄せ
  *
  * 【props 互換性】
- * description / isFeatured / chapterCount / videoCount / duration は props として保持するが
- * UI 上では表示しない（B003 等の将来再利用 + 既存テスト破壊回避）。
+ * isFeatured / chapterCount / videoCount / duration は props として保持するが UI 上は表示しない。
  *
- * 非破壊：既存 CourseCard / ui/ / LP / admin に影響なし。
+ * 非破壊：既存 CourseCard / FreeBadge / PriceTag / ui/ / LP / admin に影響なし。
  */
 
 export type MediaType = 'course' | 'content'
@@ -36,7 +37,7 @@ export interface MediaCardProps {
   title: string
   /** サムネイル URL。null の場合はプレースホルダ。 */
   thumbnailUrl: string | null
-  /** 説明（props 保持・現バージョンでは表示しない）。 */
+  /** 概要文（タイトル下に line-clamp-3 表示・任意）。 */
   description?: string | null
   /** 無料か。 */
   isFree: boolean
@@ -63,6 +64,7 @@ const MediaCard = React.forwardRef<HTMLAnchorElement, MediaCardProps>(
       href,
       title,
       thumbnailUrl,
+      description,
       isFree,
       price,
       categoryName,
@@ -70,21 +72,18 @@ const MediaCard = React.forwardRef<HTMLAnchorElement, MediaCardProps>(
     },
     ref,
   ) => {
-    const typeLabel = type === 'course' ? 'コース' : '単体動画'
-
     return (
       <Link
         ref={ref}
         href={href}
         aria-label={`${title} の詳細を見る`}
         className={cn(
-          // 既存運用カード（ProjectCard / ELearningCard / コラム）と統一：
-          // 背景色なし / 透明 border-2 / hover で gray-200・transition-colors duration-300 / rounded（md 相当）
+          // 既存運用カード（ProjectCard / ELearningCard / コラム）と統一フレーム
           'group flex h-full flex-col overflow-hidden rounded border-2 border-transparent transition-colors duration-300 hover:border-gray-200',
           className,
         )}
       >
-        {/* サムネ（バッジ overlay なし・純粋な画像） */}
+        {/* サムネ */}
         <div className="relative aspect-video w-full bg-muted">
           {thumbnailUrl ? (
             <Image
@@ -99,6 +98,13 @@ const MediaCard = React.forwardRef<HTMLAnchorElement, MediaCardProps>(
               <PlayCircle aria-hidden="true" className="h-12 w-12" />
             </div>
           )}
+
+          {/* type='content' 時のみサムネ左上に「単体動画」バッジ overlay（既存 ELearningCard の無料バッジ位置と同パターン） */}
+          {type === 'content' && (
+            <span className="absolute top-2 left-2 inline-flex items-center bg-white text-xs px-3 py-1 border border-green-200 text-green-700 font-medium">
+              単体動画
+            </span>
+          )}
         </div>
 
         {/* 本体 */}
@@ -108,22 +114,27 @@ const MediaCard = React.forwardRef<HTMLAnchorElement, MediaCardProps>(
             {title}
           </h3>
 
-          {/* 1 行目：金額（左・有料はテキスト / 無料は緑 border バッジ）+ カテゴリ（右・グレー border バッジ） */}
+          {/* 概要文（任意・line-clamp-3） */}
+          {description && (
+            <p className="line-clamp-3 text-sm text-muted-foreground">
+              {description}
+            </p>
+          )}
+
+          {/* 下段：金額テキスト（左）+ カテゴリバッジ（右）両端寄せ */}
           <div className="mt-auto flex items-center justify-between gap-2 pt-2">
-            {/* 左：金額（有料はテキスト・無料は border バッジ既存通り） */}
+            {/* 左：金額（カテゴリバッジと同じ text-xs サイズ） */}
             {isFree ? (
-              <span className="inline-flex items-center bg-white text-xs px-3 py-1 border border-green-200 text-green-700 font-medium">
-                無料
-              </span>
+              <span className="text-xs text-muted-foreground">無料</span>
             ) : price != null ? (
-              <span className="text-sm font-medium text-gray-900">
+              <span className="text-xs text-gray-900">
                 ¥{price.toLocaleString()}
               </span>
             ) : (
               <span />
             )}
 
-            {/* 右：カテゴリバッジ（既存カード border パターン・タイトル下から移動） */}
+            {/* 右：カテゴリバッジ（既存カード border パターン） */}
             {categoryName ? (
               <span className="inline-flex items-center bg-white text-xs px-3 py-1 border border-gray-200 text-gray-700 font-medium">
                 {categoryName}
@@ -131,11 +142,6 @@ const MediaCard = React.forwardRef<HTMLAnchorElement, MediaCardProps>(
             ) : (
               <span />
             )}
-          </div>
-
-          {/* 2 行目：種別テキスト（右寄せ） */}
-          <div className="mt-2 text-right text-xs text-muted-foreground">
-            {typeLabel}
           </div>
         </div>
       </Link>

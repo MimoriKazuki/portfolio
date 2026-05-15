@@ -2,13 +2,14 @@
  * @vitest-environment jsdom
  */
 /**
- * MediaCard molecule のユニットテスト（2026-05-15 Kosuke フィードバック反映後）
+ * MediaCard molecule のユニットテスト（2026-05-15 Kosuke 最終確定版）
  *
  * 観点：
- * - type='course' / 'content' で下段右に「コース」「単体動画」テキストが切り替わる
+ * - type='content' のみ サムネ左上に「単体動画」バッジが overlay 表示される
+ * - type='course' 時はサムネ左上に何も表示されない（バッジ overlay なし）
  * - thumbnailUrl 有無で Image / PlayCircle 切替
- * - サムネにバッジ overlay がない（左上の種別バッジ / 右上の注目バッジは UI から除去）
- * - description / chapterCount / videoCount / duration は props 互換のため受け取るが UI 上は非表示
+ * - description（任意）の line-clamp-3 表示／非表示
+ * - chapterCount / videoCount / duration / isFeatured は props 互換のため受け取るが UI 上は非表示
  */
 
 import { describe, it, expect, vi } from 'vitest'
@@ -45,15 +46,14 @@ const baseProps = {
 }
 
 describe('MediaCard molecule', () => {
-  it('type="course" → 下段右に「コース」テキストが表示される', () => {
-    render(<MediaCard {...baseProps} type="course" />)
-    expect(screen.getByText('コース')).toBeInTheDocument()
-    expect(screen.queryByText('単体動画')).not.toBeInTheDocument()
-  })
-
-  it('type="content" → 下段右に「単体動画」テキストが表示される', () => {
+  it('type="content" → サムネ左上に「単体動画」バッジ overlay が表示される', () => {
     render(<MediaCard {...baseProps} type="content" />)
     expect(screen.getByText('単体動画')).toBeInTheDocument()
+  })
+
+  it('type="course" → サムネ左上にバッジ overlay は表示されない', () => {
+    render(<MediaCard {...baseProps} type="course" />)
+    expect(screen.queryByText('単体動画')).not.toBeInTheDocument()
     expect(screen.queryByText('コース')).not.toBeInTheDocument()
   })
 
@@ -63,12 +63,17 @@ describe('MediaCard molecule', () => {
     expect(container.querySelectorAll('svg').length).toBeGreaterThan(0)
   })
 
-  it('isFeatured=true でも UI 上に「注目」バッジは表示されない（props 互換のみ）', () => {
-    render(<MediaCard {...baseProps} type="course" isFeatured={true} />)
-    expect(screen.queryByText('注目')).not.toBeInTheDocument()
+  it('description あり → タイトル下に表示、null → 非表示', () => {
+    const { rerender } = render(
+      <MediaCard {...baseProps} type="course" description="この動画の説明" />,
+    )
+    expect(screen.getByText('この動画の説明')).toBeInTheDocument()
+
+    rerender(<MediaCard {...baseProps} type="course" description={null} />)
+    expect(screen.queryByText('この動画の説明')).not.toBeInTheDocument()
   })
 
-  it('chapterCount/videoCount / duration / description を渡しても UI 上に表示されない（props 互換のみ）', () => {
+  it('chapterCount/videoCount / duration / isFeatured を渡しても UI 上に表示されない（props 互換のみ）', () => {
     render(
       <MediaCard
         {...baseProps}
@@ -76,11 +81,11 @@ describe('MediaCard molecule', () => {
         chapterCount={3}
         videoCount={8}
         duration="12:34"
-        description="この動画の説明"
+        isFeatured={true}
       />,
     )
     expect(screen.queryByText(/章 \//)).not.toBeInTheDocument()
     expect(screen.queryByText('12:34')).not.toBeInTheDocument()
-    expect(screen.queryByText('この動画の説明')).not.toBeInTheDocument()
+    expect(screen.queryByText('注目')).not.toBeInTheDocument()
   })
 })
