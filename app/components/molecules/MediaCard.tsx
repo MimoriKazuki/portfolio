@@ -123,11 +123,11 @@ const MediaCard = React.forwardRef<HTMLAnchorElement, MediaCardProps>(
 
           {/* 下段：金額テキスト（左）+ カテゴリバッジ（右）両端寄せ */}
           <div className="mt-auto flex items-center justify-between gap-2 pt-2">
-            {/* 左：金額（カテゴリバッジと同じ text-xs サイズ） */}
+            {/* 左：金額（やや視認性を上げて text-sm に拡大・Kosuke FB） */}
             {isFree ? (
-              <span className="text-xs text-muted-foreground">無料</span>
+              <span className="text-sm text-muted-foreground">無料</span>
             ) : price != null ? (
-              <span className="text-xs text-gray-900">
+              <span className="text-sm text-gray-900">
                 ¥{price.toLocaleString()}
               </span>
             ) : (
