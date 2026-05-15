@@ -4,6 +4,7 @@ import * as React from 'react'
 import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { X } from 'lucide-react'
 import { Select, type SelectOption } from '@/app/components/molecules/Select'
+import { cn } from '@/app/lib/utils'
 
 /**
  * マイラーニングの上部ドロップダウンフィルタ Client Component（Kosuke FB 2026-05-15 Udemy 風）。
@@ -98,15 +99,22 @@ export function MyLearningFilterBar({ categories }: MyLearningFilterBarProps) {
 
   return (
     <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center sm:gap-4">
-      {/* 種別ドロップダウン */}
-      <div className="relative sm:w-48">
+      {/* 種別ドロップダウン
+          選択時は Select Trigger 内の ChevronDown を CSS で非表示にし、✕ アイコンのみ表示する
+          （Kosuke FB 2026-05-15・Select の button 直下の svg を `[&>button>svg]:hidden` で消す） */}
+      <div
+        className={cn(
+          'relative sm:w-48',
+          isTypeSelected && '[&>button>svg]:hidden',
+        )}
+      >
         <Select
           id="mylearning-type"
           aria-label="種別フィルタ"
           value={currentType}
           onValueChange={handleTypeChange}
-          // 選択時は ✕ ボタン分の右パディングを確保（chevron との衝突回避のため pr-12）
-          className={isTypeSelected ? 'pr-12' : undefined}
+          // 選択時は ✕ ボタン分の右パディング確保（chevron は CSS で消すため pr-10 で十分）
+          className={isTypeSelected ? 'pr-10' : undefined}
           options={typeOptions}
         />
         {isTypeSelected && (
@@ -117,21 +125,26 @@ export function MyLearningFilterBar({ categories }: MyLearningFilterBarProps) {
               e.stopPropagation()
               handleTypeChange(ALL)
             }}
-            className="absolute right-8 top-1/2 inline-flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-sm text-muted-foreground hover:text-foreground"
+            className="absolute right-2 top-1/2 inline-flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-sm text-muted-foreground hover:text-foreground"
           >
             <X aria-hidden="true" className="h-4 w-4" />
           </button>
         )}
       </div>
 
-      {/* カテゴリドロップダウン */}
-      <div className="relative sm:w-56">
+      {/* カテゴリドロップダウン（種別と同流儀） */}
+      <div
+        className={cn(
+          'relative sm:w-56',
+          isCategorySelected && '[&>button>svg]:hidden',
+        )}
+      >
         <Select
           id="mylearning-category"
           aria-label="カテゴリフィルタ"
           value={currentCategory}
           onValueChange={handleCategoryChange}
-          className={isCategorySelected ? 'pr-12' : undefined}
+          className={isCategorySelected ? 'pr-10' : undefined}
           options={categoryOptions}
         />
         {isCategorySelected && (
@@ -142,7 +155,7 @@ export function MyLearningFilterBar({ categories }: MyLearningFilterBarProps) {
               e.stopPropagation()
               handleCategoryChange(ALL)
             }}
-            className="absolute right-8 top-1/2 inline-flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-sm text-muted-foreground hover:text-foreground"
+            className="absolute right-2 top-1/2 inline-flex h-5 w-5 -translate-y-1/2 items-center justify-center rounded-sm text-muted-foreground hover:text-foreground"
           >
             <X aria-hidden="true" className="h-4 w-4" />
           </button>
