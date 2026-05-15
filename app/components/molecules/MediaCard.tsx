@@ -79,7 +79,9 @@ const MediaCard = React.forwardRef<HTMLAnchorElement, MediaCardProps>(
         href={href}
         aria-label={`${title} の詳細を見る`}
         className={cn(
-          'group flex h-full flex-col overflow-hidden rounded-lg border border-border bg-card text-card-foreground transition hover:border-primary',
+          // 既存運用カード（ProjectCard / ELearningCard / コラム）と統一：
+          // 背景色なし / 透明 border-2 / hover で gray-200・transition-colors duration-300 / rounded（md 相当）
+          'group flex h-full flex-col overflow-hidden rounded border-2 border-transparent transition-colors duration-300 hover:border-gray-200',
           className,
         )}
       >
