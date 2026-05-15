@@ -108,27 +108,34 @@ const MediaCard = React.forwardRef<HTMLAnchorElement, MediaCardProps>(
             {title}
           </h3>
 
-          {/* カテゴリ名（任意・既存カード共通の border バッジパターン） */}
-          {categoryName && (
-            <span className="inline-flex w-fit items-center bg-white text-xs px-3 py-1 border border-gray-200 text-gray-700 font-medium">
-              {categoryName}
-            </span>
-          )}
-
-          {/* 下段：金額（左・既存カード border バッジ統一）+ 種別テキスト（右）両端寄せ */}
+          {/* 1 行目：金額（左・有料はテキスト / 無料は緑 border バッジ）+ カテゴリ（右・グレー border バッジ） */}
           <div className="mt-auto flex items-center justify-between gap-2 pt-2">
+            {/* 左：金額（有料はテキスト・無料は border バッジ既存通り） */}
             {isFree ? (
               <span className="inline-flex items-center bg-white text-xs px-3 py-1 border border-green-200 text-green-700 font-medium">
                 無料
               </span>
             ) : price != null ? (
-              <span className="inline-flex items-center bg-white text-xs px-3 py-1 border border-gray-200 text-gray-900 font-medium">
+              <span className="text-sm font-medium text-gray-900">
                 ¥{price.toLocaleString()}
               </span>
             ) : (
               <span />
             )}
-            <span className="text-xs text-muted-foreground">{typeLabel}</span>
+
+            {/* 右：カテゴリバッジ（既存カード border パターン・タイトル下から移動） */}
+            {categoryName ? (
+              <span className="inline-flex items-center bg-white text-xs px-3 py-1 border border-gray-200 text-gray-700 font-medium">
+                {categoryName}
+              </span>
+            ) : (
+              <span />
+            )}
+          </div>
+
+          {/* 2 行目：種別テキスト（右寄せ） */}
+          <div className="mt-2 text-right text-xs text-muted-foreground">
+            {typeLabel}
           </div>
         </div>
       </Link>
