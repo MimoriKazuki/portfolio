@@ -78,13 +78,13 @@ const MediaCard = React.forwardRef<HTMLAnchorElement, MediaCardProps>(
         href={href}
         aria-label={`${title} の詳細を見る`}
         className={cn(
-          // 既存運用カード（ProjectCard / ELearningCard / コラム）と統一フレーム
-          'group flex h-full flex-col overflow-hidden rounded border-2 border-transparent transition-colors duration-300 hover:border-gray-200',
+          // 既存運用カード（ProjectCard / ELearningCard / コラム）と統一フレーム + 内側パディング p-4
+          'group flex h-full flex-col overflow-hidden rounded border-2 border-transparent transition-colors duration-300 hover:border-gray-200 p-4',
           className,
         )}
       >
-        {/* サムネ */}
-        <div className="relative aspect-video w-full bg-muted">
+        {/* サムネ：パディング内に収め、角丸＋オーバーフロー隠しで丸い縁 */}
+        <div className="relative aspect-video w-full overflow-hidden rounded bg-muted">
           {thumbnailUrl ? (
             <Image
               src={thumbnailUrl}
@@ -100,15 +100,16 @@ const MediaCard = React.forwardRef<HTMLAnchorElement, MediaCardProps>(
           )}
 
           {/* type='content' 時のみサムネ左上に「単体動画」バッジ overlay（既存 ELearningCard の無料バッジ位置と同パターン） */}
+          {/* ホバー時はフェードアウト（既存 ELearningCard と同流儀） */}
           {type === 'content' && (
-            <span className="absolute top-2 left-2 inline-flex items-center bg-white text-xs px-3 py-1 border border-green-200 text-green-700 font-medium">
+            <span className="absolute top-2 left-2 inline-flex items-center bg-white text-xs px-3 py-1 border border-green-200 text-green-700 font-medium transition-opacity duration-300 group-hover:opacity-0">
               単体動画
             </span>
           )}
         </div>
 
-        {/* 本体 */}
-        <div className="flex flex-1 flex-col gap-2 p-5">
+        {/* 本体（左右パディングは外側 p-4 に委譲し、上下のみ pt-4 で間隔確保） */}
+        <div className="flex flex-1 flex-col gap-2 pt-4">
           {/* タイトル（2 行クランプ） */}
           <h3 className="line-clamp-2 text-base text-foreground group-hover:text-primary md:text-lg">
             {title}
