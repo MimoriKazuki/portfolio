@@ -146,30 +146,30 @@ describe('getMyLearning — tab=purchased', () => {
     expect(result).toHaveLength(0)
   })
 
-  it('types=["course"] のとき content を含まない', async () => {
+  it('type="course" のとき content を含まない', async () => {
     mockClientForPurchased(
       makePurchasedChain([completedCoursePurchase, completedContentPurchase]),
     )
-    const result = await getMyLearning('eu-1', { tab: 'purchased', types: ['course'] })
+    const result = await getMyLearning('eu-1', { tab: 'purchased', type: 'course' })
     expect(result).toHaveLength(1)
     expect(result[0].type).toBe('course')
   })
 
-  it('types=["content"] のとき course を含まない', async () => {
+  it('type="content" のとき course を含まない', async () => {
     mockClientForPurchased(
       makePurchasedChain([completedCoursePurchase, completedContentPurchase]),
     )
-    const result = await getMyLearning('eu-1', { tab: 'purchased', types: ['content'] })
+    const result = await getMyLearning('eu-1', { tab: 'purchased', type: 'content' })
     expect(result).toHaveLength(1)
     expect(result[0].type).toBe('content')
   })
 
-  it('categoryIds 指定で他カテゴリのアイテムを除外する', async () => {
+  it('categoryId 指定で他カテゴリのアイテムを除外する', async () => {
     mockClientForPurchased(
       makePurchasedChain([completedCoursePurchase, completedContentPurchase]),
     )
     // cat-1 のみ指定 → course のみ残る
-    const result = await getMyLearning('eu-1', { tab: 'purchased', categoryIds: ['cat-1'] })
+    const result = await getMyLearning('eu-1', { tab: 'purchased', categoryId: 'cat-1' })
     expect(result).toHaveLength(1)
     expect(result[0].id).toBe('course-1')
   })
@@ -256,10 +256,10 @@ describe('getMyLearning — tab=bookmarked', () => {
     expect(result).toHaveLength(0)
   })
 
-  it('types=["course"] のとき content を含まない', async () => {
+  it('type="course" のとき content を含まない', async () => {
     ;(listBookmarks as ReturnType<typeof vi.fn>).mockResolvedValue(bookmarkRecords)
     mockClientForBookmarked(makeInChain([bookmarkedCourse]), makeInChain([bookmarkedContent]))
-    const result = await getMyLearning('eu-1', { tab: 'bookmarked', types: ['course'] })
+    const result = await getMyLearning('eu-1', { tab: 'bookmarked', type: 'course' })
     expect(result.every(r => r.type === 'course')).toBe(true)
   })
 

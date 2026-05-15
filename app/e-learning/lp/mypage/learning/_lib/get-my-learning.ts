@@ -11,15 +11,18 @@ import { list as listBookmarks } from '@/app/lib/services/bookmark-service'
  *   既存 B012 の get-bookmarks-detail と整合
  * - 公開済（is_published=true / deleted_at IS NULL）のみ：マイラーニングは視聴前提のため、非公開・削除済は出さない
  *   （B012 ブックマークは過去事実保持で全件出していたが、マイラーニングは「いま視聴できるもの」に揃える）
- * - フィルタ：種別（types: course/content）/ カテゴリ（categoryIds）は呼び出し側でクエリ層に渡し DB レベルで絞る
+ * - フィルタ：種別（type: course/content）/ カテゴリ（categoryId）は呼び出し側から単一値で受け取りメモリ側で絞る
+ *   （Kosuke FB 2026-05-15 でドロップダウン単一選択化）
  */
 
 export type MyLearningTab = 'purchased' | 'bookmarked'
 
 export interface MyLearningFilters {
   tab: MyLearningTab
-  types?: ('course' | 'content')[]
-  categoryIds?: string[]
+  /** 種別フィルタ（単一値）。undefined ならすべて。 */
+  type?: 'course' | 'content'
+  /** カテゴリ ID（単一値）。undefined ならすべて。 */
+  categoryId?: string
 }
 
 export interface MyLearningItem {
@@ -114,9 +117,8 @@ async function getPurchasedList(
     content: ContentJoin | ContentJoin[] | null
   }>
 
-  const wantTypes = filters.types && filters.types.length > 0 ? new Set(filters.types) : null
-  const wantCategoryIds =
-    filters.categoryIds && filters.categoryIds.length > 0 ? new Set(filters.categoryIds) : null
+  const wantType = filters.type ?? null
+  const wantCategoryId = filters.categoryId ?? null
 
   const items: MyLearningItem[] = []
 
@@ -126,8 +128,8 @@ async function getPurchasedList(
 
     if (r.course_id && courseRaw) {
       if (courseRaw.is_published === false || courseRaw.deleted_at !== null) continue
-      if (wantTypes && !wantTypes.has('course')) continue
-      if (wantCategoryIds && (!courseRaw.category_id || !wantCategoryIds.has(courseRaw.category_id))) continue
+      if (wantType && wantType !== 'course') continue
+      if (wantCategoryId && courseRaw.category_id !== wantCategoryId) continue
       const cat = Array.isArray(courseRaw.category) ? courseRaw.category[0] : courseRaw.category
       items.push({
         key: `course:${courseRaw.id}`,
@@ -143,8 +145,8 @@ async function getPurchasedList(
       })
     } else if (r.content_id && contentRaw) {
       if (contentRaw.is_published === false || contentRaw.deleted_at !== null) continue
-      if (wantTypes && !wantTypes.has('content')) continue
-      if (wantCategoryIds && (!contentRaw.category_id || !wantCategoryIds.has(contentRaw.category_id))) continue
+      if (wantType && wantType !== 'content') continue
+      if (wantCategoryId && contentRaw.category_id !== wantCategoryId) continue
       const cat = Array.isArray(contentRaw.category) ? contentRaw.category[0] : contentRaw.category
       items.push({
         key: `content:${contentRaw.id}`,
@@ -238,9 +240,8 @@ async function getBookmarkedList(
     ((contentsResp.data ?? []) as unknown as ContentDetail[]).map(c => [c.id, c]),
   )
 
-  const wantTypes = filters.types && filters.types.length > 0 ? new Set(filters.types) : null
-  const wantCategoryIds =
-    filters.categoryIds && filters.categoryIds.length > 0 ? new Set(filters.categoryIds) : null
+  const wantType = filters.type ?? null
+  const wantCategoryId = filters.categoryId ?? null
 
   const items: MyLearningItem[] = []
 
@@ -249,8 +250,8 @@ async function getBookmarkedList(
       const c = coursesMap.get(r.course_id)
       if (!c) continue
       if (c.is_published === false || c.deleted_at !== null) continue
-      if (wantTypes && !wantTypes.has('course')) continue
-      if (wantCategoryIds && (!c.category_id || !wantCategoryIds.has(c.category_id))) continue
+      if (wantType && wantType !== 'course') continue
+      if (wantCategoryId && c.category_id !== wantCategoryId) continue
       const cat = Array.isArray(c.category) ? c.category[0] : c.category
       items.push({
         key: `course:${c.id}`,
@@ -268,8 +269,8 @@ async function getBookmarkedList(
       const c = contentsMap.get(r.content_id)
       if (!c) continue
       if (c.is_published === false || c.deleted_at !== null) continue
-      if (wantTypes && !wantTypes.has('content')) continue
-      if (wantCategoryIds && (!c.category_id || !wantCategoryIds.has(c.category_id))) continue
+      if (wantType && wantType !== 'content') continue
+      if (wantCategoryId && c.category_id !== wantCategoryId) continue
       const cat = Array.isArray(c.category) ? c.category[0] : c.category
       items.push({
         key: `content:${c.id}`,
