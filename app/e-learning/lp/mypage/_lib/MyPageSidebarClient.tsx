@@ -3,26 +3,22 @@
 import * as React from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Bookmark, History, Receipt, User } from 'lucide-react'
+import { BookOpen, Receipt, User } from 'lucide-react'
 import { cn } from '@/app/lib/utils'
 
 /**
- * B011/B012/B013/B014 マイページ共通サブナビ（Client Component）。
+ * マイページ共通サブナビ（Client Component）。
  *
- * 起点：
- * - docs/frontend/page-templates.md §MyPageTemplate
- * - docs/frontend/screens.md B011-B014
- *
- * 仕様：
- * - 4 リンク：購入履歴 / ブックマーク / 視聴履歴 / プロフィール（B014・未実装）
+ * 仕様（Kosuke FB 2026-05-15 で再編）：
+ * - 3 リンク：マイラーニング（購入 + ブックマーク 統合）/ 購入履歴 / プロフィール
+ * - 旧「ブックマーク」「視聴履歴」はマイラーニングに統合（独立メニューは廃止）
  * - 現在 path に一致する項目は aria-current="page" + 強調スタイル
  * - usePathname() 使用のため Client Component
  */
 
 const ITEMS: Array<{ href: string; label: string; icon: React.ElementType }> = [
+  { href: '/e-learning/lp/mypage/learning', label: 'マイラーニング', icon: BookOpen },
   { href: '/e-learning/lp/mypage/purchases', label: '購入履歴', icon: Receipt },
-  { href: '/e-learning/lp/mypage/bookmarks', label: 'ブックマーク', icon: Bookmark },
-  { href: '/e-learning/lp/mypage/progress', label: '視聴履歴', icon: History },
   { href: '/e-learning/lp/mypage', label: 'プロフィール', icon: User },
 ]
 
