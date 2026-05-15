@@ -316,30 +316,23 @@
 - 補足: 単体動画購入なら `/e-learning/[id]` へ遷移
 - ステータス: 📋 未着手
 
-#### SC-UAT-055: B012 新ブックマーク「解除」→ 行が楽観的に非表示 + リロード後も復活しない
-- 対象URL: `/e-learning/lp/mypage/bookmarks`（ブックマーク1件以上）
-- 操作: ブックマーク行の解除ボタン（BookmarkX アイコン）をクリック
-- 期待結果（2点）:
-  1. ボタンクリック後、該当行が即座に非表示になる（楽観的更新）
-  2. ページをリロードしても行が復活しない（DB 削除確認）
-  （クリーンアップ：テスト用ブックマークはテスト前に作成・解除で完結）
-- ステータス: 📋 未着手
+#### ~~SC-UAT-055: B012 新ブックマーク「解除」→ 行が楽観的に非表示 + リロード後も復活しない~~
+- ~~対象URL: `/e-learning/lp/mypage/bookmarks`（ブックマーク1件以上）~~
+- **廃止（2026-05-15）**: Kosuke FB によりブックマーク独立メニュー（B012）削除。マイラーニング（B012b）に統合。ブックマーク解除は SC-UAT-031（B004 詳細画面）で引き続き確認。
+- ステータス: 🚫 廃止
 
-#### SC-UAT-056: B013 新視聴履歴 コース別 ProgressBar + 「次のレッスン」→ B005 へ遷移
-- 対象URL: `/e-learning/lp/mypage/progress`（コース進捗あり）
-- 確認内容:
-  - コース行に ProgressBar が表示され、「completed/total（pct%）」が表示される
-  - 「次のレッスン」ボタンをクリック → `/e-learning/lp/courses/[slug]/videos/[videoId]` に遷移する
-  - コース完了時はボタンが「もう一度視聴」表示になる
-- ステータス: 📋 未着手
+#### ~~SC-UAT-056: B013 新視聴履歴 コース別 ProgressBar + 「次のレッスン」→ B005 へ遷移~~
+- ~~対象URL: `/e-learning/lp/mypage/progress`（コース進捗あり）~~
+- **廃止（2026-05-15）**: Kosuke FB により視聴履歴独立メニュー（B013）削除。視聴進捗確認は B005（SC-UAT-040）・B004（SC-UAT-038）で引き続き確認。
+- ステータス: 🚫 廃止
 
 #### SC-UAT-057: マイページサイドバー active 強調（aria-current="page"）
 - 前提: ログイン済み
 - 操作: `/e-learning/lp/mypage/purchases` にアクセス
 - 確認内容:
   - サイドバーの「購入履歴」リンクに `aria-current="page"` が付いている
-  - 他の3リンク（ブックマーク・視聴履歴・プロフィール）には `aria-current` が付いていない
-- 補足: B012/B013 でも同様の active 強調が機能することを確認
+  - 他の2リンク（マイラーニング・プロフィール）には `aria-current` が付いていない
+- 補足: B012b マイラーニング（`/e-learning/lp/mypage/learning`）でも同様に「マイラーニング」リンクが active になることを確認（SC-UAT-110 と合わせて確認）
 - ステータス: 📋 未着手
 
 #### SC-UAT-058: B014 退会ダイアログ → 開く
@@ -787,13 +780,81 @@
   - **既存コース（人作成データ）の章・動画には絶対に削除ボタンを押さないこと**
 - ステータス: 📋 未着手
 
+### マイラーニング（B012b — `/e-learning/lp/mypage/learning`）
+
+#### SC-UAT-110: B012b マイラーニング「ブックマーク済み」タブ切替 → URL query 反映
+- 対象URL: `/e-learning/lp/mypage/learning`（ログイン済み）
+- 前提: ログイン済み・ブックマーク済みアイテムが1件以上存在する
+- 操作: `role="tablist"` 内「ブックマーク済み」タブをクリック
+- 確認内容:
+  - URL が `/e-learning/lp/mypage/learning?tab=bookmarked` に更新される
+  - `aria-selected="true"` が「ブックマーク済み」タブに移る
+  - MediaGrid にブックマーク済みアイテムが表示される（purchased タブとは別セット）
+- ステータス: 📋 未着手
+
+#### SC-UAT-111: B012b マイラーニング「購入済み」タブに戻る → `?tab` が URL から消える
+- 対象URL: `/e-learning/lp/mypage/learning?tab=bookmarked`
+- 操作: `role="tablist"` 内「購入済み」タブをクリック
+- 確認内容:
+  - URL が `/e-learning/lp/mypage/learning`（`?tab` なし）に更新される（`params.delete('tab')`）
+  - `aria-selected="true"` が「購入済み」タブに移る
+  - MediaGrid に購入済みアイテムが表示される
+- ステータス: 📋 未着手
+
+#### SC-UAT-112: B012b マイラーニング 種別「コース」Checkbox ON → URL `?types=course`・コースのみ表示
+- 対象URL: `/e-learning/lp/mypage/learning`（ログイン済み・購入済みコースとコンテンツが混在）
+- 前提: ログイン済み・購入済みコース・単体動画が各1件以上存在する
+- 操作: `aria-label="マイラーニングフィルタ"` aside 内「コース」Checkbox（`id="mylearning-type-course"`）を ON にする
+- 確認内容:
+  - URL に `?types=course` が付く
+  - MediaGrid に `type="course"` の MediaCard のみ表示される
+  - 「単体動画」MediaCard が表示されない
+- ステータス: 📋 未着手
+
+#### SC-UAT-113: B012b マイラーニング 種別 Checkbox 両方 ON → `?types=course,content`・全件表示
+- 対象URL: `/e-learning/lp/mypage/learning`
+- 前提: ログイン済み・SC-UAT-112 で「コース」だけ ON の状態から続けて操作
+- 操作: 「単体動画」Checkbox（`id="mylearning-type-content"`）も ON にする
+- 確認内容:
+  - URL が `?types=course,content` になる
+  - コース・単体動画の両方が MediaGrid に表示される
+- ステータス: 📋 未着手
+
+#### SC-UAT-114: B012b マイラーニング 種別 Checkbox 両方 OFF → `?types` が URL から消え全件表示
+- 対象URL: `/e-learning/lp/mypage/learning?types=course,content`
+- 操作: 「コース」「単体動画」の両 Checkbox を OFF にする
+- 確認内容:
+  - URL から `?types=` が削除される（`params.delete('types')`）
+  - コース・単体動画の両方が再び表示される（フィルタなし状態に戻る）
+- ステータス: 📋 未着手
+
+#### SC-UAT-115: B012b マイラーニング カテゴリ Checkbox 選択 → URL `?categories={id}` 反映・絞り込み
+- 対象URL: `/e-learning/lp/mypage/learning`（ログイン済み・複数カテゴリのアイテムが存在）
+- 前提: ログイン済み・aside のカテゴリセクションにカテゴリが1件以上表示されている
+- 操作: カテゴリ Checkbox（`id="mylearning-category-{id}"`）を1件 ON にする
+- 確認内容:
+  - URL に `?categories={id}` が付く
+  - MediaGrid にそのカテゴリのアイテムのみ表示される
+  - 他カテゴリのアイテムが非表示になる
+- ステータス: 📋 未着手
+
+#### SC-UAT-116: B012b マイラーニング タブ切替時に types・categories フィルタが維持される
+- 対象URL: `/e-learning/lp/mypage/learning?types=course&categories={id}`
+- 操作: 「ブックマーク済み」タブをクリック
+- 確認内容:
+  - URL が `?tab=bookmarked&types=course&categories={id}` に更新される（既存 query が保持される）
+  - フィルタがタブ切替をまたいで維持されている
+- 補足: `MyLearningTabsClient` は `new URLSearchParams(searchParams.toString())` で既存パラメータを引き継ぐ設計のため
+- ステータス: 📋 未着手
+
 ---
 
 ## サマリ
 
 | 状態 | 件数 |
 |------|------|
-| 📋 未着手 | 91 |
+| 📋 未着手 | 96 |
 | 🔧 実装中 | 0 |
 | ✅ 完了 | 0 |
-| **合計** | **91** |
+| 🚫 廃止 | 2 |
+| **合計** | **98** |

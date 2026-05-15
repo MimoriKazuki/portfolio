@@ -192,12 +192,27 @@
 - ステータス: 📋 未着手
 
 #### SC-SMK-012c: B012 新マイページブックマーク表示（`/e-learning/lp/mypage/bookmarks`）
-- 対象URL: `/e-learning/lp/mypage/bookmarks`
+- ~~対象URL: `/e-learning/lp/mypage/bookmarks`~~
+- **廃止（2026-05-15）**: Kosuke FB によりブックマーク独立メニュー（B012）削除。マイラーニング（SC-SMK-012d）に統合。
+- ステータス: 🚫 廃止
+
+#### SC-SMK-012d: マイラーニング 未ログイン redirect 確認（`/e-learning/lp/mypage/learning`）
+- 対象URL: `/e-learning/lp/mypage/learning`
+- 認証: 未ログイン
+- 確認内容:
+  - `/auth/login?returnTo=%2Fe-learning%2Flp%2Fmypage%2Flearning` にリダイレクトされる
+- ステータス: 📋 未着手
+
+#### SC-SMK-012e: マイラーニング ページ描画確認（`/e-learning/lp/mypage/learning`）
+- 対象URL: `/e-learning/lp/mypage/learning`
 - 前提: ログイン済み
 - 確認内容:
-  - h1「ブックマーク」が表示される
-  - MyPageSidebarClient が表示される
-  - ブックマーク0件でも 200 OK（EmptyState 表示）
+  - h1「マイラーニング」が表示される
+  - タブ「購入済み」「ブックマーク済み」が表示される（`role="tablist" aria-label="マイラーニング表示切替"`）
+  - 「購入済み」タブが既定で `aria-selected="true"` になっている
+  - `aside[aria-label="マイラーニングフィルタ"]` 内に「種別」「カテゴリ」セクションが表示される（価格セクションなし）
+  - MyPageSidebarClient（マイページナビ）が表示される
+  - アイテム0件でも 200 OK（MediaGrid isEmpty 状態）
 - ステータス: 📋 未着手
 
 #### SC-SMK-013: B013 マイページ視聴履歴表示
@@ -207,13 +222,9 @@
 - ステータス: 📋 未着手
 
 #### SC-SMK-013c: B013 新マイページ視聴履歴表示（`/e-learning/lp/mypage/progress`）
-- 対象URL: `/e-learning/lp/mypage/progress`
-- 前提: ログイン済み
-- 確認内容:
-  - h1「視聴履歴」が表示される
-  - MyPageSidebarClient が表示される
-  - 視聴履歴0件でも 200 OK（EmptyState 表示）
-- ステータス: 📋 未着手
+- ~~対象URL: `/e-learning/lp/mypage/progress`~~
+- **廃止（2026-05-15）**: Kosuke FB により視聴履歴独立メニュー（B013）削除。マイラーニング（SC-SMK-012d/012e）に統合。
+- ステータス: 🚫 廃止
 
 #### SC-SMK-014: B014 マイページプロフィール表示
 - 対象URL: `/e-learning/mypage`
